@@ -1,0 +1,753 @@
+fileFormatVersion: 2
+guid: b3d40029323ffe043b793619097d982e
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: b2a9591990af98743ba3ff7cf1000886, type: 3}
+  textureImporterSettings:
+    alphaSource: 1
+    mipMapMode: 0
+    enableMipMap: 1
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+    convertToNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    isReadable: 1
+    streamingMipmaps: 1
+    streamingMipmapsPriority: 0
+    vTOnly: 0
+    nPOTScale: 1
+    sRGBTexture: 1
+    spriteMode: 2
+    spriteExtrude: 1
+    spriteMeshType: 1
+    alignment: 0
+    spritePivot: {x: 0.5, y: 0.5}
+    spritePixelsToUnits: 100
+    spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+    spriteGenerateFallbackPhysicsShape: 0
+    generateCubemap: 6
+    cubemapConvolution: 0
+    seamlessCubemap: 0
+    alphaIsTransparency: 1
+    spriteTessellationDetail: -1
+    textureType: 8
+    textureShape: 1
+    singleChannelComponent: 0
+    flipbookRows: 0
+    flipbookColumns: 0
+    ignorePngGamma: 0
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 0
+    wrapV: 0
+    wrapW: 0
+    normalMap: 0
+    textureFormat: 0
+    maxTextureSize: 0
+    lightmap: 0
+    compressionQuality: 0
+    linearTexture: 0
+    grayScaleToAlpha: 0
+    rGBM: 0
+    cubemapConvolutionSteps: 0
+    cubemapConvolutionExponent: 0
+    maxTextureSizeSet: 0
+    compressionQualitySet: 0
+    textureFormatSet: 0
+    applyGammaDecoding: 0
+  spriteImportData:
+  - name: 
+    originalName: 
+    pivot: {x: 0, y: 0}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    spriteID: 
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: 0, y: 0}
+  mosaicSpriteImportData:
+  - name: Multicolor Background
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 4
+      width: 680
+      height: 980
+    spriteID: e4c5c292d0cf15740a99242b60f5acee
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: 4, y: 4}
+  - name: Dark Background
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 1980
+      width: 0
+      height: 0
+    spriteID: ed11565828423084c99cfe1dfb7ea0af
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: -676, y: 1000}
+  - name: Frost Background
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 12
+      y: 1980
+      width: 0
+      height: 0
+    spriteID: 91b71068de55267488a6532e0c085ff2
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: -668, y: 1000}
+  - name: Light Background
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 20
+      y: 1980
+      width: 0
+      height: 0
+    spriteID: 8e65c4f1a9471964b8b41ee5e9fcf373
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: -660, y: 1000}
+  - name: Wind Background
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 28
+      y: 1980
+      width: 0
+      height: 0
+    spriteID: 8a6317bd221803f4f9966869aef4fa3d
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: -652, y: 1000}
+  - name: Thunder Background
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 36
+      y: 1980
+      width: 0
+      height: 0
+    spriteID: 114659e0a1dadf44281fb464a2e0e432
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: -644, y: 1000}
+  - name: Earth Background
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 44
+      y: 1980
+      width: 0
+      height: 0
+    spriteID: ef4b3009b0c17414babc5ee669b36349
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: -636, y: 1000}
+  - name: Water Background
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 52
+      y: 1980
+      width: 0
+      height: 0
+    spriteID: 959b4542c3900594aaaa1cea37da13c9
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: -628, y: 1000}
+  - name: Fire Background
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 60
+      y: 1980
+      width: 0
+      height: 0
+    spriteID: 8e144cb5840dc4c45904260018f83be7
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: -620, y: 1000}
+  - name: Star Background
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 992
+      width: 680
+      height: 980
+    spriteID: 7a6d13ade774e714fa2ce3cc100a131c
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: 4, y: 992}
+  rigSpriteImportData:
+  - name: Multicolor Background
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 943
+      y: 4
+      width: 825
+      height: 1125
+    spriteID: c6485e5c526faf44f8b76d4893090b2b
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: 890, y: -85}
+  - name: Dark Background
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 1315
+      width: 0
+      height: 0
+    spriteID: ac05067808a56f1488142a46eab82a96
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: -927, y: 12}
+  - name: Frost Background
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 12
+      y: 1315
+      width: 0
+      height: 0
+    spriteID: d2097ee883f75df48b1a9cf256ee83ee
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: -919, y: 12}
+  - name: Light Background
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 20
+      y: 1315
+      width: 0
+      height: 0
+    spriteID: 8b9e7a38cefe93d4681e2f9fa115e818
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: -911, y: 12}
+  - name: Wind Background
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 28
+      y: 1315
+      width: 0
+      height: 0
+    spriteID: 50710d500f2c3e24a935ac7fb1d0087e
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: -903, y: 12}
+  - name: Thunder Background
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 36
+      y: 1315
+      width: 0
+      height: 0
+    spriteID: 6cc8e24e5b3b8c34c8d40dc3889f4de1
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: -895, y: 12}
+  - name: Earth Background
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 44
+      y: 1315
+      width: 0
+      height: 0
+    spriteID: de65c0a370cfb42429ab747e794a89e6
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: -887, y: 12}
+  - name: Water Background
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 52
+      y: 1315
+      width: 0
+      height: 0
+    spriteID: f4857eb392f93fe45aebb8adcf87d0e0
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: -879, y: 12}
+  - name: Fire Background
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 60
+      y: 1315
+      width: 0
+      height: 0
+    spriteID: e20db1a7e6530e042aa49b4a14476c08
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: -871, y: 12}
+  - name: Star Background
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 4
+      width: 931
+      height: 1303
+    spriteID: cfd8d062af4f832459cab9d57b9a56e2
+    internalID: 0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    parentGroupIndex: -1
+    uvTransform: {x: 4, y: 4}
+  platformSettings:
+  - name: DefaultTexturePlatform
+    overridden: 0
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    androidETC2FallbackOverride: 0
+  - name: Standalone
+    overridden: 0
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    androidETC2FallbackOverride: 0
+  - name: iPhone
+    overridden: 0
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    androidETC2FallbackOverride: 0
+  - name: Android
+    overridden: 0
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    androidETC2FallbackOverride: 0
+  mosaicLayers: 1
+  documentPivot: {x: 0, y: 0}
+  documentAlignment: 7
+  importHiddenLayers: 1
+  importedTextureWidth: 2048
+  importedTextureHeight: 2048
+  documentSize: {x: 931, y: 1303}
+  paperDollMode: 0
+  keepDupilcateSpriteName: 1
+  spriteCategoryList:
+    categories: []
+  textureActualWidth: 2048
+  textureActualHeight: 2048
+  spritePackingTag: 
+  resliceFromLayer: 0
+  characterMode: 1
+  mosaicPSDLayers:
+  - name: STAR BACKGROUND
+    spriteName: 
+    isGroup: 1
+    parentIndex: -1
+    spriteID: 
+    layerID: 13
+    mosaicPosition: {x: 0, y: 0}
+  - name: Multicolor Background
+    spriteName: Multicolor Background
+    isGroup: 0
+    parentIndex: 0
+    spriteID: e4c5c292d0cf15740a99242b60f5acee
+    layerID: 12
+    mosaicPosition: {x: 4, y: 4}
+  - name: Dark Background
+    spriteName: Dark Background
+    isGroup: 0
+    parentIndex: 0
+    spriteID: ed11565828423084c99cfe1dfb7ea0af
+    layerID: 11
+    mosaicPosition: {x: 4, y: 1980}
+  - name: Frost Background
+    spriteName: Frost Background
+    isGroup: 0
+    parentIndex: 0
+    spriteID: 91b71068de55267488a6532e0c085ff2
+    layerID: 10
+    mosaicPosition: {x: 12, y: 1980}
+  - name: Light Background
+    spriteName: Light Background
+    isGroup: 0
+    parentIndex: 0
+    spriteID: 8e65c4f1a9471964b8b41ee5e9fcf373
+    layerID: 9
+    mosaicPosition: {x: 20, y: 1980}
+  - name: Wind Background
+    spriteName: Wind Background
+    isGroup: 0
+    parentIndex: 0
+    spriteID: 8a6317bd221803f4f9966869aef4fa3d
+    layerID: 8
+    mosaicPosition: {x: 28, y: 1980}
+  - name: Thunder Background
+    spriteName: Thunder Background
+    isGroup: 0
+    parentIndex: 0
+    spriteID: 114659e0a1dadf44281fb464a2e0e432
+    layerID: 7
+    mosaicPosition: {x: 36, y: 1980}
+  - name: Earth Background
+    spriteName: Earth Background
+    isGroup: 0
+    parentIndex: 0
+    spriteID: ef4b3009b0c17414babc5ee669b36349
+    layerID: 6
+    mosaicPosition: {x: 44, y: 1980}
+  - name: Water Background
+    spriteName: Water Background
+    isGroup: 0
+    parentIndex: 0
+    spriteID: 959b4542c3900594aaaa1cea37da13c9
+    layerID: 5
+    mosaicPosition: {x: 52, y: 1980}
+  - name: Fire Background
+    spriteName: Fire Background
+    isGroup: 0
+    parentIndex: 0
+    spriteID: 8e144cb5840dc4c45904260018f83be7
+    layerID: 4
+    mosaicPosition: {x: 60, y: 1980}
+  - name: Star Background
+    spriteName: Star Background
+    isGroup: 0
+    parentIndex: 0
+    spriteID: 7a6d13ade774e714fa2ce3cc100a131c
+    layerID: 3
+    mosaicPosition: {x: 4, y: 992}
+  rigPSDLayers:
+  - name: Multicolor Background
+    spriteName: Multicolor Background
+    isGroup: 0
+    parentIndex: -1
+    spriteID: c6485e5c526faf44f8b76d4893090b2b
+    layerID: 11
+    mosaicPosition: {x: 943, y: 4}
+  - name: Dark Background
+    spriteName: Dark Background
+    isGroup: 0
+    parentIndex: -1
+    spriteID: ac05067808a56f1488142a46eab82a96
+    layerID: 10
+    mosaicPosition: {x: 4, y: 1315}
+  - name: Frost Background
+    spriteName: Frost Background
+    isGroup: 0
+    parentIndex: -1
+    spriteID: d2097ee883f75df48b1a9cf256ee83ee
+    layerID: 9
+    mosaicPosition: {x: 12, y: 1315}
+  - name: Light Background
+    spriteName: Light Background
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 8b9e7a38cefe93d4681e2f9fa115e818
+    layerID: 8
+    mosaicPosition: {x: 20, y: 1315}
+  - name: Wind Background
+    spriteName: Wind Background
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 50710d500f2c3e24a935ac7fb1d0087e
+    layerID: 7
+    mosaicPosition: {x: 28, y: 1315}
+  - name: Thunder Background
+    spriteName: Thunder Background
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 6cc8e24e5b3b8c34c8d40dc3889f4de1
+    layerID: 6
+    mosaicPosition: {x: 36, y: 1315}
+  - name: Earth Background
+    spriteName: Earth Background
+    isGroup: 0
+    parentIndex: -1
+    spriteID: de65c0a370cfb42429ab747e794a89e6
+    layerID: 5
+    mosaicPosition: {x: 44, y: 1315}
+  - name: Water Background
+    spriteName: Water Background
+    isGroup: 0
+    parentIndex: -1
+    spriteID: f4857eb392f93fe45aebb8adcf87d0e0
+    layerID: 4
+    mosaicPosition: {x: 52, y: 1315}
+  - name: Fire Background
+    spriteName: Fire Background
+    isGroup: 0
+    parentIndex: -1
+    spriteID: e20db1a7e6530e042aa49b4a14476c08
+    layerID: 3
+    mosaicPosition: {x: 60, y: 1315}
+  - name: Star Background
+    spriteName: Star Background
+    isGroup: 0
+    parentIndex: -1
+    spriteID: cfd8d062af4f832459cab9d57b9a56e2
+    layerID: 2
+    mosaicPosition: {x: 4, y: 4}
+  characterData:
+    bones: []
+    parts: []
+    dimension: {x: 0, y: 0}
+    characterGroups: []
+  generateGOHierarchy: 1
+  textureAssetName: StarBackground Texture
+  prefabAssetName: StarBackground Prefab
+  spriteLibAssetName: StarBackground Sprite Lib
+  secondarySpriteTextures: []

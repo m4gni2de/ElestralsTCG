@@ -1,0 +1,298 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Runes
+  m_EditorClassIdentifier: 
+  m_GroupName: Runes
+  m_Data:
+    m_SerializedData: []
+  m_GUID: d139f41da20f89044931caecca3f3139
+  m_SerializeEntries:
+  - m_GUID: eb060eb2c2a6b744eb287425be7140ca
+    m_Address: aeolus
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 37e73def5069d5446a3efd8fc4c153c6
+    m_Address: altarofstars
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 23224cf930c129a4294f73afad41fbcf
+    m_Address: ambrosia
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 06ad3bc7ace258f48a4981a1594ba76c
+    m_Address: atlantis
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7f6fb8da4c81dfc47b00c3bfd27d6746
+    m_Address: bagofwinds
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 49b8805ac87bd6a449db5292b47c0c2d
+    m_Address: charonsobol
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9cb4d9c5c39d52f49b5221b7570e1e43
+    m_Address: circlethesky1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a6627d3a1cb9c5b4dbf41ba19ed838a2
+    m_Address: circlethesky2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 656d602938feae14bb0d005141450de8
+    m_Address: demeter
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5aae9b13ab3ff6242ad4aab5f3158f10
+    m_Address: dropsoflethe
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a85d8564b868ebd4d91e2387915f53b8
+    m_Address: earthquake
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2f91b425243463f49aa63b113243a7ef
+    m_Address: eruption
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 758380c101f883546801ff4384f9e611
+    m_Address: foloiforest
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c46cfa3a57788f14590aef17306ba7ac
+    m_Address: goldenappleofdiscord
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 42eb9f37d355a3a478187021f18ecf64
+    m_Address: goldenfleece
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0cdc065186a2f494092cd1bdec1e41f8
+    m_Address: gorgonsgaze
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b870ca4f298e77049a272d28419d423a
+    m_Address: hammerofhephaestus
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7d56e45c903bc7349a5403361812ea54
+    m_Address: helioschariotride
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7c5d486202d8a424d8041a1c5ef5e97e
+    m_Address: hephaestus
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 84d6ac4923f4a614596f6d811246a0c2
+    m_Address: islandofaeolia
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a0eb4e09717fdd242a7cc9a8bee41c12
+    m_Address: mountolympus
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4f114726d52ded14591d93d08b24f2c0
+    m_Address: necklaceofharmonia
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c869d219843bbce4b92c06733a25a3e8
+    m_Address: nectarofthegods
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c2db7e85386f3d944a9a82195ffe74b4
+    m_Address: pandorasbox
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 10477e41146d68e418b4574d7d3de834
+    m_Address: poisontippedarrow
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 22934ffbd350e61468eea09daf588930
+    m_Address: poseidon
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a36c2795462911842931b6f3055e0ec1
+    m_Address: restingonyourlaurels
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 873a17d87b5a94b4b89df7ae8aea9d20
+    m_Address: risefromthe ashes
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 40ffdb3e976050c468708ca015464fee
+    m_Address: riveroffire
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7bd492fe58d6eb64ba59b5859b50107e
+    m_Address: scytheofdemeter
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4d44433df3d06884084ae85eb383fff0
+    m_Address: shieldofachilles
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bf277007023222b4e824ea6274a50e58
+    m_Address: stoketheforge
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d3ed187c5432a4d419aee7e3b6fb8b52
+    m_Address: thunderboltofzeus
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8c4b949be6f9a494a95383dd5a02c584
+    m_Address: thunderstorm
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2c6f94da9ad037740b68fd9b83032986
+    m_Address: tornado
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b9a7039c36703b643bf24cbd546f83d9
+    m_Address: tridentofposeidon
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3b58e0cda28a406488c937616052ad04
+    m_Address: tsunami
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e73af5f3491a0b5449467f16c9c2a1c0
+    m_Address: volcanicforge
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c13ab941246be204e9d917df00dc9157
+    m_Address: zeus
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Rune
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: c812ce0212039b248909d53632816f61, type: 2}
+    - {fileID: 11400000, guid: 23c30a914212f5944b5d72c40c5071d4, type: 2}

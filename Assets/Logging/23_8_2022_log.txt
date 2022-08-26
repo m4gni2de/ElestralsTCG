@@ -1,0 +1,505 @@
+8/23/2022 12:04:17 AM - Log Created.
+Start time: 8/22/2022 11:20:02 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 12:04:17 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:44:14.5569359
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 12:04:35 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 12:06:15 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:01:39.7794635
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 12:06:36 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 12:06:44 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:08.5076672
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 12:08:10 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 12:08:36 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:26.3820477
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 12:10:15 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 12:12:25 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:02:09.6301951
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 12:15:20 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 12:16:08 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:48.5194002
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 10:29:44 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 10:29:59 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:14.4501105
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 10:37:15 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 10:37:27 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:11.5580868
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 10:38:16 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 10:38:27 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:11.6734031
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 10:39:24 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 10:39:33 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:08.3990004
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 11:04:30 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 11:04:51 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:21.1448753
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 11:09:00 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 11:09:06 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:05.4788048
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 11:10:52 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 11:11:00 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:08.2242723
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 11:11:38 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 11:12:27 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:48.2949357
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 11:13:56 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 11:14:22 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:26.1454701
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 11:19:26 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 11:19:44 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:17.5704560
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 11:21:16 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 11:21:25 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:08.5508602
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 11:23:24 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 11:23:34 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:10.5881944
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 11:24:23 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 11:24:29 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:05.2234706
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 11:24:45 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 11:25:12 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:27.0808308
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 11:25:43 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 11:25:50 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:07.2992676
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 11:28:22 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 11:28:51 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:28.8838644
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 11:32:36 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 11:33:51 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:01:14.6530904
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 11:34:07 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 11:34:33 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:25.4192035
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 11:37:31 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 11:37:54 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:22.9067200
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 11:38:58 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 11:39:15 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:17.5230521
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 11:41:20 AM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 11:42:04 AM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:44.3888104
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 12:17:44 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 12:18:00 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:15.4408520
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 12:19:19 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 12:19:48 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:28.2364084
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 12:23:22 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 12:23:35 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:13.5859842
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 12:31:53 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 12:37:54 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:06:01.1017775
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 12:54:15 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 12:55:08 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:52.3777319
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 3:04:44 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 3:04:53 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:08.7480570
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 3:05:31 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 3:05:49 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:17.8191301
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 3:06:16 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 3:06:24 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:08.6941843
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 3:06:34 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 3:06:39 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:05.2703743
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 3:10:46 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 3:10:57 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:11.4943276
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 3:11:46 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 3:12:24 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:38.2793529
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 3:13:55 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 3:14:58 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:01:02.2016109
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 3:20:13 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 3:20:26 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:12.9117321
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 3:21:56 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 3:22:15 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:19.1759456
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 3:23:17 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 3:23:41 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:24.2266698
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 3:24:25 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 3:24:33 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:08.5903370
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 3:25:49 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 3:26:06 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:16.9581089
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 3:27:03 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 3:28:03 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:01:00.2299802
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 3:29:20 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 3:29:34 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:14.0757680
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 3:30:49 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 3:31:18 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:28.8650943
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 3:32:32 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 3:32:35 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:03.3300482
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 3:32:44 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 3:34:13 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:01:29.4350610
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 3:34:46 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 3:35:40 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:53.4777201
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 3:36:59 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 3:38:13 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:01:14.2830825
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 3:41:57 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 3:43:54 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:01:56.8574521
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 3:45:46 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 3:48:45 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:02:59.7862916
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 4:02:23 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 4:02:26 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:02.4913829
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 4:39:17 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 4:39:25 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:07.8720022
+Message
+Tuesday, August 23, 2022
+Start time: 8/23/2022 4:39:35 PM
+Message
+Tuesday, August 23, 2022
+End time: 8/23/2022 4:39:47 PM
+Message
+Tuesday, August 23, 2022
+Total Time: 00:00:12.5187299
+Message
+Tuesday, August 23, 2022

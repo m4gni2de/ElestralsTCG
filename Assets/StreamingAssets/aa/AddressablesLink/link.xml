@@ -1,0 +1,89 @@
+<linker>
+  <assembly fullname="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="AppManager" preserve="all" />
+    <type fullname="Blocker" preserve="all" />
+    <type fullname="CardConfig" preserve="all" />
+    <type fullname="CardObject" preserve="all" />
+    <type fullname="CardsUI.ElestralTexts" preserve="all" />
+    <type fullname="CardsUI.Glowing.GlowControls" preserve="all" />
+    <type fullname="CardsUI.Glowing.GlowObject" preserve="all" />
+    <type fullname="CardsUI.Stones.TypeStone" preserve="all" />
+    <type fullname="CardsUI.TypeStones" preserve="all" />
+    <type fullname="DbManager" preserve="all" />
+    <type fullname="DisplayGroup" preserve="all" />
+    <type fullname="DynamicObject" preserve="all" />
+    <type fullname="FormattedText" preserve="all" />
+    <type fullname="FX.SpriteGradient" preserve="all" />
+    <type fullname="Gameplay.DeckSlot" preserve="all" />
+    <type fullname="Gameplay.ElestralSlot" preserve="all" />
+    <type fullname="Gameplay.Field" preserve="all" />
+    <type fullname="Gameplay.HandSlot" preserve="all" />
+    <type fullname="Gameplay.RuneSlot" preserve="all" />
+    <type fullname="Gameplay.SpiritDeckSlot" preserve="all" />
+    <type fullname="Gameplay.StadiumSlot" preserve="all" />
+    <type fullname="Gameplay.UnderworldSlot" preserve="all" />
+    <type fullname="LoadingBar" preserve="all" />
+    <type fullname="Packs.PackGenerator" preserve="all" />
+    <type fullname="SpiritStone" preserve="all" />
+    <type fullname="SpriteDisplay" preserve="all" />
+    <type fullname="StoneBottom" preserve="all" />
+    <type fullname="StoneVariant" preserve="all" />
+    <type fullname="StoneVariants.ElestralVariant" preserve="all" />
+    <type fullname="TouchObject" preserve="all" />
+    <type fullname="Waypoint" preserve="all" />
+  </assembly>
+  <assembly fullname="Unity.Addressables, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" preserve="all">
+    <type fullname="UnityEngine.AddressableAssets.Addressables" preserve="all" />
+  </assembly>
+  <assembly fullname="Unity.ResourceManager, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" preserve="all">
+    <type fullname="UnityEngine.ResourceManagement.ResourceProviders.AssetBundleProvider" preserve="all" />
+    <type fullname="UnityEngine.ResourceManagement.ResourceProviders.BundledAssetProvider" preserve="all" />
+    <type fullname="UnityEngine.ResourceManagement.ResourceProviders.InstanceProvider" preserve="all" />
+    <type fullname="UnityEngine.ResourceManagement.ResourceProviders.LegacyResourcesProvider" preserve="all" />
+    <type fullname="UnityEngine.ResourceManagement.ResourceProviders.SceneProvider" preserve="all" />
+  </assembly>
+  <assembly fullname="Unity.TextMeshPro, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="TMPro.TextMeshPro" preserve="all" />
+    <type fullname="TMPro.TextMeshProUGUI" preserve="all" />
+    <type fullname="TMPro.TMP_FontAsset" preserve="all" />
+  </assembly>
+  <assembly fullname="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="UnityEngine.GameObject" preserve="all" />
+    <type fullname="UnityEngine.Material" preserve="all" />
+    <type fullname="UnityEngine.MeshRenderer" preserve="all" />
+    <type fullname="UnityEngine.Object" preserve="all" />
+    <type fullname="UnityEngine.RectTransform" preserve="all" />
+    <type fullname="UnityEngine.Shader" preserve="all" />
+    <type fullname="UnityEngine.Sprite" preserve="all" />
+    <type fullname="UnityEngine.SpriteRenderer" preserve="all" />
+    <type fullname="UnityEngine.TextAsset" preserve="all" />
+    <type fullname="UnityEngine.Texture2D" preserve="all" />
+    <type fullname="UnityEngine.Transform" preserve="all" />
+  </assembly>
+  <assembly fullname="UnityEngine.Physics2DModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="UnityEngine.BoxCollider2D" preserve="all" />
+  </assembly>
+  <assembly fullname="UnityEngine.SpriteMaskModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="UnityEngine.SpriteMask" preserve="all" />
+  </assembly>
+  <assembly fullname="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="UnityEngine.Font" preserve="all" />
+  </assembly>
+  <assembly fullname="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="UnityEngine.UI.Button" preserve="all" />
+    <type fullname="UnityEngine.UI.CanvasScaler" preserve="all" />
+    <type fullname="UnityEngine.UI.ContentSizeFitter" preserve="all" />
+    <type fullname="UnityEngine.UI.GraphicRaycaster" preserve="all" />
+    <type fullname="UnityEngine.UI.GridLayoutGroup" preserve="all" />
+    <type fullname="UnityEngine.UI.Image" preserve="all" />
+    <type fullname="UnityEngine.UI.Mask" preserve="all" />
+    <type fullname="UnityEngine.UI.Scrollbar" preserve="all" />
+    <type fullname="UnityEngine.UI.ScrollRect" preserve="all" />
+    <type fullname="UnityEngine.UI.Slider" preserve="all" />
+  </assembly>
+  <assembly fullname="UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="UnityEngine.Canvas" preserve="all" />
+    <type fullname="UnityEngine.CanvasGroup" preserve="all" />
+    <type fullname="UnityEngine.CanvasRenderer" preserve="all" />
+  </assembly>
+</linker>

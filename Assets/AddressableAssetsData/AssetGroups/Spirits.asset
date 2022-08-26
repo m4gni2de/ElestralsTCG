@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Spirits
+  m_EditorClassIdentifier: 
+  m_GroupName: Spirits
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 647d88cf05cf5a74182180e4ad58b2bb
+  m_SerializeEntries:
+  - m_GUID: 6e535eca739883949a55eaf2f701d352
+    m_Address: leviaphin
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Spirit
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cbbeeea587f90274d9be04666a679cbc
+    m_Address: lycarus
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Spirit
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3f3bdb623e2c61a47b7d7f7a7233d14e
+    m_Address: teratlas
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Spirit
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 55be2469f3310bf498bb0b70e6dfcbd6
+    m_Address: vipyro
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Spirit
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d02fd01034bd19b448e994a4b478dcae
+    m_Address: zaptor
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Spirit
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: d255ba664c60e1747ae42bad731eb505, type: 2}
+    - {fileID: 11400000, guid: e79877d32f457284aa6f386f47fcb0c2, type: 2}
