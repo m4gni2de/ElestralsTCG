@@ -36,7 +36,7 @@ namespace CardsUI.Stones
             
         }
 
-        public async void SetStone(int code)
+        public void SetStone(int code)
         {
             Show();
             if (code < 0) { code = -1; }
@@ -45,12 +45,12 @@ namespace CardsUI.Stones
             string spName = $"{element.ToString()}Symbol";
 
             SetTypeSprite();
-            Sprite sp = await AssetPipeline.ByKeyAsync<Sprite>(spName);
+            Sprite sp = AssetPipeline.ByKey<Sprite>(spName);
             spriteDisplay.SetSprite(sp);
             //TypeSymbolSp.sprite = AssetPipeline.ByKey<Sprite>(spName);
         }
 
-        public async void SetLargeStone(int code)
+        public void SetLargeStone(int code)
         {
             Show();
             if (code < 0) { code = -1; }
@@ -58,7 +58,7 @@ namespace CardsUI.Stones
 
             string spName = $"{element.ToString()}Symbol_Large";
 
-            spriteDisplay.SetSprite(await AssetPipeline.ByKeyAsync<Sprite>(spName, "cardbackSp"));
+            spriteDisplay.SetSprite(AssetPipeline.ByKey<Sprite>(spName, "cardbackSp"));
             Show();
             //TypeSymbolSp.sprite = AssetPipeline.ByKey<Sprite>(spName);
         }

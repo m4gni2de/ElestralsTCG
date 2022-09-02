@@ -166,9 +166,9 @@ public struct StoneConfig
     #endregion
 
     #region Enum To Sprite
-    private static async Task<Sprite> GetSprite(string key)
+    private static Sprite GetSprite(string key)
     {
-        return await AssetPipeline.ByKeyAsync<Sprite>(key);
+        return AssetPipeline.ByKey<Sprite>(key);
     }
 
     public static async Task<Sprite> IconToSprite(TopIcon icon)
@@ -208,7 +208,7 @@ public struct StoneConfig
                 break;
         }
 
-        return await GetSprite(assetString);
+        return GetSprite(assetString);
     }
 
     

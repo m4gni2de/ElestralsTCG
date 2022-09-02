@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
     {
         if (ActiveGame != null) { App.LogError("There is already an active game."); }
         ActiveGame = Game.NewGame();
-        ActiveGame.AddPlayer(App.Account.Name, "1");
+        ActiveGame.AddPlayer(App.Account.Id, "1");
         //if (Camera.main.scene.name != "GameScene")
         //{
         //    App.ChangeScene("GameScene");
@@ -44,7 +44,7 @@ public class GameManager : MonoBehaviour
     public Blocker m_Blocker;
     public HandMenu handMenu;
     public CardBrowseMenu browseMenu;
-
+    public PopupMenu popupMenu;
     #endregion
 
     #region Global Properties
@@ -130,6 +130,8 @@ public class GameManager : MonoBehaviour
     }
     protected IEnumerator DoMove(CardSlot fromSlot, GameCard card, CardSlot to)
     {
+        MoveCommand comm = MoveCommand.StartMove(card);
+        ActiveGame.AddCommand(comm);
         float time = .65f;
 
         float acumTime = 0f;
@@ -147,6 +149,7 @@ public class GameManager : MonoBehaviour
 
         fromSlot.RemoveCard(card);
         to.AllocateTo(card);
+        comm.Complete(CommandStatus.Success);
         yield return ActionEnd;
     }
 

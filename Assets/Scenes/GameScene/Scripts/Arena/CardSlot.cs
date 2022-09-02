@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using Gameplay.Menus;
+using UnityEngine.Events;
 
 namespace Gameplay
 {
@@ -36,6 +37,12 @@ namespace Gameplay
 
         #region Properties
         public int index;
+        private string _slotId = "";
+        public string slotId
+        {
+            get { return _slotId; }
+            set { _slotId = value; }
+        }
         protected List<GameCard> _cards = null;
         public List<GameCard> cards { get { _cards ??= new List<GameCard>(); return _cards; } }
 
@@ -48,6 +55,7 @@ namespace Gameplay
                 return transform.position;
             }
         }
+       
         protected List<CardObject> atSlot = new List<CardObject>();
         public CardLocation slotType;
         public CardFacing facing;
@@ -57,10 +65,39 @@ namespace Gameplay
         #endregion
 
         #region Functions/Commands
+        protected Player _Owner = null;
+        protected Player Owner
+        {
+            get
+            {
+                if (_Owner == null) { _Owner = GameManager.Instance.arena.GetSlotOwner(this); }return _Owner;
+            }
+        }
         public bool ValidatePlayer()
         {
             Field f = GameManager.Instance.arena.GetPlayerField(GameManager.ActiveGame.You);
             return f.cardSlots.Contains(this);
+        }
+
+        public bool Validate()
+        {
+            //if (ValidatePlayer()) return true;
+            if (App.WhoAmI != Owner.userId) { return false; }
+            if (GameManager.Instance.popupMenu.isOpen) { return false; }
+            return true;
+        }
+       
+        public Dictionary<string, UnityAction> ButtonCommands
+        {
+            get
+            {
+                return GetButtonCommands();
+            }
+        }
+        protected virtual Dictionary<string, UnityAction> GetButtonCommands()
+        {
+            App.LogFatal($"{name} has no Commands Set!");
+            return new Dictionary<string, UnityAction>();
         }
         #endregion
 
@@ -68,6 +105,7 @@ namespace Gameplay
         {
             
             name = $"{slotType}{index}";
+            slotId = UniqueString.Create("csl", 5);
             rect = GetComponent<RectTransform>();
             GetSpriteRenderer();
             SetSlot();
@@ -167,7 +205,7 @@ namespace Gameplay
             CardObject c = card.cardObject;
             c.transform.SetParent(transform);
             card.rect.sizeDelta = rect.sizeDelta;
-            if (!atSlot.Contains(card.cardObject))
+            if (!atSlot.Contains(c))
             {
                 atSlot.Add(c);
             }
@@ -176,12 +214,30 @@ namespace Gameplay
             c.Flip(facing == CardFacing.FaceDown);
         }
 
+
         #endregion
+
+       
         protected virtual void ClickCard(GameCard card)
         {
             GameManager.Instance.SelectCard(card);
         }
 
+        #region Slot Menus
+        public virtual void OpenSlotMenu()
+        {
+            if (Validate())
+            {
+
+                GameManager.Instance.popupMenu.LoadMenu(this);
+            }
+        }
+
+        protected virtual void CloseSlotMenu()
+        {
+            GameManager.Instance.popupMenu.CloseMenu();
+        }
+        #endregion
         private void Update()
         {
             

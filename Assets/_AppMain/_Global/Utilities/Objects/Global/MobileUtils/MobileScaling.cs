@@ -18,22 +18,25 @@ public class MobileScaling : MonoBehaviour
         worldCanvas = WorldCanvas.Instance.GetComponent<RectTransform>();
         scalerCanvas = GetComponent<RectTransform>();
 
-#if UNITY_EDITOR
-
-#else
-    height = worldCanvas.rect.height;
+        height = worldCanvas.rect.height;
         width = worldCanvas.rect.width;
         widthVal = 960f;
         heightVal = 640f;
         offset = 1f;
-    Scale();
+        Scale();
+        //Scale();
+
+#if UNITY_EDITOR
+
+
+
+#else
 #endif
 
     }
 
     public void Scale()
     {
-
         float xDiff = width / widthVal;
         float yDiff = worldCanvas.rect.height;
 

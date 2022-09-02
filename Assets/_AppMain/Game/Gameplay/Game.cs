@@ -30,7 +30,7 @@ namespace Gameplay
                 {
                     for (int i = 0; i < players.Count; i++)
                     {
-                        if (players[i].userId == App.Account.Name)
+                        if (players[i].userId == App.Account.Id)
                         {
                             _You = players[i];
                         }

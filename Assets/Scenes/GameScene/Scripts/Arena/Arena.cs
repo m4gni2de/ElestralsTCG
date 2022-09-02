@@ -8,12 +8,37 @@ namespace Gameplay
     {
         public Field NearField, FarField;
 
+        private List<Field> _Fields = null;
+        private List<Field> Fields
+        {
+            get
+            {
+                if (_Fields == null)
+                {
+                    _Fields = new List<Field>();
+                    _Fields.Add(NearField);
+                    _Fields.Add(FarField);
+                }
+                return _Fields;
+            }
+        }
 
         #region Player Properties
         public Field GetPlayerField(Player p)
         {
             if (NearField._player == p) { return NearField; }
             return FarField;
+        }
+        public Player GetSlotOwner(CardSlot slot)
+        {
+            for (int i = 0; i < Fields.Count; i++)
+            {
+                if (Fields[i].cardSlots.Contains(slot))
+                {
+                    return Fields[i]._player;
+                }
+            }
+            return null;
         }
 
         //public CardSlot GetCardSlot(Player p, CardLocation location)

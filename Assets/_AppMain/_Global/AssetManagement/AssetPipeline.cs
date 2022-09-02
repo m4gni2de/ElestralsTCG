@@ -22,49 +22,13 @@ public class AssetPipeline
     public static event Action OnDownloadComplete;
     protected static void DownloadComplete()
     {
-        OnDownloadComplete.Invoke();
+        //OnDownloadComplete?.Invoke();
+        LoadingBar.Instance.SetSlider(LoadingBar.Instance.slider.maxValue);
+        LoadingBar.Instance.Hide();
     }
-    #region Asset Management
-    public static void LoadAssets()
-    {
-#if UNITY_EDITOR
+   
 
-        AssetsComplete();
-#else
-        _AssetsLoaded = false;
-        Addressables.InitializeAsync().Completed += AssetsComplete;
-#endif
-
-
-    }
-    private static void AssetsComplete(AsyncOperationHandle<UnityEngine.AddressableAssets.ResourceLocators.IResourceLocator> obj)
-    {
-        AssetsComplete();
-        
-    }
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-    private static async void AssetsComplete()
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-    {
-        _AssetsLoaded = true;
-#if UNITY_EDITOR
-
-#else
-GameObject app = await AssetPipeline.WorldObjectClone(AppManager.ManagerAsset);
-        bool dbReady = await WaitForDatabase();
-#endif
-    }
-    #endregion
-
-    private static async Task<bool> WaitForDatabase()
-    {
-        do
-        {
-            await Task.Delay(1);
-        } while (true && AppManager.Instance.dbManager._conn == null);
-        return true;
-    }
-
+   
     public static async Task<bool> LoadAllAssets(AsyncOperationHandle<IResourceLocator> obj)
     {
         int count = 0;
@@ -145,6 +109,8 @@ GameObject app = await AssetPipeline.WorldObjectClone(AppManager.ManagerAsset);
             AsyncOperationHandle<IList<IResourceLocation>> locations = Addressables.LoadResourceLocationsAsync(keys);
             await locations.Task;
             int downloadExpected = locations.Result.Count;
+
+            LoadingBar.Instance.Display("Downloading Assets", 0f, (float)downloadExpected, 0f);
             int count = 0;
             if (downloadExpected > 0)
             {
@@ -166,9 +132,9 @@ GameObject app = await AssetPipeline.WorldObjectClone(AppManager.ManagerAsset);
 
                             //if (handle.Status == AsyncOperationStatus.Succeeded && handle.IsDone)
                             //{
-                                
+
                             //}
-                            ItemDownloaded(1f);
+                            LoadingBar.Instance.MoveSlider(1f);
                             isDownloading = false;
                             count += 1;
                             if (count >= locations.Result.Count - 1)
@@ -183,12 +149,12 @@ GameObject app = await AssetPipeline.WorldObjectClone(AppManager.ManagerAsset);
                     {
                         if (location.ResourceType == typeof(Sprite))
                         {
-                           //ItemDownloaded(1f);
+                            LoadingBar.Instance.MoveSlider(1f);
                             AppManager.Instance.loadingBar.SetText("Initializing Card Images");
 
                         }
                     }
-                        ItemDownloaded(1f);
+
                     if (count >= locations.Result.Count - 1)
                     {
                         DownloadComplete();
@@ -205,17 +171,62 @@ GameObject app = await AssetPipeline.WorldObjectClone(AppManager.ManagerAsset);
 
     }
 
+    public static async Task<T> AwaitDownload<T>(AsyncOperationHandle<T> handle, float size)
+    {
+        LoadingBar.Instance.Display($"Downloading Card Assets", 0f, 1f, 0f);
+        do
+        {
+            await Task.Delay(1);
+            if (LoadingBar.Instance != null)
+            {
+                LoadingBar.Instance.SetSlider(handle.PercentComplete);
+            }
+            
+        } while (true && !handle.IsDone);
+
+        await handle.Task;
+        return handle.Result;
+    }
+
     public static async void DoRedownloadAllCards()
     {
-        List<string> keys = new List<string>();
-        keys.Add("Card");
-        keys.Add("FullCard");
-        AsyncOperationHandle<IList<IResourceLocation>> locations = Addressables.LoadResourceLocationsAsync(keys);
-        await locations.Task;
-        isDownloading = false;
-        Addressables.Release(locations);
-        Addressables.ClearDependencyCacheAsync(locations.Result);
-        DownloadAllCards();
+
+        List<qCards> allCards = DataService.GetAllWhere<qCards>(Cards.CardService.CardsByImageTable, "image is not null");
+        isDownloading = true;
+        LoadingBar.Instance.Display("Initializing Card Assets", 0f, allCards.Count, 0f);
+
+        int count = 0;
+        foreach (qCards card in allCards)
+        { 
+            string imageKey = card.image.ToLower() + "_c";
+            AsyncOperationHandle<long> size = Addressables.GetDownloadSizeAsync(imageKey);
+            await size.Task;
+            if (size.Result > 0f)
+            {
+                Sprite s = await AwaitDownload<Sprite>(Addressables.LoadAssetAsync<Sprite>(imageKey), size.Result);
+                if (LoadingBar.Instance == null) { return; }
+                if (!CardLibrary.CardArt.ContainsKey(imageKey)) { CardLibrary.CardArt.Add(imageKey, s); }
+                LoadingBar.Instance.Display("Initializing Card Assets", count, allCards.Count, 0f);
+                count += 1;
+                LoadingBar.Instance.MoveSlider(1f);
+
+            }
+            else
+            {
+                Sprite sp = await ByKeyAsync<Sprite>(imageKey, CardLibrary.DefaultCardKey);
+                LoadingBar.Instance.MoveSlider(1f);
+                count += 1;
+
+            }
+
+            if (count >= allCards.Count - 1)
+            {
+                DownloadComplete();
+                isDownloading = false;
+            }
+
+        }
+       
     }
 
     public static async void PreloadFullCards()
@@ -225,6 +236,9 @@ GameObject app = await AssetPipeline.WorldObjectClone(AppManager.ManagerAsset);
 
         await locations.Task;
 
+        int expectedCount = locations.Result.Count;
+        LoadingBar.Instance.Display("Downloading Assets", 0f, (float)expectedCount, 0f);
+
         int count = 0;
         foreach (IResourceLocation location in locations.Result)
         {
@@ -233,9 +247,12 @@ GameObject app = await AssetPipeline.WorldObjectClone(AppManager.ManagerAsset);
                 AsyncOperationHandle<Sprite> handle = Addressables.LoadAssetAsync<Sprite>(location);
                 await handle.Task;
                 count += 1;
-                ItemDownloaded(1f);
+                LoadingBar.Instance.MoveSlider(1f);
+
+                
             }
         }
+        LoadingBar.Instance.Hide();
         DownloadComplete();
 
     }
@@ -246,39 +263,41 @@ GameObject app = await AssetPipeline.WorldObjectClone(AppManager.ManagerAsset);
        
     }
 
-    public static async Task<T> ByKeyAsync<T>(string key, string fallback = "")
+    #region Download Managing
+    public static AsyncOperationHandle _activeHandle { get; set; }
+    public static event Action<float> OnAssetDownloading;
+    public static void Downloading(float val)
     {
-        //await GameManager.Instance.downloadManager.ShowDownloadStatus(items);
-
-        UnityEngine.ResourceManagement.ResourceManager.ExceptionHandler = (op, ex) => SetDefaultImage(op, ex);
-        AsyncOperationHandle<T> sp = Addressables.LoadAssetAsync<T>(key);
-        T go = await sp.Task;
-
-        if (sp.Status == AsyncOperationStatus.Failed && !string.IsNullOrEmpty(fallback))
-        {
-            //Debug.Log($"Asset {key} not found");
-            sp = Addressables.LoadAssetAsync<T>(key);
-            go = await sp.Task;
-
-            UnityEngine.ResourceManagement.ResourceManager.ExceptionHandler = (op, ex) => throw ex;
-            return go;
-        }
-
-       
-        if (sp.Status == AsyncOperationStatus.Succeeded && sp.IsDone)
-        {
-            return sp.Result;
-        }
-        else
-        {
-            return default(T);
-        }
+        OnAssetDownloading.Invoke(val);
     }
+
+  
+#endregion
     public static T ByKey<T>(string key, string fallback = "")
     {
         UnityEngine.ResourceManagement.ResourceManager.ExceptionHandler = (op, ex) => SetDefaultImage(op, ex);
+        LoadingBar.Instance.Display("Downloading Assets", 0f, 1f, 0f);
         var op = Addressables.LoadAssetAsync<T>(key);
         T go = op.WaitForCompletion();
+
+        if (op.Status == AsyncOperationStatus.Failed && !string.IsNullOrEmpty(fallback))
+        {
+            //Debug.Log($"Asset {key} not found");
+            op = Addressables.LoadAssetAsync<T>(fallback);
+            go = op.WaitForCompletion();
+        }
+
+        LoadingBar.Instance.SetSlider(1f);
+        LoadingBar.Instance.gameObject.SetActive(false);
+        UnityEngine.ResourceManagement.ResourceManager.ExceptionHandler = (op, ex) => throw ex;
+        return go;
+    }
+
+    public static async Task<T> ByKeyAsync<T>(string key, string fallback = "")
+    {
+        UnityEngine.ResourceManagement.ResourceManager.ExceptionHandler = (op, ex) => SetDefaultImage(op, ex);
+        var op = Addressables.LoadAssetAsync<T>(key);
+        T go = await op.Task;
 
         if (op.Status == AsyncOperationStatus.Failed && !string.IsNullOrEmpty(fallback))
         {
@@ -292,20 +311,12 @@ GameObject app = await AssetPipeline.WorldObjectClone(AppManager.ManagerAsset);
     }
 
 
-
     public static void Release<T>(T obj)
     {
         Addressables.Release(obj);
     }
 
-    public static async Task<GameObject> GameObjectCloneAsync(string key, Transform parent)
-    {
-        GameObject go = await ByKeyAsync<GameObject>(key);
-        GameObject clone = MonoBehaviour.Instantiate(go, parent);
-        return clone;
-
-    }
-
+   
     public static GameObject GameObjectClone(string key, Transform parent)
     {
         GameObject go = ByKey<GameObject>(key);
@@ -313,16 +324,14 @@ GameObject app = await AssetPipeline.WorldObjectClone(AppManager.ManagerAsset);
         return clone;
 
     }
-
-    public static async Task<GameObject> WorldObjectClone(string key)
+    public static GameObject WorldObjectClone(string key)
     {
-        GameObject go = await ByKeyAsync<GameObject>(key);
+        GameObject go = ByKey<GameObject>(key);
         GameObject clone = MonoBehaviour.Instantiate(go);
         return clone;
 
     }
 
-   
 
     //public static GameObject BattleObjectClone(string key, Transform parent, )
 

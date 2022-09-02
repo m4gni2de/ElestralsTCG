@@ -10,15 +10,11 @@ using System.Threading.Tasks;
 public class CardView : MonoBehaviour
 {
     public Card ActiveCard;
-    public SpriteRenderer sp;
+    public SpriteDisplay sp;
     public TouchObject touch;
+    public int cardIndex;
 
-    public static event Action<float> OnCardLoaded;
-    public static void CardLoaded(float val)
-    {
-        OnCardLoaded.Invoke(val);
-    }
-
+    
     public void Hide()
     {
         gameObject.SetActive(false);
@@ -29,40 +25,42 @@ public class CardView : MonoBehaviour
     }
 
     
-    public void LoadCard(Card card = null)
+    public void LoadCard( Card card = null)
     {
         if (card != null)
         {
             ActiveCard = card;
-            sp.sprite = CardLibrary.GetFullCard(card);
+            sp.MainSprite = CardLibrary.GetFullCard(card);
         }
         else
         {
             ActiveCard = null;
-            sp.sprite = AssetPipeline.ByKey<Sprite>("cardbackSp");
+            sp.MainSprite = AssetPipeline.ByKey<Sprite>("cardbackSp");
         }
 
         Show();
         
 
     }
+
     public async Task<bool> LoadCardAsync(Card card = null)
     {
         if (card != null)
         {
             ActiveCard = card;
-            sp.sprite = await CardLibrary.GetFullCardAsync(ActiveCard);
+            sp.MainSprite = await CardLibrary.GetFullCardAsync(card);
         }
         else
         {
             ActiveCard = null;
-            sp.sprite = await AssetPipeline.ByKeyAsync<Sprite>("cardbackSp");
+            sp.MainSprite = AssetPipeline.ByKey<Sprite>("cardbackSp");
         }
 
-        
         Show();
         return true;
+
+
     }
 
-    
+
 }

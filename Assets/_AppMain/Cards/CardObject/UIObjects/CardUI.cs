@@ -62,10 +62,10 @@ public static class CardUI
 
    
     #region Rune Sprites
-    public static async Task<Sprite> RuneTypeSprite(this Rune.RuneType subClass)
+    public static Sprite RuneTypeSprite(this Rune.RuneType subClass)
     {
         string st = RuneSpriteCode(subClass);
-        return await AssetPipeline.ByKeyAsync<Sprite>(st);
+        return AssetPipeline.ByKey<Sprite>(st);
     }
     private static string RuneSpriteCode(Rune.RuneType rType)
     {
@@ -87,16 +87,16 @@ public static class CardUI
     }
     #endregion
 
-    public static async Task<Sprite> ElestralSubClassSprite(this Elestral.SubClass subClass)
+    public static Sprite ElestralSubClassSprite(this Elestral.SubClass subClass)
     {
         string st = subClass.ToString().ToLower() + "Sp";
-        return await AssetPipeline.ByKeyAsync<Sprite>(st);
+        return AssetPipeline.ByKey<Sprite>(st);
     }
     
 
-    private static async Task<Sprite> GetSprite(string key)
+    private static Sprite GetSprite(string key)
     {
-        return await AssetPipeline.ByKeyAsync<Sprite>(key);
+        return AssetPipeline.ByKey<Sprite>(key);
     }
 
     public static Color TextColor(this ElementCode code)

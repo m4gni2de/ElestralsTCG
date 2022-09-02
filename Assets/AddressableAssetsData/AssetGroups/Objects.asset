@@ -17,11 +17,6 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 9e55d56d8a147d546bb24f9e82aff0c5
   m_SerializeEntries:
-  - m_GUID: 4f21e02c5a65bca40b00cdb00d9be46f
-    m_Address: AppManager
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 69ae6524e1c22f245a411d07ca434dab
     m_Address: ArenaField
     m_ReadOnly: 0

@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Gameplay.Menus;
+using UnityEngine.Events;
 
 namespace Gameplay
 {
@@ -16,7 +18,7 @@ namespace Gameplay
             orientation = Orientation.Vertical;
             slotType = CardLocation.Deck;
             //touch.OnClickEvent.AddListener(() => DrawCard());
-            touch.OnClickEvent.AddListener(() => BrowseCards());
+            touch.OnClickEvent.AddListener(() => OpenSlotMenu());
         }
 
        
@@ -58,18 +60,44 @@ namespace Gameplay
 
 
 
-        public void DrawCard()
+        
+
+        public override void OpenSlotMenu()
         {
-            GameManager.ActiveGame.You.Draw(1);
+            base.OpenSlotMenu();
+            
         }
-
-        public void BrowseCards()
+        protected override Dictionary<string, UnityAction> GetButtonCommands()
         {
-           if (!ValidatePlayer()) { return; }
-
+            Dictionary<string, UnityAction> commands = new Dictionary<string, UnityAction>();
+            commands.Add("Draw", () => DrawCommand());
+            commands.Add("Browse", () => BrowseCommand());
+            commands.Add("Mill", () => MillCommand());
+            commands.Add("Close", () => CloseCommand());
+            return commands;
+            
+        }
+        
+        #region Menu Commands
+       
+        protected void DrawCommand()
+        {
+            GameManager.Instance.popupMenu.InputNumber("How many cards do you want to Draw?", Owner.Draw);
+        }
+        protected void MillCommand()
+        {
+            GameManager.Instance.popupMenu.InputNumber("How many cards do you want to Mill?", Owner.Mill);
+        }
+        protected void BrowseCommand()
+        {
             GameManager.Instance.browseMenu.LoadCards(cards, true);
         }
+        protected void CloseCommand()
+        {
+            CloseSlotMenu();
+        }
+        #endregion
 
-        
+
     }
 }

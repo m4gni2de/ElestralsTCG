@@ -738,26 +738,12 @@ MonoBehaviour:
     - Elestral
     - Card
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 04b425290afcf094386dbc2000cc4321
-    m_Address: stratomoth_fa
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Card
-    - Elestral
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cddc952a1c7cf034b871b5a07c02bc9d
     m_Address: apheros
     m_ReadOnly: 0
     m_SerializedLabels:
     - Elestral
     - Card
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 532c160cadf313442a3709944a20721b
-    m_Address: glydesdale_fa
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Card
-    - Elestral
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}

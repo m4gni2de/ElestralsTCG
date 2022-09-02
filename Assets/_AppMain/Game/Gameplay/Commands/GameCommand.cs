@@ -34,7 +34,7 @@ namespace Gameplay.GameCommands
 
         public virtual void Complete(CommandStatus status)
         {
-            OnEventComplete.Invoke(this);
+            OnEventComplete?.Invoke(this);
         }
 
         public virtual void End()

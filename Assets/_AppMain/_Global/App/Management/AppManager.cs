@@ -10,6 +10,8 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.AddressableAssets.ResourceLocators;
 using System.Threading.Tasks;
+using UnityEngine.ResourceManagement.ResourceLocations;
+using Databases;
 
 public class AppManager : MonoBehaviour
 {
@@ -34,7 +36,11 @@ public class AppManager : MonoBehaviour
     private async void LoadApp(AsyncOperationHandle<IResourceLocator> obj)
     {
         Addressables.InitializeAsync().Completed -= LoadApp;
+
+        bool hasDb = await dbConnector.ConnectAsync();
+
         var data = await AssetPipeline.CheckForCatalogUpdate();
+        bool hasUpdate = data != null;
         if (data != null)
         {
             
@@ -43,19 +49,36 @@ public class AppManager : MonoBehaviour
             if (size > 0)
             {
                 Instance.ShowLoadingBar("Items Downloaded", 0f, items.Count);
-                AssetPipeline.OnItemDownloaded += Instance.loadingBar.MoveSlider;
-                AssetPipeline.OnDownloadComplete += Instance.loadingBar.CompleteLoad;
-                bool complete = await AwaitLoading(Instance.loadingBar, AssetPipeline.DoRedownloadAllCards);
-                AssetPipeline.OnItemDownloaded -= Instance.loadingBar.MoveSlider;
-                AssetPipeline.OnDownloadComplete -= Instance.loadingBar.CompleteLoad;
+                //AssetPipeline.OnItemDownloaded += Instance.loadingBar.MoveSlider;
+                //AssetPipeline.OnDownloadComplete += Instance.loadingBar.CompleteLoad;
+                //bool complete = await AwaitLoading(Instance.loadingBar, AssetPipeline.DoRedownloadAllCards);
+               
             }
             
         }
+        
 
-        bool hasDb = await dbManager.ConnectAsync();
+
+        
+
+        //if (!hasUpdate)
+        //{
+        //    List<string> keys = new List<string>();
+        //    keys.Add("Card");
+        //    keys.Add("FullCard");
+        //    AsyncOperationHandle<IList<IResourceLocation>> locations = Addressables.LoadResourceLocationsAsync(keys);
+        //    await locations.Task;
+        //    Instance.ShowLoadingBar("Items Downloaded", 0f, locations.Result.Count);
+        //    AssetPipeline.OnItemDownloaded += Instance.loadingBar.MoveSlider;
+        //    AssetPipeline.OnDownloadComplete += Instance.loadingBar.CompleteLoad;
+        //    bool complete = await AwaitLoading(Instance.loadingBar, AssetPipeline.DoRedownloadAllCards);
+        //    AssetPipeline.OnItemDownloaded -= Instance.loadingBar.MoveSlider;
+        //    AssetPipeline.OnDownloadComplete -= Instance.loadingBar.CompleteLoad;
+        //}
 
         if (hasDb)
         {
+
             SetupManager();
             App.ChangeScene(1);
         }
@@ -89,8 +112,8 @@ public class AppManager : MonoBehaviour
     public DateTime SessionEnd { get { return _SessionEnd; } }
 
     [SerializeField]
-    private DbManager _dbManager;
-    public DbManager dbManager { get { return _dbManager; } }
+    private DbConnector _dbConn;
+    public DbConnector dbConnector { get { return _dbConn; } }
 
     #region Pause/Play Management
     public static float TimeScale { get { return Time.timeScale; } set { Time.timeScale = value; } }
@@ -194,6 +217,10 @@ public class AppManager : MonoBehaviour
     }
     private void OnDestroy()
     {
+        if (Instance != null)
+        {
+            End();
+        }
         //_SessionEnd = DateTime.Now;
         //LogSession();
         
@@ -203,8 +230,8 @@ public class AppManager : MonoBehaviour
         SceneManager.activeSceneChanged -= OnSceneChange;
         if (Instance != null)
         {
-            dbManager._conn.Flush();
-            Destroy(this);
+            dbConnector.Flush();
+            Instance = null;
         }
         
        
@@ -239,6 +266,7 @@ public class AppManager : MonoBehaviour
     }
     public static async Task<bool> AwaitLoading(LoadingBar bar, Action ac)
     {
+
         ac.Invoke();
         do
         {
@@ -250,5 +278,6 @@ public class AppManager : MonoBehaviour
     }
 
     
+
     #endregion
 }

@@ -23,17 +23,17 @@ namespace StoneVariants
 
 
 
-        protected async void SetSubClassSprite(Card card)
+        protected void SetSubClassSprite(Card card)
         {
             Elestral e = (Elestral)card;
             Elestral.SubClass es1 = e.Data.subType1;
             Elestral.SubClass es2 = e.Data.subType2;
 
-            SubClassSp[0].sprite = await es1.ElestralSubClassSprite();
+            SubClassSp[0].sprite = es1.ElestralSubClassSprite();
 
             if (es2 != Elestral.SubClass.None)
             {
-                SubClassSp[1].sprite = await es2.ElestralSubClassSprite();
+                SubClassSp[1].sprite = es2.ElestralSubClassSprite();
             }
 
         }

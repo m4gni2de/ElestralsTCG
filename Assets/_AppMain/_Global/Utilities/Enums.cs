@@ -14,7 +14,7 @@ public static class Enums
 
         for (int i = 0; i < array.Length; i++)
         {
-            names.Add(array[0]);
+            names.Add(array[i]);
         }
         return names;
         

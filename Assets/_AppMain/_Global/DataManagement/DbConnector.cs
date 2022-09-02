@@ -5,10 +5,13 @@ using SimpleSQL;
 using System;
 using System.IO;
 using UnityEditor;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.AddressableAssets;
+using System.Threading.Tasks;
 
 namespace Databases
 {
-    public class DbConnector
+    public class DbConnector : MonoBehaviour
     {
         protected readonly string dbPath = "Assets/_AppMain/_Global/DataManagement/Databases/dbInternal.bytes";
         public enum OverridePathMode
@@ -17,7 +20,7 @@ namespace Databases
             RelativeToPersistentData
         }
 
-        public string name = "dbManager";
+       
 
         public SQLiteConnection _conn;
         public TextAsset databaseFile;
@@ -92,6 +95,24 @@ namespace Databases
             Initialize(forceReinitialization: false);
         }
 
+        public async Task<bool> ConnectAsync()
+        {
+            AsyncOperationHandle<TextAsset> db = Addressables.LoadAssetAsync<TextAsset>("dbInternal");
+
+            await db.Task;
+
+            if (db.Status == AsyncOperationStatus.Succeeded && db.IsDone)
+            {
+                databaseFile = db.Result;
+                Initialize(true);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
 
         public void Flush()
         {
@@ -104,16 +125,15 @@ namespace Databases
         }
 
 
-        public DbConnector(TextAsset dbFile, bool overWrite = false, bool debugLog = true)
-        {
-
-            databaseFile = dbFile;
-            overwriteIfExists = overWrite;
-            DebugTrace = debugLog;
-            LoadRuntimeLibrary();
-            Initialize(true);
-            //Initialize();
-        }
+        //public DbConnector(TextAsset dbFile, bool overWrite = false, bool debugLog = true)
+        //{
+        //    databaseFile = dbFile;
+        //    overwriteIfExists = overWrite;
+        //    DebugTrace = debugLog;
+        //    LoadRuntimeLibrary();
+        //    Initialize(false);
+        //    //Initialize();
+        //}
 
 
         private void LoadRuntimeLibrary()

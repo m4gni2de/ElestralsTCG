@@ -1,0 +1,205 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: SD01_Full
+  m_EditorClassIdentifier: 
+  m_GroupName: SD01_Full
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 7fc345faebc713845a5e278f9ec5122f
+  m_SerializeEntries:
+  - m_GUID: d154ede27a5e81d4ca5909f9a77a14aa
+    m_Address: sd01_glydesdale_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 321844dc5a480794aa52646e328dcb67
+    m_Address: sd01_restingonyourlaurels_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b2e98eecefa5a9b4280b77a1229e0a99
+    m_Address: sd01_lycarus_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f17301ea4f9427e46af09bc1411e340b
+    m_Address: sd01_penterror_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3cd267801eef11946af4f15f5abc2452
+    m_Address: sd01_chrysoar_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2630c290d2324904ebe28e849bc3f30c
+    m_Address: sd01_astrabbit_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 18d16dd83d9fb6c46b5da3e5c40e4587
+    m_Address: sd01_aeolus_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1fa468c5797cb0e44a0e7317f7dd2fb9
+    m_Address: sd01_exaltair_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c2dc27fb028404a43aa823128646891d
+    m_Address: sd01_carryon_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 373ba87fd16e80d4d92c1223a0bfebc8
+    m_Address: sd01_zaptor_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9f0fb671afce8d949a9fe83481ce74d8
+    m_Address: sd01_ambrosia_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c865b1f610767e148a789238222eaecc
+    m_Address: sd01_jolten_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fa7b75bc3b8cce249943f999df1079a0
+    m_Address: sd01_peagust_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 46b73ea2da7b21045918a4b183c4ee3b
+    m_Address: sd01_fowlicane_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ddcd46840e7abcb4886d90303a7f7469
+    m_Address: sd01_pandorasbox_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f357f697c0a251749b1c1f35b11c4cf4
+    m_Address: sd01_aeromare_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 30a1ccb2b780d9547b2584bf758bfb49
+    m_Address: sd01_soarlet_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bfd51bee65137fb43a867a4e99c75560
+    m_Address: sd01_dropsoflethe_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 735e8567172923c41a523d8c963f463c
+    m_Address: sd01_hydrake_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 73fa36d9fdc9e024d8a920fc525d7059
+    m_Address: sd01_nectarofthegods_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 45089c58169d4654d97dadb833a878ac
+    m_Address: sd01_verutaqua_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a9f0f0d583cea294db33aa9eb82e8a2f
+    m_Address: sd01_thunderstorm_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 68ab0e9e0f48a5743847c5841026bf91
+    m_Address: sd01_circlethesky_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: db29873309270214c87db51753c40b37
+    m_Address: sd01_boombatt_1_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: da8b62b7d5254e94e863c20245699074
+    m_Address: sd01_twindra_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b5642e0dbb5ad2342ba921b39efd1540
+    m_Address: sd01_elechik_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 93a4f19e317409f4597742af74eed8e6
+    m_Address: sd01_bagofwinds_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 072c2496108e535499f4f4d11df8c7a1
+    m_Address: sd01_leviaphin_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9dac51c77c775854393a4c181f7f722b
+    m_Address: sd01_islandofaeolia_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 579b3935d74ac4b4fbc5457756c46bcd
+    m_Address: sd01_tornado_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: fe40c4c1f2138454b99fa206df2ca3b3, type: 2}
+    - {fileID: 11400000, guid: a0294887768bb1b4abc76393397b307a, type: 2}

@@ -31,6 +31,7 @@ namespace Gameplay
             public int childIndex { get; set; }
             public Vector2 position { get; set; }
             public bool isFaceUp { get; set; }
+            public CardLocation location { get; set; }
 
            VisualInfo(GameCard card)
             {
@@ -40,6 +41,7 @@ namespace Gameplay
                 childIndex = card.cardObject.transform.GetSiblingIndex();
                 position = card.cardObject.transform.localPosition;
                 isFaceUp = card.IsFaceUp;
+                location = card.location;
             }
 
             public static VisualInfo GetInfo(GameCard card)
@@ -104,6 +106,7 @@ namespace Gameplay
         public string name;
 
         public CardObject cardObject { get; set; }
+        public CardView cardView { get; set; }
         private RectTransform _rect = null;
         public RectTransform rect
         {
@@ -117,7 +120,6 @@ namespace Gameplay
                 return _rect;
             }
         }
-
         #endregion
 
        
@@ -164,6 +166,7 @@ namespace Gameplay
             cardObject = obj;
         }
 
+       
         public void SetDeckPosition(int index)
         {
             deckPosition = index;

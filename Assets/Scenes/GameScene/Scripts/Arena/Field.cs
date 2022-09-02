@@ -57,6 +57,25 @@ namespace Gameplay
             }
         }
 
+        private CardSlot _UnderWorldSlot = null;
+        public CardSlot UnderworldSlot
+        {
+            get
+            {
+                if (_UnderWorldSlot == null)
+                {
+                    for (int i = 0; i < cardSlots.Count; i++)
+                    {
+                        if (cardSlots[i].slotType == CardLocation.Underworld) { _UnderWorldSlot =  cardSlots[i]; }
+                    }
+                    App.LogFatal("There is no Underworld Slot marked.");
+                    return null;
+                }
+                return _UnderWorldSlot;
+               
+            }
+        }
+
         public CardSlot ByIndex(int index)
         {
             for (int i = 0; i < cardSlots.Count; i++)
@@ -87,13 +106,13 @@ namespace Gameplay
             _player = p;
             AllocateCards();
         }
-        private async void AllocateCards()
+        private void AllocateCards()
         {
             Deck sp = _deck.SpiritDeck;
             for (int i = 0; i < sp.Cards.Count; i++)
             {
                 GameCard g = sp.Cards[i];
-                CardObject co = await SpawnCard(g, SpiritDeckSlot);
+                CardObject co = SpawnCard(g, SpiritDeckSlot);
                 g.SetObject(co);
                 SpiritDeckSlot.AllocateTo(g);
 
@@ -103,7 +122,7 @@ namespace Gameplay
             for (int i = 0; i < de.InOrder.Count; i++)
             {
                 GameCard g = de.InOrder[i];
-                CardObject co = await SpawnCard(g, DeckSlot);
+                CardObject co = SpawnCard(g, DeckSlot);
                 g.SetObject(co);
                 DeckSlot.AllocateTo(g);
 
@@ -111,9 +130,9 @@ namespace Gameplay
             GameManager.Instance.ReadyPlayer(_player);
         }
 
-        protected async Task<CardObject> SpawnCard(GameCard card, CardSlot slot)
+        protected CardObject SpawnCard(GameCard card, CardSlot slot)
         {
-            GameObject go = await AssetPipeline.GameObjectCloneAsync(CardObject.CardKey, transform);
+            GameObject go = AssetPipeline.GameObjectClone(CardObject.CardKey, transform);
             CardObject c = go.GetComponent<CardObject>();
             bool displayBack = slot.facing == CardSlot.CardFacing.FaceDown;
             c.LoadCard(card.card);

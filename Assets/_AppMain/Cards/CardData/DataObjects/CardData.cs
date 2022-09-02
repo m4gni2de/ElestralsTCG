@@ -24,6 +24,8 @@ namespace Cards
         public int setNumber { get; set; }
         public ArtType artType { get; set; }
         public List<ElementCode> Spirits = null;
+        public string setKey { get; set; }
+        public string image { get; set; }
 
         //public static CardData Empty
         //{
@@ -75,32 +77,64 @@ namespace Cards
             setCode = dto.setName;
             setNumber = dto.setNumber;
             artType = (ArtType)dto.artType;
-
-
-
-
-        }
-
-        
-
-        protected int GetSetNumber(string cardKey)
-        {
-            
-            int charIndex = 0;
-
-            for (int i = 0; i < cardKey.Length; i++)
+            if (!string.IsNullOrEmpty(dto.setKey))
             {
-                if (cardKey[i].ToString() == "-")
-                {
-                    charIndex = i + 1;
-                    break;
-                }
+                setKey = dto.setKey;
+            }
+            else
+            {
+                setKey = "";
             }
 
-            int number = int.Parse(cardKey.Remove(0, charIndex));
-            return number;
-            
+            image = dto.image;
+
+
         }
+
+        public CardData(qCards dto)
+        {
+            cardKey = dto.cardKey;
+            cardName = dto.title;
+            cardType = dto.cardClass;
+            cost1 = dto.cost1;
+            if (!dto.cost2.HasValue) { cost2 = -1; } else { cost2 = dto.cost2.Value; }
+            if (!dto.cost3.HasValue) { cost3 = -1; } else { cost3 = dto.cost3.Value; }
+            artist = dto.artist;
+            if (!string.IsNullOrEmpty(dto.effect))
+            {
+                effect = dto.effect;
+            }
+            else
+            {
+                effect = "";
+            }
+
+            rarity = (Rarity)dto.rarity;
+            setCode = dto.setName;
+            setNumber = dto.setNumber;
+            artType = (ArtType)dto.artType;
+            if (!string.IsNullOrEmpty(dto.setKey))
+            {
+                setKey = dto.setKey;
+            }
+            else
+            {
+                setKey = "";
+            }
+
+            if (!string.IsNullOrEmpty(dto.image))
+            {
+                image = dto.image;
+            }
+            else
+            {
+                image = "";
+            }
+            
+
+
+        }
+
 
     }
 
@@ -123,7 +157,17 @@ namespace Cards
             if (dto.subType1.HasValue) { subType1 = (Elestral.SubClass)dto.subType1.Value; } else { subType1 = Elestral.SubClass.None; }
             if (dto.subType2.HasValue) { subType2 = (Elestral.SubClass)dto.subType2.Value; } else { subType2 = Elestral.SubClass.None; }
         }
-        
+
+        public ElestralData(qCards dto) : base(dto)
+        {
+            if (dto.attack.HasValue) { attack = dto.attack.Value; }
+            if (dto.defense.HasValue) { defense = dto.defense.Value; }
+            if (dto.subType1.HasValue) { subType1 = (Elestral.SubClass)dto.subType1.Value; } else { subType1 = Elestral.SubClass.None; }
+            if (dto.subType2.HasValue) { subType2 = (Elestral.SubClass)dto.subType2.Value; } else { subType2 = Elestral.SubClass.None; }
+        }
+
+
+
     }
 
     [System.Serializable]
@@ -135,7 +179,12 @@ namespace Cards
         {
             runeType = (Rune.RuneType)dto.subType1;
         }
-       
+
+        public RuneData(qCards dto) : base(dto)
+        {
+            runeType = (Rune.RuneType)dto.subType1;
+        }
+
     }
 
     

@@ -7,13 +7,7 @@ using Cards;
 
 namespace CardsUI.Filtering
 {
-    public enum FilterValue
-    {
-        CardType = 0,
-        CardElement = 1
-
-    }
-
+    
     public class FiltersMenu : MonoBehaviour
     {
 
@@ -33,19 +27,19 @@ namespace CardsUI.Filtering
         #region Filter Groups
         
         public FilterGroup elementGroup;
-        private List<int> m_elementFilters = null;
-        protected List<int> _elementFilters
+        private List<string> m_elementFilters = null;
+        protected List<string> _elementFilters
         {
             get
             {
-                m_elementFilters ??= new List<int>();
+                m_elementFilters ??= new List<string>();
                 return m_elementFilters;
             }
         }
 
         public FilterGroup cardTypeGroup;
-        public List<int> m_typeFilters = null;
-        protected List<int> _cardTypeFilters { get { m_typeFilters ??= new List<int>(); return m_typeFilters; } }
+        public List<string> m_typeFilters = null;
+        protected List<string> _cardTypeFilters { get { m_typeFilters ??= new List<string>(); return m_typeFilters; } }
         #endregion
         //public DataFilter dataFilter;
 
@@ -55,10 +49,7 @@ namespace CardsUI.Filtering
 
         private void Awake()
         {
-            if (IsOpen)
-            {
-                Close();
-            }
+           
         }
 
         public void SetFilter<T>()
@@ -86,16 +77,28 @@ namespace CardsUI.Filtering
             gameObject.SetActive(false);
         }
 
+        public bool Validate()
+        {
+            for (int i = 0; i < Groups.Length; i++)
+            {
+                if (!Groups[i].Validate())
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         public string GenerateQuery()
         {
-            string query = $"SELECT * FROM {CardService.CardTable} ";
+            string query = "image is not null";
 
             List<string> wheres = GetQueryWheres();
 
             if (wheres.Count == 0) { return query; }
 
-            query += "where ";
+            query += " and ";
             for (int i = 0; i < wheres.Count; i++)
             {
                 query += wheres[i];
@@ -117,9 +120,29 @@ namespace CardsUI.Filtering
 
             int filterCount = _elementFilters.Count + _cardTypeFilters.Count;
 
-            if (filterCount == 0) { return wheres; }
-            string where = "";
+            //if (filterCount == 0) { return wheres; }
 
+            for (int i = 0; i < Groups.Length; i++)
+            {
+                if (!Groups[i].AllChecked) { wheres.Add(Groups[i].GetQuery()); }
+                
+            }
+
+            //string elementWhere = ElementWhere();
+            //wheres.Add(elementWhere);
+
+            //string cardTypeWhere = CardTypeWhere();
+            //wheres.Add(cardTypeWhere);
+           
+            return wheres;
+        }
+
+
+
+        #region Filter QueryWheres
+        protected string ElementWhere()
+        {
+            string where = "";
             for (int i = 0; i < _elementFilters.Count; i++)
             {
                 if (i == 0) { where += "("; }
@@ -131,11 +154,15 @@ namespace CardsUI.Filtering
                 else
                 {
                     where += ")";
-                    wheres.Add(where);
                 }
             }
 
-            where = "";
+            return where;
+        }
+
+        protected string CardTypeWhere()
+        {
+            string where = "";
 
             for (int i = 0; i < _cardTypeFilters.Count; i++)
             {
@@ -148,13 +175,15 @@ namespace CardsUI.Filtering
                 else
                 {
                     where += ")";
-                    wheres.Add(where);
                 }
             }
 
-
-            return wheres;
+            return where;
         }
+        #endregion
+
+
+
         public void DoFilters()
         {
             _elementFilters.Clear();
@@ -164,10 +193,10 @@ namespace CardsUI.Filtering
             for (int i = 0; i < elementValues.Count; i++)
             {
                 int eleCode = Element.ElementInt(elementValues[i]);
-                _elementFilters.Add(eleCode);
+                _elementFilters.Add(eleCode.ToString());
             }
 
-            List<int> cardTypeValues = cardTypeGroup.GetIntValues();
+            List<string> cardTypeValues = cardTypeGroup.GetIntValues();
             for (int i = 0; i < cardTypeValues.Count; i++)
             {
                 _cardTypeFilters.Add(cardTypeValues[i]);

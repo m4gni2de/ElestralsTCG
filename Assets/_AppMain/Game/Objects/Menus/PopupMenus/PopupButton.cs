@@ -20,10 +20,23 @@ namespace Gameplay.Menus.Popup
             }
         }
 
-        private TMP_Text txtButton { get { return button.GetComponentInChildren<TMP_Text>(); } }
+        public TMP_Text txtButton;
+        public string CommandName { get { return txtButton.text; } }
 
-        private UnityEvent OnClickEvent { get { return button.onClick; } }
+
+        public UnityEvent OnClickEvent { get { return button.onClick; } }
         #endregion
+
+        public void Clear()
+        {
+            txtButton.text = "";
+            OnClickEvent.RemoveAllListeners();
+            gameObject.SetActive(false);
+        }
+        public void Show()
+        {
+            gameObject.SetActive(true);
+        }
         public void SetText(string msg)
         {
             txtButton.text = msg;

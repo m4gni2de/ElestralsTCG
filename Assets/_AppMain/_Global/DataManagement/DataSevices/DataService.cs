@@ -22,9 +22,10 @@ public class DataService
 
 #if UNITY_EDITOR
 
-    protected static DbConnector db { get { return ConnectionManager.db; } }
+    //protected static DbConnector db { get { return ConnectionManager.db; } }
+    protected static DbConnector db { get { return AppManager.Instance.dbConnector; } }
 #else
-    protected static DbConnector db { get { return AppManager.Instance.dbManager._conn; } }
+    protected static DbConnector db { get { return AppManager.Instance.dbConnector; } }
 #endif
     //
 

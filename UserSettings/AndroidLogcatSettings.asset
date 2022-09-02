@@ -3,7 +3,7 @@
     "m_SelectedPackage": {
         "deviceId": "R5CR20B30MT",
         "name": "com.M4GStudios.ElestralsTCG.com",
-        "processId": 13118,
+        "processId": 32322,
         "exited": false
     },
     "m_SelectedPriority": 0,
@@ -17,91 +17,199 @@
         {
             "deviceId": "R5CR20B30MT",
             "name": "com.M4GStudios.ElestralsTCG.com",
-            "processId": 19528,
+            "processId": 9695,
             "exited": true
         },
         {
             "deviceId": "R5CR20B30MT",
             "name": "com.M4GStudios.ElestralsTCG.com",
-            "processId": 28528,
+            "processId": 11701,
             "exited": true
         },
         {
             "deviceId": "R5CR20B30MT",
             "name": "com.M4GStudios.ElestralsTCG.com",
-            "processId": 31237,
+            "processId": 29145,
             "exited": true
         },
         {
             "deviceId": "R5CR20B30MT",
             "name": "com.M4GStudios.ElestralsTCG.com",
-            "processId": 16701,
+            "processId": 30890,
             "exited": true
         },
         {
             "deviceId": "R5CR20B30MT",
             "name": "com.M4GStudios.ElestralsTCG.com",
-            "processId": 22139,
-            "exited": true
-        },
-        {
-            "deviceId": "R5CR20B30MT",
-            "name": "com.M4GStudios.ElestralsTCG.com",
-            "processId": 12661,
+            "processId": 5068,
             "exited": false
         },
         {
             "deviceId": "R5CR20B30MT",
             "name": "com.M4GStudios.ElestralsTCG.com",
-            "processId": 20381,
+            "processId": 2023,
             "exited": false
         },
         {
             "deviceId": "R5CR20B30MT",
             "name": "com.M4GStudios.ElestralsTCG.com",
-            "processId": 25416,
+            "processId": 29806,
             "exited": false
         },
         {
             "deviceId": "R5CR20B30MT",
             "name": "com.M4GStudios.ElestralsTCG.com",
-            "processId": 3017,
+            "processId": 6688,
             "exited": false
         },
         {
             "deviceId": "R5CR20B30MT",
             "name": "com.M4GStudios.ElestralsTCG.com",
-            "processId": 8609,
+            "processId": 11793,
             "exited": false
         },
         {
             "deviceId": "R5CR20B30MT",
             "name": "com.M4GStudios.ElestralsTCG.com",
-            "processId": 15559,
+            "processId": 15909,
             "exited": false
         },
         {
             "deviceId": "R5CR20B30MT",
             "name": "com.M4GStudios.ElestralsTCG.com",
-            "processId": 24631,
+            "processId": 19814,
             "exited": false
         },
         {
             "deviceId": "R5CR20B30MT",
             "name": "com.M4GStudios.ElestralsTCG.com",
-            "processId": 31534,
+            "processId": 28557,
             "exited": false
         },
         {
             "deviceId": "R5CR20B30MT",
             "name": "com.M4GStudios.ElestralsTCG.com",
-            "processId": 6449,
+            "processId": 14065,
             "exited": false
         },
         {
             "deviceId": "R5CR20B30MT",
             "name": "com.M4GStudios.ElestralsTCG.com",
-            "processId": 13118,
+            "processId": 16699,
+            "exited": false
+        },
+        {
+            "deviceId": "R5CR20B30MT",
+            "name": "com.M4GStudios.ElestralsTCG.com",
+            "processId": 20563,
+            "exited": false
+        },
+        {
+            "deviceId": "R5CR20B30MT",
+            "name": "com.M4GStudios.ElestralsTCG.com",
+            "processId": 24661,
+            "exited": false
+        },
+        {
+            "deviceId": "R5CR20B30MT",
+            "name": "com.M4GStudios.ElestralsTCG.com",
+            "processId": 25716,
+            "exited": false
+        },
+        {
+            "deviceId": "R5CR20B30MT",
+            "name": "com.M4GStudios.ElestralsTCG.com",
+            "processId": 28080,
+            "exited": false
+        },
+        {
+            "deviceId": "R5CR20B30MT",
+            "name": "com.M4GStudios.ElestralsTCG.com",
+            "processId": 31619,
+            "exited": false
+        },
+        {
+            "deviceId": "R5CR20B30MT",
+            "name": "com.M4GStudios.ElestralsTCG.com",
+            "processId": 4232,
+            "exited": false
+        },
+        {
+            "deviceId": "R5CR20B30MT",
+            "name": "com.M4GStudios.ElestralsTCG.com",
+            "processId": 14547,
+            "exited": false
+        },
+        {
+            "deviceId": "R5CR20B30MT",
+            "name": "com.M4GStudios.ElestralsTCG.com",
+            "processId": 17288,
+            "exited": false
+        },
+        {
+            "deviceId": "R5CR20B30MT",
+            "name": "com.M4GStudios.ElestralsTCG.com",
+            "processId": 19792,
+            "exited": false
+        },
+        {
+            "deviceId": "R5CR20B30MT",
+            "name": "com.M4GStudios.ElestralsTCG.com",
+            "processId": 24263,
+            "exited": false
+        },
+        {
+            "deviceId": "R5CR20B30MT",
+            "name": "com.M4GStudios.ElestralsTCG.com",
+            "processId": 32634,
+            "exited": false
+        },
+        {
+            "deviceId": "R5CR20B30MT",
+            "name": "com.M4GStudios.ElestralsTCG.com",
+            "processId": 8096,
+            "exited": false
+        },
+        {
+            "deviceId": "R5CR20B30MT",
+            "name": "com.M4GStudios.ElestralsTCG.com",
+            "processId": 15050,
+            "exited": false
+        },
+        {
+            "deviceId": "R5CR20B30MT",
+            "name": "com.M4GStudios.ElestralsTCG.com",
+            "processId": 24246,
+            "exited": false
+        },
+        {
+            "deviceId": "R5CR20B30MT",
+            "name": "com.M4GStudios.ElestralsTCG.com",
+            "processId": 29329,
+            "exited": false
+        },
+        {
+            "deviceId": "R5CR20B30MT",
+            "name": "com.M4GStudios.ElestralsTCG.com",
+            "processId": 19832,
+            "exited": false
+        },
+        {
+            "deviceId": "R5CR20B30MT",
+            "name": "com.M4GStudios.ElestralsTCG.com",
+            "processId": 28700,
+            "exited": false
+        },
+        {
+            "deviceId": "R5CR20B30MT",
+            "name": "com.M4GStudios.ElestralsTCG.com",
+            "processId": 32322,
+            "exited": false
+        },
+        {
+            "deviceId": "10.0.0.190:5555",
+            "name": "com.M4GStudios.ElestralsTCG.com",
+            "processId": 11701,
             "exited": false
         }
     ],
@@ -155,7 +263,21 @@
         "MemoryGroup": 2,
         "Behavior": 0
     },
-    "m_Filter": "",
-    "m_FilterIsRegularExpression": false,
-    "m_SymbolPaths": []
+    "m_FilterOptions": {
+        "m_Filter": "",
+        "m_UseRegularExpressions": false,
+        "m_MatchCase": false
+    },
+    "m_SymbolPaths": [],
+    "m_CaptureVideoSettings": {
+        "TimeLimitEnabled": false,
+        "TimeLimit": 180,
+        "VideoSizeEnabled": false,
+        "VideoSizeX": 1280,
+        "VideoSizeY": 720,
+        "BitRateEnabled": false,
+        "BitRateK": 20000,
+        "DisplayIdEnabled": false,
+        "DisplayId": ""
+    }
 }

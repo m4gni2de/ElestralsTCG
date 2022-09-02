@@ -7,8 +7,32 @@ namespace CardsUI.Filtering
 {
     public class FilterGroup : MonoBehaviour
     {
+        public enum Joiner
+        {
+            And = 0,
+            Or = 1
+        };
+        public enum FilterValueType
+        {
+            String = 0,
+            Integer = 1,
+        }
+        public enum FilterColumnType
+        {
+            Generic = 0,
+            IntGeneric = 1,
+            Element = 2,
+            CardType = 3,
+            CardCost = 4,
+        }
 
+        public static readonly string ValChar = "{val}";
+
+        public Joiner joinWord;
+        public FilterValueType valueType;
+        public FilterColumnType colType;
         #region Properties
+            
         //private ToggleGroup toggleGroup;
         private FilterToggle[] _toggles = null;
         public FilterToggle[] toggles
@@ -36,6 +60,18 @@ namespace CardsUI.Filtering
             }
         }
 
+        public FilterToggle FilterWithValue(string val)
+        {
+            for (int i = 0; i < toggles.Length; i++)
+            {
+                if (val.ToLower() == toggles[i].valName.ToLower())
+                {
+                    return toggles[i];
+                }
+            }
+            return null;
+        }
+
         private Dictionary<string, bool> _LastFilters = null;
         public Dictionary<string, bool> LastFilters { get { _LastFilters ??= new Dictionary<string, bool>(); return _LastFilters; } }
 
@@ -43,8 +79,17 @@ namespace CardsUI.Filtering
         /// If there is only 1 Toggle Checked and it is set to be unchecked, Check everything in the Group instead of allowing 0 items to be checked.
         /// </summary>
         public bool NoneIsAll;
+
+        public string ValueClause;
+
+        public bool AllChecked { get { return CheckedCount == toggles.Length; } }
+        protected string LastQuery;
         #endregion
 
+        public virtual bool Validate()
+        {
+            return true;
+        }
         #region Opening/Closing
         private void Awake()
         {
@@ -98,31 +143,102 @@ namespace CardsUI.Filtering
 
             for (int i = 0; i < toggles.Length; i++)
             {
-                FilterToggle t = toggles[0];
+                FilterToggle t = toggles[i];
 
                 if (t.IsChecked)
                 {
-                    list.Add(t.valName);
+                    list.Add(GetColumnValue(t.valName));
                 }
             }
             return list;
         }
-        public List<int> GetIntValues()
+        public List<string> GetIntValues()
         {
-            List<int> list = new List<int>();
+            List<string> list = new List<string>();
 
             for (int i = 0; i < toggles.Length; i++)
             {
-                FilterToggle t = toggles[0];
+                FilterToggle t = toggles[i];
 
                 if (t.IsChecked)
                 {
-                    list.Add(int.Parse(t.valName));
+                    list.Add(GetColumnValue(t.valName));
                 }
             }
             return list;
         }
         #endregion
+
+        #region Commands
+        public void SelectAllCommand()
+        {
+            for (int i = 0; i < toggles.Length; i++)
+            {
+                toggles[i].SetChecked(true);
+            }
+        }
+        #endregion
+
+        #region Column Types
+        protected string GetColumnValue(string val)
+        {
+            switch (colType)
+            {
+                case FilterColumnType.Generic:
+                    return $"'{val}'";
+                case FilterColumnType.IntGeneric:
+                    return $"{val}";
+                case FilterColumnType.Element:
+                    int eleCode = Element.ElementInt(val);
+                    return $"{eleCode}";
+                case FilterColumnType.CardCost:
+                    return CardLibrary.CostString(val);             
+                default:
+                    return $"'{val}'";
+            }
+        }
+
+        #endregion
+
+       
+        protected IEnumerator AwaitValidate()
+        {
+
+            do
+            {
+
+            } while (true);
+        }
+        public virtual string GetQuery()
+        {
+            string where = "";
+            if (AllChecked) { return where; }
+
+            List<string> vals = GetStringValues();
+            if (valueType == FilterValueType.Integer) { vals = GetIntValues(); }
+
+          
+            int count = 0;
+
+            for (int i = 0; i < CheckedCount; i++)
+            {
+                if (i == 0) { where += "("; }
+                string valString = $" {vals[i]} ";
+                where += ValueClause.Replace(ValChar, valString);
+                count += 1;
+                if (count == CheckedCount)
+                {
+                    where += ")";
+                }
+                else
+                {
+                    where += $" {joinWord.ToString()} ";
+                }
+                
+            }
+
+            return where;
+        }
 
         protected void CheckAll()
         {

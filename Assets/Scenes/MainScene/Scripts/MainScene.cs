@@ -11,16 +11,12 @@ public class MainScene : MonoBehaviour
     void Start()
     {
         //CardCatalog.Open();
-
-        PreloadCards(); 
+        App.StartApp();
+        AssetPipeline.DoRedownloadAllCards();
         
     }
     
-    async void PreloadCards()
-    {
-        await CardLibrary.PreloadFullCards();
-    }
-
+    
     // Update is called once per frame
     void Update()
     {
@@ -36,5 +32,15 @@ public class MainScene : MonoBehaviour
         menuButtons.SetActive(false);
     }
 
+    public void PackGeneratorLoad()
+    {
+        menuButtons.SetActive(false);
+        PackGenerator.LoadGenerator();
+    }
+    public void PlayGameButton()
+    {
+        menuButtons.SetActive(false);
+        App.ChangeScene("GameScene");
+    }
     #endregion
 }

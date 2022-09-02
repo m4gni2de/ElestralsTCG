@@ -101,7 +101,11 @@ public class CardObject : MonoBehaviour, iHold
     }
     public void SetScale(Vector2 scale)
     {
+        Vector2 currScale = Container.transform.localScale;
+        Vector2 scaleDiff = scale / currScale;
+
         Container.transform.localScale = scale;
+        CardBack.transform.localScale *= scaleDiff;
     }
     public void DisplayBack(string assetString = "cardbackSp")
     {

@@ -25,7 +25,9 @@ public class DbManager : MonoBehaviour
         if (db.Status == AsyncOperationStatus.Succeeded && db.IsDone)
         {
             dbFile = db.Result;
-            _conn = new DbConnector(dbFile, true, false);
+            //_conn = new DbConnector(dbFile, true, false);
+            _conn.databaseFile = dbFile;
+            _conn.Initialize(true);
             return true;
         }
         else
@@ -34,18 +36,24 @@ public class DbManager : MonoBehaviour
         }
 
     }
-    public async void Connect()
+    
+
+
+    private void OnApplicationQuit()
     {
-        dbFile = await AssetPipeline.ByKeyAsync<TextAsset>("dbInternal");
-        _conn = new DbConnector(dbFile, false, false);
+        if (_conn != null)
+        {
+            _conn.Flush();
+        }
+        
+    }
 
-        //_conn = ConnectionManager.db;
-
-//#if UNITY_EDITOR
-//        _conn = ConnectionManager.db;
-//#else
-//dbFile = await AssetPipeline.ByKeyAsync<TextAsset>("dbInternal");
-//_conn = new DbConnector(dbFile, false, false);
-//#endif
+    private void OnDestroy()
+    {
+        if(_conn != null)
+        {
+            _conn.Flush();
+        }
+        
     }
 }

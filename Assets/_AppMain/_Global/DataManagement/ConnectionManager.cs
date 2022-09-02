@@ -22,8 +22,8 @@ public class ConnectionManager
                 //{
                 //    AppManager.Create();
                 //}
-                TextAsset db = AssetPipeline.ByKey<TextAsset>(dbName);
-                _conn = new DbConnector(db);
+                //TextAsset db = AssetPipeline.ByKey<TextAsset>(dbName);
+                //_conn = new DbConnector(db);
             }
             return _conn;
         }
@@ -107,13 +107,13 @@ public class ConnectionManager
         
     }
 
-    private async void Do(string databaseName)
+    private void Do(string databaseName)
     {
         dbName = databaseName;
-        dbAsset = await AssetPipeline.ByKeyAsync<TextAsset>(dbName);
+        dbAsset = AssetPipeline.ByKey<TextAsset>(dbName);
         if (dbAsset != null)
         {
-            _conn = new DbConnector(dbAsset);
+            //_conn = new DbConnector(dbAsset);
         }
         else
         {

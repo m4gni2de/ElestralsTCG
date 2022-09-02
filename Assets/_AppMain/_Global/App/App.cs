@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Events;
 using UnityEngine.AddressableAssets;
 using System.Threading.Tasks;
+using System;
 
 public class App 
 {
@@ -39,6 +40,7 @@ public class App
         {
             if (_account == null)
             {
+                
                 LogFatal("There is no account in use.");
             }
             return _account;
@@ -63,10 +65,10 @@ public class App
     #region Initialization
 
 
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    static void StartApp()
+    //[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    public static void StartApp()
     {
-
+        CheckForAccount();
         //if (_Instance == null)
         //{
         //    await AssetPipeline.WorldObjectClone(ManagerAsset);
@@ -150,5 +152,29 @@ public class App
         //do something with object stacking eventually
         AppManager.Instance.ShowObject(obj, sortLayerValue);
     }
+    #endregion
+
+    #region Popup Boxes
+    protected static PopupManager popUp { get { return PopupManager.Instance; } }
+    public static void ShowMessage(string msg, Action callback = null)
+    {
+        if (PopupManager.ActivePopup == null)
+        {
+            popUp.DisplayMessage(msg, callback);
+        }
+
+    }
+    public static void AskYesNo(string msg, Action<bool> callback)
+    {
+        if (PopupManager.ActivePopup == null)
+        {
+            popUp.AskYesNo(msg, callback);
+        }
+        
+    }
+    #endregion
+
+    #region Global Functions
+    public static string WhoAmI { get { return Account.Id; } }
     #endregion
 }

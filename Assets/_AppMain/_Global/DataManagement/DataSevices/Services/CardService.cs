@@ -17,7 +17,7 @@ namespace Cards
 
 
         public static readonly string CardTable = "qCard";
-        public static readonly string CardBySetTable = "CardsBySet";
+        public static readonly string CardsByImageTable = "qCards";
 
 
 
@@ -80,9 +80,9 @@ namespace Cards
         #region Elestrals
 
         #endregion
-        public static string CardArtString(string cardKey)
+        public static string CardArtString(string cardKey, string colName)
         {
-            string qWhere= $"cardKey = '{cardKey}'";
+            string qWhere= $"{colName} = '{cardKey}'";
             CardDTO dto = GetFirstWhere<CardDTO>(CardTable, qWhere);
             return dto.image;
         }

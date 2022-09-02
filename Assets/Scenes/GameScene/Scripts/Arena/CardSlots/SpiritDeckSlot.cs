@@ -12,7 +12,7 @@ namespace Gameplay
             facing = CardFacing.FaceDown;
             orientation = Orientation.Vertical;
             slotType = CardLocation.SpiritDeck;
-            touch.OnClickEvent.AddListener(() => BrowseCards());
+            touch.OnClickEvent.AddListener(() => OpenSlotMenu());
         }
 
         protected override void SetCommands(GameCard card)

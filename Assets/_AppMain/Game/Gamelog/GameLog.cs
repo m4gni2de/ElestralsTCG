@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Gameplay
 {
+    
     public class GameLog
     {
         private List<string> _logs = null;

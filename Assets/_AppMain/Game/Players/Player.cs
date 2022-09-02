@@ -32,6 +32,19 @@ namespace Gameplay
         public Decklist decklist { get; private set; }
         private GameDeck _deck = null;
         public GameDeck deck { get { return _deck; } }
+
+        private Field _gameField = null;
+        public Field gameField
+        {
+            get
+            {
+                if (_gameField == null)
+                {
+                    _gameField = GameManager.Instance.arena.GetPlayerField(this);
+                }
+                return _gameField;
+            }
+        }
         #endregion
 
         public Player(string user, Decklist list)
@@ -51,12 +64,20 @@ namespace Gameplay
 
         public void Draw(int count)
         {
-            Field f = GameManager.Instance.arena.GetPlayerField(this);
             for (int i = 0; i < count; i++)
             {
                 GameCard c = deck.Top;
                 deck.RemoveCard(c, deck.MainDeck);
-                GameManager.Instance.MoveCard(f.DeckSlot, c, f.HandSlot);
+                GameManager.Instance.MoveCard(gameField.DeckSlot, c, gameField.HandSlot);
+            }
+        }
+        public void Mill(int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                GameCard c = deck.Top;
+                deck.RemoveCard(c, deck.MainDeck);
+                GameManager.Instance.MoveCard(gameField.DeckSlot, c, gameField.UnderworldSlot);
             }
         }
     }

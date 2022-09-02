@@ -78,6 +78,7 @@ public class CameraMotion : MonoBehaviour
             defaultSize = Width / targetRatio * differenceInSize;
         }
         maxCameraSize = Width * MaxPercentOfScreen;
+
 #endif
 
 
@@ -93,9 +94,7 @@ public class CameraMotion : MonoBehaviour
 
     void EditorScales()
     {
-        float screenRatio = ScreenHeight / ScreenWidth;
-        float targetRatio = Height / Width;
-
+       
         defaultSize = ParentCanvas.renderingDisplaySize.x;
 
         maxCameraSize = defaultSize * (1 + minSizePercent);
