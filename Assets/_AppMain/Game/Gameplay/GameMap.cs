@@ -2,17 +2,33 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameMap : MonoBehaviour
+namespace Gameplay
 {
-    // Start is called before the first frame update
-    void Start()
+    [System.Serializable]
+    public struct SlotData
     {
-        
+        public string slotId;
+        public string fieldId;
+        public string owner;
+        public int index;
+        public string name;
+        public string[] cardsOn;
     }
 
-    // Update is called once per frame
-    void Update()
+    [System.Serializable]
+    public class GameMap
     {
-        
+        #region Properties
+        private List<SlotData> _Slots = null;
+        public List<SlotData> Slots
+        {
+            get
+            {
+                _Slots ??= new List<SlotData>();
+                return _Slots;
+            }
+        }
+        #endregion
     }
 }
+

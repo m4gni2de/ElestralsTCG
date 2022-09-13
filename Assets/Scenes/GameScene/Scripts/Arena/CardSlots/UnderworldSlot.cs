@@ -48,7 +48,7 @@ namespace Gameplay
         public void BrowseCards()
         {
 
-            GameManager.Instance.browseMenu.LoadCards(cards, true);
+            GameManager.Instance.browseMenu.LoadCards(cards, "Your Underworld", true);
         }
     }
 }

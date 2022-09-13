@@ -3,36 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public static class TouchController 
+public class TouchController : MonoBehaviour
 {
-    public static DateTime LastTouch { get; private set; }
+    public List<TouchObject> touchObjects = new List<TouchObject>();
 
-    private static Dictionary<int, DateTime> _touches = null;
-    public static Dictionary<int, DateTime> Touches
+    public void AddObject(TouchObject obj)
     {
-        get
+        if (!touchObjects.Contains(obj))
         {
-            _touches ??= new Dictionary<int, DateTime>();
-            return _touches;
+            touchObjects.Add(obj);
         }
     }
 
-    private static void AddTouch(int touchIndex)
-    {
-        if (!Touches.ContainsKey(touchIndex))
-        {
-            Touches.Add(touchIndex, DateTime.Now);
-        }
-    }
-
-    public static void RegisterTouch(int touchIndex)
-    {
-        AddTouch(touchIndex);
-    }
-    public static float TouchRelease(int touchIndex)
-    {
-        TimeSpan interval = DateTime.Now - Touches[touchIndex];
-        return (float)interval.TotalSeconds;
-    }
-    
+    //WORK ON MAKING TOUCH BUTTONS WORK WITH CONTROLLERS THAT CAN TOGGLE EVENTS RATHER THAN MAKING THE TOUCH BUTTONS THEMSELVES HAVE EVENT LISTENERS
 }

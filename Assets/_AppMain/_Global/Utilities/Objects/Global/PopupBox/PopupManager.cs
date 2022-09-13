@@ -5,7 +5,7 @@ using PopupBox;
 using System;
 public class PopupManager : MonoBehaviour
 {
-    public static PopupManager Instance { get; private set; }
+    public static PopupManager Instance { get; set; }
     public static BasePopup ActivePopup;
 
     public GameObject objectPool;

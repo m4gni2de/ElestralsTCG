@@ -12,6 +12,7 @@ using UnityEngine.AddressableAssets.ResourceLocators;
 using System.Threading.Tasks;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using Databases;
+using Gameplay;
 
 public class AppManager : MonoBehaviour
 {
@@ -49,9 +50,6 @@ public class AppManager : MonoBehaviour
             if (size > 0)
             {
                 Instance.ShowLoadingBar("Items Downloaded", 0f, items.Count);
-                //AssetPipeline.OnItemDownloaded += Instance.loadingBar.MoveSlider;
-                //AssetPipeline.OnDownloadComplete += Instance.loadingBar.CompleteLoad;
-                //bool complete = await AwaitLoading(Instance.loadingBar, AssetPipeline.DoRedownloadAllCards);
                
             }
             
@@ -59,36 +57,13 @@ public class AppManager : MonoBehaviour
         
 
 
-        
-
-        //if (!hasUpdate)
-        //{
-        //    List<string> keys = new List<string>();
-        //    keys.Add("Card");
-        //    keys.Add("FullCard");
-        //    AsyncOperationHandle<IList<IResourceLocation>> locations = Addressables.LoadResourceLocationsAsync(keys);
-        //    await locations.Task;
-        //    Instance.ShowLoadingBar("Items Downloaded", 0f, locations.Result.Count);
-        //    AssetPipeline.OnItemDownloaded += Instance.loadingBar.MoveSlider;
-        //    AssetPipeline.OnDownloadComplete += Instance.loadingBar.CompleteLoad;
-        //    bool complete = await AwaitLoading(Instance.loadingBar, AssetPipeline.DoRedownloadAllCards);
-        //    AssetPipeline.OnItemDownloaded -= Instance.loadingBar.MoveSlider;
-        //    AssetPipeline.OnDownloadComplete -= Instance.loadingBar.CompleteLoad;
-        //}
-
         if (hasDb)
         {
 
             SetupManager();
             App.ChangeScene(1);
         }
-        //do
-        //{
-        //    await Task.Delay(1);
-        //} while (true && Instance.dbManager._conn == null);
-
-        //SetupManager();
-        //App.ChangeScene(1);
+       
     }
 
 
@@ -133,6 +108,10 @@ public class AppManager : MonoBehaviour
     private Canvas appCanvas;
     public Blocker appBlocker;
     public LoadingBar loadingBar;
+    
+
+    private static bool _IsFrozen = false;
+    public static bool IsFrozen { get { return _IsFrozen; } }
     #endregion
     public int GetManagerLayer()
     {
@@ -151,9 +130,49 @@ public class AppManager : MonoBehaviour
     {
         ActiveHoldObject = hold;
     }
+
+
+
+    #region Game Time/Freeze Management
+    [SerializeField]
+    private GameLog _freezeLog = null;
+    public GameLog FreezeLog { get { _freezeLog ??= GameLog.Create("FreezeLog", false); return _freezeLog; } }
+    protected static List<iFreeze> _FreezeObjects = null;
+    public static List<iFreeze> FreezeObjects { get { _FreezeObjects ??= new List<iFreeze>(); return _FreezeObjects; } }
+    public static void Freeze(bool isFreeze = true)
+    {
+        _IsFrozen = isFreeze;
+        CameraMotion.main.Freeze(_IsFrozen);
+    }
+    public static void Freeze(iFreeze obj)
+    {
+        if (!FreezeObjects.Contains(obj))
+        {
+            FreezeObjects.Add(obj);
+            string logMsg = $"{obj} was added as a Freeze Object. There are now {FreezeObjects.Count} Freeze Objects.";
+            Instance.FreezeLog.AddLog(logMsg);
+        }
+        
+        Freeze(true);
+    }
+    public static void Thaw(iFreeze obj)
+    {
+        if (FreezeObjects.Contains(obj))
+        {
+            FreezeObjects.Remove(obj);
+            string logMsg = $"{obj} was removed as a Freeze Object. There are now {FreezeObjects.Count} Freeze Objects.";
+            Instance.FreezeLog.AddLog(logMsg);
+        }
+        if (FreezeObjects.Count == 0)
+        {
+            Freeze(false);
+        }
+    }
     #endregion
 
-   
+    #endregion
+
+
     private void OnEnable()
     {
         appCanvas.overrideSorting = true;

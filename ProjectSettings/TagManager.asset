@@ -50,6 +50,9 @@ TagManager:
   - name: Card
     uniqueID: 3816955839
     locked: 0
+  - name: CardL2
+    uniqueID: 2574460451
+    locked: 0
   - name: InputBlocker
     uniqueID: 3487167371
     locked: 0

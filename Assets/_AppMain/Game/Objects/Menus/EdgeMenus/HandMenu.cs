@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Gameplay;
 
-public class HandMenu : EdgeMenu, iScaleCard
+public class HandMenu : EdgeMenu, iScaleCard, iFreeze
 {
     #region Interface
     public Vector2 CardScale
@@ -36,10 +36,11 @@ public class HandMenu : EdgeMenu, iScaleCard
         base.Open();
         MenuUI.SetActive(true);
 
-        if (GameManager.ActivePlayer != null && GameManager.ActivePlayer == GameManager.ActiveGame.You)
+        if (GameManager.Instance != null && GameManager.Instance.ActivePlayer != null && GameManager.Instance.ActivePlayer == GameManager.ActiveGame.You)
         {
-            //AddTouchButtons(GameManager.ActivePlayer);
+
         }
+        
 
     }
     protected override void Close()
@@ -55,15 +56,16 @@ public class HandMenu : EdgeMenu, iScaleCard
         //card.cardObject.transform.SetAsFirstSibling();
         //card.cardObject.SetScale(CardScale);
         //card.cardObject.SetSortingLayer(SortLayer);
-
         card.cardObject.SetAsChild(Content, CardScale, SortLayer, 0);
         card.cardObject.Flip();
 
         if (card.location != CardLocation.Hand)
         {
             TouchObject to = card.cardObject.touch;
-            to.OnClickEvent.AddListener(() => ClickCard(card));
-            to.OnHoldEvent.AddListener(() => DragCard(card));
+            to.AddClickListener(() => ClickCard(card));
+            to.AddHoldListener(() => DragCard(card));
+            //to.OnClickEvent.AddListener(() => ClickCard(card));
+            //to.OnHoldEvent.AddListener(() => DragCard(card));
         }
         
 
@@ -87,16 +89,16 @@ public class HandMenu : EdgeMenu, iScaleCard
     {
         
         //card.cardObject.transform.SetParent(transform);
-        Vector2 newScale = new Vector2(card.cardObject.Container.transform.localScale.x / 2f, card.cardObject.Container.transform.localScale.y / 2f);
+        Vector2 newScale = new Vector2(card.cardObject.transform.localScale.x / 2f, card.cardObject.transform.localScale.y / 2f);
         //card.cardObject.SetScale(newScale);
 
-        card.cardObject.SetAsChild(transform, newScale);
+        card.cardObject.SetAsChild(transform, newScale, SortLayer);
 
         Field f = GameManager.Instance.arena.GetPlayerField(GameManager.ActiveGame.You);
         do
         {
             Close();
-            GameManager.Instance.Freeze(true);
+            DoFreeze();
             yield return new WaitForEndOfFrame();
             var newPos = Camera.main.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
             card.cardObject.transform.position = new Vector3(newPos.x, newPos.y, -2f);
@@ -115,7 +117,7 @@ public class HandMenu : EdgeMenu, iScaleCard
         {
             if (slot.ValidateCard(card))
             {
-                _cardSlot.RemoveCard(card);
+                //_cardSlot.RemoveCard(card);
                 slot.AllocateTo(card);
             }
             else
@@ -124,7 +126,7 @@ public class HandMenu : EdgeMenu, iScaleCard
             }
             f.SetSlot();
         }
-        GameManager.Instance.Freeze(false);
+        DoThaw();
     }
     #endregion
 
@@ -143,5 +145,17 @@ public class HandMenu : EdgeMenu, iScaleCard
 
     }
 
-   
+
+    #region Game Freezing
+    protected void DoFreeze()
+    {
+        this.Freeze();
+    }
+
+    protected void DoThaw()
+    {
+        this.Thaw();
+    }
+    #endregion
+
 }

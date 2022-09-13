@@ -11,6 +11,7 @@ public class SpriteDisplay : MonoBehaviour
         Image = 1
     };
 
+    
     private Sprite _mainSprite = null;
     public Sprite MainSprite
     {
@@ -37,9 +38,20 @@ public class SpriteDisplay : MonoBehaviour
     private RenderType _rendType = RenderType.Sprite;
     public RenderType RendType { get { return _rendType; } }
 
+    [SerializeField]
     private SpriteRenderer _sp = null;
     private Image _image = null;
 
+    public Transform m_Transform
+    {
+        get
+        {
+            Transform t = gameObject.transform;
+            if (RendType == RenderType.Sprite) { t = _sp.gameObject.transform; }
+            if (RendType == RenderType.Image) { t = _image.gameObject.transform; }
+            return t;
+        }
+    }
     private void Awake()
     {
         CheckDisplay();
@@ -82,9 +94,56 @@ public class SpriteDisplay : MonoBehaviour
         MainSprite = sp;
     }
 
+    public void Clear()
+    {
+        MainSprite = null;
+        //if (RendType == RenderType.Sprite) { _sp.sprite = null; }
+        //if (RendType == RenderType.Image) { _image.sprite = null; }
+    }
+
     public void SetColor(Color color)
     {
         if (RendType == RenderType.Image) { _image.color = color; }
         if (RendType == RenderType.Sprite) { _sp.color = color; }
     }
+    public Color GetColor()
+    {
+        if (RendType == RenderType.Image) { return _image.color; }
+        if (RendType == RenderType.Sprite) { return _sp.color; }
+        return Color.white;
+    }
+
+    #region Functions
+    public void SetSortLayer(string sortLayer)
+    {
+        if (RendType == RenderType.Sprite) { _sp.sortingLayerName = sortLayer; }
+        if (RendType == RenderType.Image) { _image.canvas.sortingLayerName = sortLayer; }
+    }
+    public void SetSortOrder(int order)
+    {
+        if (RendType == RenderType.Sprite) { _sp.sortingOrder = order; }
+        if (RendType == RenderType.Image) { _image.canvas.sortingOrder = order; }
+    }
+    public void ChangeSortOrder(int changeVal)
+    {
+        if (RendType == RenderType.Sprite)
+        {
+            _sp.sortingOrder += changeVal;
+        }
+        if (RendType == RenderType.Image)
+        {
+            _image.canvas.sortingOrder += changeVal;
+        }
+    }
+    public string SortLayerName
+    {
+        get
+        {
+            string layer = "";
+            if (RendType == RenderType.Sprite) { layer = _sp.sortingLayerName; }
+            if (RendType == RenderType.Image) { layer = _image.canvas.sortingLayerName; }
+            return layer;
+        }
+    }
+    #endregion
 }

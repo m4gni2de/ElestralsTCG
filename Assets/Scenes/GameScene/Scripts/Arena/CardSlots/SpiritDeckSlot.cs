@@ -12,7 +12,18 @@ namespace Gameplay
             facing = CardFacing.FaceDown;
             orientation = Orientation.Vertical;
             slotType = CardLocation.SpiritDeck;
-            touch.OnClickEvent.AddListener(() => OpenSlotMenu());
+            touch.OnClickEvent.AddListener(() => OpenPopMenu());
+            touch.AddClickListener(() => OpenPopMenu());
+        }
+
+        public override void AllocateTo(GameCard card)
+        {
+            card.RemoveFromSlot();
+            cards.Insert(0, card);
+            card.AllocateTo(this);
+
+            DisplayCardObject(card);
+            SetCommands(card);
         }
 
         protected override void SetCommands(GameCard card)
@@ -24,7 +35,7 @@ namespace Gameplay
 
         public override bool ValidateCard(GameCard card)
         {
-            if (card.card.CardType == CardType.Spirit) { return true; }
+            if (card.CardType == CardType.Spirit) { return true; }
             return false;
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Gameplay.Menus;
 using UnityEngine.Events;
+using Gameplay.Menus.Popup;
 
 namespace Gameplay
 {
@@ -18,22 +19,15 @@ namespace Gameplay
             orientation = Orientation.Vertical;
             slotType = CardLocation.Deck;
             //touch.OnClickEvent.AddListener(() => DrawCard());
-            touch.OnClickEvent.AddListener(() => OpenSlotMenu());
+            //touch.OnClickEvent.AddListener(() => OpenSlotMenu());
+            touch.AddClickListener(() => OpenPopMenu());
         }
 
        
 
         public override void AllocateTo(GameCard card)
         {
-            card.RemoveFromSlot();
-            cards.Add(card);
-            TouchObject to = card.cardObject.touch;
-            to.ClearClick();
-            to.ClearHold();
-            card.SetSlot(index);
-            card.AllocateTo(slotType);
-
-
+            base.AllocateTo(card);
             DisplayCardObject(card);
             SetCommands(card);
 
@@ -54,7 +48,7 @@ namespace Gameplay
 
         public override bool ValidateCard(GameCard card)
         {
-            if (card.card.CardType == CardType.Spirit) { return false; }
+            if (card.CardType == CardType.Spirit) { return false; }
             return true;
         }
 
@@ -62,20 +56,20 @@ namespace Gameplay
 
         
 
-        public override void OpenSlotMenu()
+        public override void OpenPopMenu()
         {
-            base.OpenSlotMenu();
+            base.OpenPopMenu();
             
         }
-        protected override Dictionary<string, UnityAction> GetButtonCommands()
+        protected override List<PopupCommand> GetSlotCommands()
         {
-            Dictionary<string, UnityAction> commands = new Dictionary<string, UnityAction>();
-            commands.Add("Draw", () => DrawCommand());
-            commands.Add("Browse", () => BrowseCommand());
-            commands.Add("Mill", () => MillCommand());
-            commands.Add("Close", () => CloseCommand());
+            List<PopupCommand> commands = new List<PopupCommand>();
+            commands.Add(PopupCommand.Create("Draw", () => DrawCommand(), 0, 0));
+            commands.Add(PopupCommand.Create("Browse", () => BrowseCommand(), 0, 1));
+            commands.Add(PopupCommand.Create("Mill", () => MillCommand(), 0, 2));
+            commands.Add(PopupCommand.Create("Shuffle", () => ShuffleCommand(), 0, 2));
+            commands.Add(PopupCommand.Create("Close", () => CloseCommand(), 0, 5));
             return commands;
-            
         }
         
         #region Menu Commands
@@ -90,11 +84,27 @@ namespace Gameplay
         }
         protected void BrowseCommand()
         {
-            GameManager.Instance.browseMenu.LoadCards(cards, true);
+            GameManager.Instance.browseMenu.LoadCards(cards, "Browse Deck", true);
+        }
+        protected void ShuffleCommand()
+        {
+            GameManager.Instance.popupMenu.ConfirmAction("Do you want to start the Battle Phase?", ConfirmShuffle);
+        }
+
+        protected void ConfirmShuffle(bool doShuffle)
+        {
+            if (doShuffle)
+            {
+                Owner.Shuffle();
+            }
+            else
+            {
+                GameManager.Instance.popupMenu.ShowMenu();
+            }
         }
         protected void CloseCommand()
         {
-            CloseSlotMenu();
+            ClosePopMenu();
         }
         #endregion
 

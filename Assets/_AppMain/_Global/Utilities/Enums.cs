@@ -19,6 +19,21 @@ public static class Enums
         return names;
         
     }
+    
+    public static T ConvertTo<T>(string val)
+    {
+        foreach (T item in Enum.GetValues(typeof(T)))
+        {
+            if (item.ToString().ToLower() == val.ToLower())
+            {
+                return item;
+            }
+        }
+
+        App.LogFatal($"Enum of type {typeof(T)} does not contain Name '{val}'");
+        return default(T);
+        
+    }
 
     public static string NameOf(Type ty, string text)
     {

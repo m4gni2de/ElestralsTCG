@@ -6,7 +6,20 @@ namespace Gameplay
 {
     public class StadiumSlot : RuneSlot
     {
+        #region Interface
         
+        protected override void SetMainCard(GameCard card)
+        {
+            if (card.CardType == CardType.Rune)
+            {
+                Rune rune = (Rune)card.card;
+                if (rune.GetRuneType == Rune.RuneType.Stadium)
+                {
+                    AddMainCard(card);
+                }
+            }
+        }
+        #endregion
         protected override void SetSlot()
         {
             facing = CardFacing.Both;
@@ -17,7 +30,7 @@ namespace Gameplay
 
         public override bool ValidateCard(GameCard card)
         {
-            if (card.card.CardType == CardType.Rune)
+            if (card.CardType == CardType.Rune)
             {
                 Rune rune = (Rune)card.card;
                 if (rune.GetRuneType == Rune.RuneType.Stadium)
@@ -26,9 +39,9 @@ namespace Gameplay
                 }
                 return false;
             }
-            if (card.card.CardType == CardType.Spirit)
+            if (card.CardType == CardType.Spirit)
             {
-                if (cards.Count > 0 && cards[0].card.CardType == CardType.Rune) { return true; }
+                if (MainCard != null) { return true; }
             }
             return false;
         }

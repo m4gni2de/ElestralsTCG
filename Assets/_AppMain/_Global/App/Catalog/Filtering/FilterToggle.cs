@@ -10,7 +10,9 @@ namespace CardsUI.Filtering
     public class FilterToggle : MonoBehaviour
     {
         public Toggle toggle;
+        [SerializeField]
         private TMP_Text txt;
+        [SerializeField]
         private ToggleGroup _group;
         public string valName;
 
@@ -48,6 +50,21 @@ namespace CardsUI.Filtering
         {
             toggle.onValueChanged.RemoveAllListeners();
             SetDefault();
+        }
+
+        public void SetText(string text)
+        {
+            txt.text = text;
+        }
+
+        public void Hide()
+        {
+            SetChecked(false);
+            gameObject.SetActive(false);
+        }
+        public void Show()
+        {
+            gameObject.SetActive(true);
         }
     }
 }

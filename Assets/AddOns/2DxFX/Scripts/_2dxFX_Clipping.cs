@@ -258,19 +258,7 @@ public class _2dxFX_Clipping_Editor : Editor
 		
 		_2dxFX_Clipping _2dxScript = (_2dxFX_Clipping)target;
 	
-		Texture2D icon = Resources.Load ("2dxfxinspector") as Texture2D;
-		if (icon)
-		{
-			Rect r;
-			float ih=icon.height;
-			float iw=icon.width;
-			float result=ih/iw;
-			float w=Screen.width;
-			result=result*w;
-			r = GUILayoutUtility.GetRect(ih, result);
-			EditorGUI.DrawTextureTransparent(r,icon);
-		}
-
+		
         EditorGUILayout.PropertyField(m_object.FindProperty("ActiveUpdate"), new GUIContent("Active Update", "Active Update, for animation / Animator only"));
         EditorGUILayout.PropertyField(m_object.FindProperty("ForceMaterial"), new GUIContent("Shared Material", "Use a unique material, reduce drastically the use of draw call"));
 		

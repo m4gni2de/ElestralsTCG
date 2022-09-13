@@ -21,6 +21,7 @@ public static class RemoteAssetHelpers
     {
         Dictionary<Type, string> assets = new Dictionary<Type, string>();
         assets.Add(typeof(NumberInput), "NumberInput");
+        assets.Add(typeof(CardView), "CardView");
 
 
         return assets;

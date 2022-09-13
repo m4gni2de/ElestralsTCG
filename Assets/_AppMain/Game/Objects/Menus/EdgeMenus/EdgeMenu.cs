@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +6,7 @@ using UnityEngine.EventSystems;
 
 public class EdgeMenu : MonoBehaviour
 {
-    private bool _isOpen; 
+    protected bool _isOpen; 
     public bool IsOpen { get { return _isOpen; } }
 
     
@@ -25,6 +26,7 @@ public class EdgeMenu : MonoBehaviour
         _isOpen = true;
         GameManager.OpenEdgeMenu(this);
     }
+   
     protected virtual void Close()
     {
         _isOpen = false;

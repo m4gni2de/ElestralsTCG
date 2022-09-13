@@ -63,29 +63,56 @@ namespace Gameplay
         {
             if (type == CardType.Spirit)
             {
-                CardData data = CardService.FindSpiritCard(key);
+                CardData data = CardService.FindSpirit(key);
                 return GameCard.Spirit(data, copy);
             }
 
             if (type == CardType.Elestral)
             {
 
-                ElestralData data = CardService.FindElestralCard(key);
+                ElestralData data = CardService.FindElestral(key);
                 return GameCard.Elestral(data, copy);
             }
             if (type == CardType.Rune)
             {
 
-                RuneData data = CardService.FindRuneCard(key);
+                RuneData data = CardService.FindRune(key);
                 return GameCard.Rune(data, copy);
             }
             return null;
         }
         #endregion
 
+        #region Functions
+        public string[] SpiritOrder
+        {
+            get
+            {
+                List<string> cards = new List<string>();
+                for (int i = 0; i < SpiritDeck.InOrder.Count; i++)
+                {
+                    cards.Add(SpiritDeck.InOrder[i].cardId);
+                }
+                return cards.ToArray();
+            }
+        }
+        public string[] DeckOrder
+        {
+            get
+            {
+                List<string> cards = new List<string>();
+                for (int i = 0; i < MainDeck.InOrder.Count; i++)
+                {
+                    cards.Add(MainDeck.InOrder[i].cardId);
+                }
+                return cards.ToArray();
+            }
+        }
+        #endregion
+
         public GameDeck(Decklist list)
         {
-            uniqueId = UniqueString.GetTempId("dk");
+            uniqueId = UniqueString.GetShortId("dk");
             _spiritDeck = Deck.SpiritDeck();
             _mainDeck = Deck.MainDeck();
 
@@ -129,26 +156,31 @@ namespace Gameplay
         {
             get
             {
+                if (MainDeck.Cards.Count == 0)
+                {
+                    //do some end game stuff here
+                }
                 return MainDeck.AtPosition(0);
             }
         }
+        
 
         public void RemoveCard(GameCard c, Deck deck)
         {
-            deck.InOrder.Remove(c);
+            deck.Remove(c);
         }
 
         
-        public void Draw(Deck deck, int count)
-        {
-            for (int i = 0; i < count; i++)
-            {
-                GameCard c = deck.AtPosition(0);
-                c.AllocateTo(CardLocation.Hand);
-                deck.InOrder.Remove(c);
-            }
+        //public void Draw(Deck deck, int count)
+        //{
+        //    for (int i = 0; i < count; i++)
+        //    {
+        //        GameCard c = deck.AtPosition(0);
+        //        c.AllocateTo(CardLocation.Hand);
+        //        deck.InOrder.Remove(c);
+        //    }
             
-        }
+        //}
         #endregion
        
     }

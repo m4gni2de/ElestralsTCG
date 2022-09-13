@@ -41,6 +41,12 @@ namespace Gameplay
             return null;
         }
 
+   
+        public void RemoveSelector()
+        {
+
+        }
+
         //public CardSlot GetCardSlot(Player p, CardLocation location)
         //{
         //    Field f = GetPlayerField(p);
@@ -76,9 +82,12 @@ namespace Gameplay
         public void SetPlayer(Player p)
         {
             Field f = NearField;
-            if (NearField._player != null) { f = FarField; }
+            if (p.userId != App.WhoAmI) { f = FarField; }
+            //if (NearField._player != null) { f = FarField; }
             f.SetPlayer(p);
         }
+
+        
 
 
     }

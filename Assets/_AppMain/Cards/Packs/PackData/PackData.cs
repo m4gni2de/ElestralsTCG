@@ -25,7 +25,7 @@ namespace Packs
         }
         public PackData(BoosterSet set)
         {
-            packId = $"{set.SetName}_pack_{UniqueString.GetTempId(packId)}";
+            packId = $"{set.SetName}_pack_{UniqueString.GetShortId(packId)}";
         }
 
         public void SetCommons(List<CardData> commons)

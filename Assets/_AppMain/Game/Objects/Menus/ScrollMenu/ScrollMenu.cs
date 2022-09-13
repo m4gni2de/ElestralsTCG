@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace Gameplay.Menus
 {
-    public class ScrollMenu : EdgeMenu, iScaleCard
+    public class ScrollMenu : EdgeMenu, iScaleCard, iFreeze
     {
         #region Interface
         [SerializeField]
@@ -29,6 +29,8 @@ namespace Gameplay.Menus
 
         public RectTransform Content { get { return Scroll.content; } }
 
+        public List<GameCard> _cards = null;
+        public List<GameCard> cards { get { _cards ??= new List<GameCard>(); return _cards; } }
 
         #endregion
         private void Awake()
@@ -43,14 +45,29 @@ namespace Gameplay.Menus
         {
             base.Open();
             gameObject.SetActive(true);
+            DoFreeze();
+            
+            
         }
         protected override void Close()
         {
             base.Close();
             gameObject.SetActive(false);
         }
-        
-        
+
+
+        #region Game Freezing
+        protected void DoFreeze()
+        {
+            this.Freeze();
+        }
+
+        protected void DoThaw()
+        {
+            this.Thaw();
+        }
+        #endregion
+
     }
 }
 

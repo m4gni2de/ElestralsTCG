@@ -362,11 +362,10 @@ MonoBehaviour:
     - Sprite
     - CardArt
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 91bcac8db8b54334b9ddc09df4f32822
+  - m_GUID: e70d181a5f079e94ba50f12eb9c78169
     m_Address: cardbackSp
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Sprite
     - CardArt
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a034a78a5fc2bba44a777bcdf9d5e03f

@@ -4,7 +4,6 @@ using UnityEngine;
 using Cards;
 using CardsUI;
 using Gameplay.GameCommands;
-using static Gameplay.GameCommands.MoveCommand;
 
 namespace Gameplay
 {
@@ -19,9 +18,18 @@ namespace Gameplay
         SpiritDeck = 5,
         Hand = 6
     }
+    public enum CardMode
+    {
+        None = 0,
+        Attack = 1,
+        Defense = 2,
+    }
 
+    [System.Serializable]
     public class GameCard
     {
+        public string name;
+        public CardStats cardStats;
         #region Visual Info
         public struct VisualInfo
         {
@@ -36,8 +44,8 @@ namespace Gameplay
            VisualInfo(GameCard card)
             {
                 transform = card.cardObject.transform.parent;
-                scale = card.cardObject.Container.transform.localScale;
-                sortLayer = card.cardObject.CardImageSp.sortingLayerName;
+                scale = card.cardObject.transform.localScale;
+                sortLayer = card.cardObject.sp.SortLayerName;
                 childIndex = card.cardObject.transform.GetSiblingIndex();
                 position = card.cardObject.transform.localPosition;
                 isFaceUp = card.IsFaceUp;
@@ -63,7 +71,7 @@ namespace Gameplay
                 SetCard(value);
             }
         }
-        public bool IsFaceUp { get { return cardObject.CardBack.activeSelf == false; } }
+        public bool IsFaceUp { get { return cardObject.IsFaceUp; } }
 
         protected void SetCard(VisualInfo value)
         {
@@ -97,16 +105,16 @@ namespace Gameplay
         private Card _card = null;
         public Card card { get { return _card; } }
         public CardLocation location;
+        public CardMode mode;
         public int deckPosition;
         public string cardId;
 
         private int _slotIndex = -1;
         public int slotIndex { get { return _slotIndex; } }
 
-        public string name;
+       
 
-        public CardObject cardObject { get; set; }
-        public CardView cardView { get; set; }
+        public CardView cardObject { get; set; }
         private RectTransform _rect = null;
         public RectTransform rect
         {
@@ -120,9 +128,17 @@ namespace Gameplay
                 return _rect;
             }
         }
-        #endregion
 
-       
+        private List<GameCard> _enchantingSpirits = null;
+        public List<GameCard> EnchantingSpirits
+        {
+            get
+            {
+                _enchantingSpirits ??= new List<GameCard>();
+                return _enchantingSpirits;
+            }
+        }
+        #endregion
 
         #region Functions
         public Player Owner
@@ -141,46 +157,70 @@ namespace Gameplay
             }
         }
 
+        private CardSlot _CurrentSlot = null;
         public CardSlot CurrentSlot
         {
-            get
-            {
-                Field f = GameManager.Instance.arena.GetPlayerField(Owner);
-                return f.ByIndex(slotIndex);
-            }
+            get { return _CurrentSlot; }
         }
 
         #endregion
 
+
+       
         GameCard(Card data, int copy)
         {
             _card = data;
             location = CardLocation.Deck;
-            cardId = UniqueString.GetTempId("car");
+            cardId = UniqueString.GetShortId("car");
             name = $"{_card.cardData.cardName} - {copy}";
+            cardStats = new CardStats(this);
         }
 
-        public void SetObject(CardObject obj)
+       
+        public void SetObject(CardView obj)
         {
             //do something to tie the carddata of the Object to the GameCard
             cardObject = obj;
         }
 
-       
+
         public void SetDeckPosition(int index)
         {
             deckPosition = index;
         }
+        public void SetCardMode(CardMode cardMode)
+        {
+            mode = cardMode;
+            if (CardType == CardType.Elestral)
+            {
+                cardObject.Rotate(mode == CardMode.Defense);
+            }
+           
+        }
+        
 
         #region Slot Management
-        public void SetSlot(int index)
+        public void AllocateTo(CardSlot slot)
         {
-            _slotIndex = index;
+            _CurrentSlot = slot;
+            location = slot.slotType;
+            _slotIndex = slot.index;
         }
-
-        public void AllocateTo(CardLocation loc)
+       
+        public void Enchant(GameCard card)
         {
-            location = loc;
+            if (this.CardType == CardType.Spirit) { return; }
+            if (card.CardType != CardType.Spirit) { return; }
+
+            EnchantingSpirits.Add(card);
+            
+        }
+        public void DisEnchant(GameCard card)
+        {
+            if (EnchantingSpirits.Contains(card))
+            {
+                EnchantingSpirits.Remove(card);
+            }
         }
 
         public void RemoveFromSlot()
@@ -188,16 +228,81 @@ namespace Gameplay
             if (CurrentSlot == null) { return; }
             CurrentSlot.RemoveCard(this);
         }
-        public void ReAddToSlot()
+        public void ReAddToSlot(bool reAddCommands)
         {
             if (CurrentSlot == null) { return; }
-            CurrentSlot.ReAddCard(this);
+            CurrentSlot.ReAddCard(this, reAddCommands);
+        }
+        public void RefreshAtSlot()
+        {
+            if (CurrentSlot == null) { return; }
+            CurrentSlot.RefreshAtSlot(this);
         }
        
+
+        public void SelectCard(bool toggle)
+        {
+            cardObject.SelectCard(toggle);
+        }
         #endregion
 
-        #region Command Management
-        
+        #region Information/Stats Management
+        public CardType CardType { get { return cardStats.cardType; } }
+        public CardType DefaultCardType { get { return card.CardType; } }
+        #endregion
+
+        #region Card Actions
+        //public void ChangeCardMode(CardMode cardMode)
+        //{
+        //    CardMode current = mode;
+        //    if (cardMode == CardMode.None || cardMode == current) { return; }
+        //    SetCardMode(cardMode);
+        //    if (CardType == CardType.Elestral)
+        //    {
+        //        cardObject.Rotate(cardMode == CardMode.Defense);
+
+        //    }
+        //    if (CardType == CardType.Rune)
+        //    {
+        //        if (cardMode == CardMode.Attack)
+        //        {
+
+        //        }
+
+        //    }
+        //}
+        #endregion
+
+        #region Event Watching
+        //protected void SetWatchers()
+        //{
+        //    Game.OnNewTargetParams += OnNewTargetParams;
+        //}
+
+        //private void OnNewTargetParams(TargetArgs obj)
+        //{
+        //    if (obj == null)
+        //    {
+        //        cardObject.touch.RemoveOverrideClick();
+        //        cardObject.touch.CheckFreeze();
+        //    }
+        //    else
+        //    {
+        //        if (obj.Validate(this))
+        //        {
+        //            cardObject.touch.OverrideClick(() => obj.SelectTarget(this));
+        //        }
+        //        else
+        //        {
+        //            cardObject.touch.FreezeClick();
+        //        }
+        //    }
+        //}
+
+        //protected void RemoveWatchers()
+        //{
+        //    Game.OnNewTargetParams -= OnNewTargetParams;
+        //}
         #endregion
 
     }

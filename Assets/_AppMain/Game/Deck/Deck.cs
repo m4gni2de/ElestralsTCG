@@ -38,7 +38,8 @@ namespace Gameplay.Decks
         
 
         #region Properties
-        protected DeckType deckType { get; set; }
+        protected DeckType _deckType { get; set; }
+        public DeckType deckType { get { return _deckType; } }
 
         private List<GameCard> _cards = null;
         public List<GameCard> Cards
@@ -63,7 +64,7 @@ namespace Gameplay.Decks
 
         Deck(DeckType type)
         {
-            deckType = type;
+            _deckType = type;
         }
 
         public void AddCard(GameCard card)
@@ -110,14 +111,15 @@ namespace Gameplay.Decks
             }
 
             _inOrder = newOrder;
+            ReorderCards();
         }
 
        
-        public void Draw()
+       public void Remove(GameCard c)
         {
-            GameCard c = AtPosition(0);
-            c.AllocateTo(CardLocation.Hand);
             InOrder.Remove(c);
+            c.SetDeckPosition(-1);
+            ReorderCards();
         }
         public GameCard AtPosition(int atIndex)
         {

@@ -83,7 +83,7 @@ public class CameraMotion : MonoBehaviour
 
 
 
-        minSizePercent = 2f;
+        minSizePercent = .95f;
 
         minCameraSize = defaultSize * (1 - minSizePercent);
 
@@ -166,7 +166,7 @@ public class CameraMotion : MonoBehaviour
                     Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f));
         var x = worldMousePosition.x;
         var y = worldMousePosition.y;
-        if (Input.GetMouseButton(0) && !IsPointerOverUIObject() && UIHelpers.IsPointerOnScreen())
+        if (Input.GetMouseButton(0) && UIHelpers.IsPointerOnScreen() && !IsPointerOverUIObject())
         //if (Input.GetMouseButton(0))
         {
             

@@ -14,11 +14,14 @@ namespace PopupBox
         public void Show(string msg, Action<bool> callback)
         {
             ToggleHandled(false);
+            gameObject.SetActive(true);
             txtMessage.text = msg;
             OnHandled = callback;
             ConfirmButton.gameObject.SetActive(true);
             CancelButton.gameObject.SetActive(true);
+            ConfirmButton.onClick.RemoveAllListeners();
             ConfirmButton.onClick.AddListener(() => Confirm());
+            CancelButton.onClick.RemoveAllListeners();
             CancelButton.onClick.AddListener(() => Cancel());
 
         }

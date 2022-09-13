@@ -10,6 +10,7 @@ namespace Gameplay
     {
         [SerializeField]
         public string fieldId { get; set; }
+        public int baseIndex;
         private SpriteRenderer spMat;
 
         public List<CardSlot> cardSlots = new List<CardSlot>();
@@ -32,7 +33,7 @@ namespace Gameplay
                 return null;
             }
         }
-        protected CardSlot SpiritDeckSlot
+        public CardSlot SpiritDeckSlot
         {
             get
             {
@@ -57,6 +58,37 @@ namespace Gameplay
             }
         }
 
+        public List<CardSlot> ElestralSlots
+        {
+            get
+            {
+                List<CardSlot> list = new List<CardSlot>();
+                for (int i = 0; i < cardSlots.Count; i++)
+                {
+                    if (cardSlots[i].slotType == CardLocation.Elestral)
+                    {
+                        list.Add(cardSlots[i]);
+                    }
+                }
+                return list;
+            }
+        }
+        protected List<CardSlot> RuneSlots
+        {
+            get
+            {
+                List<CardSlot> list = new List<CardSlot>();
+                for (int i = 0; i < cardSlots.Count; i++)
+                {
+                    if (cardSlots[i].slotType == CardLocation.Rune)
+                    {
+                        list.Add(cardSlots[i]);
+                    }
+                }
+                return list;
+            }
+        }
+
         private CardSlot _UnderWorldSlot = null;
         public CardSlot UnderworldSlot
         {
@@ -64,12 +96,17 @@ namespace Gameplay
             {
                 if (_UnderWorldSlot == null)
                 {
+                    bool hasSlot = false;
                     for (int i = 0; i < cardSlots.Count; i++)
                     {
-                        if (cardSlots[i].slotType == CardLocation.Underworld) { _UnderWorldSlot =  cardSlots[i]; }
+                        if (cardSlots[i].slotType == CardLocation.Underworld) { _UnderWorldSlot =  cardSlots[i]; hasSlot = true; }
                     }
-                    App.LogFatal("There is no Underworld Slot marked.");
-                    return null;
+                    if (!hasSlot)
+                    {
+                        App.LogFatal("There is no Underworld Slot marked.");
+                        return null;
+                    }
+                   
                 }
                 return _UnderWorldSlot;
                
@@ -84,6 +121,42 @@ namespace Gameplay
             }
             return null;
         }
+
+        public CardSlot ElestralSlot(int index, bool onlyOpenSlots)
+        {
+            List<CardSlot> slots = ElestralSlots;
+            return GetSlotAt(slots, index, onlyOpenSlots);
+        }
+        public CardSlot RuneSlot(int index, bool onlyOpenSlots)
+        {
+            List<CardSlot> slots = RuneSlots;
+            return GetSlotAt(slots, index, onlyOpenSlots);
+        }
+
+        protected CardSlot GetSlotAt(List<CardSlot> slots, int index, bool onlyOpenSlots)
+        {
+            if (!onlyOpenSlots) { return slots[index]; }
+            for (int i = 0; i < slots.Count; i++)
+            {
+                if (slots[i].cards.Count == 0) { return slots[i]; }
+            }
+            return null;
+        }
+
+        public CardSlot FirstOpenElestralSlot
+        {
+            get
+            {
+                List<CardSlot> slots = ElestralSlots;
+
+                for (int i = 0; i < slots.Count; i++)
+                {
+                    if (slots[i].cards.Count == 0) { return slots[i]; }
+                }
+                return null;
+            }
+        }
+
         #endregion
 
         private void Awake()
@@ -93,10 +166,10 @@ namespace Gameplay
 
         public string Register()
         {
-            fieldId = UniqueString.GetTempId("fld");
+            fieldId = UniqueString.GetShortId("fld");
             for (int i = 0; i < cardSlots.Count; i++)
             {
-                cardSlots[i].SetIndex(i);
+                cardSlots[i].SetIndex(baseIndex + i);
             }
             return fieldId;
         }
@@ -104,6 +177,10 @@ namespace Gameplay
         public void SetPlayer(Player p)
         {
             _player = p;
+            for (int i = 0; i < cardSlots.Count; i++)
+            {
+                cardSlots[i].SetId(p.userId);
+            }
             AllocateCards();
         }
         private void AllocateCards()
@@ -112,7 +189,7 @@ namespace Gameplay
             for (int i = 0; i < sp.Cards.Count; i++)
             {
                 GameCard g = sp.Cards[i];
-                CardObject co = SpawnCard(g, SpiritDeckSlot);
+                CardView co = SpawnCard(g, SpiritDeckSlot);
                 g.SetObject(co);
                 SpiritDeckSlot.AllocateTo(g);
 
@@ -122,7 +199,7 @@ namespace Gameplay
             for (int i = 0; i < de.InOrder.Count; i++)
             {
                 GameCard g = de.InOrder[i];
-                CardObject co = SpawnCard(g, DeckSlot);
+                CardView co = SpawnCard(g, DeckSlot);
                 g.SetObject(co);
                 DeckSlot.AllocateTo(g);
 
@@ -130,17 +207,19 @@ namespace Gameplay
             GameManager.Instance.ReadyPlayer(_player);
         }
 
-        protected CardObject SpawnCard(GameCard card, CardSlot slot)
+       
+        protected CardView SpawnCard(GameCard card, CardSlot slot)
         {
-            GameObject go = AssetPipeline.GameObjectClone(CardObject.CardKey, transform);
-            CardObject c = go.GetComponent<CardObject>();
+            GameObject go = Instantiate(GameManager.Instance.cardTemplate, transform).gameObject;
+            CardView c = go.GetComponent<CardView>();
             bool displayBack = slot.facing == CardSlot.CardFacing.FaceDown;
             c.LoadCard(card.card);
+            c.name = card.name;
             return c;
         }
 
 
-       
+
         #region Card Slot Interactions
         private CardSlot _SelectedSlot = null;
         public CardSlot SelectedSlot { get { return _SelectedSlot; } set { _SelectedSlot = value; } }

@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Decks;
-
+using System;
+using Gameplay.CardActions;
+using UnityEngine.Events;
 
 namespace Gameplay
 {
@@ -13,11 +15,26 @@ namespace Gameplay
         {
             get
             {
-                if (GameManager.ActivePlayer == this)
+                if (GameManager.Instance.ActivePlayer == this)
                 {
                     return true;
                 }
                 return false;
+            }
+        }
+        public Player Opponent
+        {
+            get
+            {
+                if (GameManager.ActiveGame == null) { return null; }
+                for (int i = 0; i < GameManager.ActiveGame.players.Count; i++)
+                {
+                    if (GameManager.ActiveGame.players[i] != this)
+                    {
+                        return GameManager.ActiveGame.players[i];
+                    }
+                }
+                return null;
             }
         }
         #endregion
@@ -47,6 +64,7 @@ namespace Gameplay
         }
         #endregion
 
+       
         public Player(string user, Decklist list)
         {
             _userId = user;
@@ -62,24 +80,81 @@ namespace Gameplay
         }
         #endregion
 
+
+        #region Drawing Actions
+        public GameCard DrawPreview(bool isMainDeck)
+        {
+            if (isMainDeck)
+            {
+                return deck.Top;
+            }
+            return deck.SpiritDeck.AtPosition(0);
+            
+        }
+
+
+        public GameCard AtPosition(bool isMainDeck, int index)
+        {
+            if (isMainDeck)
+            {
+                return deck.MainDeck.AtPosition(index);
+            }
+            return deck.SpiritDeck.AtPosition(index);
+
+        }
+
+        public void StartingDraw()
+        {
+            Draw(5, DrawAction.DrawType.GameStart);
+        }
+        public void Draw(int count, DrawAction.DrawType drawType)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                GameManager.Instance.PlayerDraw(this, AtPosition(true, i), gameField.DeckSlot, gameField.HandSlot, drawType);
+            }
+        }
+        
         public void Draw(int count)
         {
             for (int i = 0; i < count; i++)
             {
-                GameCard c = deck.Top;
-                deck.RemoveCard(c, deck.MainDeck);
-                GameManager.Instance.MoveCard(gameField.DeckSlot, c, gameField.HandSlot);
+                GameManager.Instance.PlayerDraw(this, AtPosition(true, i), gameField.DeckSlot, gameField.HandSlot, DrawAction.DrawType.FromEffect);
             }
         }
         public void Mill(int count)
         {
             for (int i = 0; i < count; i++)
             {
-                GameCard c = deck.Top;
-                deck.RemoveCard(c, deck.MainDeck);
-                GameManager.Instance.MoveCard(gameField.DeckSlot, c, gameField.UnderworldSlot);
+                GameManager.Instance.PlayerDraw(this, AtPosition(true, i), gameField.DeckSlot, gameField.UnderworldSlot, DrawAction.DrawType.Mill);
             }
         }
+
+        public void Shuffle()
+        {
+            GameManager.Instance.PlayerShuffle(this);
+        }
+        #endregion
+
+        #region Event Watching
+        public event Action<GameCard> OnCardDraw;
+        public void SendCardDraw(GameCard card)
+        {
+            OnCardDraw?.Invoke(card);
+        }
+        #endregion
+
+        #region Card Target Scope 
+        public List<GameCard> GetTargets(TargetArgs args)
+        {
+            List<GameCard> targets = args.CardTargets(deck.Cards);
+            return targets;
+        }
+        
+
+       
+        
+        #endregion
     }
 }
 

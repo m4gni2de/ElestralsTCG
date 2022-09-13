@@ -41,6 +41,8 @@ public class NumberInput : InputBox, iRemoteAsset
             _input.text = value.ToString();
         }
     }
+    [SerializeField]
+    private TMP_Text titleText;
 
     private int _minVal;
     public int minVal { get { return _minVal; } set { _minVal = value; } }
@@ -56,6 +58,7 @@ public class NumberInput : InputBox, iRemoteAsset
     {
         Instance.Open(title, startVal, min, max);
         Instance.transform.SetParent(parent);
+        Instance.transform.localPosition = Vector2.zero;
         return Instance;
     }
 
@@ -72,6 +75,7 @@ public class NumberInput : InputBox, iRemoteAsset
         gameObject.SetActive(true);
         placeHolder.text = title;
         Value = startVal;
+        titleText.text = title;
         minVal = min;
         maxVal = max;
     }

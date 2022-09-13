@@ -28,6 +28,8 @@ public class DynamicObject : MonoBehaviour
         }
     }
     #endregion
+
+
     public GameObject MainObject;
 
     protected Waypoint ByKey(string key)
@@ -45,5 +47,15 @@ public class DynamicObject : MonoBehaviour
         if (toMove == null) { App.LogFatal($"Waypoint of Key {key} does not exist as a Child of this Object."); }
 
         MainObject.transform.localPosition = toMove.Position;
+    }
+}
+
+
+public static class DynamicObjectExtensions
+{
+    public static void MoveToWaypoint(this iDynamicObject dynamicObj, string key)
+    {
+        DynamicObject obj = dynamicObj.dynamicObject;
+        obj.MoveToWaypoint(key);
     }
 }

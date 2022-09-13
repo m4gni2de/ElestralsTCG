@@ -25,13 +25,23 @@ namespace Gameplay.Menus.Popup
 
 
         public UnityEvent OnClickEvent { get { return button.onClick; } }
+
+        public int Page { get; set; }
         #endregion
 
+        public void LoadCommand(PopupCommand cmd)
+        {
+            OnClickEvent.RemoveAllListeners();
+            OnClickEvent.AddListener(cmd.action);
+            Page = cmd.level;
+            SetText(cmd.name);
+        }
         public void Clear()
         {
             txtButton.text = "";
             OnClickEvent.RemoveAllListeners();
             gameObject.SetActive(false);
+            Page = -1;
         }
         public void Show()
         {

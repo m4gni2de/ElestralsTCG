@@ -33,9 +33,9 @@ public class UniqueString
         _value = Create(prefix, maxLength);
     }
 
-    public static UniqueString GetTempId(string prefix = "")
+    public static UniqueString GetShortId(string prefix = "", int length = 7)
     {
-        string tempId = CreateId(7, prefix);
+        string tempId = CreateId(length, prefix);
         return new UniqueString(tempId);
     }
     public static UniqueString WithSetLength(string prefix, int length)

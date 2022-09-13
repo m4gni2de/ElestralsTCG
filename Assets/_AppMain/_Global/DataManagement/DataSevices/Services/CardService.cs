@@ -35,21 +35,42 @@ namespace Cards
             ElestralData data = new ElestralData(dto);
             return data;
         }
-        public static RuneData FindRuneCard(string key)
+        public static ElestralData FindElestral(string key)
         {
             //CardDTO dto = ByPk<CardDTO>(CardTable, key);
+            qCards dto = ByKey<qCards>(CardsByImageTable, "setKey", key);
+            ElestralData data = new ElestralData(dto);
+            return data;
+        }
+        public static RuneData FindRuneCard(string key)
+        {
+            
             CardDTO dto = ByKey<CardDTO>(CardTable, "cardKey", key);
+            RuneData data = new RuneData(dto);
+            return data;
+        }
+        public static RuneData FindRune(string key)
+        {
+
+            qCards dto = ByKey<qCards>(CardsByImageTable, "setKey", key);
             RuneData data = new RuneData(dto);
             return data;
         }
         public static CardData FindSpiritCard(string key)
         {
-            //CardDTO dto = ByPk<CardDTO>(CardTable, key);
+            
             CardDTO dto = ByKey<CardDTO>(CardTable, "cardKey", key);
             CardData data = new CardData(dto);
             return data;
         }
-        
+        public static CardData FindSpirit(string key)
+        {
+
+            qCards dto = ByKey<qCards>(CardsByImageTable, "setKey", key);
+            CardData data = new CardData(dto);
+            return data;
+        }
+
         public static CardData FindCard(string key)
         {
             //CardDTO dto = ByPk<CardDTO>(CardTable, key);

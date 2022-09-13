@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Gameplay.Menus;
 using UnityEngine.Events;
+using Gameplay.Menus.Popup;
 
 namespace Gameplay
 {
@@ -17,7 +18,12 @@ namespace Gameplay
         protected string _SortLayer = "Card";
         public string SortLayer { get { return _SortLayer; } }
         #endregion
-       
+
+        public GameCard MainCard { get; set; }
+        protected virtual void SetMainCard(GameCard card)
+        {
+            App.LogFatal($"Card Slot {name} is not of iMainCard interface, so it cannot accept a MainCard.");
+        }
 
         #region Enums
         public enum CardFacing
@@ -51,15 +57,16 @@ namespace Gameplay
         {
             get
             {
-                if (GetComponent<RectTransform>()) { return GetComponent<RectTransform>().anchoredPosition; }
                 return transform.position;
             }
         }
        
-        protected List<CardObject> atSlot = new List<CardObject>();
         public CardLocation slotType;
         public CardFacing facing;
         public Orientation orientation;
+        protected int SpiritSortOrderBase = 0;
+        protected int NonSpiritSortOrderBase = 0;
+        public GameCard SelectedCard { get; set; }
 
         public RectTransform rect { get; set; }
         #endregion
@@ -79,33 +86,49 @@ namespace Gameplay
             return f.cardSlots.Contains(this);
         }
 
-        public bool Validate()
+        public bool Validate
+        {
+            get
+            {
+                return GetClickValidation();
+            }
+        }
+        protected virtual bool GetClickValidation()
         {
             //if (ValidatePlayer()) return true;
             if (App.WhoAmI != Owner.userId) { return false; }
             if (GameManager.Instance.popupMenu.isOpen) { return false; }
             return true;
         }
+
+        protected void SetSelectedCard(GameCard view = null)
+        {
+            if (view == null) { SelectedCard = null; } else { SelectedCard = view; }
+        }
+
        
-        public Dictionary<string, UnityAction> ButtonCommands
+        public List<PopupCommand> ButtonCommands
         {
             get
             {
-                return GetButtonCommands();
+                return GetSlotCommands();
             }
         }
-        protected virtual Dictionary<string, UnityAction> GetButtonCommands()
+        
+        protected virtual List<PopupCommand> GetSlotCommands()
         {
             App.LogFatal($"{name} has no Commands Set!");
-            return new Dictionary<string, UnityAction>();
+            return new List<PopupCommand>();
         }
+
         #endregion
+
+        
 
         protected void Awake()
         {
             
             name = $"{slotType}{index}";
-            slotId = UniqueString.Create("csl", 5);
             rect = GetComponent<RectTransform>();
             GetSpriteRenderer();
             SetSlot();
@@ -132,6 +155,11 @@ namespace Gameplay
         public void SetIndex(int newIndex)
         {
             index = newIndex;
+            name = $"{slotType}{index}";
+        }
+        public void SetId(string ownerId)
+        {
+            slotId = $"{ownerId}-{name}";
         }
 
         protected void Start()
@@ -163,59 +191,62 @@ namespace Gameplay
         }
         #endregion
 
-#region Card Management
-        public void RemoveCard(GameCard card)
-        {
-            cards.Remove(card);
-            TouchObject to = card.cardObject.touch;
-            to.ClearClick();
-            to.ClearHold();
-        }
-
-        public virtual void AllocateTo(GameCard card)
-        {
-            card.RemoveFromSlot();
-            cards.Add(card);
-            TouchObject to = card.cardObject.touch;
-            to.ClearClick();
-            to.ClearHold();
-            card.SetSlot(index);
-            card.AllocateTo(slotType);
-
-           
-            DisplayCardObject(card);
-            SetCommands(card);
-
-
-        }
-
-        protected virtual void SetCommands(GameCard card)
-        {
-            TouchObject to = card.cardObject.touch;
-            to.OnClickEvent.AddListener(() => ClickCard(card));
-            to.OnHoldEvent.AddListener(() => GameManager.Instance.DragCard(card, this));
-        }
-
-        public void ReAddCard(GameCard card)
-        {
-            DisplayCardObject(card);
-        }
-        protected virtual void DisplayCardObject(GameCard card)
-        {
-            CardObject c = card.cardObject;
-            c.transform.SetParent(transform);
-            card.rect.sizeDelta = rect.sizeDelta;
-            if (!atSlot.Contains(c))
+    #region Card Management
+    public void RemoveCard(GameCard card)
+    {
+        cards.Remove(card);
+        if (MainCard != null && MainCard == card)
             {
-                atSlot.Add(c);
+                MainCard = null;
             }
-            c.transform.localPosition = new Vector2(0f, 0f);
-            c.SetScale(CardScale);
-            c.Flip(facing == CardFacing.FaceDown);
+        TouchObject to = card.cardObject.touch;
+        to.ClearClick();
+        to.ClearHold();
+
+    }
+
+    public virtual void AllocateTo(GameCard card)
+    {
+        card.RemoveFromSlot();
+        cards.Add(card);
+        card.AllocateTo(this);
+
+        DisplayCardObject(card);
+        SetCommands(card);
+    }
+        
+    public void RefreshAtSlot(GameCard card)
+    {
+        SetCommands(card);
+    }
+    protected virtual void SetCommands(GameCard card)
+    {
+        TouchObject to = card.cardObject.touch;
+        //to.OnClickEvent.AddListener(() => ClickCard(card));
+        to.AddClickListener(() => ClickCard(card));
+        //to.OnHoldEvent.AddListener(() => GameManager.Instance.DragCard(card, this));
+        to.AddHoldListener(() => GameManager.Instance.DragCard(card, this));
+    }
+
+    public void ReAddCard(GameCard card, bool reAddCommands)
+    {
+        if (reAddCommands)
+        {
+            SetCommands(card);
         }
+        DisplayCardObject(card);
+    }
+    protected virtual void DisplayCardObject(GameCard card)
+    {
+        CardView c = card.cardObject;
+        c.SetAsChild(transform, CardScale, SortLayer);
+        card.rect.sizeDelta = rect.sizeDelta;
+        c.transform.localPosition = new Vector2(0f, 0f);
+        c.Flip(facing == CardFacing.FaceDown);
+        c.Rotate(orientation == Orientation.Horizontal);
+    }
 
-
-        #endregion
+    #endregion
 
        
         protected virtual void ClickCard(GameCard card)
@@ -224,16 +255,16 @@ namespace Gameplay
         }
 
         #region Slot Menus
-        public virtual void OpenSlotMenu()
+        public virtual void OpenPopMenu()
         {
-            if (Validate())
+            if (Validate)
             {
 
                 GameManager.Instance.popupMenu.LoadMenu(this);
             }
         }
 
-        protected virtual void CloseSlotMenu()
+        protected virtual void ClosePopMenu()
         {
             GameManager.Instance.popupMenu.CloseMenu();
         }
