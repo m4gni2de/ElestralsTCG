@@ -79,7 +79,7 @@ public abstract class Card : iCard
     public iCardData cardData { get { return GetCardData(); } }
 
     public Rarity GetRarity() { return cardData.rarity; }
-    private bool _isFullArt = false;
+    //private bool _isFullArt = false;
     public bool isFullArt { get { return cardData.artType == ArtType.FullArt; } }
 
     protected virtual iCardData GetCardData()

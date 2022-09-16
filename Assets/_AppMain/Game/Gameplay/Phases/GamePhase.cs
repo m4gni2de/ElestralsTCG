@@ -126,9 +126,10 @@ namespace Gameplay.Turns
                 {
                     GameManager.SetActiveAction(actions[0]);
                     CardAction ActiveAction = GameManager.Instance.ActiveAction;
-                    yield return DeclareAction(ActiveAction);
-                    ActiveAction.Do();
-                    yield return ActiveAction.PerformAction();
+                    yield return ActiveAction.DeclareAction();
+                    yield return ActiveAction.Do();
+                    //yield return ActiveAction.PerformAction();
+                    
                     actions.RemoveAt(0);
                     GameManager.Instance.gameLog.LogAction(ActiveAction);
                     yield return new WaitForEndOfFrame();
@@ -142,7 +143,7 @@ namespace Gameplay.Turns
 
         public IEnumerator DeclareAction(CardAction ac)
         {
-            GameManager.DeclareCardAction(ac);
+            ac.DeclareAction();
 
             do
             {

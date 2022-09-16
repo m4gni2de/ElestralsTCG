@@ -24,7 +24,7 @@ namespace Gameplay
 
             
         }
-       
+        
         protected override void DisplayCardObject(GameCard card)
         {
             card.cardObject.SetAsChild(Content, CardScale, SortLayer, 0);
@@ -33,9 +33,6 @@ namespace Gameplay
         protected override void SetCommands(GameCard card)
         {
             TouchObject to = card.cardObject.touch;
-            //to.OnClickEvent.AddListener(() => ClickCard(card));
-            //to.OnHoldEvent.AddListener(() => GameManager.Instance.DragCard(card, this));
-
             to.AddClickListener(() => ClickCard(card));
             to.AddHoldListener(() => GameManager.Instance.DragCard(card, this));
         }
@@ -106,13 +103,13 @@ namespace Gameplay
             GameManager.Instance.browseMenu.LoadCards(toShow, title, true, enchantCount, enchantCount);
             GameManager.Instance.browseMenu.EnchantMode(SelectedCard);
             ClosePopMenu();
-            GameManager.Instance.browseMenu.OnMenuClose += AwaitEnchantClose;
+            GameManager.Instance.browseMenu.OnEnchantClose += AwaitEnchantClose;
 
         }
         protected void AwaitEnchantClose(List<GameCard> selectedCards, CardMode cMode)
         {
             
-            GameManager.Instance.browseMenu.OnMenuClose -= AwaitEnchantClose;
+            GameManager.Instance.browseMenu.OnEnchantClose -= AwaitEnchantClose;
             if (cMode == CardMode.None) { return; }
 
             Field f = GameManager.Instance.arena.GetPlayerField(Owner);

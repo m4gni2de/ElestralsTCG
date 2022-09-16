@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Gameplay.CardActions;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using static Gameplay.CardActions.DrawAction;
 
 namespace Gameplay
 {
@@ -17,38 +20,62 @@ namespace Gameplay
         public CardSlot targetSlot;
         public AttackResult attackResult;
         public int damageDealt = 0;
-        
-        public AttackAction(Player p, GameCard attacker, CardSlot defender) : base(p, attacker)
-        {
-            IsDirectAttack = defender.slotType == CardLocation.SpiritDeck;
-            targetSlot = defender;
-        }
 
-        public static AttackAction ElestralAttack(GameCard attacker, CardSlot defender)
-        {
-            return new AttackAction(attacker.Owner, attacker, defender);
-        }
-        
         protected override CardActionData GetActionData()
         {
             //can tell it's a direct attack on the import based on the slot. if it's the spirit deck slot, then it's direct.
             CardActionData data = new CardActionData(this);
             data.AddData("player", player.userId);
             data.AddData("attacker", sourceCard.cardId);
-            data.AddData("action_type", "attack");
+            data.AddData("action_type", AttackType);
             data.AddData("defend_slot", targetSlot.slotId);
             data.AddData("attack_outcome", (int)attackResult);
             data.AddData("attack_damage", damageDealt);
-            data.AddData("result", actionResult);
+            data.AddData("result", (int)actionResult);
 
             return data;
         }
+        #region Initialization
+        protected AttackAction(CardActionData data) : base(data)
+        {
 
+        }
+        protected override void ParseData(CardActionData data)
+        {
+            base.ParseData(data);
+            player = Game.FindPlayer(data.Value<string>("player"));
+            sourceCard = Game.FindCard(data.Value<string>("attacker"));
+            targetSlot = Game.FindSlot(data.Value<string>("defend_slot"));
+            attackResult = (AttackResult)data.Value<int>("attack_outcome");
+            damageDealt = data.Value<int>("attack_damage");
+            actionResult = (ActionResult)data.Value<int>("result");
+            SetDetails();
+        }
+        protected void SetDetails()
+        {
+            IsDirectAttack = targetSlot.slotType == CardLocation.SpiritDeck;
+            _declaredMessage = $"{sourceCard.cardStats.title} targets {targetSlot.SlotTitle} for an Attack!";
+            _actionMessage = $"{sourceCard.cardStats.title} attacks {targetSlot.SlotTitle}!";
+        }
+        public AttackAction(Player p, GameCard attacker, CardSlot defender, ActionResult ac) : base(p, attacker, ac)
+        {
+            targetSlot = defender;
+            SetDetails();
+            
+        }
+
+        public static AttackAction ElestralAttack(GameCard attacker, CardSlot defender)
+        {
+            return new AttackAction(attacker.Owner, attacker, defender, ActionResult.Pending);
+        }
+
+
+        #endregion
 
         public override IEnumerator PerformAction()
         {
+           
             yield return DoAttack(sourceCard, targetSlot);
-            //damageDealt = 
 
         }
 
@@ -56,7 +83,7 @@ namespace Gameplay
         protected IEnumerator DoAttack(GameCard card, CardSlot to, float time = .65f)
         {
             Vector3 direction = GetDirection(card, to);
-            Vector3 fromDirection = -direction;
+            Vector3 startPos = card.cardObject.transform.position;
 
             
             float acumTime = 0f;
@@ -74,20 +101,16 @@ namespace Gameplay
                 }
                 
                 acumTime += Time.deltaTime;
-            } while (IsValid(acumTime, time));
+            } while (Validate(acumTime, time));
+            card.cardObject.transform.position = startPos;
             this.Thaw();
-            End(Result.Succeed);
+            
+            End(ActionResult.Succeed);
 
         }
 
-        protected bool IsValid(float acumTime, float time)
-        {
-            if (GameManager.Instance == true && acumTime < time) { return true; }
-            return false;
-        }
-
-
-        protected override void ResolveAction(Result result)
+       
+        protected override void ResolveAction(ActionResult result)
         {
             base.ResolveAction(result);
 
@@ -106,7 +129,7 @@ namespace Gameplay
                 attackResult = GetAttackResult(attacker, defender.MainCard);
                 if (attackResult == AttackResult.Succeed)
                 {
-                    damage = attacker.cardStats.EnchantingSpirits.Count - defender.MainCard.cardStats.EnchantingSpirits.Count;
+                    damage = attacker.EnchantingSpirits.Count - defender.MainCard.EnchantingSpirits.Count;
                 }
             }
         }

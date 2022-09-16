@@ -129,13 +129,20 @@ namespace Gameplay
             }
         }
 
-        private List<GameCard> _enchantingSpirits = null;
-        public List<GameCard> EnchantingSpirits
+        
+        public List<ElementCode> EnchantingSpirits
         {
             get
             {
-                _enchantingSpirits ??= new List<GameCard>();
-                return _enchantingSpirits;
+                List<ElementCode> list = new List<ElementCode>();
+                if (CurrentSlot == null || CurrentSlot.GetType() != typeof(SingleSlot)) { return list; }
+                SingleSlot slot = (SingleSlot)CurrentSlot;
+                for (int i = 0; i < slot.EnchantingSpirits.Count; i++)
+                {
+                    list.AddRange(slot.EnchantingSpirits[i].cardStats.CardElements);
+
+                }
+                return list;
             }
         }
         #endregion
@@ -200,6 +207,10 @@ namespace Gameplay
         
 
         #region Slot Management
+        public void ToggleValidSlot(bool isValid)
+        {
+
+        }
         public void AllocateTo(CardSlot slot)
         {
             _CurrentSlot = slot;
@@ -207,22 +218,7 @@ namespace Gameplay
             _slotIndex = slot.index;
         }
        
-        public void Enchant(GameCard card)
-        {
-            if (this.CardType == CardType.Spirit) { return; }
-            if (card.CardType != CardType.Spirit) { return; }
-
-            EnchantingSpirits.Add(card);
-            
-        }
-        public void DisEnchant(GameCard card)
-        {
-            if (EnchantingSpirits.Contains(card))
-            {
-                EnchantingSpirits.Remove(card);
-            }
-        }
-
+       
         public void RemoveFromSlot()
         {
             if (CurrentSlot == null) { return; }
@@ -242,7 +238,17 @@ namespace Gameplay
 
         public void SelectCard(bool toggle)
         {
-            cardObject.SelectCard(toggle);
+            if (toggle)
+            {
+                cardObject.Images.SetColor("Border", Color.yellow);
+                cardObject.Images.ShowSprite("Border");
+            }
+            else
+            {
+                cardObject.Images.SetColor("Border", Color.clear);
+                cardObject.Images.HideSprite("Border");
+            }
+            //cardObject.SelectCard(toggle);
         }
         #endregion
 
@@ -252,6 +258,7 @@ namespace Gameplay
         #endregion
 
         #region Card Actions
+
         //public void ChangeCardMode(CardMode cardMode)
         //{
         //    CardMode current = mode;
@@ -273,7 +280,12 @@ namespace Gameplay
         //}
         #endregion
 
-        #region Event Watching
+        #region Card Events
+        protected void OnEnchantment(GameCard source, GameCard spirit)
+        {
+            Game.OnEnchantmentSend(source, spirit);
+            
+        }
         //protected void SetWatchers()
         //{
         //    Game.OnNewTargetParams += OnNewTargetParams;

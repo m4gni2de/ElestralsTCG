@@ -2,13 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
+using UnityEditor.Experimental.GraphView;
+using System.Security;
 
 namespace Gameplay.CardActions
 {
     public class DrawAction : CardAction
     {
         protected CardSlot fromSlot, toSlot;
-        public DrawType drawType;
+        public DrawActionType drawType;
 
         bool isMainDeck
         {
@@ -18,7 +20,7 @@ namespace Gameplay.CardActions
             }
         }
 
-        public enum DrawType
+        public enum DrawActionType
         {
             GameStart = 0,
             TurnStart = 1,
@@ -31,21 +33,50 @@ namespace Gameplay.CardActions
             CardActionData data = new CardActionData(this);
             data.AddData("player", player.userId);
             data.AddData("card", sourceCard.cardId);
-            data.AddData("action_type", "draw");
+            data.AddData("action_type", DrawType);
             data.AddData("draw_type", (int)drawType);
             data.AddData("slot_from", fromSlot.slotId);
             data.AddData("slot_to", toSlot.slotId);
-            data.AddData("result", actionResult);
+            data.AddData("result", (int)actionResult);
 
             return data;
         }
+        public static DrawAction FromData(CardActionData data)
+        {
+            return new DrawAction(data);
+        }
+        protected DrawAction(CardActionData data) : base(data)
+        {
+            
+        }
+        protected override void ParseData(CardActionData data)
+        {
+            base.ParseData(data);
+            player = Game.FindPlayer(data.Value<string>("player"));
+            sourceCard = Game.FindCard(data.Value<string>("card"));
+            drawType = (DrawActionType)data.Value<int>("draw_type");
+            fromSlot = Game.FindSlot(data.Value<string>("slot_from"));
+            toSlot = Game.FindSlot(data.Value<string>("slot_to"));
+            actionResult = (ActionResult)data.Value<int>("result");
+            SetDetails(player);
 
-        public DrawAction(Player player, GameCard source, CardSlot from, CardSlot to, DrawType drawType) : base(player, source)
+        }
+        protected void SetDetails(Player player)
+        {
+            actionTime = .65f;
+            if (this.drawType == DrawActionType.GameStart || this.drawType == DrawActionType.TurnStart) { actionResult = ActionResult.Succeed; }
+            string drawString = "draws";
+            if (this.drawType == DrawActionType.Mill) { drawString = "mills"; }
+            _declaredMessage = $"{drawString} a card!";
+            _actionMessage = $"{player.username} {drawString} a card from their deck!";
+        }
+
+        public DrawAction(Player player, GameCard source, CardSlot from, CardSlot to, DrawActionType drawType, ActionResult ac = ActionResult.Pending) : base(player, source, ac)
         {
             fromSlot = from;
             toSlot = to;
-            actionTime = .65f;
             this.drawType = drawType;
+            SetDetails(player);
         }
 
         #region Static Constructors
@@ -54,11 +85,13 @@ namespace Gameplay.CardActions
             GameCard toDraw = p.deck.Top;
             CardSlot from = p.gameField.DeckSlot;
             CardSlot to = p.gameField.HandSlot;
-            DrawType t = DrawType.TurnStart;
+            DrawActionType t = DrawActionType.TurnStart;
 
-            DrawAction ac = new DrawAction(p, toDraw, from, to, t);
+            DrawAction ac = new DrawAction(p, toDraw, from, to, t, ActionResult.Succeed);
             return ac;
         }
+
+        
         #endregion
 
         public override IEnumerator PerformAction()
@@ -77,17 +110,10 @@ namespace Gameplay.CardActions
             player.SendCardDraw(card);
             deck.RemoveCard(card, sourceDeck);
             to.AllocateTo(card);
-            End(Result.Succeed);
+            End(ActionResult.Succeed);
         }
 
-        protected bool IsValid(float acumTime, float time)
-        {
-            if (GameManager.Instance == true && acumTime < time) { return true; }
-            return false;
-        }
-
-
-        protected override void ResolveAction(Result result)
+        protected override void ResolveAction(ActionResult result)
         {
             base.ResolveAction(result);
 

@@ -171,7 +171,7 @@ public class TouchObject : MonoBehaviour, iFreeze
     private float _holdTime = 0f;
     public float HoldTime { get { return _holdTime; } }
 
-    private int _LastInput = -1;
+    //private int _LastInput = -1;
 
     [Tooltip("Defines the minimum time a tap needs to be held down before it's considered Held.")]
     public float HoldThreshold = 1f;
@@ -295,7 +295,7 @@ public class TouchObject : MonoBehaviour, iFreeze
             
         }
 
-        if (Input.GetMouseButton(0)) { _LastInput = 0; } else if (!Input.GetMouseButton(0)) { _LastInput = -1; }
+        //if (Input.GetMouseButton(0)) { _LastInput = 0; } else if (!Input.GetMouseButton(0)) { _LastInput = -1; }
     }
 
     
@@ -335,18 +335,18 @@ public class TouchObject : MonoBehaviour, iFreeze
     {
         if (!ForceClickOverride)
         {
-            OnClickEvent.Invoke();
+            OnClickEvent?.Invoke();
         }
         else
         {
-            OverrideClickEvent.Invoke();
+            OverrideClickEvent?.Invoke();
         }
         
 
     }
     protected void DoHold()
     {
-        OnHoldEvent.Invoke();
+        OnHoldEvent?.Invoke();
     }
     protected void DoDoubleClick()
     {

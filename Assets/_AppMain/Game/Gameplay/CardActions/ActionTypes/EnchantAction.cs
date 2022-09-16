@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Gameplay.CardActions.DrawAction;
 
 namespace Gameplay.CardActions
 {
     public class EnchantAction : CardAction
     {
-        public enum EnchantType
+        public enum EnchantActionType
         {
             Set = -1,
             Normal = 0,
@@ -17,9 +18,33 @@ namespace Gameplay.CardActions
         }
 
         protected CardSlot toSlot;
-        public EnchantType enchantType;
+        public EnchantActionType enchantType;
         private List<GameCard> _spirits = null;
         protected List<GameCard> spirits { get { _spirits ??= new List<GameCard>(); return _spirits; } }
+        protected string SpiritString
+        {
+            get
+            {
+                string st = "";
+                for (int i = 0; i < spirits.Count; i++)
+                {
+                    for (int j = 0; j < spirits[i].cardStats.CardElements.Count; j++)
+                    {
+                        if (i >= spirits.Count - 1 && j >= spirits[i].cardStats.CardElements.Count - 1)
+                        {
+                            st += $"{spirits[i].cardStats.CardElements[j].ToString()} Spirits.";
+                        }
+                        else
+                        {
+                            st += $"{spirits[i].cardStats.CardElements[j].ToString()}, ";
+                        }
+                        
+                    }
+                    
+                }
+                return st;
+            }
+        }
         protected CardMode cardMode;
         protected bool doesSourceMove = true;
 
@@ -30,10 +55,10 @@ namespace Gameplay.CardActions
             CardActionData data = new CardActionData(this);
             data.AddData("player", player.userId);
             data.AddData("card", sourceCard.cardId);
-            data.AddData("action_type", "enchant");
+            data.AddData("action_type", EnchantType);
             data.AddData("enchant_type", (int)enchantType);
             data.AddData("card_mode", (int)cardMode);
-            data.AddData("slot_to", toSlot.index);
+            data.AddData("slot_to", toSlot.slotId);
             data.AddData("spirit_1", "");
             data.AddData("spirit_2", "");
             data.AddData("spirit_3", "");
@@ -45,8 +70,48 @@ namespace Gameplay.CardActions
             return data;
         }
 
+
+
         #region Initialization
-        protected EnchantAction(Player p, GameCard source, CardSlot to, EnchantType enchantType, GameCard[] spiritsUsed, CardMode cMode) : base(p, source)
+        public static EnchantAction FromData(CardActionData data)
+        {
+            return new EnchantAction(data);
+        }
+        protected EnchantAction(CardActionData data) : base(data)
+        {
+
+        }
+        protected override void ParseData(CardActionData data)
+        {
+            base.ParseData(data);
+            player = Game.FindPlayer(data.Value<string>("player"));
+            sourceCard = Game.FindCard(data.Value<string>("card"));
+            enchantType = (EnchantActionType)data.Value<int>("enchant_type");
+            cardMode = (CardMode)data.Value<int>("card_mode");
+            toSlot = Game.FindSlot(data.Value<string>("slot_to"));
+            actionResult = (ActionResult)data.Value<int>("result");
+            int spiritCount = data.CountOfSpiritFields();
+            for (int i = 0; i < spiritCount; i++)
+            {
+                string fieldName = $"spirit_{i + 1}";
+                string spirit = data.Value<string>(fieldName);
+                if (!string.IsNullOrEmpty(spirit))
+                {
+                    GameCard spiritCard = Game.FindCard(spirit);
+                    spirits.Add(spiritCard);
+                }
+            }
+            SetDetails();
+
+        }
+        protected void SetDetails()
+        {
+            actionTime = .65f;
+            if (enchantType == EnchantActionType.ReEnchant || enchantType == EnchantActionType.FromFaceDown || enchantType == EnchantActionType.DisEnchant) { doesSourceMove = false; } else { doesSourceMove = true; }
+            _declaredMessage = $"Enchant {sourceCard.cardStats.title} with {SpiritString}";
+            _actionMessage = $"{sourceCard.cardStats.title} is Enchanted with {SpiritString}!";
+        }
+        protected EnchantAction(Player p, GameCard source, CardSlot to, EnchantActionType enchantType, GameCard[] spiritsUsed, CardMode cMode, ActionResult ac = ActionResult.Pending) : base(p, source, ac)
         {
             toSlot = to;
 
@@ -57,28 +122,33 @@ namespace Gameplay.CardActions
             this.enchantType = enchantType;
             cardMode = cMode;
 
-            if (enchantType == EnchantType.ReEnchant || enchantType == EnchantType.FromFaceDown) { doesSourceMove = false; } else { doesSourceMove = true; }
+            SetDetails();
         }
 
 
         public static EnchantAction Normal(Player p, GameCard source, List<GameCard> spirits, CardSlot to, CardMode cMode)
         {
-            EnchantType en = EnchantType.Normal;
+            EnchantActionType en = EnchantActionType.Normal;
             return new EnchantAction(p, source, to, en, spirits.ToArray(), cMode);
         }
         public static EnchantAction Set(Player p, GameCard source, CardSlot to)
         {
-            EnchantType en = EnchantType.Set;
+            EnchantActionType en = EnchantActionType.Set;
             return new EnchantAction(p, source, to, en, new GameCard[0], CardMode.Defense);
         }
         public static EnchantAction ReEnchant(Player p, GameCard source, List<GameCard> spirits)
         {
-            EnchantType en = EnchantType.ReEnchant;
+            EnchantActionType en = EnchantActionType.ReEnchant;
             return new EnchantAction(p, source, source.CurrentSlot, en, spirits.ToArray(), source.mode);
+        }
+        public static EnchantAction DisEnchant(Player p, GameCard source, List<GameCard> spirits, CardSlot to)
+        {
+            EnchantActionType en = EnchantActionType.DisEnchant;
+            return new EnchantAction(p, source, to, en, spirits.ToArray(), source.mode);
         }
         public static EnchantAction FromFaceDown(Player p, GameCard source, List<GameCard> spirits)
         {
-            EnchantType en = EnchantType.FromFaceDown;
+            EnchantActionType en = EnchantActionType.FromFaceDown;
             return new EnchantAction(p, source, source.CurrentSlot, en, spirits.ToArray(), CardMode.Attack);
         }
 
@@ -103,10 +173,9 @@ namespace Gameplay.CardActions
             for (int i = 0; i < spirits.Count; i++)
             {
                 Movements.Add(DoMove(spirits[i], toSlot));
-                sourceCard.Enchant(spirits[i]);
             }
 
-            if (enchantType == EnchantType.FromFaceDown)
+            if (enchantType == EnchantActionType.FromFaceDown)
             {
                 Movements.Add(DoFlip(sourceCard, CardMode.Attack));
             }
@@ -116,6 +185,7 @@ namespace Gameplay.CardActions
                 Movements.Add(DoMove(sourceCard, toSlot));
 
             }
+
             
             yield return DoEnchant();
 
@@ -144,7 +214,7 @@ namespace Gameplay.CardActions
                 yield return new WaitForEndOfFrame();
                 acumTime += time;
 
-            } while (IsValid(acumTime, time) || card.cardObject.GetScale().x > targetVal);
+            } while (Validate(acumTime, time) || card.cardObject.GetScale().x > targetVal);
             card.SetCardMode(cardMode);
             card.cardObject.SetScale(startScale);
             card.cardObject.Flip(toFaceDown);
@@ -154,22 +224,17 @@ namespace Gameplay.CardActions
         {
             do
             {
-                yield return Movements[0];
+                IEnumerator move = Movements[0];
+                yield return move;
                 yield return new WaitForEndOfFrame();
-                Movements.RemoveAt(0);
+                Movements.Remove(move);
+
 
             } while (Movements.Count > 0);
-            End(Result.Succeed);
+            End(ActionResult.Succeed);
         }
 
-        protected bool IsValid(float acumTime, float time)
-        {
-            if (GameManager.Instance == true && acumTime < time) { return true; }
-            return false;
-        }
-
-
-        protected override void ResolveAction(Result result)
+        protected override void ResolveAction(ActionResult result)
         {
             base.ResolveAction(result);
 

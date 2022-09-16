@@ -8,6 +8,8 @@ using System;
 using Gameplay.Data;
 using Gameplay.Turns;
 using UnityEngine.Events;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Users;
 
 namespace Gameplay
 {
@@ -132,6 +134,8 @@ namespace Gameplay
         #endregion
 
         #region Game Events
+
+        #region Turn Based Events
         public static event Action<TargetArgs> OnNewTargetParams;
         public static void SetTargetParams(TargetArgs args = null)
         {
@@ -154,6 +158,29 @@ namespace Gameplay
         public static event Action<GameMode> OnGameModeSet;
         #endregion
 
+        #region Action Events
+        public static event Action<CardAction> OnActionDeclared;
+        public static void ActionDeclared(CardAction ac)
+        {
+            OnActionDeclared?.Invoke(ac);
+        }
+        #endregion
+
+        #region Card Based Events
+        public static event Action<GameCard, GameCard> OnEnchantment;
+        public static void OnEnchantmentSend(GameCard source, GameCard spirit)
+        {
+            OnEnchantment?.Invoke(source, spirit);
+        }
+        public static event Action<GameCard, GameCard> OnDisEnchantment;
+        public static void OnDisEnchantmentSend(GameCard source, GameCard spirit)
+        {
+            OnDisEnchantment?.Invoke(source, spirit);
+        }
+        #endregion
+
+        #endregion
+
         #region Game Information
         public int CardsInHand(Player p)
         {
@@ -166,6 +193,43 @@ namespace Gameplay
                 }
             }
             return count;
+        }
+        public static Player FindPlayer(string userId)
+        {
+            for (int i = 0; i < GameManager.ActiveGame.players.Count; i++)
+            {
+                Player p = GameManager.ActiveGame.players[i];
+                if (p.userId == userId) { return p; }
+            }
+            App.LogFatal($"No player with Id {userId} exists in this Game.");
+            return null;
+        }
+        public static GameCard FindCard(string cardId)
+        {
+            for (int i = 0; i < GameManager.ActiveGame.players.Count; i++)
+            {
+                Player p = GameManager.ActiveGame.players[i];
+                foreach (var item in p.deck.Cards)
+                {
+                    if (item.cardId == cardId) { return item; }
+                }
+            }
+            App.LogFatal($"No card with Id {cardId} exists in this Game.");
+            return null;
+        }
+
+        public static CardSlot FindSlot(string slotId)
+        {
+            for (int i = 0; i < GameManager.ActiveGame.players.Count; i++)
+            {
+                Player p = GameManager.ActiveGame.players[i];
+                foreach (var item in p.gameField.cardSlots)
+                {
+                    if (item.slotId == slotId) { return item; }
+                }
+            }
+            App.LogFatal($"No Card Slot with Id {slotId} exists in this Game.");
+            return null;
         }
         #endregion
 

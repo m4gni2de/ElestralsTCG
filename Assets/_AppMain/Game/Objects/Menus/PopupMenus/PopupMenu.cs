@@ -213,9 +213,9 @@ namespace Gameplay.Menus
         #endregion
 
         #region User Inputs
-        public void InputNumber(string title, Action<int> returnedVal)
+        public void InputNumber(string title, Action<int> returnedVal, int min = -1, int max = -1)
         {
-            StartCoroutine(AwaitNumericInput(title, callback =>
+            StartCoroutine(AwaitNumericInput(title, min, max, callback =>
             {
                 if (callback)
                 {
@@ -226,9 +226,10 @@ namespace Gameplay.Menus
                 CloseMenu();
             }));
         }
-        protected IEnumerator AwaitNumericInput(string title, Action<bool> callback)
+
+        protected IEnumerator AwaitNumericInput(string title, int min, int max, Action<bool> callback)
         {
-            NumberInput.Load(transform.parent, title, 0);
+            NumberInput.Load(transform.parent, title, min, max);
             HideMenu();
             
             do
@@ -253,8 +254,8 @@ namespace Gameplay.Menus
         }
         #endregion
 
-       
 
+       
         public void InspectCard(GameCard card)
         {
 

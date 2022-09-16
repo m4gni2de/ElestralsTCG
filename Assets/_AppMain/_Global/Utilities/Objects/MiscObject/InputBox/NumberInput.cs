@@ -54,7 +54,7 @@ public class NumberInput : InputBox, iRemoteAsset
         Value = newVal;
     }
     #endregion
-    public static NumberInput Load(Transform parent, string title, int startVal, int min = 0, int max = 10000)
+    public static NumberInput Load(Transform parent, string title, int startVal, int min = -1, int max = -1)
     {
         Instance.Open(title, startVal, min, max);
         Instance.transform.SetParent(parent);
@@ -69,7 +69,7 @@ public class NumberInput : InputBox, iRemoteAsset
 
     }
     
-    public void Open(string title, int startVal, int min = 0, int max = 10000)
+    public void Open(string title, int startVal, int min, int max)
     {
         IsHandled = false;
         gameObject.SetActive(true);

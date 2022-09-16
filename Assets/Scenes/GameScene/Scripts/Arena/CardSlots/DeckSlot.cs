@@ -9,18 +9,18 @@ namespace Gameplay
 {
 
 
-    public class DeckSlot : CardSlot
+    public class DeckSlot : CardSlot, iSelectSlot
     {
-
-        public TouchObject touch;
+        private TouchObject _touch = null;
+        public TouchObject touch { get { _touch ??= GetComponent<TouchObject>(); return _touch; } }
         protected override void SetSlot()
         {
+            
             facing = CardFacing.FaceDown;
             orientation = Orientation.Vertical;
             slotType = CardLocation.Deck;
-            //touch.OnClickEvent.AddListener(() => DrawCard());
-            //touch.OnClickEvent.AddListener(() => OpenSlotMenu());
-            touch.AddClickListener(() => OpenPopMenu());
+            touch.ClearAll();
+            touch.AddClickListener(() => ClickSlot());
         }
 
        
@@ -53,8 +53,8 @@ namespace Gameplay
         }
 
 
+       
 
-        
 
         public override void OpenPopMenu()
         {
@@ -76,11 +76,11 @@ namespace Gameplay
        
         protected void DrawCommand()
         {
-            GameManager.Instance.popupMenu.InputNumber("How many cards do you want to Draw?", Owner.Draw);
+            GameManager.Instance.popupMenu.InputNumber("How many cards do you want to Draw?", Owner.Draw, 0, Owner.deck.MainDeck.InOrder.Count);
         }
         protected void MillCommand()
         {
-            GameManager.Instance.popupMenu.InputNumber("How many cards do you want to Mill?", Owner.Mill);
+            GameManager.Instance.popupMenu.InputNumber("How many cards do you want to Mill?", Owner.Mill, 0, Owner.deck.MainDeck.InOrder.Count);
         }
         protected void BrowseCommand()
         {

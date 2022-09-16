@@ -70,32 +70,7 @@ public class CardLibrary
     }
 
 
-    public static async Task PreloadFullCards()
-    {
-        //string key = "FullCard";
-        //AsyncOperationHandle<IList<IResourceLocation>> locations = Addressables.LoadResourceLocationsAsync(key);
-        //await locations.Task;
-        //DownloadJob job = new DownloadJob("Items Downloaded", 0f, locations.Result.Count, 0f, AssetPipeline.PreloadFullCards);
-        //AssetPipeline.OnItemDownloaded += job.WorkEvent;
-        //LoadingBar.Instance.AddJob(job);
-        //StartCoroutine(LoadingBar.Instance.AwaitCompletion(job, success =>
-        //{
-        //    if (success)
-        //    {
-
-        //    }
-        //}));
-
-
-
-        //AppManager.Instance.ShowLoadingBar("Items Downloaded", 0f, locations.Result.Count);
-        //AssetPipeline.OnItemDownloaded += AppManager.Instance.loadingBar.MoveSlider;
-        //AssetPipeline.OnDownloadComplete += AppManager.Instance.loadingBar.CompleteLoad;
-        //bool complete = await AppManager.AwaitLoading(AppManager.Instance.loadingBar, AssetPipeline.PreloadFullCards);
-        //AssetPipeline.OnItemDownloaded -= AppManager.Instance.loadingBar.MoveSlider;
-        //AssetPipeline.OnDownloadComplete -= AppManager.Instance.loadingBar.CompleteLoad;
-
-    }
+   
     #endregion
 
 

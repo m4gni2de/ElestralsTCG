@@ -9,12 +9,13 @@ namespace Gameplay
         
         protected override void SetSlot()
         {
+            base.SetSlot();
             facing = CardFacing.FaceDown;
             orientation = Orientation.Vertical;
             slotType = CardLocation.SpiritDeck;
-            touch.OnClickEvent.AddListener(() => OpenPopMenu());
-            touch.AddClickListener(() => OpenPopMenu());
         }
+
+       
 
         public override void AllocateTo(GameCard card)
         {

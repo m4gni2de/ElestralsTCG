@@ -17,7 +17,7 @@ namespace Gameplay.CardActions
             CardActionData data = new CardActionData(this);
             data.AddData("player", player.userId);
             data.AddData("card", sourceCard.cardId);
-            data.AddData("action_type", "mode");
+            data.AddData("action_type", ModeType);
             data.AddData("old_mode", (int)oldCardMode);
             data.AddData("new_mode", (int)newCardMode);
             return data;
@@ -27,6 +27,8 @@ namespace Gameplay.CardActions
         {
             newCardMode = newMode;
             oldCardMode = source.mode;
+            _declaredMessage = $"Change {sourceCard.cardStats.title} to {newCardMode} Mode!";
+            _actionMessage = $"{sourceCard.cardStats.title} is changed to {newCardMode} Mode!";
         }
 
         public static ModeAction DefenseMode(Player p, GameCard source)
@@ -43,6 +45,7 @@ namespace Gameplay.CardActions
 
         public override IEnumerator PerformAction()
         {
+            
             yield return DoChange();
 
         }
@@ -70,9 +73,9 @@ namespace Gameplay.CardActions
                 yield return new WaitForEndOfFrame();
                 acumTime += Time.deltaTime;
 
-            } while (acumTime < actionTime || IsValid(goingUp, sourceCard.cardObject.transform.localEulerAngles.z, targetRotation.z));
+            } while (Validate(acumTime, actionTime) || IsValid(goingUp, sourceCard.cardObject.transform.localEulerAngles.z, targetRotation.z));
             sourceCard.SetCardMode(newCardMode);
-            End(Result.Succeed);
+            End(ActionResult.Succeed);
         }
 
 
@@ -87,7 +90,7 @@ namespace Gameplay.CardActions
         }
 
 
-        protected override void ResolveAction(Result result)
+        protected override void ResolveAction(ActionResult result)
         {
             base.ResolveAction(result);
 

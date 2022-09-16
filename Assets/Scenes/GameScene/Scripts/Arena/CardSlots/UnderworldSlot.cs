@@ -4,32 +4,19 @@ using UnityEngine;
 
 namespace Gameplay
 {
-    public class UnderworldSlot : CardSlot
+    public class UnderworldSlot : CardSlot, iSelectSlot
     {
         private TouchObject _touch = null;
-        public TouchObject touch
-        {
-            get
-            {
-                if (_touch == null)
-                {
-                    if (GetComponent<TouchObject>() != null)
-                    {
-                        _touch = GetComponent<TouchObject>();
-                    }
-                    else
-                    {
-                        _touch = gameObject.AddComponent<TouchObject>();   
-                    }
-                }
-                return _touch;
-            }
-        }
+        public TouchObject touch { get { _touch ??= GetComponent<TouchObject>(); return _touch; } }
+
         protected override void SetSlot()
         {
+            
             facing = CardFacing.FaceUp;
             orientation = Orientation.Vertical;
             slotType = CardLocation.Underworld;
+            touch.ClearAll();
+            touch.AddClickListener(() => ClickSlot());
         }
 
         protected override void SetCommands(GameCard card)

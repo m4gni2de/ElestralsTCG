@@ -24,14 +24,26 @@ public class MultiImage : MonoBehaviour
 
     public List<MappedImage> images = new List<MappedImage>();
 
+    protected SpriteDisplay this[string key]
+    {
+        get
+        {
+            return images[MappedKey(key)].image;
+        }
+    }
+
     protected int MappedKey(string objectKey)
     {
         for (int i = 0; i < images.Count; i++)
         {
-            if (Mapping.ContainsKey(i))
+            if (images[i].key == objectKey)
             {
                 return i;
             }
+            //if (Mapping.ContainsKey(i))
+            //{
+            //    return i;
+            //}
         }
         return -1;
     }
@@ -101,6 +113,19 @@ public class MultiImage : MonoBehaviour
             map.image.SetSprite(sp);
         }
 
+    }
+
+    public void SetColor(string key, Color color)
+    {
+        this[key].SetColor(color);
+    }
+    public void ShowSprite(string key)
+    {
+        this[key].gameObject.SetActive(true);
+    }
+    public void HideSprite(string key)
+    {
+        this[key].gameObject.SetActive(false);
     }
 
     public void ClearAll()

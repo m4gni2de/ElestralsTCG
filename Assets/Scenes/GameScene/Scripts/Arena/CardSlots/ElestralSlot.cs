@@ -7,94 +7,31 @@ using UnityEngine.Events;
 
 namespace Gameplay
 {
-    public class ElestralSlot : CardSlot, iMainCard
+    public class ElestralSlot : SingleSlot
     {
-        #region Interface
-        public void AddMainCard(GameCard card)
-        {
-            MainCard = card;
-        }
-        protected override void SetMainCard(GameCard card)
-        {
-            if (card.CardType == CardType.Elestral)
-            {
-                AddMainCard(card);
-            }
-            
-        }
-        #endregion
-
+        
         protected override void SetSlot()
         {
+            base.SetSlot();
             facing = CardFacing.FaceUp;
             orientation = Orientation.Both;
             slotType = CardLocation.Elestral;
         }
 
-       
-        public override void AllocateTo(GameCard card)
+        protected override void SetOrientation(GameCard card)
         {
-
-            card.RemoveFromSlot();
-            cards.Add(card);
-            if (card.CardType == CardType.Elestral)
+            card.cardObject.Flip();
+        }
+        protected override void SetRotation(GameCard card)
+        {
+            if (card.mode == CardMode.Defense)
             {
-                SetMainCard(card);
+                card.cardObject.Rotate(true);
             }
-            card.AllocateTo(this);
-            DisplayCardObject(card);
-
         }
 
-
-        protected override void DisplayCardObject(GameCard card)
-        {
-            CardView c = card.cardObject;
-            string sortLayer = SortLayer;
-            float height = rect.sizeDelta.y;
-            float offsetVal = .05f;
-            float offsetHeight = height * offsetVal;
-            Vector2 basePos = new Vector2(0f, 0f);
-
-
-            if (card.cardStats.cardType != CardType.Spirit)
-            {
-                sortLayer = "CardL2";
-                SetCommands(card);
-                offsetHeight *= -1;
-                if (card.mode == CardMode.Defense)
-                {
-                    card.cardObject.Rotate(true);
-                }
-
-            }
-            else
-            {
-                offsetHeight *= (1 + cards.Count);
-                c.SetSortingOrder(-cards.Count);
-                
-            }
-
-
-            c.SetAsChild(transform, CardScale, sortLayer);
-            c.transform.localPosition = new Vector2(0f, offsetHeight);
-
-            card.rect.sizeDelta = rect.sizeDelta;
-            
-            c.Flip();
-        }
-
-
-        
-
-        protected override void SetCommands(GameCard card)
-        {
-            base.SetCommands(card);
-        }
         protected override void ClickCard(GameCard card)
         {
-            //OpenSlotMenu();
-            
             SetSelectedCard(card);
             if (GameManager.Instance.currentSelector == null)
             {
@@ -121,11 +58,17 @@ namespace Gameplay
             return false;
         }
 
-        #region Slot Menu
         public override void OpenPopMenu()
         {
-            base.OpenPopMenu();
+            if (MainCard != null)
+            {
+                SetSelectedCard(MainCard);
+                base.OpenPopMenu();
+            }
+            
         }
+        #region Slot Menu
+
         protected override bool GetClickValidation()
         {
             
@@ -140,7 +83,7 @@ namespace Gameplay
         protected override List<PopupCommand> GetSlotCommands()
         {
             List<PopupCommand> commands = new List<PopupCommand>();
-            commands.Add(PopupCommand.Create("Inspect", () => InspectCommand()));
+            //commands.Add(PopupCommand.Create("Inspect", () => InspectCommand()));
             if (Owner.userId != App.WhoAmI) { commands.Add(PopupCommand.Create("Close", () => CloseCommand())); return commands; }
 
             commands.Add(PopupCommand.Create("Change Mode", () => ChangeModeCommand()));
@@ -194,7 +137,27 @@ namespace Gameplay
                 GameManager.Instance.browseMenu.LoadCards(toShow, title, true, enchantCount, enchantCount);
                 GameManager.Instance.browseMenu.EnchantMode(SelectedCard);
                 ClosePopMenu();
-                GameManager.Instance.browseMenu.OnMenuClose += AwaitEnchantClose;
+                GameManager.Instance.browseMenu.OnEnchantClose += AwaitEnchantClose;
+            }
+            else
+            {
+                List<GameCard> toShow = new List<GameCard>();
+                for (int i = 0; i < cards.Count; i++)
+                {
+                    if (cards[i].CardType == CardType.Spirit)
+                    {
+                        toShow.Add(cards[i]);
+                    }
+                }
+                int maxEnchantCount = toShow.Count;
+                int minCount = 1;
+                
+
+                string title = $"Select {minCount} Spirits to DisEnchant from {SelectedCard.name}";
+                GameManager.Instance.browseMenu.LoadCards(toShow, title, true, maxEnchantCount, minCount);
+                GameManager.Instance.browseMenu.EnchantMode(SelectedCard, false);
+                ClosePopMenu();
+                GameManager.Instance.browseMenu.OnMenuClose += AwaitDisEnchantClose;
             }
            
             
@@ -202,28 +165,34 @@ namespace Gameplay
         }
         protected void AwaitEnchantClose(List<GameCard> selectedCards, CardMode cMode)
         {
-            GameManager.Instance.browseMenu.OnMenuClose -= AwaitEnchantClose;
+            GameManager.Instance.browseMenu.OnEnchantClose -= AwaitEnchantClose;
             if (cMode == CardMode.None) { return; }
 
-            Field f = GameManager.Instance.arena.GetPlayerField(Owner);
             List<GameCard> cardsList = new List<GameCard>();
             for (int i = 0; i < selectedCards.Count; i++)
             {
                 cardsList.Add(selectedCards[i]);
             }
-            GameCard Selected = SelectedCard;
-            CardSlot slot = f.ElestralSlot(0, true);
-
-            GameManager.Instance.NormalEnchant(Owner, Selected, cardsList, slot, cMode);
+            GameManager.Instance.ReEnchant(Owner, MainCard, cardsList);
             Refresh();
 
         }
-       
-        #endregion
-        protected void NexusCommand()
+        protected void AwaitDisEnchantClose(List<GameCard> selectedCards)
         {
+            GameManager.Instance.browseMenu.OnMenuClose -= AwaitDisEnchantClose;
+            List<GameCard> cardsList = new List<GameCard>();
+            for (int i = 0; i < selectedCards.Count; i++)
+            {
+                cardsList.Add(selectedCards[i]);
+            }
+            GameManager.Instance.DisEnchant(Owner, MainCard, cardsList, Owner.gameField.UnderworldSlot);
+            Refresh();
 
         }
+
+        #endregion
+
+        
 
         #region Attack Command
         protected void AttackCommand()
@@ -232,17 +201,32 @@ namespace Gameplay
             {
                 if (TurnManager.IsBattlePhase)
                 {
-                    SlotSelector attackSelector = SlotSelector.AttackSlots(Owner.Opponent, 1);
-                    GameManager.Instance.SetSelector(attackSelector);
-                    GameManager.Instance.currentSelector.OnSelectionHandled += AwaitAttackSelection;
+                    AttackTargetSelect(true);
+                }
+                else
+                {
                     ClosePopMenu();
+                    App.AskYesNo("Do you wish to end the Main Phase and start the Battle Phase?", AttackTargetSelect);
                 }
             }
             
         }
-        protected void AwaitAttackSelection(bool isSuccess, List<CardSlot> attackTargets)
+
+        protected void AttackTargetSelect(bool confirm)
+        {
+            if (confirm)
+            {
+                SlotSelector attackSelector = SlotSelector.AttackSlots(Owner.Opponent, 1);
+                GameManager.Instance.SetSelector(attackSelector);
+                GameManager.Instance.currentSelector.OnSelectionHandled += AwaitAttackSelection;
+                ClosePopMenu();
+            }
+           
+        }
+        protected void AwaitAttackSelection(bool isSuccess, SlotSelector selector)
         {
             if (!isSuccess) { return; }
+            List<CardSlot> attackTargets = selector.SelectedSlots;
             for (int i = 0; i < attackTargets.Count; i++)
             {
                 GameManager.Instance.ElestralAttack(MainCard, attackTargets[i]);
@@ -261,11 +245,7 @@ namespace Gameplay
             ClosePopMenu();
         }
 
-        protected void Refresh()
-        {
-            GameManager.Instance.browseMenu.SelectedCards.Clear();
-            SelectedCard = null;
-        }
+       
         #endregion
     }
 }

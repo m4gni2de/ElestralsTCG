@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Defective.JSON;
 using System;
+using UnityEditor.ShaderGraph.Serialization;
+using UnityEngine.UIElements;
+using Gameplay.CardActions;
 
 namespace Gameplay
 {
@@ -13,6 +16,62 @@ namespace Gameplay
         private Dictionary<string, object> _actionValues = null;
         public Dictionary<string, object> actionValues { get { _actionValues ??= new Dictionary<string, object>(); return _actionValues; } }
 
+        #region Indexers/Field Functions
+        protected string GetActionType
+        {
+            get
+            {
+                return (string)actionValues["action_type"];
+            }
+        }
+
+        public object this[string field]
+        {
+            get
+            {
+                return actionValues[field];
+            }
+        }
+
+
+        public T Value<T>(string field)
+        {
+            return (T)actionValues[field];
+        }
+        
+        /// <summary>
+        /// Get the count of fields that have the same prefix, but different suffix. Example being spirit fields are named 'spirit_1', 'spirit_2', etc
+        /// </summary>
+        /// <param name="containsKey"></param>
+        /// <returns></returns>
+        protected int CountOfBaseField(string containsKey)
+        {
+            int count = 0;
+            foreach (var item in actionValues)
+            {
+                string lowerKey = item.Key.ToLower();
+                if (lowerKey.Contains(containsKey.ToLower()))
+                 {
+                    count += 1;
+                }
+            }
+            return count;
+        }
+
+        public int CountOfSpiritFields()
+        {
+            int count = 0;
+            foreach (var item in actionValues)
+            {
+                string lowerKey = item.Key.ToLower();
+                if (lowerKey.Contains("spirit_"))
+                {
+                    count += 1;
+                }
+            }
+            return count;
+        }
+        #endregion
 
         public CardActionData(CardAction ac)
         {
@@ -64,19 +123,13 @@ namespace Gameplay
         {
             get
             {
-                string json = "";
-
                 JSONObject o = new JSONObject();
-   
-
                 foreach (var item in actionValues)
                 {
                     AddValue(o, item);
-                    
-                    
                 }
 
-                return o.Print(true);
+                return o.Print();
 
             }
         }
@@ -107,6 +160,38 @@ namespace Gameplay
 
             return o.stringValue;
         }
+
+
+        #region Data to Action
+        public static void FromData(string jsonData)
+        {
+            JSONObject obj = new JSONObject(jsonData);
+
+            if (obj.type != JSONObject.Type.Null)
+            {
+                CardActionData data = new CardActionData(obj);
+                string acType = data.GetActionType;
+            }
+           
+        }
+
+        protected static CardAction ParseData(CardActionData data)
+        {
+            string acType = data.GetActionType.ToLower();
+
+            switch (acType)
+            {
+                case "draw":
+                    return DrawAction.FromData(data);
+                case "attack":
+                    return DrawAction.FromData(data);
+            }
+
+            return null;
+        }
+
+
+        #endregion
     }
 }
 

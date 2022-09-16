@@ -7,79 +7,27 @@ namespace Gameplay
 {
 
 
-    public class RuneSlot : CardSlot, iMainCard
+    public class RuneSlot : SingleSlot
     {
-        #region Interface
-        public void AddMainCard(GameCard card)
-        {
-            MainCard = card;
-        }
-        protected override void SetMainCard(GameCard card)
-        {
-            if (card.CardType == CardType.Rune)
-            {
-                Rune rune = (Rune)card.card;
-                if (rune.GetRuneType == Rune.RuneType.Stadium)
-                {
-                    AddMainCard(card);
-                }
-            }
-            
-        }
-        #endregion
+       
         protected override void SetSlot()
         {
+            base.SetSlot();
             facing = CardFacing.Both;
             orientation = Orientation.Vertical;
             slotType = CardLocation.Rune;
         }
 
-       
-
-        public override void AllocateTo(GameCard card)
+        protected override void SetOrientation(GameCard card)
         {
-            card.RemoveFromSlot();
-            cards.Add(card);
-            card.AllocateTo(this);
-            DisplayCardObject(card);
+            card.cardObject.Flip(card.mode == CardMode.Defense);
+        }
+        protected override void SetRotation(GameCard card)
+        {
+
         }
 
 
-        protected override void DisplayCardObject(GameCard card)
-        {
-            CardView c = card.cardObject;
-            string sortLayer = SortLayer;
-            float height = rect.sizeDelta.y;
-            float offsetVal = .05f;
-            float offsetHeight = height * offsetVal;
-            Vector2 basePos = new Vector2(0f, 0f);
-
-
-            if (card.CardType != CardType.Spirit)
-            {
-                sortLayer = "CardL2";
-                SetCommands(card);
-                offsetHeight *= -1;
-
-            }
-            else
-            {
-                offsetHeight *= (1 + cards.Count);
-            }
-           
-
-            c.SetAsChild(transform, CardScale, sortLayer);
-            c.transform.localPosition = new Vector2(0f, offsetHeight);
-
-            card.rect.sizeDelta = rect.sizeDelta;
-
-
-            c.Flip(card.mode == CardMode.Defense);
-        }
-
-
-
-       
         public override bool ValidateCard(GameCard card)
         {
             if (card.CardType == CardType.Rune)
@@ -115,11 +63,14 @@ namespace Gameplay
 
         }
 
-
-        protected void Refresh()
+        public override void OpenPopMenu()
         {
-            GameManager.Instance.browseMenu.SelectedCards.Clear();
-            SelectedCard = null;
+            if (MainCard != null)
+            {
+                SetSelectedCard(MainCard);
+                base.OpenPopMenu();
+            }
+
         }
 
         #region Slot Commands
@@ -179,7 +130,7 @@ namespace Gameplay
                 GameManager.Instance.browseMenu.LoadCards(toShow, title, true, enchantCount, enchantCount);
                 GameManager.Instance.browseMenu.EnchantMode(SelectedCard);
                 ClosePopMenu();
-                GameManager.Instance.browseMenu.OnMenuClose += AwaitEnchantClose;
+                GameManager.Instance.browseMenu.OnEnchantClose += AwaitEnchantClose;
             }
 
 
@@ -187,7 +138,7 @@ namespace Gameplay
         }
         protected void AwaitEnchantClose(List<GameCard> selectedCards, CardMode cMode)
         {
-            GameManager.Instance.browseMenu.OnMenuClose -= AwaitEnchantClose;
+            GameManager.Instance.browseMenu.OnEnchantClose -= AwaitEnchantClose;
             if (cMode == CardMode.None || cMode == CardMode.Defense) { return; }
 
             Field f = GameManager.Instance.arena.GetPlayerField(Owner);

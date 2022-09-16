@@ -4,26 +4,13 @@ using UnityEngine;
 using Gameplay.Menus;
 using UnityEngine.Events;
 using Gameplay.Menus.Popup;
+using System;
+using UnityEngine.UI;
 
 namespace Gameplay
 {
     public class CardSlot : MonoBehaviour, iScaleCard
     {
-        #region Interface
-        [SerializeField]
-        protected Vector2 _cardScale = new Vector2(8f, 8f);
-        public Vector2 CardScale { get { return _cardScale; } }
-        
-        [SerializeField]
-        protected string _SortLayer = "Card";
-        public string SortLayer { get { return _SortLayer; } }
-        #endregion
-
-        public GameCard MainCard { get; set; }
-        protected virtual void SetMainCard(GameCard card)
-        {
-            App.LogFatal($"Card Slot {name} is not of iMainCard interface, so it cannot accept a MainCard.");
-        }
 
         #region Enums
         public enum CardFacing
@@ -40,6 +27,42 @@ namespace Gameplay
         }
 
         #endregion
+
+        #region Interface
+        [SerializeField]
+        protected Vector2 _cardScale = new Vector2(8f, 8f);
+        public Vector2 CardScale { get { return _cardScale; } }
+        
+        [SerializeField]
+        protected string _SortLayer = "Card";
+        public string SortLayer { get { return _SortLayer; } }
+        #endregion
+
+
+        #region Slot Info
+        public GameCard MainCard { get; set; }
+        public string SlotTitle
+        {
+            get
+            {
+                if (MainCard == null)
+                {
+                    string title = $"{Owner.userId}'s {slotType.ToString()}";
+                    return title;
+                }
+                else
+                {
+                    return $"{Owner.userId}'s {MainCard.cardStats.title}";
+                }
+            }
+        }
+        
+        protected virtual void SetMainCard(GameCard card)
+        {
+            App.LogFatal($"Card Slot {name} is not of iMainCard interface, so it cannot accept a MainCard.");
+        }
+        #endregion
+
 
         #region Properties
         public int index;
@@ -69,6 +92,7 @@ namespace Gameplay
         public GameCard SelectedCard { get; set; }
 
         public RectTransform rect { get; set; }
+       
         #endregion
 
         #region Functions/Commands
@@ -96,7 +120,7 @@ namespace Gameplay
         protected virtual bool GetClickValidation()
         {
             //if (ValidatePlayer()) return true;
-            if (App.WhoAmI != Owner.userId) { return false; }
+            //if (App.WhoAmI != Owner.userId) { return false; }
             if (GameManager.Instance.popupMenu.isOpen) { return false; }
             return true;
         }
@@ -104,8 +128,12 @@ namespace Gameplay
         protected void SetSelectedCard(GameCard view = null)
         {
             if (view == null) { SelectedCard = null; } else { SelectedCard = view; }
-        }
 
+        }
+        protected virtual void ToggleSelect(bool isSelected)
+        {
+
+        }
        
         public List<PopupCommand> ButtonCommands
         {
@@ -123,7 +151,7 @@ namespace Gameplay
 
         #endregion
 
-        
+        #region Initialization
 
         protected void Awake()
         {
@@ -132,8 +160,10 @@ namespace Gameplay
             rect = GetComponent<RectTransform>();
             GetSpriteRenderer();
             SetSlot();
-            
+
         }
+
+        
 
         protected virtual void GetSpriteRenderer()
         {
@@ -143,13 +173,13 @@ namespace Gameplay
                 {
                     _sp = GetComponentInChildren<SpriteRenderer>();
                 }
+                
             }
-            
-            
+
         }
         protected virtual void SetSlot()
         {
-
+           
         }
 
         public void SetIndex(int newIndex)
@@ -166,6 +196,7 @@ namespace Gameplay
         {
             
         }
+        #endregion
 
         #region Drag Validation
         public virtual void SetValidate(bool isValid)
@@ -173,15 +204,18 @@ namespace Gameplay
             if (isValid)
             {
                 _sp.color = new Color(Color.green.r, Color.green.g, Color.green.g, .45f);
+
             }
             else
             {
                 _sp.color = new Color(Color.red.r, Color.red.g, Color.red.g, .45f);
+
             }
         }
         public virtual void ClearValidation()
         {
             _sp.color = Color.clear;
+
         }
 
         public virtual bool ValidateCard(GameCard card)
@@ -191,14 +225,10 @@ namespace Gameplay
         }
         #endregion
 
-    #region Card Management
-    public void RemoveCard(GameCard card)
+       #region Card Management
+    public virtual void RemoveCard(GameCard card)
     {
         cards.Remove(card);
-        if (MainCard != null && MainCard == card)
-            {
-                MainCard = null;
-            }
         TouchObject to = card.cardObject.touch;
         to.ClearClick();
         to.ClearHold();
@@ -222,9 +252,7 @@ namespace Gameplay
     protected virtual void SetCommands(GameCard card)
     {
         TouchObject to = card.cardObject.touch;
-        //to.OnClickEvent.AddListener(() => ClickCard(card));
         to.AddClickListener(() => ClickCard(card));
-        //to.OnHoldEvent.AddListener(() => GameManager.Instance.DragCard(card, this));
         to.AddHoldListener(() => GameManager.Instance.DragCard(card, this));
     }
 
@@ -246,20 +274,32 @@ namespace Gameplay
         c.Rotate(orientation == Orientation.Horizontal);
     }
 
-    #endregion
+        #endregion
 
-       
+        #region Slot Menus
         protected virtual void ClickCard(GameCard card)
         {
             GameManager.Instance.SelectCard(card);
         }
+        public void ClickSlot()
+        {
+            if (GameManager.Instance.IsSelecting)
+            {
+                if (GameManager.Instance.currentSelector.TargetSlots.Contains(this))
+                {
+                    GameManager.Instance.currentSelector.SelectSlot(this);
+                }
+            }
+            else
+            {
+                OpenPopMenu();
+            }
+        }
 
-        #region Slot Menus
         public virtual void OpenPopMenu()
         {
             if (Validate)
             {
-
                 GameManager.Instance.popupMenu.LoadMenu(this);
             }
         }

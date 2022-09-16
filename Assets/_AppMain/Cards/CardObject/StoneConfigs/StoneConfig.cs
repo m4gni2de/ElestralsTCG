@@ -171,45 +171,45 @@ public struct StoneConfig
         return AssetPipeline.ByKey<Sprite>(key);
     }
 
-    public static async Task<Sprite> IconToSprite(TopIcon icon)
-    {
-        string assetString = "";
+    //public static async Task<Sprite> IconToSprite(TopIcon icon)
+    //{
+    //    string assetString = "";
 
-        switch (icon)
-        {
-            case TopIcon.Sword:
-                assetString = CardUI.SwordSprite;
-                break;
-            case TopIcon.Shield:
-                assetString = CardUI.ShieldSprite;
-                break;
-            case TopIcon.Invoke:
-                assetString = CardUI.InvokeSprite;
-                break;
-            case TopIcon.Artifact:
-                assetString = CardUI.ArtifactSprite;
-                break;
-            case TopIcon.Counter:
-                assetString = CardUI.CounterSprite;
-                break;
-            case TopIcon.Stadium:
-                assetString = CardUI.StadiumSprite;
-                break;
-            case TopIcon.Divine:
-                assetString = CardUI.DivineSprite;
-                break;
-            case TopIcon.SpiritR:
-                assetString = CardUI.SpiritGlowRight;
-                break;
-            case TopIcon.SpiritL:
-                assetString = CardUI.SpiritGlowLeft;
-                break;
-            default:
-                break;
-        }
+    //    switch (icon)
+    //    {
+    //        case TopIcon.Sword:
+    //            assetString = CardUI.SwordSprite;
+    //            break;
+    //        case TopIcon.Shield:
+    //            assetString = CardUI.ShieldSprite;
+    //            break;
+    //        case TopIcon.Invoke:
+    //            assetString = CardUI.InvokeSprite;
+    //            break;
+    //        case TopIcon.Artifact:
+    //            assetString = CardUI.ArtifactSprite;
+    //            break;
+    //        case TopIcon.Counter:
+    //            assetString = CardUI.CounterSprite;
+    //            break;
+    //        case TopIcon.Stadium:
+    //            assetString = CardUI.StadiumSprite;
+    //            break;
+    //        case TopIcon.Divine:
+    //            assetString = CardUI.DivineSprite;
+    //            break;
+    //        case TopIcon.SpiritR:
+    //            assetString = CardUI.SpiritGlowRight;
+    //            break;
+    //        case TopIcon.SpiritL:
+    //            assetString = CardUI.SpiritGlowLeft;
+    //            break;
+    //        default:
+    //            break;
+    //    }
 
-        return GetSprite(assetString);
-    }
+    //    return GetSprite(assetString);
+    //}
 
     
     #endregion

@@ -8,6 +8,7 @@ namespace Gameplay
     public class CardStats
     {
         public string name;
+        public string title;
         public int attack;
         protected int _attackBase;
         public int defense;
@@ -17,14 +18,14 @@ namespace Gameplay
         public string effect;
         public CardTags Tags = null;
         public List<ElementCode> CardElements = null;
-        public List<ElementCode> EnchantingSpirits = null;
-        
+
+        #region Initialization
         public CardStats(GameCard card)
         {
             CardElements = new List<ElementCode>();
-            EnchantingSpirits = new List<ElementCode>();
 
             name = card.name;
+            title = card.card.cardData.cardName;
             if (card.DefaultCardType == CardType.Elestral)
             {
                 SetElestral((Elestral)card.card);
@@ -76,6 +77,11 @@ namespace Gameplay
                 }
             }
         }
+        #endregion
+
+        #region Updating
+        
+        #endregion
     }
 }
 

@@ -137,6 +137,7 @@ namespace Gameplay.Menus
             Toggles[0].Toggle(true);
             for (int i = 0; i < Toggles.Count; i++)
             {
+                Toggles[i].OnToggleChanged -= ToggleChanged;
                 Toggles[i].OnToggleChanged += ToggleChanged;
             }
             

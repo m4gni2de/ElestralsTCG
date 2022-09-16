@@ -6,6 +6,8 @@ using Cards;
 using CardsUI;
 using System;
 using System.Threading.Tasks;
+using Gameplay;
+using static Decks.Decklist;
 
 public class CardView : MonoBehaviour, iRemoteAsset
 {
@@ -16,7 +18,11 @@ public class CardView : MonoBehaviour, iRemoteAsset
     public TouchObject touch;
     public int cardIndex;
 
-    
+    private MultiImage _images = null;
+    public MultiImage Images { get { _images ??= GetComponent<MultiImage>(); return _images; } }
+
+    public bool isDragging = false;
+
     public bool IsFaceUp { get; set; }
     public bool IsVertical
     {
@@ -144,5 +150,11 @@ public class CardView : MonoBehaviour, iRemoteAsset
         }
     }
 
+    public void SetColor(Color col)
+    {
+        sp.SetColor(col);
+    }
 
+   
+   
 }

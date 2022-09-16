@@ -58,36 +58,49 @@ namespace Gameplay
             }
         }
 
-        public List<CardSlot> ElestralSlots
+        
+        public List<CardSlot> ElestralSlots(bool includeEmpty)
         {
-            get
+            List<CardSlot> list = new List<CardSlot>();
+            for (int i = 0; i < cardSlots.Count; i++)
             {
-                List<CardSlot> list = new List<CardSlot>();
-                for (int i = 0; i < cardSlots.Count; i++)
+                if (cardSlots[i].slotType == CardLocation.Elestral)
                 {
-                    if (cardSlots[i].slotType == CardLocation.Elestral)
+                    if (!includeEmpty)
+                    {
+                        if (cardSlots[i].MainCard != null) { list.Add(cardSlots[i]); }
+                    }
+                    else
                     {
                         list.Add(cardSlots[i]);
                     }
+                    
                 }
-                return list;
             }
+            return list;
         }
-        protected List<CardSlot> RuneSlots
+       
+        public List<CardSlot> RuneSlots(bool includeEmpty)
         {
-            get
+            List<CardSlot> list = new List<CardSlot>();
+            for (int i = 0; i < cardSlots.Count; i++)
             {
-                List<CardSlot> list = new List<CardSlot>();
-                for (int i = 0; i < cardSlots.Count; i++)
+                if (cardSlots[i].slotType == CardLocation.Rune)
                 {
-                    if (cardSlots[i].slotType == CardLocation.Rune)
+                    if (!includeEmpty)
+                    {
+                        if (cardSlots[i].MainCard != null) { list.Add(cardSlots[i]); }
+                    }
+                    else
                     {
                         list.Add(cardSlots[i]);
                     }
+                        
                 }
-                return list;
             }
+            return list;
         }
+        
 
         private CardSlot _UnderWorldSlot = null;
         public CardSlot UnderworldSlot
@@ -124,12 +137,12 @@ namespace Gameplay
 
         public CardSlot ElestralSlot(int index, bool onlyOpenSlots)
         {
-            List<CardSlot> slots = ElestralSlots;
+            List<CardSlot> slots = ElestralSlots(true);
             return GetSlotAt(slots, index, onlyOpenSlots);
         }
         public CardSlot RuneSlot(int index, bool onlyOpenSlots)
         {
-            List<CardSlot> slots = RuneSlots;
+            List<CardSlot> slots = RuneSlots(true);
             return GetSlotAt(slots, index, onlyOpenSlots);
         }
 
@@ -147,7 +160,7 @@ namespace Gameplay
         {
             get
             {
-                List<CardSlot> slots = ElestralSlots;
+                List<CardSlot> slots = ElestralSlots(false);
 
                 for (int i = 0; i < slots.Count; i++)
                 {
@@ -251,7 +264,6 @@ namespace Gameplay
         public void ValidateSlots(GameCard card)
         {
             bool isSelected = false;
-            int selected = -1;
             for (int i = 0; i < cardSlots.Count; i++)
             {
                 if (card.rect.DoesIntersect(cardSlots[i].rect))
@@ -259,12 +271,14 @@ namespace Gameplay
                     if (cardSlots[i].ValidateCard(card))
                     {
                         SetSlot(true, cardSlots[i]);
+                        card.cardObject.SetColor(Color.green);
                         isSelected = true;
                         break;
                     }
                     else
                     {
                         SetSlot(false, cardSlots[i]);
+                        card.cardObject.SetColor(Color.red);
                         isSelected = true;
                         break;
                     }
@@ -275,9 +289,11 @@ namespace Gameplay
             if (isSelected == false)
             {
                SetSlot();
+               card.cardObject.SetColor(Color.white);
             }
             
         }
+        
         #endregion
     }
 }

@@ -30,7 +30,7 @@ public class ShuffleAction : CardAction
 
         data.AddData("player", player.userId);
         data.AddData("deck", (int)sourceDeck.deckType);
-        data.AddData("action_type", "shuffle");
+        data.AddData("action_type", ShuffleType);
         data.AddData("old_order", oldOrder.ToJson());
         data.AddData("new_order", newOrder.ToJson());
         return data;
@@ -49,6 +49,8 @@ public class ShuffleAction : CardAction
             oldOrder.Add(deck.InOrder[i].cardId);
         }
         actionTime = 1.5f;
+        _declaredMessage = $"Shuffle their deck.";
+        _actionMessage = $"{p.userId} shuffles their deck!";
     }
 
     public static ShuffleAction Shuffle(Player p, Deck deck)
@@ -113,24 +115,17 @@ public class ShuffleAction : CardAction
                 directionMod = -1f;
             }
 
-        } while (acumTime < actionTime);
+        } while (Validate(acumTime, actionTime));
         sourceDeck.Shuffle();
 
         for (int i = 0; i < sourceDeck.InOrder.Count; i++)
         {
             newOrder.Add(sourceDeck.InOrder[i].cardId);
         }
-        End(Result.Succeed);
+        End(ActionResult.Succeed);
     }
 
-    protected bool IsValid(float acumTime, float time)
-    {
-        if (GameManager.Instance == true && acumTime < time) { return true; }
-        return false;
-    }
-
-
-    protected override void ResolveAction(Result result)
+    protected override void ResolveAction(ActionResult result)
     {
         base.ResolveAction(result);
 

@@ -82,10 +82,10 @@ namespace Gameplay.Menus
 
         private void LoadSpiritSprites()
         {
-            List<GameCard> elements = ActiveCard.EnchantingSpirits;
+            List<ElementCode> elements = ActiveCard.EnchantingSpirits;
             for (int i = 0; i < elements.Count; i++)
             {
-                Element e = elements[i].card.SpiritsReq[0];
+                Element e = new Element((int)elements[i]);
                 SetSpirit(i, e);
             }
         }

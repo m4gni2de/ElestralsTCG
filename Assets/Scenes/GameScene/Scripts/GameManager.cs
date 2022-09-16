@@ -52,6 +52,7 @@ public class GameManager : MonoBehaviour, iFreeze
     public PopupMenu popupMenu;
     public TurnMenu turnMenu;
     public CardSlotMenu cardSlotMenu;
+    public MessageController messageControl;
     #endregion
 
     #region Turn Management
@@ -59,6 +60,9 @@ public class GameManager : MonoBehaviour, iFreeze
     #endregion
 
     #region Select Mode
+    private bool _isSelecting = false;
+    public bool IsSelecting { get { return _isSelecting; } }
+   
     private SlotSelector _currentSelector = null;
     public SlotSelector currentSelector
     {
@@ -71,52 +75,63 @@ public class GameManager : MonoBehaviour, iFreeze
             _currentSelector = value;
             if (value != null)
             {
-                DoFreeze();
+                _isSelecting = true;
+                //DoFreeze();
             }
             else
             {
-                DoThaw();
+                _isSelecting = false;
+                //DoThaw();
             }
             
         }
     }
+   
     public void SetSelector(SlotSelector selector = null)
     {
         if (selector != null) { currentSelector = selector; } else { currentSelector = null; }
     }
-    private TargetArgs _ActiveTargetArgs = null;
-    public TargetArgs ActiveTargetParams
+    private CardSlot _SelectedSlot = null;
+    public CardSlot SelectedSlot
     {
         get
         {
-            return _ActiveTargetArgs;
-        }
-        set
-        {
-            _ActiveTargetArgs = value;
-            Game.SetTargetParams(value);
+            return _SelectedSlot;
         }
     }
-    public void SetTargetModeArgs(TargetArgs args)
-    {
-        if (args != null) { ActiveTargetParams = args; } else { ActiveTargetParams = null; }
+    //private TargetArgs _ActiveTargetArgs = null;
+    //public TargetArgs ActiveTargetParams
+    //{
+    //    get
+    //    {
+    //        return _ActiveTargetArgs;
+    //    }
+    //    set
+    //    {
+    //        _ActiveTargetArgs = value;
+    //        Game.SetTargetParams(value);
+    //    }
+    //}
+    //public void SetTargetModeArgs(TargetArgs args)
+    //{
+    //    if (args != null) { ActiveTargetParams = args; } else { ActiveTargetParams = null; }
        
-    }
-    public List<GameCard> TargetModeScope(TargetArgs args)
-    {
-        List<GameCard> cards = new List<GameCard>();
+    //}
+    //public List<GameCard> TargetModeScope(TargetArgs args)
+    //{
+    //    List<GameCard> cards = new List<GameCard>();
 
-        for (int i = 0; i < _players.Count; i++)
-        {
-            if (args.PlayerScope.Contains(_players[i]))
-            {
-                List<GameCard> playerScope = _players[i].GetTargets(args);
-                cards.AddRange(playerScope);
-            }
+    //    for (int i = 0; i < _players.Count; i++)
+    //    {
+    //        if (args.PlayerScope.Contains(_players[i]))
+    //        {
+    //            List<GameCard> playerScope = _players[i].GetTargets(args);
+    //            cards.AddRange(playerScope);
+    //        }
            
-        }
-        return cards;
-    }
+    //    }
+    //    return cards;
+    //}
     #endregion
 
     #region Setup
@@ -213,9 +228,8 @@ public class GameManager : MonoBehaviour, iFreeze
         {
             DoFreeze();
             ActiveAction = CardActions[0];
-            yield return StartCoroutine(DeclareAction(ActiveAction));
-            ActiveAction.Do();
-            yield return StartCoroutine(ActiveAction.PerformAction());
+            yield return StartCoroutine(ActiveAction.DeclareAction());
+            yield return StartCoroutine(ActiveAction.Do());
             CardActions.RemoveAt(0);
             gameLog.LogAction(ActiveAction);
             yield return new WaitForEndOfFrame();
@@ -227,23 +241,14 @@ public class GameManager : MonoBehaviour, iFreeze
     {
         Instance.OnActionDeclared?.Invoke(ac);
     }
-    public IEnumerator DeclareAction(CardAction ac)
+   
+    //public void PlayerDraw(Player p, GameCard c, CardSlot from, CardSlot to, DrawAction.DrawActionType drawType)
+    //{
+    //    DrawAction draw = new DrawAction(p, c, from, to, drawType);
+    //    AddAction(draw);
+    //}
+    public void PlayerDraw(DrawAction draw)
     {
-        OnActionDeclared?.Invoke(ac);
-
-        do
-        {
-            yield return new WaitForEndOfFrame();
-
-        } while (true && ac.Resposnes.Count > 0);
-
-    }
-
-
-
-    public void PlayerDraw(Player p, GameCard c, CardSlot from, CardSlot to, DrawAction.DrawType drawType)
-    {
-        DrawAction draw = new DrawAction(p, c, from, to, drawType);
         AddAction(draw);
     }
 
@@ -253,9 +258,19 @@ public class GameManager : MonoBehaviour, iFreeze
         EnchantAction enchant = EnchantAction.Normal(p, source, spirits, to, cMode);
         AddAction(enchant);
     }
+    public void ReEnchant(Player p, GameCard source, List<GameCard> spirits)
+    {
+        EnchantAction enchant = EnchantAction.ReEnchant(p, source, spirits);
+        AddAction(enchant);
+    }
     public void SetEnchant(Player p, GameCard source, CardSlot to)
     {
         EnchantAction enchant = EnchantAction.Set(p, source, to);
+        AddAction(enchant);
+    }
+    public void DisEnchant(Player p, GameCard source, List<GameCard> spirits, CardSlot to)
+    {
+        EnchantAction enchant = EnchantAction.DisEnchant(p, source, spirits, to);
         AddAction(enchant);
     }
     public void FaceDownRuneEnchant(Player p, GameCard source, List<GameCard> spirits)
@@ -290,6 +305,12 @@ public class GameManager : MonoBehaviour, iFreeze
         AttackAction ac = AttackAction.ElestralAttack(attacker, defender);
         AddAction(ac);
 
+    }
+    public void Nexus(Player p, GameCard source, GameCard target, List<GameCard> spirits)
+    {
+        NexusAction ac = NexusAction.Create(p, source, target, spirits);
+        AddAction(ac);
+       
     }
     #endregion
 
@@ -393,6 +414,7 @@ public class GameManager : MonoBehaviour, iFreeze
 
         } while (true && Input.GetMouseButton(0));
 
+        card.cardObject.SetColor(Color.white);
         CardSlot slot = f.SelectedSlot;
 
         if (slot == null)

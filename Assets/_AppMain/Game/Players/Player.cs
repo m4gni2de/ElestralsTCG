@@ -46,6 +46,12 @@ namespace Gameplay
             get { return _userId; }
         }
 
+        //eventually have this changed to show the actual username
+        public string username
+        {
+            get { return userId; }
+        }
+
         public Decklist decklist { get; private set; }
         private GameDeck _deck = null;
         public GameDeck deck { get { return _deck; } }
@@ -105,13 +111,15 @@ namespace Gameplay
 
         public void StartingDraw()
         {
-            Draw(5, DrawAction.DrawType.GameStart);
+            Draw(5, DrawAction.DrawActionType.GameStart);
         }
-        public void Draw(int count, DrawAction.DrawType drawType)
+        public void Draw(int count, DrawAction.DrawActionType drawType)
         {
             for (int i = 0; i < count; i++)
             {
-                GameManager.Instance.PlayerDraw(this, AtPosition(true, i), gameField.DeckSlot, gameField.HandSlot, drawType);
+                //GameManager.Instance.PlayerDraw(this, AtPosition(true, i), gameField.DeckSlot, gameField.HandSlot, drawType);
+                DrawAction ac = new DrawAction(this, AtPosition(true, i), gameField.DeckSlot, gameField.HandSlot, drawType);
+                GameManager.Instance.PlayerDraw(ac);
             }
         }
         
@@ -119,14 +127,18 @@ namespace Gameplay
         {
             for (int i = 0; i < count; i++)
             {
-                GameManager.Instance.PlayerDraw(this, AtPosition(true, i), gameField.DeckSlot, gameField.HandSlot, DrawAction.DrawType.FromEffect);
+                //GameManager.Instance.PlayerDraw(this, AtPosition(true, i), gameField.DeckSlot, gameField.HandSlot, DrawAction.DrawActionType.FromEffect);
+                DrawAction ac = new DrawAction(this, AtPosition(true, i), gameField.DeckSlot, gameField.HandSlot, DrawAction.DrawActionType.FromEffect);
+                GameManager.Instance.PlayerDraw(ac);
             }
         }
         public void Mill(int count)
         {
             for (int i = 0; i < count; i++)
             {
-                GameManager.Instance.PlayerDraw(this, AtPosition(true, i), gameField.DeckSlot, gameField.UnderworldSlot, DrawAction.DrawType.Mill);
+                //GameManager.Instance.PlayerDraw(this, AtPosition(true, i), gameField.DeckSlot, gameField.UnderworldSlot, DrawAction.DrawActionType.Mill);
+                DrawAction ac = new DrawAction(this, AtPosition(true, i), gameField.DeckSlot, gameField.UnderworldSlot, DrawAction.DrawActionType.Mill);
+                GameManager.Instance.PlayerDraw(ac);
             }
         }
 

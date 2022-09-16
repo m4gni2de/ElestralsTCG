@@ -62,8 +62,8 @@ public class HandMenu : EdgeMenu, iScaleCard, iFreeze
         if (card.location != CardLocation.Hand)
         {
             TouchObject to = card.cardObject.touch;
-            to.AddClickListener(() => ClickCard(card));
-            to.AddHoldListener(() => DragCard(card));
+            //to.AddClickListener(() => ClickCard(card));
+            //to.AddHoldListener(() => DragCard(card));
             //to.OnClickEvent.AddListener(() => ClickCard(card));
             //to.OnHoldEvent.AddListener(() => DragCard(card));
         }
@@ -75,59 +75,59 @@ public class HandMenu : EdgeMenu, iScaleCard, iFreeze
 
     #region Touch Cards
 
-    public void ClickCard(GameCard card)
-    {
-        GameManager.Instance.SelectCard(card);
-    }
+    //public void ClickCard(GameCard card)
+    //{
+    //    GameManager.Instance.SelectCard(card);
+    //}
 
-    public void DragCard(GameCard card)
-    {
-        StartCoroutine(DoDragCard(card));
-    }
+    //public void DragCard(GameCard card)
+    //{
+    //    StartCoroutine(DoDragCard(card));
+    //}
 
-    protected IEnumerator DoDragCard(GameCard card)
-    {
+    //protected IEnumerator DoDragCard(GameCard card)
+    //{
         
-        //card.cardObject.transform.SetParent(transform);
-        Vector2 newScale = new Vector2(card.cardObject.transform.localScale.x / 2f, card.cardObject.transform.localScale.y / 2f);
-        //card.cardObject.SetScale(newScale);
+    //    //card.cardObject.transform.SetParent(transform);
+    //    Vector2 newScale = new Vector2(card.cardObject.transform.localScale.x / 2f, card.cardObject.transform.localScale.y / 2f);
+    //    //card.cardObject.SetScale(newScale);
 
-        card.cardObject.SetAsChild(transform, newScale, SortLayer);
+    //    card.cardObject.SetAsChild(transform, newScale, SortLayer);
 
-        Field f = GameManager.Instance.arena.GetPlayerField(GameManager.ActiveGame.You);
-        do
-        {
-            Close();
-            DoFreeze();
-            yield return new WaitForEndOfFrame();
-            var newPos = Camera.main.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
-            card.cardObject.transform.position = new Vector3(newPos.x, newPos.y, -2f);
-            f.ValidateSlots(card);
+    //    Field f = GameManager.Instance.arena.GetPlayerField(GameManager.ActiveGame.You);
+    //    do
+    //    {
+    //        Close();
+    //        DoFreeze();
+    //        yield return new WaitForEndOfFrame();
+    //        var newPos = Camera.main.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
+    //        card.cardObject.transform.position = new Vector3(newPos.x, newPos.y, -2f);
+    //        f.ValidateSlots(card);
 
-        } while (true && Input.GetMouseButton(0));
+    //    } while (true && Input.GetMouseButton(0));
 
-        CardSlot slot = f.SelectedSlot;
+    //    CardSlot slot = f.SelectedSlot;
 
-        if (slot == null)
-        {
-            AddCard(card);
-            f.SetSlot();
-        }
-        else
-        {
-            if (slot.ValidateCard(card))
-            {
-                //_cardSlot.RemoveCard(card);
-                slot.AllocateTo(card);
-            }
-            else
-            {
-                AddCard(card);
-            }
-            f.SetSlot();
-        }
-        DoThaw();
-    }
+    //    if (slot == null)
+    //    {
+    //        AddCard(card);
+    //        f.SetSlot();
+    //    }
+    //    else
+    //    {
+    //        if (slot.ValidateCard(card))
+    //        {
+    //            //_cardSlot.RemoveCard(card);
+    //            slot.AllocateTo(card);
+    //        }
+    //        else
+    //        {
+    //            AddCard(card);
+    //        }
+    //        f.SetSlot();
+    //    }
+    //    DoThaw();
+    //}
     #endregion
 
     private void Update()
