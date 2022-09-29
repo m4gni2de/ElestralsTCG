@@ -5,22 +5,33 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using CardsUI.Filtering;
-
+using UnityEngine.Events;
 
 namespace Gameplay.Menus
 {
     public class CardBrowseMenu : ScrollMenu
     {
-        private Dictionary<GameCard, GameCard.VisualInfo> _VisualInfo = null;
-        public Dictionary<GameCard, GameCard.VisualInfo> m_VisualInfo
+        public class BrowseArgs
         {
-            get
+            public List<GameCard> Selections { get; set; }
+            public CardMode EnchantMode { get; set; }
+            public int Minimum { get; set; }
+            public int Maximum { get; set; }
+            public bool IsConfirm { get; set; }
+
+            public BrowseArgs(CardBrowseMenu menu, CardMode mode)
             {
-                _VisualInfo ??= new Dictionary<GameCard, GameCard.VisualInfo>();
-                return _VisualInfo;
+                Selections = new List<GameCard>();
+                Selections.AddRange(menu.SelectedCards);
+                EnchantMode = mode;
+                Minimum = menu.minSelectCount;
+                Maximum = menu.maxSelectCount;
+                IsConfirm = menu.IsConfirmed;
             }
         }
-
+        public BrowseArgs menuArgs { get; set; }
+        public event Action<BrowseArgs> OnClosed;
+       
         private List<GameCard> _SelectedCards = null;
         public List<GameCard> SelectedCards
         {
@@ -46,13 +57,21 @@ namespace Gameplay.Menus
         protected bool isEnchantMode = false;
         #endregion
 
+        private UnityEvent _OnSelection = null;
+        public UnityEvent OnSelection { get { _OnSelection ??= new UnityEvent(); return _OnSelection; } }
+
+        public event Action<CardBrowseMenu> OnSelectionConfirm;
+
+        public event Action<GameCard, bool> OnCardSelected;
         protected void SelectCard(int index)
         {
             GameCard v = cards[index];
             CardView clone = clones[index];
+            
             if (SelectedCards.Contains(v))
             {
                 SelectedCards.Remove(v);
+                OnCardSelected?.Invoke(v, false);
                 ToggleSelect(clone, false);
             }
             else
@@ -60,12 +79,15 @@ namespace Gameplay.Menus
                 if (SelectedCards.Count < maxSelectCount)
                 {
                     SelectedCards.Add(v);
+                    OnCardSelected?.Invoke(v, true);
                     ToggleSelect(clone, true);
+                    
                 }
 
             }
 
-            ConfirmButton.interactable = SelectedCards.Count == maxSelectCount;
+            
+            ConfirmButton.interactable = (SelectedCards.Count >= minSelectCount && SelectedCards.Count <= maxSelectCount);
         }
 
         protected void ToggleSelect(CardView clone, bool isSelected)
@@ -73,6 +95,7 @@ namespace Gameplay.Menus
             if (isSelected)
             {
                 clone.sp.SetColor(Color.white);
+
             }
             else
             {
@@ -105,6 +128,8 @@ namespace Gameplay.Menus
             
             CardModeGroup.Refresh();
         }
+
+        
         public void LoadCards(List<GameCard> cards, string title, bool faceUp = true)
         {
             LoadCards(cards, title, faceUp, 0, 0);
@@ -112,7 +137,12 @@ namespace Gameplay.Menus
 
         }
 
-        public void LoadCards(List<GameCard> cards, string title, bool faceUp, int maxSelectable, int minSelectable)
+        public void EnchantLoad(List<GameCard> cards, string title, bool faceUp, int minSelectable, int maxSelectable, GameCard toEnchant, bool isAdding)
+        {
+            LoadCards(cards, title, faceUp, minSelectable, maxSelectable);
+            EnchantMode(toEnchant, isAdding);
+        }
+        public void LoadCards(List<GameCard> cards, string title, bool faceUp, int minSelectable, int maxSelectable)
         {
             if (IsOpen) { return; }
 
@@ -129,6 +159,8 @@ namespace Gameplay.Menus
                 //CardView co = cards[i].cardObject;
                 CardView co = Instantiate(cards[i].cardObject, Content);
                 co.LoadCard(cards[i].card);
+                co.Images.SetColor("Border", Color.clear);
+                co.Images.HideSprite("Border");
                 DisplayCard(cards[i], co, faceUp);
                 clones.Add(co);
                 co.transform.localPosition = new Vector3(co.transform.localPosition.x, co.transform.localPosition.y, -2f);
@@ -253,6 +285,7 @@ namespace Gameplay.Menus
             if (SelectedCards.Count < minSelectCount) { return; }
             IsConfirmed = true;
             
+
             Close();
         }
 
@@ -279,11 +312,15 @@ namespace Gameplay.Menus
                             cMode = CardMode.Defense;
                         }
                     }
-                    OnEnchantClose?.Invoke(selected, cMode);
+                    
                 }
                 
             }
 
+            menuArgs = new BrowseArgs(this, cMode);
+
+
+            OnEnchantClose?.Invoke(selected, cMode);
             OnMenuClose?.Invoke(selected);
             Refresh();
             base.Close();
@@ -292,13 +329,15 @@ namespace Gameplay.Menus
             isEnchantMode = false;
             DoThaw();
 
+            OnClosed?.Invoke(menuArgs);
+
         }
-        
+
         #endregion
 
+
        
-
-
+        
     }
 }
 

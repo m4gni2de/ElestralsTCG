@@ -5,11 +5,83 @@ using Decks;
 using System;
 using Gameplay.CardActions;
 using UnityEngine.Events;
+using Databases;
+using RiptideNetworking;
+using Gameplay.Networking;
+using nsSettings;
+using System.Threading.Tasks;
 
 namespace Gameplay
 {
     public class Player 
     {
+       public static Player LocalPlayer { get; private set; }
+        #region Network Properties
+        public ushort lobbyId { get; private set; }
+        public bool IsLocal { get; private set; }
+        public bool IsHost { get; private set; }
+        public string deckUploadKey { get; private set; }
+        public bool IsLoaded { get; private set; } = false;
+        #endregion
+
+        #region Networking
+        public static Player CreateRemotePlayer(ushort lobbyID, string userId, string deckId)
+        {
+            Player p = new Player(lobbyID, userId, deckId, false);
+            return p;
+        }
+        public async Task<bool> DownloadDeck(string deckId)
+        {
+            
+            UploadedDeckDTO dto = await RemoteData.SearchDeck(deckId);
+            if (dto == null) { return false; }
+            LoadDeckList(dto);
+            
+            return true;
+            
+
+
+        }
+
+        #region Message Senders
+        //creates the local player, adds it to the game, then sends it to the Server for it to be Added to the Server players
+        public async static void SendLocalPlayer()
+        {
+            bool uploaded = await RemoteData.AddDeckToRemoteDB(LocalPlayer.decklist);
+
+            Message outbound = NetworkPipeline.OutboundMessage(MessageSendMode.reliable, (ushort)ClientToServer.registerPlayer,
+                LocalPlayer.userId, LocalPlayer.username, LocalPlayer.decklist.UploadCode);
+            NetworkPipeline.SendMessageToServer(outbound);
+        }
+
+        #endregion
+
+
+
+        #region Message Responses
+        public static async void RegisterPlayer(ushort networkIndex, string userId, string username, string deckId, string gameId, string fieldId)
+        {
+            Player player;
+            if (networkIndex == NetworkManager.Instance.Client.Id)
+            {
+                player = LocalPlayer;
+            }
+            else
+            {
+                player = CreateRemotePlayer(networkIndex, userId, deckId);
+                await player.DownloadDeck(deckId);
+            }
+
+            if (GameManager.ActiveGame == null)
+            {
+                GameManager.LoadConnectedGame(gameId);
+            }
+            GameManager.AddPlayer(player, fieldId);
+        }
+        #endregion
+
+        #endregion
+
         #region Global Properties
         public bool IsActive
         {
@@ -22,6 +94,7 @@ namespace Gameplay
                 return false;
             }
         }
+        
         public Player Opponent
         {
             get
@@ -35,6 +108,14 @@ namespace Gameplay
                     }
                 }
                 return null;
+            }
+        }
+        private CardAction _activeAction = null;
+        public CardAction ActiveAction
+        {
+            get
+            {
+                return _activeAction;
             }
         }
         #endregion
@@ -53,6 +134,15 @@ namespace Gameplay
         }
 
         public Decklist decklist { get; private set; }
+        public string[] GetDeckList()
+        {
+            string[] list = new string[decklist.Cards.Count];
+            for (int i = 0; i < decklist.Cards.Count; i++)
+            {
+                list[i] = decklist.Cards[i].key;
+            }
+            return list;
+        }
         private GameDeck _deck = null;
         public GameDeck deck { get { return _deck; } }
 
@@ -70,13 +160,42 @@ namespace Gameplay
         }
         #endregion
 
-       
-        public Player(string user, Decklist list)
+        #region Constructors
+        Player(string userName, bool isLocal)
         {
-            _userId = user;
+            _userId = userName;
+            this.IsLocal = isLocal;
+        }
+        public Player(string user, Decklist list) : this(user, true)
+        {
+            LoadDeckList(list);
+        }
+        public Player(ushort lobbyID, string user, Decklist list, bool isLocal) : this(user, isLocal)
+        {
+            this.lobbyId = lobbyID;
+            deckUploadKey = list.UploadCode;
+            LoadDeckList(list);
+        }
+        public Player(ushort lobbyID, string user, string deckKey, bool isLocal) : this(user, isLocal)
+        {
+            this.lobbyId = lobbyID;
+            this.deckUploadKey = deckKey;
+            
+        }
+        public static Player CreateLocalPlayer(ushort lobbyID, string user, Decklist list)
+        {
+            LocalPlayer = new Player(lobbyID, user, list, true);
+            return LocalPlayer;
+        }
+
+        public void LoadDeckList(Decklist list)
+        {
             decklist = list;
             _deck = new GameDeck(list);
+            IsLoaded = true;
         }
+
+        #endregion
 
         #region In Game Properties
         public bool isReady = false;
@@ -156,15 +275,7 @@ namespace Gameplay
         }
         #endregion
 
-        #region Card Target Scope 
-        public List<GameCard> GetTargets(TargetArgs args)
-        {
-            List<GameCard> targets = args.CardTargets(deck.Cards);
-            return targets;
-        }
-        
-
-       
+        #region Remote Connection
         
         #endregion
     }

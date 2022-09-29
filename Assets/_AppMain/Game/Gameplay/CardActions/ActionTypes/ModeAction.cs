@@ -9,15 +9,18 @@ namespace Gameplay.CardActions
         public CardMode newCardMode;
         public CardMode oldCardMode;
 
+        protected override ActionCategory GetCategory()
+        {
+            return ActionCategory.Mode;
+        }
+
 
         protected override CardActionData GetActionData()
         {
 
-
             CardActionData data = new CardActionData(this);
-            data.AddData("player", player.userId);
-            data.AddData("card", sourceCard.cardId);
-            data.AddData("action_type", ModeType);
+            data.SetPlayer(player);
+            data.SetSourceCard(sourceCard);
             data.AddData("old_mode", (int)oldCardMode);
             data.AddData("new_mode", (int)newCardMode);
             return data;

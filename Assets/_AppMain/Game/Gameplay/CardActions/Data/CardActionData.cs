@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Defective.JSON;
 using System;
-using UnityEditor.ShaderGraph.Serialization;
-using UnityEngine.UIElements;
 using Gameplay.CardActions;
 
 namespace Gameplay
@@ -12,16 +10,27 @@ namespace Gameplay
     [System.Serializable]
     public class CardActionData
     {
+
+        
+
+        #region Properties
         public string actionKey;
         private Dictionary<string, object> _actionValues = null;
         public Dictionary<string, object> actionValues { get { _actionValues ??= new Dictionary<string, object>(); return _actionValues; } }
 
+
+        public List<string> bindings = new List<string>();
+        #endregion
+
+       
+
+
         #region Indexers/Field Functions
-        protected string GetActionType
+        protected int GetActionType
         {
             get
             {
-                return (string)actionValues["action_type"];
+                return (int)actionValues[CategoryKey];
             }
         }
 
@@ -73,26 +82,82 @@ namespace Gameplay
         }
         #endregion
 
+        #region Base Fields
+        public static readonly string CategoryKey = "category";
+        public void SetCategory(ActionCategory cat)
+        {
+            SetData(CategoryKey, (int)cat);
+        }
+        public ActionCategory GetCategory(string valKey = "")
+        {
+            if (string.IsNullOrEmpty(valKey)) { valKey = CategoryKey; }
+            return (ActionCategory)Value<int>(valKey);
+        }
+        public static readonly string PlayerKey = "player";
+        public void SetPlayer(Player p)
+        {
+            SetData(PlayerKey, p.username);
+        }
+        public Player FindPlayer(string playerKey = "")
+        {
+            if (string.IsNullOrEmpty(playerKey)) { playerKey = PlayerKey; }
+            return Game.FindPlayer(Value<string>(playerKey));
+        }
+        public static readonly string SpiritPrefix = "spirit_";
+        public void SetSpirit(int index, string cardKey)
+        {
+            string st = $"{SpiritPrefix}_{index}";
+            AddData(st, cardKey);
+        }
+        public void SetSpiritList(List<GameCard> spirits)
+        {
+            int count = CountOfSpiritFields();
+            for (int i = 0; i < spirits.Count; i++)
+            {
+                string st = $"{SpiritPrefix}_{i + count}";
+                AddData(st, spirits[i].cardId);
+            }
+            
+            
+        }
+        public static readonly string SourceKey = "source_card";
+        public void SetSourceCard(GameCard card)
+        {
+            AddData(SourceKey, card.cardId);
+        }
+        public GameCard FindSourceCard(string valKey = "")
+        {
+            if (string.IsNullOrEmpty(valKey)) { valKey = SourceKey; }
+            return Game.FindCard(Value<string>(valKey));
+        }
+        public static readonly string ResultKey = "result";
+        public void SetResult(ActionResult result)
+        {
+            AddData(ResultKey, (int)result);
+        }
+        public ActionResult GetResult()
+        {
+            return (ActionResult)Value<int>(ResultKey);
+        }
+        #endregion
+
+        public CardActionData(ActionCategory cat)
+        {
+            CreateData(UniqueString.GetShortId($"ca", 5));
+            SetCategory(cat);
+
+        }
+        
         public CardActionData(CardAction ac)
         {
             CreateData(ac.id);
+            SetCategory(ac.category);
         }
         public CardActionData(JSONObject obj)
         {
-            int count = 0;
-            foreach (var item in obj)
+            for (int i = 0; i < obj.keys.Count; i++)
             {
-                if (count == 0)
-                {
-                    actionKey = obj[0].stringValue;
-                    
-                }
-                else
-                {
-                    object val = GetValue(obj[count]);
-                    actionValues.Add(obj.keys[count], val);
-                }
-                count += 1;
+                AddData(obj.keys[i], GetValue(obj.list[i]));
             }
         }
         public void CreateData(string actionId)
@@ -106,6 +171,11 @@ namespace Gameplay
             if (!actionValues.ContainsKey(key))
             {
                 actionValues.Add(key, val);
+                
+            }
+            else
+            {
+                SetData(key, val);
             }
         }
         public void SetData(string key, object val)
@@ -113,6 +183,10 @@ namespace Gameplay
             if (actionValues.ContainsKey(key))
             {
                 actionValues[key] = val;
+            }
+            else
+            {
+                AddData(key, val);
             }
         }
 
@@ -143,21 +217,21 @@ namespace Gameplay
 
         protected object GetValue(JSONObject o)
         {
-            Type ty = o.GetType();
 
-            if (ty == typeof(string))
+
+            if (o.type == JSONObject.Type.Number)
+            {
+                if (o.isInteger)
+                {
+                    return o.intValue;
+                }
+                return o.floatValue;
+
+            }
+            if (o.type == JSONObject.Type.String)
             {
                 return o.stringValue;
             }
-            if (ty == typeof(int))
-            {
-                return o.intValue;
-            }
-            if (ty == typeof(float))
-            {
-                return o.floatValue;
-            }
-
             return o.stringValue;
         }
 
@@ -170,28 +244,48 @@ namespace Gameplay
             if (obj.type != JSONObject.Type.Null)
             {
                 CardActionData data = new CardActionData(obj);
-                string acType = data.GetActionType;
+                
             }
            
         }
 
-        protected static CardAction ParseData(CardActionData data)
+        public static CardAction ParseData(CardActionData data)
         {
-            string acType = data.GetActionType.ToLower();
+            ActionCategory acCat = (ActionCategory)data.GetActionType;
 
-            switch (acType)
+            switch (acCat)
             {
-                case "draw":
+                case ActionCategory.None:
+                    return MoveAction.FromData(data);
+                case ActionCategory.Draw:
                     return DrawAction.FromData(data);
-                case "attack":
-                    return DrawAction.FromData(data);
+                case ActionCategory.Shuffle:
+                    break;
+                case ActionCategory.Enchant:
+                    return EnchantAction.FromData(data);
+                case ActionCategory.Mode:
+                    break;
+                case ActionCategory.Attack:
+                    break;
+                case ActionCategory.Nexus:
+                    return NexusAction.FromData(data);
+                case ActionCategory.Ascend:
+                    return AscendAction.FromData(data);
+                default:
+                    break;
             }
+
 
             return null;
         }
 
 
         #endregion
+
+
+       
+        
+        
     }
 }
 

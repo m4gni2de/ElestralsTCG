@@ -40,10 +40,6 @@ public class MultiImage : MonoBehaviour
             {
                 return i;
             }
-            //if (Mapping.ContainsKey(i))
-            //{
-            //    return i;
-            //}
         }
         return -1;
     }
@@ -94,6 +90,12 @@ public class MultiImage : MonoBehaviour
         
         images.Add(map);
     }
+
+    public SpriteDisplay FromKey(string key)
+    {
+        return this[key];
+    }
+
     public void SetSprite(string objectKey, Sprite sp)
     {
         int key = MappedKey(objectKey);
@@ -127,6 +129,7 @@ public class MultiImage : MonoBehaviour
     {
         this[key].gameObject.SetActive(false);
     }
+    
 
     public void ClearAll()
     {

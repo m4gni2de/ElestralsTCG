@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Gameplay;
-using Newtonsoft.Json.Bson;
-using TMPro.EditorUtilities;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -160,6 +158,13 @@ public class SlotSelector
         SelectedSlots.Clear();
     }
 
+    public static SlotSelector Create(string msg, string confirm, List<CardSlot> targets, int totalSelections)
+    {
+        List<string> msgs = new List<string>();
+        msgs.Add(msg);
+        SlotSelector sel = new SlotSelector(msgs, confirm, totalSelections, targets.ToArray(), false);
+        return sel;
+    }
     
     public static SlotSelector CreateMulti(List<string> msgs, string confirm, List<CardSlot> targets, int totalSelections, bool confirmEach)
     {

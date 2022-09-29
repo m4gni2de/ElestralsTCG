@@ -22,12 +22,7 @@ namespace Gameplay
         {
             card.cardObject.Flip(card.mode == CardMode.Defense);
         }
-        protected override void SetRotation(GameCard card)
-        {
-
-        }
-
-
+        
         public override bool ValidateCard(GameCard card)
         {
             if (card.CardType == CardType.Rune)
@@ -48,7 +43,9 @@ namespace Gameplay
 
         protected override void ClickCard(GameCard card)
         {
+            base.ClickCard(card);
             SetSelectedCard(card);
+            
             if (GameManager.Instance.currentSelector == null)
             {
                 OpenPopMenu();

@@ -11,6 +11,7 @@ namespace Gameplay.Turns
 
         #region Instance/Global Properties
         public static TurnManager Instance { get; private set; }
+        public CardActionData CraftingAction { get; set; }
         
         public static bool IsBattlePhase
         {
@@ -118,35 +119,9 @@ namespace Gameplay.Turns
         }
         #endregion
 
-
-        #region ActiveTurn Events/Data
-        protected int CardsDrawn = 0;
-        protected int TurnDrawMax;
-        protected void OpeningDrawWatcher(GameCard card)
-        {
-            int openingDrawMax = 10;
-            CardsDrawn += 1;
-            if (CardsDrawn >= openingDrawMax)
-            {
-                for (int i = 0; i < TurnOrder.Count; i++)
-                {
-                    Player p = TurnOrder[i];
-                    p.OnCardDraw -= OpeningDrawWatcher;
-                }
-                RoundIndex = -1;
-                StartTurn();
-            }
-        } 
-        #endregion
-
-
-        
-       
-
         #region Turn Events/Watchers
         public void StartGame()
         {
-            CardsDrawn = 0;
             DoOpeningDraws();
         }
         protected IEnumerator NewTurn(Turn turn)
@@ -209,13 +184,6 @@ namespace Gameplay.Turns
         protected int DrawCount = 0;
         public void DoOpeningDraws()
         {
-            //CardsDrawn = 0;
-            //for (int i = 0; i < TurnOrder.Count; i++)
-            //{
-            //    Player p = TurnOrder[i];
-            //    p.OnCardDraw += OpeningDrawWatcher;
-            //    TurnOrder[i].StartingDraw();
-            //}
             StartCoroutine(AwaitOpeningDraws());
             for (int i = 0; i < TurnOrder.Count; i++)
             {
@@ -285,7 +253,30 @@ namespace Gameplay.Turns
         #endregion
 
         
+        
+        public static void SetCrafingAction(CardActionData data = null)
+        {
+            if (Instance == null) { App.LogFatal("Turn Manager does not yet exist so Actions cannot yet be made."); }
+            if (data == null)
+            {
+                Instance.CraftingAction = null;
+            }
+            else
+            {
+                Instance.CraftingAction = data;
+            }
+        }
+        public static CardActionData NewAction(ActionCategory cat, Player p)
+        {
+            if (Instance == null) { return null; }
+            CardActionData data = new CardActionData(cat);
+            data.SetPlayer(p);
+            data.SetResult(ActionResult.Pending);
 
+
+            SetCrafingAction(data);
+            return data;
+        }
 
 
     }

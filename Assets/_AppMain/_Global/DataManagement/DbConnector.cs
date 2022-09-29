@@ -13,6 +13,12 @@ namespace Databases
 {
     public class DbConnector : MonoBehaviour
     {
+        public enum DbMode
+        {
+            Internal = 0,
+            Player = 1,
+        }
+
         protected readonly string dbPath = "Assets/_AppMain/_Global/DataManagement/Databases/dbInternal.bytes";
         public enum OverridePathMode
         {
@@ -21,9 +27,10 @@ namespace Databases
         }
 
        
-
         public SQLiteConnection _conn;
         public TextAsset databaseFile;
+        public TextAsset internalDb;
+        public TextAsset playerDb;
 
         public string overrideBasePath = "";
 
@@ -40,7 +47,7 @@ namespace Databases
 
         public DatabaseCreatedDelegate databaseCreated;
 
-
+        
         public bool DebugTrace
         {
             get
@@ -103,8 +110,9 @@ namespace Databases
 
             if (db.Status == AsyncOperationStatus.Succeeded && db.IsDone)
             {
+                
                 databaseFile = db.Result;
-                Initialize(true);
+                Initialize();
                 return true;
             }
             else
@@ -202,8 +210,7 @@ namespace Databases
         {
             //string path = _conn.DatabasePath;
 
-            Close();
-            Dispose();
+            
             string cloneLoc = Path.Combine(string.IsNullOrEmpty(overrideBasePath) ? Application.persistentDataPath : Path.Combine((overridePathMode == OverridePathMode.Absolute) ? "" : Application.persistentDataPath, overrideBasePath), changeWorkingName ? workingName.Trim() : (databaseFile.name + ".bytes"));
             bool flag = File.Exists(cloneLoc);
 
@@ -239,12 +246,12 @@ namespace Databases
             }
 
 
-            if (flag2)
-            {
+            //if (flag2)
+            //{
 
-                CreateConnection(cloneLoc);
-                _conn.Trace = debugTrace;
-            }
+            //    CreateConnection(cloneLoc);
+            //    _conn.Trace = debugTrace;
+            //}
 
 #if UNITY_EDITOR
             AssetDatabase.Refresh();
@@ -276,6 +283,7 @@ namespace Databases
 #endif
         }
 
+        
         /// <summary>
         /// If using a clone of the working DB, use this method to create the clone, or make changes to clone DB
         /// </summary>
@@ -533,7 +541,7 @@ namespace Databases
 
         public int UpdateTable(object obj, string tableName)
         {
-            //Initialize(forceReinitialization: false);
+            Initialize(forceReinitialization: false);
             return _conn.Update(obj, obj.GetType(), tableName);
         }
 

@@ -118,6 +118,7 @@ MonoBehaviour:
     - Elestral
     - Card
     - FullCard
+    - Networking
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 3d5c90bdd758ba543be9ec6fd2b4dc16, type: 2}

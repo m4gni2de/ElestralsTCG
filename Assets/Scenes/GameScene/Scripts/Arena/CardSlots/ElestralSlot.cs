@@ -4,10 +4,13 @@ using Gameplay.Menus.Popup;
 using Gameplay.Turns;
 using UnityEngine;
 using UnityEngine.Events;
+using Gameplay.CardActions;
+using System.IO;
+using Gameplay.Menus;
 
 namespace Gameplay
 {
-    public class ElestralSlot : SingleSlot
+    public class ElestralSlot : SingleSlot, iCraftAction
     {
         
         protected override void SetSlot()
@@ -18,25 +21,36 @@ namespace Gameplay
             slotType = CardLocation.Elestral;
         }
 
-        protected override void SetOrientation(GameCard card)
-        {
-            card.cardObject.Flip();
-        }
-        protected override void SetRotation(GameCard card)
-        {
-            if (card.mode == CardMode.Defense)
-            {
-                card.cardObject.Rotate(true);
-            }
-        }
+        
 
         protected override void ClickCard(GameCard card)
         {
+            bool sameCard = GameManager.SelectedCard == card;
+            base.ClickCard(card);
             SetSelectedCard(card);
             if (GameManager.Instance.currentSelector == null)
             {
-                GameManager.Instance.cardSlotMenu.LoadMenu(this);
-                GameManager.Instance.popupMenu.LoadMenu(this);
+                if (card.CardType == CardType.Elestral)
+                {
+                    GameManager.Instance.cardSlotMenu.LoadMenu(this);
+                }
+                if (GameManager.Instance.popupMenu.isOpen)
+                {
+                    if (sameCard)
+                    {
+                        GameManager.Instance.popupMenu.CloseMenu();
+                    }
+                    else
+                    {
+                        GameManager.Instance.popupMenu.LoadMenu(this);
+                    }
+                    
+                }
+                else
+                {
+                    GameManager.Instance.popupMenu.LoadMenu(this);
+                }
+
             }
             else
             {
@@ -50,7 +64,7 @@ namespace Gameplay
 
         public override bool ValidateCard(GameCard card)
         {
-            if (card.cardStats.cardType == CardType.Elestral && MainCard == null) { return true; }
+            if (card.CardType == CardType.Elestral && MainCard == null) { return true; }
             if (card.cardStats.cardType == CardType.Spirit)
             {
                 if (MainCard != null) { return true; }
@@ -62,8 +76,13 @@ namespace Gameplay
         {
             if (MainCard != null)
             {
-                SetSelectedCard(MainCard);
-                base.OpenPopMenu();
+                if (MainCard == SelectedCard)
+                {
+                    base.OpenPopMenu();
+
+                }
+                //SetSelectedCard(MainCard);
+               
             }
             
         }
@@ -87,8 +106,9 @@ namespace Gameplay
             if (Owner.userId != App.WhoAmI) { commands.Add(PopupCommand.Create("Close", () => CloseCommand())); return commands; }
 
             commands.Add(PopupCommand.Create("Change Mode", () => ChangeModeCommand()));
-            commands.Add(PopupCommand.Create("Move", () => MoveCommand()));
+            //commands.Add(PopupCommand.Create("Move", () => MoveCommand()));
             commands.Add(PopupCommand.Create("Enchant", () => EnchantCommand(true)));
+            commands.Add(PopupCommand.Create("Ascend", () => AscendCommand()));
             commands.Add(PopupCommand.Create("DisEnchant", () => EnchantCommand(false), 1, 0));
             commands.Add(PopupCommand.Create("Nexus", () => NexusCommand(), 1, 1));
             commands.Add(PopupCommand.Create("Attack", () => AttackCommand()));
@@ -134,10 +154,10 @@ namespace Gameplay
                 List<GameCard> toShow = Owner.gameField.SpiritDeckSlot.cards;
 
                 string title = $"Select {enchantCount} Spirits for Enchantment of {SelectedCard.name}";
-                GameManager.Instance.browseMenu.LoadCards(toShow, title, true, enchantCount, enchantCount);
-                GameManager.Instance.browseMenu.EnchantMode(SelectedCard);
-                ClosePopMenu();
-                GameManager.Instance.browseMenu.OnEnchantClose += AwaitEnchantClose;
+                BrowseMenu.LoadCards(toShow, title, true, enchantCount, enchantCount);
+                BrowseMenu.EnchantMode(SelectedCard);
+                ClosePopMenu(true);
+                BrowseMenu.OnEnchantClose += AwaitEnchantClose;
             }
             else
             {
@@ -154,10 +174,10 @@ namespace Gameplay
                 
 
                 string title = $"Select {minCount} Spirits to DisEnchant from {SelectedCard.name}";
-                GameManager.Instance.browseMenu.LoadCards(toShow, title, true, maxEnchantCount, minCount);
-                GameManager.Instance.browseMenu.EnchantMode(SelectedCard, false);
-                ClosePopMenu();
-                GameManager.Instance.browseMenu.OnMenuClose += AwaitDisEnchantClose;
+                BrowseMenu.LoadCards(toShow, title, true, minCount, maxEnchantCount);
+                BrowseMenu.EnchantMode(SelectedCard, false);
+                ClosePopMenu(true);
+                BrowseMenu.OnMenuClose += AwaitDisEnchantClose;
             }
            
             
@@ -165,7 +185,7 @@ namespace Gameplay
         }
         protected void AwaitEnchantClose(List<GameCard> selectedCards, CardMode cMode)
         {
-            GameManager.Instance.browseMenu.OnEnchantClose -= AwaitEnchantClose;
+            BrowseMenu.OnEnchantClose -= AwaitEnchantClose;
             if (cMode == CardMode.None) { return; }
 
             List<GameCard> cardsList = new List<GameCard>();
@@ -179,7 +199,7 @@ namespace Gameplay
         }
         protected void AwaitDisEnchantClose(List<GameCard> selectedCards)
         {
-            GameManager.Instance.browseMenu.OnMenuClose -= AwaitDisEnchantClose;
+            BrowseMenu.OnMenuClose -= AwaitDisEnchantClose;
             List<GameCard> cardsList = new List<GameCard>();
             for (int i = 0; i < selectedCards.Count; i++)
             {
@@ -238,14 +258,63 @@ namespace Gameplay
 
         protected void DiscardCommand()
         {
-            GameManager.Instance.browseMenu.LoadCards(cards, "Select Cards to Discard", true);
-        }
-        protected void CloseCommand()
-        {
-            ClosePopMenu();
+            BrowseMenu.LoadCards(cards, "Select Cards to Discard", true);
         }
 
+        #region Ascend Command
+        //do validation on clicking based on number of spirits the Ascending card has and the number of spirits the cards on the field have
+        protected void AscendCommand()
+        {
+            CardActionData d = this.CraftAction(ActionCategory.Ascend, Owner);
+            d.AddData(AscendAction.TributedCardKey, SelectedCard.cardId);
+            d.AddData(AscendAction.SlotToKey, slotId);
+
+            int cardCount = 1;
+            List<GameCard> toShow = Owner.gameField.HandSlot.cards;
+            string title = $"Select Elestral to Ascend from {SelectedCard.name}";
+            BrowseMenu.LoadCards(toShow, title, true, cardCount, cardCount);
+            ClosePopMenu(true);
+            BrowseMenu.OnClosed += AwaitAscendingElestral;
+
+            
+        }
+        protected void AwaitAscendingElestral(CardBrowseMenu.BrowseArgs args)
+        {
+            BrowseMenu.OnClosed -= AwaitAscendingElestral;
+            if (!args.IsConfirm) { Refresh(); TurnManager.SetCrafingAction(); return; }
+            this.AddActionData(CardActionData.SourceKey, args.Selections[0].cardId);
+            GameCard sourceCard = this.GetCraftingAction().FindSourceCard();
+
+
+            string title = $"Select Catalyst Spirit to Ascend from {SelectedCard.name} to {sourceCard.name}.";
+            BrowseMenu.EnchantLoad(Owner.gameField.SpiritDeckSlot.cards, title, true, 1, 1, sourceCard, true);
+            ClosePopMenu(true);
+            BrowseMenu.OnClosed += DoAscend;
+        }
+        protected void DoAscend(CardBrowseMenu.BrowseArgs args)
+        {
+            BrowseMenu.OnClosed -= DoAscend;
+            if (!args.IsConfirm)
+            {
+                Refresh();
+                AscendCommand();
+            }
+            else
+            {
+                this.AddActionData("catalyst_spirit", args.Selections[0].cardId);
+                this.AddActionData("card_mode", (int)args.EnchantMode);
+                this.GetCraftingAction().SetSpiritList(SelectedCard.EnchantingSpirits);
+                this.GetCraftingAction().SetResult(ActionResult.Succeed);
+                AscendAction toSend = AscendAction.FromData(this.GetCraftingAction());
+                GameManager.Instance.Ascend(toSend);
+                TurnManager.SetCrafingAction();
+                Refresh();
+            }
+        }
        
+       
+        #endregion
+
         #endregion
     }
 }

@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using UnityEngine;
-using static Gameplay.CardActions.DrawAction;
-using static Gameplay.CardActions.EnchantAction;
 
 namespace Gameplay.CardActions
 {
@@ -14,28 +12,24 @@ namespace Gameplay.CardActions
         private List<GameCard> _spirits = null;
         protected List<GameCard> spirits { get { _spirits ??= new List<GameCard>(); return _spirits; } }
 
+        protected override ActionCategory GetCategory()
+        {
+            return ActionCategory.Nexus;
+        }
+
         protected override CardActionData GetActionData()
         {
             int spiritCount = spirits.Count;
 
             CardActionData data = new CardActionData(this);
-            data.AddData("player", player.userId);
-            data.AddData("nexus_source", sourceCard.cardId);
+            data.SetPlayer(player);
+            data.SetSourceCard(sourceCard);
             data.AddData("nexus_target", targetCard.cardId);
-            data.AddData("action_type", NexusType);
             data.AddData("slot_to", toSlot.slotId);
-            data.AddData("spirit_1", "");
-            data.AddData("spirit_2", "");
-            data.AddData("spirit_3", "");
-            data.AddData("spirit_4", "");
-            data.AddData("spirit_5", "");
-            data.AddData("spirit_6", "");
-            if (spiritCount > 0) { data.SetData("spirit_1", spirits[0].cardId); }
-            if (spiritCount > 1) { data.SetData("spirit_2", spirits[1].cardId); }
-            if (spiritCount > 2) { data.SetData("spirit_3", spirits[2].cardId); }
-            if (spiritCount > 3) { data.SetData("spirit_4", spirits[3].cardId); }
-            if (spiritCount > 4) { data.SetData("spirit_5", spirits[4].cardId); }
-            if (spiritCount > 5) { data.SetData("spirit_6", spirits[5].cardId); }
+            for (int i = 0; i < spirits.Count; i++)
+            {
+                data.SetSpirit(i + 1, spirits[i].cardId);
+            }
             data.AddData("result", actionResult);
 
             return data;
@@ -47,6 +41,8 @@ namespace Gameplay.CardActions
         }
 
         #region Initialization
+
+        #region Import from Data
         public static NexusAction FromData(CardActionData data)
         {
             return new NexusAction(data);
@@ -58,7 +54,7 @@ namespace Gameplay.CardActions
         protected override void ParseData(CardActionData data)
         {
             base.ParseData(data);
-            player = Game.FindPlayer(data.Value<string>("player"));
+            player = Game.FindPlayer(data.Value<string>(CardActionData.PlayerKey));
             sourceCard = Game.FindCard(data.Value<string>("nexus_source"));
             targetCard = Game.FindCard(data.Value<string>("nexus_target"));
             toSlot = Game.FindSlot(data.Value<string>("slot_to"));
@@ -78,6 +74,8 @@ namespace Gameplay.CardActions
             SetDetails(player);
 
         }
+
+        #endregion
         protected void SetDetails(Player player)
         {
             actionTime = .65f;
@@ -102,12 +100,12 @@ namespace Gameplay.CardActions
         {
             Movements.Clear();
             
-            yield return DoMove(spirits, toSlot, actionTime, .04f);
+            yield return DoStaggeredMove(spirits, toSlot, actionTime, .04f);
         }
 
-        protected override IEnumerator DoMove(List<GameCard> cards, CardSlot to, float time, float staggerTime = .04f)
+        protected override IEnumerator DoStaggeredMove(List<GameCard> cards, CardSlot to, float time, float staggerTime = .04f)
         {
-            yield return base.DoMove(cards, to, time);
+            yield return base.DoStaggeredMove(cards, to, time);
             for (int i = 0; i < cards.Count; i++)
             {
                 GameCard card = cards[i];

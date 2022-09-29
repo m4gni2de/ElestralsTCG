@@ -13,10 +13,12 @@ using System.Threading.Tasks;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using Databases;
 using Gameplay;
+using RiptideNetworking;
+using UnityEngine.Networking;
 
 public class AppManager : MonoBehaviour
 {
-
+   
     #region Initialization & Startup
     private void Awake()
     {
@@ -26,7 +28,6 @@ public class AppManager : MonoBehaviour
             DontDestroyOnLoad(this);
             CheckAssets();
         }
-
     }
 
     private void CheckAssets()
@@ -55,16 +56,16 @@ public class AppManager : MonoBehaviour
             
         }
         
-
-
         if (hasDb)
         {
-
             SetupManager();
             App.ChangeScene(1);
+            
         }
        
     }
+
+
 
 
     #endregion
@@ -73,6 +74,8 @@ public class AppManager : MonoBehaviour
     public static readonly string ManagerAsset = "AppManager";
     public static AppManager Instance { get; private set; }
     #endregion
+
+   
 
     #region User
     public User Account;
@@ -296,7 +299,90 @@ public class AppManager : MonoBehaviour
         return true;
     }
 
-    
 
+
+    #endregion
+
+
+    #region Outbound Connections
+
+    public static async Task<string> DoPostRequestWithPayload(string url, WWWForm payload)
+    {
+        using (var www = UnityWebRequest.Post(url, payload))
+        {
+            www.timeout = 3;
+            www.SendWebRequest();
+            byte[] by = www.uploadHandler.data;
+
+            string c = Convert.ToBase64String(by);
+
+
+            while (!www.isDone)
+                await Task.Delay(100);
+            if (www.result == UnityWebRequest.Result.ConnectionError)
+            {
+                string title = "Error";
+                string msg = www.error.ToString();
+                //GameManager.Instance.ShowMessage(title, msg);
+                return "error";
+            }
+            else
+            {
+                if (www.responseCode == 200)
+                {
+                    var data = www.downloadHandler.text; //You can process text - bytes - etc...
+                    return data; //Processes the downloaded information
+                }
+                else
+                {
+                    string title = "Error";
+                    string msg = www.responseCode.ToString();
+                    Debug.Log(msg);
+                    //GameManager.Instance.ShowMessage(title, msg);
+                    return "error";
+                }
+            }
+
+        }
+    }
+
+
+    public static async Task<string> DoGetRequest(string url, Dictionary<string, string> headers)
+    {
+
+        using (var www = UnityWebRequest.Get(url))
+        {
+            if (headers != null)
+            {
+                foreach (KeyValuePair<string, string> header in headers)
+                {
+                    www.SetRequestHeader(header.Key, header.Value);
+                }
+            }
+
+            www.SendWebRequest();
+            while (!www.isDone)
+                await Task.Delay(100);
+            if (www.result == UnityWebRequest.Result.ConnectionError)
+            {
+                return www.error;
+            }
+            else
+            {
+                if (www.responseCode == 200)
+                {
+                    var data = www.downloadHandler.text; //You can process text - bytes - etc...
+
+                    return data; //Processes the downloaded information
+                }
+                else
+                {
+                    //return www.error;
+                    return www.error;
+                }
+            }
+
+        }
+    }
     #endregion
 }

@@ -22,6 +22,24 @@ public static class UIHelpers
         return results.Count > 0;
     }
 
+    public static bool IsUIObjectOnTop(this RectTransform transform)
+    {
+        float z = transform.localPosition.z;
+
+
+        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
+        eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+
+        foreach (var item in results)
+        {
+            float objZ = item.gameObject.transform.localPosition.z;
+            if (objZ >= z) { return false; }
+        }
+        return true;
+    }
+
     public static bool IsPointerOverMe(this RectTransform transform)
     {
         Vector2 currPosition = Camera.main.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));

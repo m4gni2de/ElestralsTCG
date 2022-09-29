@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
-using UnityEditor.Experimental.GraphView;
 using System.Security;
 
 namespace Gameplay.CardActions
@@ -11,6 +10,10 @@ namespace Gameplay.CardActions
     {
         protected CardSlot fromSlot, toSlot;
         public DrawActionType drawType;
+        protected override ActionCategory GetCategory()
+        {
+            return ActionCategory.Draw;
+        }
 
         bool isMainDeck
         {
@@ -31,13 +34,12 @@ namespace Gameplay.CardActions
         protected override CardActionData GetActionData()
         {
             CardActionData data = new CardActionData(this);
-            data.AddData("player", player.userId);
-            data.AddData("card", sourceCard.cardId);
-            data.AddData("action_type", DrawType);
+            data.SetPlayer(player);
+            data.SetSourceCard(sourceCard);
             data.AddData("draw_type", (int)drawType);
             data.AddData("slot_from", fromSlot.slotId);
             data.AddData("slot_to", toSlot.slotId);
-            data.AddData("result", (int)actionResult);
+            data.SetResult(actionResult);
 
             return data;
         }
@@ -52,8 +54,8 @@ namespace Gameplay.CardActions
         protected override void ParseData(CardActionData data)
         {
             base.ParseData(data);
-            player = Game.FindPlayer(data.Value<string>("player"));
-            sourceCard = Game.FindCard(data.Value<string>("card"));
+            player = Game.FindPlayer(data.Value<string>(CardActionData.PlayerKey));
+            sourceCard = Game.FindCard(data.Value<string>(CardActionData.SourceKey));
             drawType = (DrawActionType)data.Value<int>("draw_type");
             fromSlot = Game.FindSlot(data.Value<string>("slot_from"));
             toSlot = Game.FindSlot(data.Value<string>("slot_to"));
@@ -67,7 +69,7 @@ namespace Gameplay.CardActions
             if (this.drawType == DrawActionType.GameStart || this.drawType == DrawActionType.TurnStart) { actionResult = ActionResult.Succeed; }
             string drawString = "draws";
             if (this.drawType == DrawActionType.Mill) { drawString = "mills"; }
-            _declaredMessage = $"{drawString} a card!";
+            _declaredMessage = $"{player.username} {drawString} a card!";
             _actionMessage = $"{player.username} {drawString} a card from their deck!";
         }
 

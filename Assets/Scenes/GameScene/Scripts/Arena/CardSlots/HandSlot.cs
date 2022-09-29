@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Gameplay.Menus;
 using Gameplay.Menus.Popup;
 using UnityEngine;
 using UnityEngine.Events;
@@ -13,6 +14,12 @@ namespace Gameplay
     {
         public ScrollRect m_Scroll;
         protected RectTransform Content { get { return m_Scroll.content; } }
+
+
+        protected override Vector2 GetSlotSize()
+        {
+            return Content.GetComponent<GridLayoutGroup>().cellSize;
+        }
 
         [SerializeField]
         private SpriteDisplay sp;
@@ -30,16 +37,17 @@ namespace Gameplay
             card.cardObject.SetAsChild(Content, CardScale, SortLayer, 0);
             card.cardObject.Flip(facing == CardFacing.FaceDown);
         }
-        protected override void SetCommands(GameCard card)
-        {
-            TouchObject to = card.cardObject.touch;
-            to.AddClickListener(() => ClickCard(card));
-            to.AddHoldListener(() => GameManager.Instance.DragCard(card, this));
-        }
+        //protected override void SetCommands(GameCard card)
+        //{
+        //    TouchObject to = card.cardObject.touch;
+        //    to.AddClickListener(() => ClickCard(card));
+        //    to.AddHoldListener(() => GameManager.Instance.DragCard(card, this));
+        //}
 
         protected override void ClickCard(GameCard card)
         {
-            //base.ClickCard(card);
+            
+            base.ClickCard(card);
             if (App.WhoAmI == Owner.userId)
             {
                 SetSelectedCard(card);
@@ -102,7 +110,7 @@ namespace Gameplay
             string title = $"Select {enchantCount} Spirits for Enchantment of {SelectedCard.name}";
             GameManager.Instance.browseMenu.LoadCards(toShow, title, true, enchantCount, enchantCount);
             GameManager.Instance.browseMenu.EnchantMode(SelectedCard);
-            ClosePopMenu();
+            ClosePopMenu(true);
             GameManager.Instance.browseMenu.OnEnchantClose += AwaitEnchantClose;
 
         }
@@ -140,7 +148,21 @@ namespace Gameplay
         }
         protected void DiscardCommand()
         {
-            GameManager.Instance.browseMenu.LoadCards(cards, "Select Cards to Discard", true);
+            GameManager.Instance.browseMenu.LoadCards(cards, "Select Cards to Discard", true, 1, cards.Count);
+            ClosePopMenu(true);
+            GameManager.Instance.browseMenu.OnClosed += AwaitDiscardClose;
+        }
+        protected void AwaitDiscardClose(CardBrowseMenu.BrowseArgs args)
+        {
+            GameManager.Instance.browseMenu.OnClosed -= AwaitDiscardClose;
+            if (!args.IsConfirm) { Refresh(); return; }
+            for (int i = 0; i < args.Selections.Count; i++)
+            {
+                GameCard toMove = args.Selections[i];
+                MoveAction ac = new MoveAction(Owner, toMove, Owner.gameField.UnderworldSlot);
+                GameManager.Instance.MoveCard(ac);
+            }
+            
         }
         protected void CloseCommand()
         {
@@ -151,6 +173,8 @@ namespace Gameplay
         {
             GameManager.Instance.browseMenu.SelectedCards.Clear();
             SelectedCard = null;
+            GameManager.SelectedCard = null;
+            
         }
         #endregion
 

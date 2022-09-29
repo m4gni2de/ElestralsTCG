@@ -4,6 +4,7 @@ using UnityEngine;
 using Cards;
 using CardsUI;
 using Gameplay.GameCommands;
+using System.Security.Cryptography;
 
 namespace Gameplay
 {
@@ -30,57 +31,19 @@ namespace Gameplay
     {
         public string name;
         public CardStats cardStats;
-        #region Visual Info
-        public struct VisualInfo
-        {
-            public Transform transform { get; set; }
-            public Vector2 scale { get; set; }
-            public string sortLayer { get; set; }
-            public int childIndex { get; set; }
-            public Vector2 position { get; set; }
-            public bool isFaceUp { get; set; }
-            public CardLocation location { get; set; }
-
-           VisualInfo(GameCard card)
-            {
-                transform = card.cardObject.transform.parent;
-                scale = card.cardObject.transform.localScale;
-                sortLayer = card.cardObject.sp.SortLayerName;
-                childIndex = card.cardObject.transform.GetSiblingIndex();
-                position = card.cardObject.transform.localPosition;
-                isFaceUp = card.IsFaceUp;
-                location = card.location;
-            }
-
-            public static VisualInfo GetInfo(GameCard card)
-            {
-                return new VisualInfo(card);
-            }
-        }
-
         #region Visual Properties
-        public VisualInfo m_VisualInfo
-        {
-            get
-            {
-                return VisualInfo.GetInfo(this);
-            }
-            set
-            {
-
-                SetCard(value);
-            }
-        }
         public bool IsFaceUp { get { return cardObject.IsFaceUp; } }
 
-        protected void SetCard(VisualInfo value)
-        {
-            cardObject.SetAsChild(value.transform, value.scale, value.sortLayer, value.childIndex);
-            cardObject.transform.localPosition = value.position;
-            cardObject.Flip(!value.isFaceUp);
-
-        }
         #endregion
+
+        #region Network Linking
+        //the id of the card in as it appears in order on the uploaded deck list. 
+        private int _networkId;
+        public int NetworkId { get => _networkId; }
+        public void SetNetId(int id)
+        {
+            _networkId = id;
+        }
         #endregion
 
         #region Static Constructors
@@ -130,18 +93,30 @@ namespace Gameplay
         }
 
         
-        public List<ElementCode> EnchantingSpirits
+        public List<ElementCode> EnchantingSpiritTypes
         {
             get
             {
                 List<ElementCode> list = new List<ElementCode>();
-                if (CurrentSlot == null || CurrentSlot.GetType() != typeof(SingleSlot)) { return list; }
+                if (CurrentSlot == null || CurrentSlot.MainCard == null) { return list; }
                 SingleSlot slot = (SingleSlot)CurrentSlot;
                 for (int i = 0; i < slot.EnchantingSpirits.Count; i++)
                 {
                     list.AddRange(slot.EnchantingSpirits[i].cardStats.CardElements);
 
                 }
+                return list;
+            }
+        }
+
+        public List<GameCard> EnchantingSpirits
+        {
+            get
+            {
+                List<GameCard> list = new List<GameCard>();
+                if (CurrentSlot == null || CurrentSlot.GetType() != typeof(SingleSlot)) { return list; }
+                SingleSlot slot = (SingleSlot)CurrentSlot;
+                list.AddRange(slot.EnchantingSpirits);
                 return list;
             }
         }
@@ -170,6 +145,13 @@ namespace Gameplay
             get { return _CurrentSlot; }
         }
 
+        public bool IsYours
+        {
+            get
+            {
+                return Owner == GameManager.ActiveGame.You;
+            }
+        }
         #endregion
 
 
@@ -178,9 +160,12 @@ namespace Gameplay
         {
             _card = data;
             location = CardLocation.Deck;
-            cardId = UniqueString.GetShortId("car");
             name = $"{_card.cardData.cardName} - {copy}";
             cardStats = new CardStats(this);
+        }
+        public void SetId(string id)
+        {
+            cardId = id;
         }
 
        
@@ -200,7 +185,18 @@ namespace Gameplay
             mode = cardMode;
             if (CardType == CardType.Elestral)
             {
-                cardObject.Rotate(mode == CardMode.Defense);
+                if (mode == CardMode.Defense)
+                {
+                    cardObject.Rotate(true);
+                    rect.sizeDelta = new Vector2(CurrentSlot.rect.sizeDelta.y, CurrentSlot.rect.sizeDelta.x);
+                }
+                else
+                {
+                    cardObject.Rotate(false);
+                    rect.sizeDelta = CurrentSlot.rect.sizeDelta;
+                }
+                
+                
             }
            
         }
@@ -213,9 +209,19 @@ namespace Gameplay
         }
         public void AllocateTo(CardSlot slot)
         {
+            int currentSlot = -1;
+            if (_CurrentSlot != null)
+            {
+                currentSlot = _CurrentSlot.index;
+            }
+            
+            
             _CurrentSlot = slot;
             location = slot.slotType;
             _slotIndex = slot.index;
+            rect.sizeDelta = slot.rect.sizeDelta;
+
+            NetworkPipeline.SendNewCardSlot(cardId, currentSlot, slot.index);
         }
        
        
@@ -257,64 +263,14 @@ namespace Gameplay
         public CardType DefaultCardType { get { return card.CardType; } }
         #endregion
 
-        #region Card Actions
-
-        //public void ChangeCardMode(CardMode cardMode)
-        //{
-        //    CardMode current = mode;
-        //    if (cardMode == CardMode.None || cardMode == current) { return; }
-        //    SetCardMode(cardMode);
-        //    if (CardType == CardType.Elestral)
-        //    {
-        //        cardObject.Rotate(cardMode == CardMode.Defense);
-
-        //    }
-        //    if (CardType == CardType.Rune)
-        //    {
-        //        if (cardMode == CardMode.Attack)
-        //        {
-
-        //        }
-
-        //    }
-        //}
-        #endregion
-
+       
         #region Card Events
         protected void OnEnchantment(GameCard source, GameCard spirit)
         {
             Game.OnEnchantmentSend(source, spirit);
             
         }
-        //protected void SetWatchers()
-        //{
-        //    Game.OnNewTargetParams += OnNewTargetParams;
-        //}
-
-        //private void OnNewTargetParams(TargetArgs obj)
-        //{
-        //    if (obj == null)
-        //    {
-        //        cardObject.touch.RemoveOverrideClick();
-        //        cardObject.touch.CheckFreeze();
-        //    }
-        //    else
-        //    {
-        //        if (obj.Validate(this))
-        //        {
-        //            cardObject.touch.OverrideClick(() => obj.SelectTarget(this));
-        //        }
-        //        else
-        //        {
-        //            cardObject.touch.FreezeClick();
-        //        }
-        //    }
-        //}
-
-        //protected void RemoveWatchers()
-        //{
-        //    Game.OnNewTargetParams -= OnNewTargetParams;
-        //}
+       
         #endregion
 
     }

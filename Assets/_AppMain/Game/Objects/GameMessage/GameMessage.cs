@@ -9,6 +9,11 @@ namespace Gameplay
 {
     public class GameMessage 
     {
+        public enum MessageType
+        {
+            Game = 0,
+            Action = 1,
+        }
 
         #region Properties
         public string message;
@@ -21,6 +26,19 @@ namespace Gameplay
             {
                 return _displayTime;
             }
+        }
+
+       public bool HasCloseEvents
+        {
+            get
+            {
+                return CloseEvents();
+            }
+        }
+        protected virtual bool CloseEvents() { return false; }
+        public virtual MessageType GetMessageType()
+        {
+            return MessageType.Game;
         }
         #endregion
 
@@ -43,6 +61,10 @@ namespace Gameplay
         }
 
         public virtual void CloseMessage()
+        {
+            
+        }
+        public virtual void ForceClose()
         {
 
         }

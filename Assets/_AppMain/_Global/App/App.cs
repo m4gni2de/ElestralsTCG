@@ -8,6 +8,8 @@ using UnityEngine.Events;
 using UnityEngine.AddressableAssets;
 using System.Threading.Tasks;
 using System;
+using Decks;
+using nsSettings;
 
 public class App 
 {
@@ -44,6 +46,21 @@ public class App
                 LogFatal("There is no account in use.");
             }
             return _account;
+        }
+    }
+
+    public static Decklist ActiveDeck
+    {
+        get
+        {
+            if (_account == null)
+            {
+                LogFatal("There is no account in use.");
+                return null;
+            }
+            int activeDeck = SettingsManager.Account.Settings.ActiveDeck;
+            Decklist deck = Account.DeckLists[activeDeck];
+            return deck;
         }
     }
 

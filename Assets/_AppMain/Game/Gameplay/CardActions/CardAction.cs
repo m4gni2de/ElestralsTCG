@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
@@ -15,18 +16,20 @@ namespace Gameplay
         Succeed = 1,
         Failed = 2,
     }
+    public enum ActionCategory
+    {
+        None = -1,
+        Draw = 0,
+        Shuffle = 1,
+        Enchant = 2,
+        Mode = 3,
+        Attack = 4,
+        Nexus = 5,
+        Ascend = 6,
+    }
     public class CardAction : iFreeze
     {
-        #region Action Types
-        public static readonly string AttackType = "attack";
-        public static readonly string DrawType = "draw";
-        public static readonly string EnchantType = "enchant";
-        public static readonly string ModeType = "mode";
-        public static readonly string NexusType = "nexus";
-        public static readonly string ShuffleType = "shuffle";
-
-        #endregion
-        
+       
 
         public string id;
         public GameCard sourceCard;
@@ -35,6 +38,17 @@ namespace Gameplay
         public bool isRunning { get { return _isRunning; } }
         private bool _isResolved = false;
         public bool isResolved { get { return _isResolved; } }
+        public ActionCategory category
+        {
+            get
+            {
+                return GetCategory();
+            }
+        }
+        protected virtual ActionCategory GetCategory()
+        {
+            return ActionCategory.None;
+        }
 
         public virtual void ForceCompleteAction()
         {
@@ -42,7 +56,8 @@ namespace Gameplay
         }
 
         protected float actionTime;
-        protected bool IsCounterable = true;
+        protected bool IsCounterable;
+        
 
         private List<CardAction> _responses = null;
         public List<CardAction> Resposnes { get { _responses ??= new List<CardAction>(); return _responses; } }
@@ -68,7 +83,7 @@ namespace Gameplay
             {
                 if (_ActionData == null)
                 {
-                    if (!_isResolved || _isRunning) { return null; }
+                    //if (!_isResolved || _isRunning) { return null; }
                     _ActionData = GetActionData();
                 }
                 return _ActionData;
@@ -115,7 +130,7 @@ namespace Gameplay
 
 
 
-        public IEnumerator DeclareAction()
+        public virtual IEnumerator DeclareAction()
         {
             if (!IsCounterable || actionResult != ActionResult.Pending)
             {
@@ -128,13 +143,13 @@ namespace Gameplay
                 yield return TryAction();
             }
         }
-        protected virtual IEnumerator TryAction(float waitTime = 1f)
+        protected virtual IEnumerator TryAction(float waitTime = .1f)
         {
             float acumTime = 0f;
             _isRunning = true;
-            GameManager.DeclareCardAction(this);
             GameMessage message = GameMessage.FromAction(DeclaredMessage, this, true, -1f);
             GameManager.Instance.messageControl.ShowMessage(message);
+            GameManager.DeclareCardAction(this);
             do
             {
                 acumTime += Time.deltaTime;
@@ -144,8 +159,12 @@ namespace Gameplay
             //figure out how to respond to actions here, but for now, just allow players to undo an action if it's been countered
             actionResult = ActionResult.Succeed;
         }
-        #region Doing Action
+
+
+
         
+        #region Doing Action
+
         public IEnumerator Do()
         {
             if (actionResult == ActionResult.Succeed)
@@ -163,7 +182,7 @@ namespace Gameplay
         }
         public void FailAction()
         {
-            ResolveAction(ActionResult.Failed);
+            End(ActionResult.Failed);
         }
         public virtual IEnumerator PerformAction()
         {
@@ -178,10 +197,18 @@ namespace Gameplay
         {
             End(ActionResult.Cancel);
         }
-        
+
         #endregion
 
-        public UnityEvent OnActionEnd;
+        private UnityEvent _OnActionEnd = null;
+        public UnityEvent OnActionEnd
+        {
+            get
+            {
+                _OnActionEnd ??= new UnityEvent();
+                return _OnActionEnd;
+            }
+        }
         public void End(ActionResult result)
         {
             ResolveAction(result);
@@ -199,7 +226,7 @@ namespace Gameplay
         }
 
 
-        #region Functions
+        #region Base Action Commands
 
         protected virtual IEnumerator DoMove(GameCard card, CardSlot to, float time = .65f)
         {
@@ -210,13 +237,14 @@ namespace Gameplay
             {
                 this.Freeze();
                 yield return new WaitForEndOfFrame();
-                card.cardObject.transform.position += direction * Time.deltaTime;
+                float frames = Time.deltaTime / time;
+                card.cardObject.transform.position += (direction * frames);
                 acumTime += Time.deltaTime;
             } while (Validate(acumTime, time));
             this.Thaw();
         }
 
-        protected virtual IEnumerator DoMove(List<GameCard> cards, CardSlot to, float time = .65f, float staggerTime = .04f)
+        protected virtual IEnumerator DoStaggeredMove(List<GameCard> cards, CardSlot to, float time = .65f, float staggerTime = .04f)
         {
             float acumTime = 0f;
             float fullTime = time + (staggerTime * (float)cards.Count);
@@ -246,8 +274,43 @@ namespace Gameplay
             } while (Validate(acumTime, fullTime));
             this.Thaw();
         }
+        protected virtual IEnumerator DoMovements()
+        {
+            do
+            {
+                IEnumerator move = Movements[0];
+                yield return move;
+                yield return new WaitForEndOfFrame();
+                Movements.Remove(move);
 
-        
+
+            } while (Movements.Count > 0);
+            End(ActionResult.Succeed);
+        }
+
+        protected IEnumerator DoFlip(GameCard card, CardMode newMode, float time = .65f)
+        {
+            float acumTime = 0f;
+            bool toFaceDown = false;
+            if (newMode == CardMode.Defense) { toFaceDown = true; }
+            float targetVal = 0f;
+            Vector3 startScale = card.cardObject.GetScale();
+            do
+            {
+                Vector3 cardScale = card.cardObject.GetScale();
+                Vector2 newScale = cardScale - new Vector3((startScale.x * (Time.deltaTime * 2f)), 0f, 0f);
+                card.cardObject.SetScale(newScale);
+                yield return new WaitForEndOfFrame();
+                acumTime += time;
+
+            } while (Validate(acumTime, time) || card.cardObject.GetScale().x > targetVal);
+            card.SetCardMode(newMode);
+            card.cardObject.SetScale(startScale);
+            card.cardObject.Flip(toFaceDown);
+        }
+        #endregion
+
+        #region Functions
 
         protected virtual bool Validate(float acumTime, float time)
         {
@@ -270,8 +333,47 @@ namespace Gameplay
             return direction;
         }
 
-        
         #endregion
+
+        #region Action Watchers
+        public virtual void SourceCardWatcher(GameCard card, bool isSelected)
+        {
+
+            if (isSelected)
+            {
+
+                ActionData.SetData(CardActionData.SourceKey, card.cardId);
+            }
+            else
+            {
+                ActionData.SetData(CardActionData.SourceKey, "");
+            }
+        }
+        #endregion
+
+
+        #region Network Actions
+
+        public void SendAction(bool send)
+        {
+            _isRunning = true;
+            GameMessage message = GameMessage.FromAction(DeclaredMessage, this, false, -1f);
+            GameManager.Instance.messageControl.ShowMessage(message);
+            if (send)
+            {
+                NetworkPipeline.SendActionDeclare(this);
+            }
+            
+        }
+       
+        public void ConfirmAttempt(ActionResult result)
+        {
+            actionResult = result;
+        }
+        #endregion
+
+
+
     }
 }
 

@@ -12,6 +12,7 @@ using static Decks.Decklist;
 public class CardView : MonoBehaviour, iRemoteAsset
 {
     public static string AssetName { get { return RemoteAssetHelpers.GetAssetName<CardView>(); } }
+    public static string BorderMapping = "Border";
 
     public Card ActiveCard;
     public SpriteDisplay sp;
@@ -20,6 +21,14 @@ public class CardView : MonoBehaviour, iRemoteAsset
 
     private MultiImage _images = null;
     public MultiImage Images { get { _images ??= GetComponent<MultiImage>(); return _images; } }
+
+    protected SpriteDisplay borderSp
+    {
+        get
+        {
+            return Images.FromKey(BorderMapping);
+        }
+    }
 
     public bool isDragging = false;
 
@@ -63,7 +72,7 @@ public class CardView : MonoBehaviour, iRemoteAsset
     }
    
 
-    public void Flip(bool toBack = false)
+    public virtual void Flip(bool toBack = false)
     {
         if (toBack)
         {
@@ -76,7 +85,7 @@ public class CardView : MonoBehaviour, iRemoteAsset
 
         IsFaceUp = !toBack;
     }
-    public void SetScale(Vector2 newScale)
+    public virtual void SetScale(Vector2 newScale)
     {
 
         
@@ -88,11 +97,12 @@ public class CardView : MonoBehaviour, iRemoteAsset
     {
         return sp.m_Transform.localScale;
     }
-    public void Rotate(bool isTapped)
+    public virtual void Rotate(bool isTapped)
     {
         if (isTapped)
         {
             transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, transform.localEulerAngles.y, 90f);
+            
         }
         else
         {
@@ -100,7 +110,7 @@ public class CardView : MonoBehaviour, iRemoteAsset
         }
     }
 
-    public void SetAsChild(Transform tf, Vector2 scale, string sortLayer = "", int childIndex = -1)
+    public virtual void SetAsChild(Transform tf, Vector2 scale, string sortLayer = "", int childIndex = -1)
     {
         transform.SetParent(tf);
         
@@ -114,26 +124,27 @@ public class CardView : MonoBehaviour, iRemoteAsset
 
     public virtual void SetSortingLayer(string sortLayer)
     {
-        Renderer[] rends = GetComponentsInChildren<Renderer>(true);
-
-        for (int i = 0; i < rends.Length; i++)
-        {
-            rends[i].sortingLayerName = sortLayer;
-        }
-
-
+        sp.SetSortLayer(sortLayer);
+        borderSp.SetSortLayer(sortLayer);
     }
 
     public virtual void SetSortingOrder(int order)
+    {
+       
+        sp.SetSortOrder(order);
+        borderSp.SetSortOrder(sp.SortOrder + 1);
+    }
+
+    public virtual void AddToSortingOrder(int order)
     {
         Renderer[] rends = GetComponentsInChildren<Renderer>(true);
 
         for (int i = 0; i < rends.Length; i++)
         {
-            rends[i].sortingOrder = order;
+            rends[i].sortingOrder += order;
         }
 
-
+        
     }
 
     public void SelectCard(bool toggle)

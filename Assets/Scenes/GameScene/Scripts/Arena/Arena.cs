@@ -79,16 +79,15 @@ namespace Gameplay
         {
             
         }
-        public void SetPlayer(Player p)
+        public void SetPlayer(Player p, string fieldId)
         {
             Field f = NearField;
-            if (p.userId != App.WhoAmI) { f = FarField; }
+            if (!p.IsLocal) { f = FarField; }
             //if (NearField._player != null) { f = FarField; }
-            f.SetPlayer(p);
+            f.SetPlayer(p, fieldId);
         }
 
         
-
 
     }
 }

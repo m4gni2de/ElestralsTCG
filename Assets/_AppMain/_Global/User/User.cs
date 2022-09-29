@@ -4,6 +4,7 @@ using UnityEngine;
 using Databases;
 using System;
 using Decks;
+using System.Threading.Tasks;
 
 namespace Users
 {
@@ -128,6 +129,11 @@ namespace Users
             UserService.SaveUser(data.data);
         }
 
+        #endregion
+
+
+        #region Network Properties
+        
         #endregion
 
     }

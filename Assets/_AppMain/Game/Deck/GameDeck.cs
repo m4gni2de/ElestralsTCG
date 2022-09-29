@@ -96,6 +96,19 @@ namespace Gameplay
                 return cards.ToArray();
             }
         }
+
+        public string[] NetworkSpiritOrder
+        {
+            get
+            {
+                List<string> cards = new List<string>();
+                for (int i = 0; i < SpiritDeck.InOrder.Count; i++)
+                {
+                    cards.Add(SpiritDeck.InOrder[i].card.cardData.cardName);
+                }
+                return cards.ToArray();
+            }
+        }
         public string[] DeckOrder
         {
             get
@@ -108,11 +121,32 @@ namespace Gameplay
                 return cards.ToArray();
             }
         }
+
+        public string[] NetworkDeckOrder
+        {
+            get
+            {
+                List<string> cards = new List<string>();
+                for (int i = 0; i < MainDeck.InOrder.Count; i++)
+                {
+                    cards.Add(MainDeck.InOrder[i].card.cardData.cardName);
+                }
+                return cards.ToArray();
+            }
+        }
         #endregion
 
         public GameDeck(Decklist list)
         {
-            uniqueId = UniqueString.GetShortId("dk");
+            if (list.IsUploaded)
+            {
+                uniqueId = list.UploadCode;
+            }
+            else
+            {
+                uniqueId = UniqueString.GetShortId("dk");
+            }
+            
             _spiritDeck = Deck.SpiritDeck();
             _mainDeck = Deck.MainDeck();
 
@@ -132,14 +166,19 @@ namespace Gameplay
                 if (list.Cards[i].cardType == CardType.Spirit)
                 {
                     GameCard card = NewCard(list.Cards[i].key, CardType.Spirit, list.Cards[i].copy);
+                    card.SetNetId(i);
+                    card.SetId($"{uniqueId}-{i}");
                     SpiritDeck.AddCard(card);
 
                 }
                 else
                 {
                     GameCard card = NewCard(list.Cards[i].key, list.Cards[i].cardType, list.Cards[i].copy);
+                    card.SetNetId(i);
+                    card.SetId($"{uniqueId}-{i}");
                     MainDeck.AddCard(card);
                 }
+
             }
         }
 

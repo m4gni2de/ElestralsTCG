@@ -5,51 +5,20 @@ using Gameplay;
 using System;
 using Newtonsoft.Json.Schema;
 using static Gameplay.GameState;
+using TouchControls;
+using UnityEngine.UIElements;
 
 public class SingleSlot : CardSlot, iMainCard
 {
-    #region Event Properties
-    public static event Action<SingleSlot> OnNewSelectedSlot;
-    public static event Action OnClearedSelectedSlot;
-    private static SingleSlot _SelectedSlot = null;
-    public static SingleSlot SelectedSlot
-    {
-        get
-        {
-            return _SelectedSlot;
-        }
-        set
-        {
-            if (_SelectedSlot != null)
-            {
-                if (value != _SelectedSlot) { _SelectedSlot.ToggleSelect(false); }
-            }
-            if (value != null)
-            {
-                OnNewSelectedSlot?.Invoke(value);
-                value.ToggleSelect(true);
-            }
-            else
-            {
-                OnClearedSelectedSlot?.Invoke();
-            }
-            _SelectedSlot = value;
+   
+    
 
-        }
-    }
-
-    #endregion
+ 
     #region Interface
     public void AddMainCard(GameCard card)
     {
         MainCard = card;
-        for (int i = 0; i < cards.Count; i++)
-        {
-            if (cards[i].CardType == CardType.Spirit)
-            {
-                //Enchant(cards[i]);
-            }
-        }
+        
     }
     protected override void SetMainCard(GameCard card)
     {
@@ -78,10 +47,35 @@ public class SingleSlot : CardSlot, iMainCard
     }
     #endregion
 
+    private TouchGroup _touchGroup = null;
+    public TouchGroup touchGroup
+    {
+        get
+        {
+           if (_touchGroup == null)
+            {
+                if (GetComponent<TouchGroup>() != null) { _touchGroup = GetComponent<TouchGroup>(); }
+                else
+                { _touchGroup = gameObject.AddComponent<TouchGroup>();
+                }
+            }
+            return _touchGroup;
+        }
+    }
+
+    private void Reset()
+    {
+        if (GetComponent<TouchGroup>() != null)
+        {
+            gameObject.AddComponent<TouchGroup>();
+        }
+    }
     protected override void SetSlot()
     {
-
+        
     }
+
+   
     protected override void ToggleSelect(bool isSelected)
     {
        if (!isSelected)
@@ -97,7 +91,6 @@ public class SingleSlot : CardSlot, iMainCard
             {
                 SelectedCard.SelectCard(true);
             }
-            SelectedCard.SelectCard(false);
         }
     }
 
@@ -136,46 +129,63 @@ public class SingleSlot : CardSlot, iMainCard
         CardView c = card.cardObject;
         string sortLayer = SortLayer;
         float height = rect.sizeDelta.y;
-        float offsetVal = .05f;
+        float offsetVal = .10f;
         float offsetHeight = height * offsetVal;
 
-
+        
+        SetCommands(card);
+        int zOrder = 0;
         if (card.cardStats.cardType != CardType.Spirit)
         {
             sortLayer = "CardL2";
-            SetCommands(card);
             offsetHeight *= -1;
-            SetRotation(card);
+            
         }
         else
         {
             offsetHeight *= (1 + cards.Count);
-            c.SetSortingOrder(-cards.Count);
+            int sortOrder = (cards.Count + 1) * -2;
+            c.SetSortingOrder(sortOrder);
+            zOrder = -cards.Count - 1;
+            c.touch.IsMaskable = true;
 
         }
 
 
         c.SetAsChild(transform, CardScale, sortLayer);
-        c.transform.localPosition = new Vector2(0f, offsetHeight);
+        c.transform.localPosition = new Vector3(0f, offsetHeight, zOrder);
 
-        card.rect.sizeDelta = rect.sizeDelta;
 
+
+        SetRotation(card);
         SetOrientation(card);
+    }
+
+    protected override void SetCommands(GameCard card)
+    {
+        TouchObject to = card.cardObject.touch;
+        to.RemoveFromGroup();
+        touchGroup.Add(to);
+        to.AddClickListener(() => ClickCard(card));
+        //to.AddHoldListener(() => GameManager.Instance.DragCard(card, this));
+        to.AddHoldListener(() => DragCard(card));
+
     }
 
     protected virtual void SetOrientation(GameCard card)
     {
-
+        card.cardObject.Flip();
     }
     protected virtual void SetRotation(GameCard card)
     {
-
+        card.SetCardMode(card.mode);
     }
     
     protected void Refresh()
     {
         GameManager.Instance.browseMenu.SelectedCards.Clear();
         SelectedCard = null;
+        GameManager.SelectedCard = null;
     }
 
 
@@ -195,7 +205,7 @@ public class SingleSlot : CardSlot, iMainCard
         SlotSelector sourceSelect = SlotSelector.CreateMulti(msgs, "Nexus Card", yourCards, 2, true);
         GameManager.Instance.SetSelector(sourceSelect);
         sourceSelect.OnSelectionHandled += AwaitNexusSource;
-        ClosePopMenu();
+        ClosePopMenu(true);
     }
 
     protected void AwaitNexusSource(bool isConfirm, SlotSelector sel)

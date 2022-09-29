@@ -5,7 +5,7 @@ using UnityEngine;
 using Gameplay.CardActions;
 using Decks;
 using Gameplay.Decks;
-using Defective.JSON;
+
 
 [System.Serializable]
 public class ShuffleAction : CardAction
@@ -17,20 +17,19 @@ public class ShuffleAction : CardAction
     [SerializeField]
     protected List<string> newOrder = null;
 
-    
+    protected override ActionCategory GetCategory()
+    {
+        return ActionCategory.Shuffle;
+    }
     #endregion
 
     protected override CardActionData GetActionData()
     {
-        
+       
 
         CardActionData data = new CardActionData(this);
-
-
-
-        data.AddData("player", player.userId);
+        data.SetPlayer(player);
         data.AddData("deck", (int)sourceDeck.deckType);
-        data.AddData("action_type", ShuffleType);
         data.AddData("old_order", oldOrder.ToJson());
         data.AddData("new_order", newOrder.ToJson());
         return data;
@@ -123,11 +122,5 @@ public class ShuffleAction : CardAction
             newOrder.Add(sourceDeck.InOrder[i].cardId);
         }
         End(ActionResult.Succeed);
-    }
-
-    protected override void ResolveAction(ActionResult result)
-    {
-        base.ResolveAction(result);
-
     }
 }

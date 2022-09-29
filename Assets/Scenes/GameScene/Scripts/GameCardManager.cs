@@ -66,10 +66,10 @@ namespace Gameplay.PlayingField
         {
             acumTime += Time.deltaTime;
 
-            if (acumTime > UpdateInterval)
-            {
-                RefreshCards();
-            }
+            //if (acumTime > UpdateInterval)
+            //{
+            //    RefreshCards();
+            //}
         }
     }
 }

@@ -11,6 +11,7 @@ public class MainScene : MonoBehaviour
     void Start()
     {
         //CardCatalog.Open();
+        menuButtons.SetActive(true);
         App.StartApp();
         AssetPipeline.DoRedownloadAllCards();
         
@@ -41,6 +42,11 @@ public class MainScene : MonoBehaviour
     {
         menuButtons.SetActive(false);
         App.ChangeScene("GameScene");
+    }
+    public void PvPButton()
+    {
+        menuButtons.SetActive(false);
+        App.ChangeScene(NetworkScene.SceneName);
     }
     #endregion
 }

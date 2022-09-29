@@ -1,14 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using Gameplay.CardActions;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using static Gameplay.CardActions.DrawAction;
 
 namespace Gameplay
 {
     public class AttackAction : CardAction
     {
+
         public enum AttackResult
         {
             Succeed = 0,
@@ -20,14 +19,17 @@ namespace Gameplay
         public CardSlot targetSlot;
         public AttackResult attackResult;
         public int damageDealt = 0;
+        protected override ActionCategory GetCategory()
+        {
+            return ActionCategory.Attack;
+        }
 
         protected override CardActionData GetActionData()
         {
             //can tell it's a direct attack on the import based on the slot. if it's the spirit deck slot, then it's direct.
             CardActionData data = new CardActionData(this);
-            data.AddData("player", player.userId);
+            data.SetPlayer(player);
             data.AddData("attacker", sourceCard.cardId);
-            data.AddData("action_type", AttackType);
             data.AddData("defend_slot", targetSlot.slotId);
             data.AddData("attack_outcome", (int)attackResult);
             data.AddData("attack_damage", damageDealt);
@@ -43,7 +45,7 @@ namespace Gameplay
         protected override void ParseData(CardActionData data)
         {
             base.ParseData(data);
-            player = Game.FindPlayer(data.Value<string>("player"));
+            player = Game.FindPlayer(data.Value<string>(CardActionData.PlayerKey));
             sourceCard = Game.FindCard(data.Value<string>("attacker"));
             targetSlot = Game.FindSlot(data.Value<string>("defend_slot"));
             attackResult = (AttackResult)data.Value<int>("attack_outcome");
@@ -121,7 +123,7 @@ namespace Gameplay
             int damage = 0;
             if (defender.slotType == CardLocation.SpiritDeck)
             {
-                if (attacker.cardStats.attack > 0) { damage = attacker.EnchantingSpirits.Count; } else { damage = 0; }
+                if (attacker.cardStats.attack > 0) { damage = attacker.EnchantingSpiritTypes.Count; } else { damage = 0; }
                 attackResult = AttackResult.Succeed;
             }
             else
@@ -129,7 +131,7 @@ namespace Gameplay
                 attackResult = GetAttackResult(attacker, defender.MainCard);
                 if (attackResult == AttackResult.Succeed)
                 {
-                    damage = attacker.EnchantingSpirits.Count - defender.MainCard.EnchantingSpirits.Count;
+                    damage = attacker.EnchantingSpiritTypes.Count - defender.MainCard.EnchantingSpiritTypes.Count;
                 }
             }
         }

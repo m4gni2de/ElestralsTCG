@@ -7,6 +7,7 @@ public class SpriteDisplay : MonoBehaviour
 {
     public enum RenderType
     {
+        Undefined = -1,
         Sprite = 0,
         Image = 1
     };
@@ -35,12 +36,33 @@ public class SpriteDisplay : MonoBehaviour
     }
 
     [SerializeField]
-    private RenderType _rendType = RenderType.Sprite;
-    public RenderType RendType { get { return _rendType; } }
+    private RenderType _rendType = RenderType.Undefined;
+    public RenderType RendType
+    {
+        get
+        {
+            return _rendType;
+        }
+        set
+        {
+            _rendType = value;
+        }
+    }
 
     [SerializeField]
     private SpriteRenderer _sp = null;
+    public SpriteRenderer sp
+    {
+        get { return _sp; }
+        set { _sp = value; }
+    }
+    [SerializeField]
     private Image _image = null;
+    public Image image
+    {
+        get { return _image; }
+        set { _image = value; }
+    }
 
     public Transform m_Transform
     {
@@ -57,18 +79,18 @@ public class SpriteDisplay : MonoBehaviour
         CheckDisplay();
     }
 
+    private void Reset()
+    {
+        CheckDisplay();
+    }
     private void CheckDisplay()
     {
         if (RendType == RenderType.Sprite)
         {
             if (_sp == null)
             {
-                if (GetComponent<SpriteRenderer>() == null)
-                {
+                if (GetComponent<SpriteRenderer>() == null) { gameObject.AddComponent<SpriteRenderer>(); }
 
-                    gameObject.AddComponent<SpriteRenderer>();
-
-                }
                 _sp = GetComponent<SpriteRenderer>();
             }  
         }
@@ -79,11 +101,7 @@ public class SpriteDisplay : MonoBehaviour
         {
             if (_image == null)
             {
-                if (GetComponent<Image>() == null)
-                {
-                    gameObject.AddComponent<Image>();
-
-                }
+                if (GetComponent<Image>() == null) { gameObject.AddComponent<Image>(); }
                 _image = GetComponent<Image>();
             }
         }
@@ -143,6 +161,16 @@ public class SpriteDisplay : MonoBehaviour
             if (RendType == RenderType.Sprite) { layer = _sp.sortingLayerName; }
             if (RendType == RenderType.Image) { layer = _image.canvas.sortingLayerName; }
             return layer;
+        }
+    }
+    public int SortOrder
+    {
+        get
+        {
+            int order = 0;
+            if (RendType == RenderType.Sprite) { order = _sp.sortingOrder; }
+            if (RendType == RenderType.Image) { order = _image.canvas.sortingOrder; }
+            return order;
         }
     }
     #endregion

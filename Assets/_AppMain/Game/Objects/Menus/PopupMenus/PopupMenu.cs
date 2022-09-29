@@ -147,7 +147,7 @@ namespace Gameplay.Menus
 
         protected void Refresh()
         {
-
+            StopAllCoroutines();
             for (int i = 0; i < buttons.Count; i++)
             {
                 buttons[i].Clear();
@@ -204,7 +204,12 @@ namespace Gameplay.Menus
             WaitForEndOfFrame frame = new WaitForEndOfFrame();
             do
             {
-                line.SetPosition(0, slot.transform.position);
+                Vector3 position = slot.transform.position;
+                if (slot.SelectedCard != null)
+                {
+                    position = slot.SelectedCard.cardObject.transform.position;
+                }
+                line.SetPosition(0, position);
                 line.SetPosition(1, transform.position);
                 yield return frame;
 

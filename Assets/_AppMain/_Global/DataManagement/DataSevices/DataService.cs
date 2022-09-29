@@ -23,8 +23,7 @@ public class DataService
     protected static DbConnector db { get { return AppManager.Instance.dbConnector; } }
 
 
-
-
+    
 
     public static string objName => "Internal Db";
 
@@ -175,6 +174,8 @@ public class DataService
         {
             db.Insert(obj, map.TableName);
         }
+        db.Commit();
+        
     }
 
     public static void Save<T>(T obj, string tableName, string colName, string colValue)
@@ -189,6 +190,8 @@ public class DataService
         {
             db.Insert(obj, tableName);
         }
+
+        db.Commit();
     }
 
     public static void Insert<T>(T obj, string tableName, string colName, string colValue)

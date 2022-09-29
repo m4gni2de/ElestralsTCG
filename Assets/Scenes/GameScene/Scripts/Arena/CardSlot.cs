@@ -36,9 +36,54 @@ namespace Gameplay
         [SerializeField]
         protected string _SortLayer = "Card";
         public string SortLayer { get { return _SortLayer; } }
+
+        public void ClickSlot()
+        {
+            GameManager.Instance.cardSlotMenu.Close();
+            if (GameManager.Instance.IsSelecting)
+            {
+                if (GameManager.Instance.currentSelector.TargetSlots.Contains(this))
+                {
+                    GameManager.Instance.currentSelector.SelectSlot(this);
+                }
+            }
+            else
+            {
+                OpenPopMenu();
+            }
+        }
         #endregion
 
+        #region Event Properties
+        public static event Action<CardSlot> OnNewSelectedSlot;
+        public static event Action OnClearedSelectedSlot;
+        private static CardSlot _SelectedSlot = null;
+        public static CardSlot SelectedSlot
+        {
+            get
+            {
+                return _SelectedSlot;
+            }
+            set
+            {
+                if (_SelectedSlot != null)
+                {
+                    if (value != _SelectedSlot) { _SelectedSlot.ToggleSelect(false); }
+                }
+                if (value != null)
+                {
+                    OnNewSelectedSlot?.Invoke(value);
+                    value.ToggleSelect(true);
+                }
+                else
+                {
+                    OnClearedSelectedSlot?.Invoke();
+                }
+                _SelectedSlot = value;
 
+            }
+        }
+        #endregion
         #region Slot Info
         public GameCard MainCard { get; set; }
         public string SlotTitle
@@ -56,12 +101,19 @@ namespace Gameplay
                 }
             }
         }
-        
+        public string SlotLocationName { get; private set; }
+        public void SetLocationName(string st)
+        {
+            SlotLocationName = st;
+        }
+
+             
         protected virtual void SetMainCard(GameCard card)
         {
             App.LogFatal($"Card Slot {name} is not of iMainCard interface, so it cannot accept a MainCard.");
         }
         #endregion
+
 
 
         #region Properties
@@ -89,21 +141,51 @@ namespace Gameplay
         public Orientation orientation;
         protected int SpiritSortOrderBase = 0;
         protected int NonSpiritSortOrderBase = 0;
-        public GameCard SelectedCard { get; set; }
+        private GameCard _SelectedCard = null;
+        public GameCard SelectedCard
+        {
+            get
+            {
+                return _SelectedCard;
+            }
+            set
+            {
+                _SelectedCard = value;
+                
+            }
+        }
 
         public RectTransform rect { get; set; }
-       
+
+        private Vector2 _SlotSize = Vector2.zero;
+        public Vector2 SlotSize
+        {
+            get
+            {
+                if (_SlotSize == Vector2.zero) { _SlotSize = GetSlotSize(); }
+                return _SlotSize;
+            }
+        }
+        protected virtual Vector2 GetSlotSize() { return rect.sizeDelta; }
         #endregion
 
         #region Functions/Commands
         protected Player _Owner = null;
-        protected Player Owner
+        public Player Owner
         {
             get
             {
                 if (_Owner == null) { _Owner = GameManager.Instance.arena.GetSlotOwner(this); }return _Owner;
             }
         }
+        public bool IsYours
+        {
+            get
+            {
+                return Owner == GameManager.ActiveGame.You;
+            }
+        }
+        
         public bool ValidatePlayer()
         {
             Field f = GameManager.Instance.arena.GetPlayerField(GameManager.ActiveGame.You);
@@ -121,13 +203,23 @@ namespace Gameplay
         {
             //if (ValidatePlayer()) return true;
             //if (App.WhoAmI != Owner.userId) { return false; }
-            if (GameManager.Instance.popupMenu.isOpen) { return false; }
+            //if (GameManager.Instance.popupMenu.isOpen) { return false; }
             return true;
         }
 
         protected void SetSelectedCard(GameCard view = null)
         {
-            if (view == null) { SelectedCard = null; } else { SelectedCard = view; }
+            
+            if (view == null) 
+            { 
+                SelectedCard = null;
+            }
+            else
+            {
+                SelectedCard = view;
+            }
+
+            
 
         }
         protected virtual void ToggleSelect(bool isSelected)
@@ -135,13 +227,8 @@ namespace Gameplay
 
         }
        
-        public List<PopupCommand> ButtonCommands
-        {
-            get
-            {
-                return GetSlotCommands();
-            }
-        }
+        public List<PopupCommand> ButtonCommands { get { return GetSlotCommands(); } }
+
         
         protected virtual List<PopupCommand> GetSlotCommands()
         {
@@ -149,7 +236,10 @@ namespace Gameplay
             return new List<PopupCommand>();
         }
 
+        public CardBrowseMenu BrowseMenu { get { return GameManager.Instance.browseMenu; } }
         #endregion
+
+       
 
         #region Initialization
 
@@ -243,6 +333,7 @@ namespace Gameplay
 
         DisplayCardObject(card);
         SetCommands(card);
+
     }
         
     public void RefreshAtSlot(GameCard card)
@@ -253,8 +344,14 @@ namespace Gameplay
     {
         TouchObject to = card.cardObject.touch;
         to.AddClickListener(() => ClickCard(card));
-        to.AddHoldListener(() => GameManager.Instance.DragCard(card, this));
+        to.AddHoldListener(() => DragCard(card));
     }
+
+        protected virtual void DragCard(GameCard card)
+        {
+            GameManager.SelectedCard = card;
+            GameManager.Instance.DragCard(card, this);
+        }
 
     public void ReAddCard(GameCard card, bool reAddCommands)
     {
@@ -277,24 +374,16 @@ namespace Gameplay
         #endregion
 
         #region Slot Menus
+       
+        protected IEnumerator AwaitBrowseMenuClose()
+        {
+            yield return new WaitUntil(() => !GameManager.Instance.browseMenu.IsOpen);
+        }
         protected virtual void ClickCard(GameCard card)
         {
-            GameManager.Instance.SelectCard(card);
+            GameManager.SelectedCard = card;
         }
-        public void ClickSlot()
-        {
-            if (GameManager.Instance.IsSelecting)
-            {
-                if (GameManager.Instance.currentSelector.TargetSlots.Contains(this))
-                {
-                    GameManager.Instance.currentSelector.SelectSlot(this);
-                }
-            }
-            else
-            {
-                OpenPopMenu();
-            }
-        }
+        
 
         public virtual void OpenPopMenu()
         {
@@ -304,15 +393,27 @@ namespace Gameplay
             }
         }
 
-        protected virtual void ClosePopMenu()
+        protected virtual void ClosePopMenu(bool keepSelected = false)
         {
             GameManager.Instance.popupMenu.CloseMenu();
+            if (!keepSelected)
+            {
+                GameManager.SelectedCard = null;
+            }
+            
         }
         #endregion
         private void Update()
         {
             
         }
+
+        #region Base Commands
+        protected void CloseCommand(bool keepSelected = false)
+        {
+            ClosePopMenu(keepSelected);
+        }
+        #endregion
     }
 }
 

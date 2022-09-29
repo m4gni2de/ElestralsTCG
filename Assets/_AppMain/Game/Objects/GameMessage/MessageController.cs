@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using TMPro;
-using static UnityEngine.Rendering.DebugUI;
+using Gameplay.Messaging;
 
 namespace Gameplay
 {
@@ -22,20 +22,9 @@ namespace Gameplay
         }
         public TMP_Text messageText;
 
-        private GameMessage _activeMessage = null;
-        public GameMessage ActiveMessage
-        {
-            get
-            {
-                return _activeMessage;
-            }
-            set
-            {
-                _activeMessage = value;
-            }
-            
-        }
+        public GameMessage ActiveMessage { get; set; }
         public GameObject messageObject;
+        public MessageViewModel vmMessage;
 
         #region Hide/Show Properties
         protected float timeOn = 0f;
@@ -43,61 +32,61 @@ namespace Gameplay
         #endregion
         #endregion
 
-        #region Events
-        public event Action<GameMessage> OnMessageClose;
-        protected void CloseMessage(GameMessage msg)
-        {
-            msg.CloseMessage();
-            messageObject.SetActive(false);
-            messageText.text = "";
-            _activeMessage = null;
-
-
-        }
-        #endregion
-
+       
+       
         public void ShowMessage(string msg)
         {
             GameMessage message = GameMessage.JustMessage(msg);
             ShowMessage(message);
         }
+
         public void ShowMessage(GameMessage msg)
         {
+            //if (ActiveMessage != null)
+            //{
+            //    GameMessage a = ActiveMessage;
+            //    CloseMessage(a);
+            //}
+
+
             Messages.Add(msg);
-            messageText.text = msg.message;
-            messageObject.SetActive(true);
-            ActiveMessage = msg;
+            vmMessage.ShowMessage(msg);
+
+
+
+
+
+            //ActiveMessage = msg;
+            //messageText.text = msg.message;
+            //messageObject.SetActive(true);
 
             if (msg != null && msg.DisplayTime > 0f)
             {
-                StartDisplayTimer(msg.DisplayTime);
+                //StartCoroutine(DoDisplay(msg.DisplayTime));
+                //StartDisplayTimer(msg.DisplayTime);
             }
         }
 
        
        
         #region Touch Events
-        public void EndOnTouch()
-        {
-            if (ActiveMessage != null)
-            {
-                GameMessage msg = ActiveMessage;
-                if (msg.CloseOnTouch)
-                {
-                    CloseMessage(msg);
-                }
-            }
-        }
+        //public void EndOnTouch()
+        //{
+        //    if (ActiveMessage != null)
+        //    {
+        //        GameMessage msg = ActiveMessage;
+        //        if (msg.CloseOnTouch)
+        //        {
+        //            ForceClose(msg);
+        //        }
+        //    }
+        //}
         #endregion
 
 
        
         #region DisplayTimer
-        protected void StartDisplayTimer(float maxTime)
-        {
-            timeOn = 0f;
-            maxTimeOn = maxTime;
-        }
+       
         protected void EndDisplayTimer()
         {
             timeOn = 0f;
@@ -130,6 +119,7 @@ namespace Gameplay
             
         }
         #endregion
+
 
     }
 }

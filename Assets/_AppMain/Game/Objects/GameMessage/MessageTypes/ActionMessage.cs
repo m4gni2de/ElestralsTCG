@@ -19,21 +19,42 @@ namespace Gameplay.Messaging
                 return _OnTouchAction;
             }
         }
+        public override MessageType GetMessageType()
+        {
+            return MessageType.Action;
+        }
+
+        protected override bool CloseEvents()
+        {
+            return true;
+        }
 
         public ActionMessage(string msg, CardAction ac, bool CloseOnTouch, float displayTime) : base(msg, CloseOnTouch, displayTime)
         {
             cardAction = ac;
+            
         }
+       
 
         public override void CloseMessage()
         {
-            base.CloseMessage();
+            RemoveWatchers();
+        }
+
+        protected void RemoveWatchers()
+        {
+            cardAction.OnActionEnd.RemoveAllListeners();
+        }
+        public override void ForceClose()
+        {
+            RemoveWatchers();
             if (cardAction != null)
             {
                 cardAction.actionResult = ActionResult.Succeed;
                 cardAction.ForceCompleteAction();
             }
         }
+
     }
 }
 

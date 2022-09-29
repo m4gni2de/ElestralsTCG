@@ -2182,6 +2182,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4440479246896129619}
+  - component: {fileID: 5347320561313301639}
   - component: {fileID: 5347320561313301638}
   - component: {fileID: 2839893188205287928}
   - component: {fileID: 5076763979629551883}
@@ -2215,6 +2216,26 @@ MonoBehaviour:
   appCanvas: {fileID: 2839893188205287928}
   appBlocker: {fileID: 1304723718709652841}
   loadingBar: {fileID: 7528685431084820845}
+  _freezeLog:
+    WritesFile: 0
+    _logs: []
+--- !u!114 &5347320561313301639
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5347320561313301633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ad01103ca7d9284997a0e3b01b9ed05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  port: 7777
+  ip: 127.0.0.1
+  myAddressLocal: 
+  myAddressGlobal: 
+  maxClientCount: 2
 --- !u!224 &5845252857061877827
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2326,13 +2347,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a67e9766470c1b747b01253d20c4a941, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _dbMode: 0
   databaseFile: {fileID: 4900000, guid: e865c6b2d41bb854d839c3a95b9ce44f, type: 3}
+  internalDb: {fileID: 4900000, guid: e865c6b2d41bb854d839c3a95b9ce44f, type: 3}
+  playerDb: {fileID: 4900000, guid: 331a2f85b647c2c4f9fd7c2aa497551f, type: 3}
   overrideBasePath: 
-  overridePathMode: 1
+  overridePathMode: 0
   changeWorkingName: 0
   workingName: 
   overwriteIfExists: 1
-  overwriteMaster: 0
+  overwriteMaster: 1
   debugTrace: 0
 --- !u!114 &7528685431084820845
 MonoBehaviour:

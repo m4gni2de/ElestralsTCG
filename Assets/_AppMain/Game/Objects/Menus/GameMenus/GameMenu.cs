@@ -25,6 +25,17 @@ namespace Gameplay.Menus
         {
 
         }
+        public void Toggle(bool open)
+        {
+            if (open)
+            {
+                Open();
+            }
+            else
+            {
+                Close();
+            }
+        }
         public virtual void Open()
         {
             menuObject.SetActive(true);

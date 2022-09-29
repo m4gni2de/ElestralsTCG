@@ -9,6 +9,7 @@ namespace Databases
     [System.Serializable]
     public class DeckDTO
     {
+        [PrimaryKey]
         public string deckKey { get; set; }
         public string title { get; set; }
         public string owner { get; set; }

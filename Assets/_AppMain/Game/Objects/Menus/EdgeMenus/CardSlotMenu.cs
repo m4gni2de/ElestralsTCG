@@ -36,7 +36,7 @@ namespace Gameplay.Menus
         protected Dictionary<int, string> GetSpiritMapping()
         {
             Dictionary<int, string> items = new Dictionary<int, string>();
-            items.Add(0, "Nase");
+            items.Add(0, "Base");
             items.Add(1, "Element");
             return items;
         }
@@ -82,7 +82,8 @@ namespace Gameplay.Menus
 
         private void LoadSpiritSprites()
         {
-            List<ElementCode> elements = ActiveCard.EnchantingSpirits;
+
+            List<ElementCode> elements = ActiveCard.EnchantingSpiritTypes;
             for (int i = 0; i < elements.Count; i++)
             {
                 Element e = new Element((int)elements[i]);
@@ -120,8 +121,13 @@ namespace Gameplay.Menus
             spSpirits.Add(clone);
             return clone;
         }
-        
 
+        public override void Close()
+        {
+            base.Close();
+            Refresh();
+            SelectedSlot = null;
+        }
         #endregion
     }
 }

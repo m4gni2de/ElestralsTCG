@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Gameplay.Decks;
 using System.Threading.Tasks;
+using System;
 
 namespace Gameplay
 {
@@ -179,16 +180,35 @@ namespace Gameplay
 
         public string Register()
         {
-            fieldId = UniqueString.GetShortId("fld");
+            
+            int runeCount = 0;
+            int elestralCount = 0;
             for (int i = 0; i < cardSlots.Count; i++)
             {
+                if (cardSlots[i].slotType == CardLocation.Rune)
+                {
+                    runeCount += 1;
+                    cardSlots[i].SetLocationName($"Rune Slot {runeCount}");
+                }
+                else if (cardSlots[i].slotType == CardLocation.Elestral)
+                {
+                    elestralCount += 1;
+                    cardSlots[i].SetLocationName($"Elestral Slot {elestralCount}");
+                }
+                else
+                {
+                    string s = $"{cardSlots[i].slotType}";
+                    cardSlots[i].SetLocationName(s);
+                }
+
                 cardSlots[i].SetIndex(baseIndex + i);
             }
             return fieldId;
         }
        
-        public void SetPlayer(Player p)
+        public void SetPlayer(Player p, string id)
         {
+            fieldId = id;
             _player = p;
             for (int i = 0; i < cardSlots.Count; i++)
             {
@@ -228,6 +248,7 @@ namespace Gameplay
             bool displayBack = slot.facing == CardSlot.CardFacing.FaceDown;
             c.LoadCard(card.card);
             c.name = card.name;
+            NetworkPipeline.SpawnNewCard(card.NetworkId, slot.index);
             return c;
         }
 

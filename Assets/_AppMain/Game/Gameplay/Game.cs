@@ -10,6 +10,8 @@ using Gameplay.Turns;
 using UnityEngine.Events;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Users;
+using RiptideNetworking;
+using Gameplay.Networking;
 
 namespace Gameplay
 {
@@ -22,7 +24,12 @@ namespace Gameplay
     [System.Serializable]
     public class Game
     {
+        #region Network Properties
+        public static OnlineGame ServerGame { get; set; }
+        public virtual bool IsOnline() { return false; }
         
+
+        #endregion
         #region Global Properties
         protected Player _You = null;
         public Player You
@@ -66,7 +73,7 @@ namespace Gameplay
         #endregion
 
         #region Properties
-        private List<Player> _players = null;
+        protected List<Player> _players = null;
         public List<Player> players { get { _players ??= new List<Player>(); return _players; } }
         public string gameId { get; set; }
 
@@ -74,14 +81,29 @@ namespace Gameplay
 
         public GameData gameData { get; set; }
         public GameMode gameMode { get; set; }
-        
+        public bool isOnline { get; private set; } = false;
+
         #endregion
 
-     
+
+       
+
         #region Initialization
-        public static Game NewGame(string id)
+        protected Game()
         {
-            return new Game(id);
+
+        }
+        public static Game ConnectTo(string gameId)
+        {
+            Game g = new Game();
+            g.gameId = gameId;
+            g.isOnline = true;
+            return g;
+        }
+        public static OnlineGame NewGame(string ip, ushort port)
+        {
+            string gameId = UniqueString.Create("game", 8);
+            return new OnlineGame(gameId, ip, port);
         }
         public static Game RandomGame()
         {
@@ -89,10 +111,7 @@ namespace Gameplay
             return new Game(data);
         }
 
-        public Game(string id)
-        {
-            gameId = id;
-        }
+       
         public Game(GameData data)
         {
             gameId = data.gameId;
@@ -108,11 +127,13 @@ namespace Gameplay
             AddPlayer(player);
         }
        
-        protected void AddPlayer(Player p)
+        public void AddPlayer(Player p)
         {
             if (!players.Contains(p))
             {
                 players.Add(p);
+                gameLog.WriteLog($"Added Player {p.userId}"!);
+
             }
         }
         #endregion
@@ -214,7 +235,7 @@ namespace Gameplay
                     if (item.cardId == cardId) { return item; }
                 }
             }
-            App.LogFatal($"No card with Id {cardId} exists in this Game.");
+            //App.LogFatal($"No card with Id {cardId} exists in this Game.");
             return null;
         }
 
@@ -228,7 +249,21 @@ namespace Gameplay
                     if (item.slotId == slotId) { return item; }
                 }
             }
-            App.LogFatal($"No Card Slot with Id {slotId} exists in this Game.");
+            //App.LogFatal($"No Card Slot with Id {slotId} exists in this Game.");
+            return null;
+        }
+
+        public static CardSlot FindSlot(int slotIndex)
+        {
+            for (int i = 0; i < GameManager.ActiveGame.players.Count; i++)
+            {
+                Player p = GameManager.ActiveGame.players[i];
+                foreach (var item in p.gameField.cardSlots)
+                {
+                    if (item.index == slotIndex) { return item; }
+                }
+            }
+            //App.LogFatal($"No Card Slot with Id {slotId} exists in this Game.");
             return null;
         }
         #endregion

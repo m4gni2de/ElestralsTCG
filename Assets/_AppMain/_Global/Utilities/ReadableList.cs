@@ -34,4 +34,15 @@ public static class ListExtensions
         items.AddRange(list);
         return JsonUtility.ToJson(items);
     }
+    public static T Last<T>(this List<T> list)
+    {
+        if (list.Count == 0) { App.LogFatal("This list does not have any items in it."); return default(T); }
+        return list[list.Count - 1];
+    }
+}
+
+[System.Serializable]
+public class DataList
+{
+    public List<string> items { get; set; }
 }

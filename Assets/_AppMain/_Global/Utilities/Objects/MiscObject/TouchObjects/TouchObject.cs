@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using UnityEngine.Events;
+using TouchControls;
 
 public class TouchObject : MonoBehaviour, iFreeze
 {
@@ -42,6 +43,16 @@ public class TouchObject : MonoBehaviour, iFreeze
     public UnityEvent OnHoldEvent { get { _OnHoldEvent ??= new UnityEvent(); return _OnHoldEvent; } }
 
 
+    public event Action<TouchObject> OnThisClicked;
+    protected void ClickObject()
+    {
+        OnThisClicked?.Invoke(this);
+    }
+    public event Action<TouchObject> OnThisHeld;
+    protected void HoldObject()
+    {
+        OnThisHeld?.Invoke(this);
+    }
     #region Customization
 
     [Tooltip("Use this to allow the object to recieve click/touch events at all.")]
@@ -55,7 +66,23 @@ public class TouchObject : MonoBehaviour, iFreeze
     public bool ForceClickOverride = false;
     #endregion
 
-
+    #region Group Management
+    private string GroupId;
+    private bool HasGroup
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(GroupId)) { return false; }
+            return true;
+        }
+    }
+    public void RemoveFromGroup()
+    {
+        if (!HasGroup) { return; }
+        TouchGroup group = ObjectPool.FindByKey<TouchGroup>(GroupId);
+        group.Remove(this);
+    }
+    #endregion
     #region Interaction Checks
     private bool _isClicked = false;
     public bool IsClicked { get { return _isClicked; } }
@@ -75,7 +102,7 @@ public class TouchObject : MonoBehaviour, iFreeze
                 if (value == true)
                 {
 
-                    DoHold();
+                    TryHold();
                 }
             }
             _isHeld = value;
@@ -230,6 +257,11 @@ public class TouchObject : MonoBehaviour, iFreeze
     private void Awake()
     {
         Source = GetComponent<RectTransform>();
+        
+    }
+    public void AddToGroup(TouchGroup group)
+    {
+        GroupId = group.groupName;
     }
 
     #region Click Listeners
@@ -257,16 +289,12 @@ public class TouchObject : MonoBehaviour, iFreeze
     private void Update()
     {
 
-       if (Interactable)
-        {
-            CheckTouch();   
-        }
-        
-
+        CheckTouch();
 
     }
     protected virtual void CheckTouch()
     {
+        
         if (!IsClicked)
         {
             if (Input.GetMouseButtonDown(0) && Validate())
@@ -314,7 +342,7 @@ public class TouchObject : MonoBehaviour, iFreeze
     {
         DoThaw();
         _isClicked = false;
-        if (!_isHeld) { DoClick(); }
+        if (!_isHeld) { TryClick(); }
         IsHeld = false;
         
 
@@ -331,20 +359,42 @@ public class TouchObject : MonoBehaviour, iFreeze
     }
 
 
-    protected void DoClick()
+    protected void TryClick()
     {
-        if (!ForceClickOverride)
+        
+       
+        if (!HasGroup)
         {
-            OnClickEvent?.Invoke();
+            DoClick();
         }
         else
         {
-            OverrideClickEvent?.Invoke();
+            ClickObject();
         }
-        
+    }
+    public void DoClick()
+    {
+        UnityEvent clickEvent = OnClickEvent;
+        if (ForceClickOverride)
+        {
+            clickEvent = OverrideClickEvent;
+        }
+        clickEvent?.Invoke();
 
     }
-    protected void DoHold()
+    protected void TryHold()
+    {
+        if (!HasGroup)
+        {
+            DoHold();
+        }
+        else
+        {
+            HoldObject();
+        }
+       
+    }
+    public void DoHold()
     {
         OnHoldEvent?.Invoke();
     }

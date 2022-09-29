@@ -5,22 +5,31 @@ using static Gameplay.CardActions.DrawAction;
 
 namespace Gameplay.CardActions
 {
-    public class EnchantAction : CardAction
+    public enum EnchantActionType
     {
-        public enum EnchantActionType
+        Set = -1,
+        Normal = 0,
+        ReEnchant = 1,
+        DisEnchant = 2,
+        FromFaceDown = 3,
+    }
+
+    public class EnchantAction : CardAction, iEnchant
+    {
+        
+
+        #region Interface
+        public bool IsNormalEnchantment()
         {
-            Set = -1,
-            Normal = 0,
-            Ascend = 1,
-            ReEnchant = 2,
-            DisEnchant = 3,
-            FromFaceDown = 4,
+            return enchantType == EnchantActionType.Normal;
         }
+        #endregion
 
         protected CardSlot toSlot;
         public EnchantActionType enchantType;
         private List<GameCard> _spirits = null;
         protected List<GameCard> spirits { get { _spirits ??= new List<GameCard>(); return _spirits; } }
+        
         protected string SpiritString
         {
             get
@@ -47,24 +56,25 @@ namespace Gameplay.CardActions
         }
         protected CardMode cardMode;
         protected bool doesSourceMove = true;
+        protected override ActionCategory GetCategory()
+        {
+            return ActionCategory.Enchant;
+        }
 
         protected override CardActionData GetActionData()
         {
             int spiritCount = spirits.Count;
 
             CardActionData data = new CardActionData(this);
-            data.AddData("player", player.userId);
-            data.AddData("card", sourceCard.cardId);
-            data.AddData("action_type", EnchantType);
+            data.SetPlayer(player);
+            data.SetSourceCard(sourceCard);
             data.AddData("enchant_type", (int)enchantType);
             data.AddData("card_mode", (int)cardMode);
             data.AddData("slot_to", toSlot.slotId);
-            data.AddData("spirit_1", "");
-            data.AddData("spirit_2", "");
-            data.AddData("spirit_3", "");
-            if (spiritCount > 0) { data.SetData("spirit_1", spirits[0].cardId); }
-            if (spiritCount > 1) { data.SetData("spirit_2", spirits[1].cardId); }
-            if (spiritCount > 2) { data.SetData("spirit_3", spirits[2].cardId); }
+            for (int i = 0; i < spiritCount; i++)
+            {
+                data.SetSpirit(i + 1, spirits[i].cardId);
+            }
             data.AddData("result", actionResult);
 
             return data;
@@ -84,8 +94,8 @@ namespace Gameplay.CardActions
         protected override void ParseData(CardActionData data)
         {
             base.ParseData(data);
-            player = Game.FindPlayer(data.Value<string>("player"));
-            sourceCard = Game.FindCard(data.Value<string>("card"));
+            player = Game.FindPlayer(data.Value<string>(CardActionData.PlayerKey));
+            sourceCard = Game.FindCard(data.Value<string>(CardActionData.SourceKey));
             enchantType = (EnchantActionType)data.Value<int>("enchant_type");
             cardMode = (CardMode)data.Value<int>("card_mode");
             toSlot = Game.FindSlot(data.Value<string>("slot_to"));
@@ -152,23 +162,11 @@ namespace Gameplay.CardActions
             return new EnchantAction(p, source, source.CurrentSlot, en, spirits.ToArray(), CardMode.Attack);
         }
 
-        //public static EnchantAction Ascend(Player p, GameCard newCard, GameCard source, GameCard spirit)
-        //{
-        //    CardSlot to = source.CurrentSlot;
-        //    EnchantType en = EnchantType.Ascend;
-        //    return new EnchantAction(p, source, to, en, spirit);
-        //}
-
-
         #endregion
 
         public override IEnumerator PerformAction()
         {
             Movements.Clear();
-
-
-
-            
 
             for (int i = 0; i < spirits.Count; i++)
             {
@@ -187,7 +185,7 @@ namespace Gameplay.CardActions
             }
 
             
-            yield return DoEnchant();
+            yield return DoMovements();
 
         }
 
@@ -199,45 +197,32 @@ namespace Gameplay.CardActions
             card.CurrentSlot.RemoveCard(card);
             to.AllocateTo(card);
         }
-        protected IEnumerator DoFlip(GameCard card, CardMode newMode, float time = .65f)
+
+
+        #region Action Building
+        public static EnchantActionType ParseSource(CardSlot from)
         {
-            float acumTime = 0f;
-            bool toFaceDown = false;
-            if (newMode == CardMode.Defense) { toFaceDown = true; }
-            float targetVal = 0f;
-            Vector3 startScale = card.cardObject.GetScale();
-            do
+            switch (from.slotType)
             {
-                Vector3 cardScale = card.cardObject.GetScale();
-                Vector2 newScale = cardScale - new Vector3((startScale.x * (Time.deltaTime * 2f)), 0f, 0f);
-                card.cardObject.SetScale(newScale);
-                yield return new WaitForEndOfFrame();
-                acumTime += time;
-
-            } while (Validate(acumTime, time) || card.cardObject.GetScale().x > targetVal);
-            card.SetCardMode(cardMode);
-            card.cardObject.SetScale(startScale);
-            card.cardObject.Flip(toFaceDown);
+                
+                case CardLocation.Elestral:
+                    return EnchantActionType.ReEnchant;
+                case CardLocation.Rune:
+                    return EnchantActionType.ReEnchant;
+                case CardLocation.Stadium:
+                    return EnchantActionType.ReEnchant;
+                case CardLocation.Underworld:
+                    return EnchantActionType.Normal;
+                case CardLocation.Deck:
+                    return EnchantActionType.Normal;
+                case CardLocation.SpiritDeck:
+                    return EnchantActionType.Normal;
+                case CardLocation.Hand:
+                    return EnchantActionType.Normal;
+                default:
+                    return EnchantActionType.Set;
+            }
         }
-
-        protected IEnumerator DoEnchant()
-        {
-            do
-            {
-                IEnumerator move = Movements[0];
-                yield return move;
-                yield return new WaitForEndOfFrame();
-                Movements.Remove(move);
-
-
-            } while (Movements.Count > 0);
-            End(ActionResult.Succeed);
-        }
-
-        protected override void ResolveAction(ActionResult result)
-        {
-            base.ResolveAction(result);
-
-        }
+        #endregion
     }
 }

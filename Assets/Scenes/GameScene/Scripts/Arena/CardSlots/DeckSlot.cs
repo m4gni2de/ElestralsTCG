@@ -102,10 +102,7 @@ namespace Gameplay
                 GameManager.Instance.popupMenu.ShowMenu();
             }
         }
-        protected void CloseCommand()
-        {
-            ClosePopMenu();
-        }
+        
         #endregion
 
 

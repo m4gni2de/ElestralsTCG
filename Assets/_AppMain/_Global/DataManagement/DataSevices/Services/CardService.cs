@@ -44,7 +44,7 @@ namespace Cards
         }
         public static RuneData FindRuneCard(string key)
         {
-            
+
             CardDTO dto = ByKey<CardDTO>(CardTable, "cardKey", key);
             RuneData data = new RuneData(dto);
             return data;
@@ -58,7 +58,7 @@ namespace Cards
         }
         public static CardData FindSpiritCard(string key)
         {
-            
+
             CardDTO dto = ByKey<CardDTO>(CardTable, "cardKey", key);
             CardData data = new CardData(dto);
             return data;
@@ -96,14 +96,14 @@ namespace Cards
 
         }
 
-        
+
 
         #region Elestrals
 
         #endregion
         public static string CardArtString(string cardKey, string colName)
         {
-            string qWhere= $"{colName} = '{cardKey}'";
+            string qWhere = $"{colName} = '{cardKey}'";
             CardDTO dto = GetFirstWhere<CardDTO>(CardTable, qWhere);
             return dto.image;
         }
@@ -111,7 +111,16 @@ namespace Cards
 
         #region Runes
 
-       
+
+        #endregion
+
+
+        #region Network Card
+        public static Decks.Decklist.DeckCard DeckCardFromDownload(string cardKey)
+        {
+            qCards dto = CardService.ByKey<qCards>(CardService.CardsByImageTable, "setKey", cardKey);
+            return new Decks.Decklist.DeckCard { cardType = (CardType)dto.cardClass, copy = 1, key = cardKey };
+        }
         #endregion
     }
 }
