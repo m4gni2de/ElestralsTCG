@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Newtonsoft.Json;
 using Defective.JSON;
+using Gameplay.Decks;
+using JetBrains.Annotations;
 
 public class RemoteData
 {
@@ -17,6 +19,9 @@ public class RemoteData
 
 
     private readonly static string pvpDecks = "http://45.77.157.225/pvpDeck.php?";
+    private readonly static string pvpLobby = "http://45.77.157.225/pvpLobby.php?";
+
+   
 
 
     public static async Task<string> DoRemoteQuery(string url, WWWForm form)
@@ -47,10 +52,10 @@ public class RemoteData
                 foreach (var prop in array)
                 {
                     UploadedDeckDTO deck = new UploadedDeckDTO();
-                    deck.uploadCode = prop[0].stringValue;
-                    DataList d = JsonConvert.DeserializeObject<DataList>(prop[1].stringValue);
+                    deck.deckKey = prop[0].stringValue;
+                    deck.title = prop[1].stringValue;
+                    DataList d = JsonConvert.DeserializeObject<DataList>(prop[2].stringValue);
                     deck.deck = d.items;
-                    deck.owner = prop[2].stringValue;
                     return deck;
                 }
 
@@ -74,9 +79,9 @@ public class RemoteData
 
         WWWForm form = new WWWForm();
         form.AddField("action", "insert");
-        form.AddField("uploadCode", deck.UploadCode);
+        form.AddField("deckKey", deck.DeckKey);
+        form.AddField("title", deck.Name);
         form.AddField("deck", deck.GetCardList);
-        form.AddField("owner", deck.Owner);
         //form.AddField("created", deck.created.ToString());
         //form.AddField("name", deck.deckName);
 
@@ -105,13 +110,32 @@ public class RemoteData
         return true;
     }
 
-    public static async void ViewDeck(Decklist deck)
+    public static async Task<List<UploadedDeckDTO>> ViewDecks(string whereClause)
     {
+        List<UploadedDeckDTO> decks = new List<UploadedDeckDTO>();
         WWWForm form = new WWWForm();
         form.AddField("action", "view");
-        //form.AddField("code", deck.key);
+        //form.AddField("whereClause", "whereClause");
 
-        await DoRemoteQuery(singleDeck, form);
+        string results = await DoRemoteQuery(pvpDecks, form);
+        if (results != "error" && results != "" && results != null)
+        {
+            var array = new JSONObject(results);
+            if (!array.isNull)
+            {
+                foreach (var prop in array)
+                {
+                    UploadedDeckDTO deck = new UploadedDeckDTO();
+                    deck.deckKey = prop[0].stringValue;
+                    deck.title = prop[1].stringValue;
+                    DataList d = JsonConvert.DeserializeObject<DataList>(prop[2].stringValue);
+                    deck.deck = d.items;
+                    decks.Add(deck);
+                }
+            }
+        }
+
+        return decks;
     }
 
     public static async void DownloadDeck(string key)
@@ -122,4 +146,31 @@ public class RemoteData
 
         await DoRemoteQuery(singleDeck, form);
     }
+
+
+    #region Lobby Management
+    public static async Task<string> CreateLobby(Decklist deck)
+    {
+        string lobbyId = UniqueString.CreateId(14);
+        RemotePlayerDTO p = new RemotePlayerDTO { userId = App.Account.Id, deckList = deck.GetCardList };
+
+        string playerString = JsonUtility.ToJson(p);
+        
+        WWWForm form = new WWWForm();
+        form.AddField("action", "Create");
+        form.AddField("lobbyCode", lobbyId);
+        form.AddField("owner", App.Account.Id);
+
+        await DoRemoteQuery(pvpLobby, form);
+        return lobbyId;
+        
+    }
+    #endregion
+}
+
+[System.Serializable]
+public class RemotePlayerDTO
+{
+    public string userId { get; set; }
+    public string deckList { get; set; }
 }

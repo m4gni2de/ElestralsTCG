@@ -60,7 +60,6 @@ public class GameManager : MonoBehaviour, iFreeze
     {
         ActiveGame = Game.ConnectTo(id);
         Instance.turnManager.LoadGame(ActiveGame);
-        Instance.RegisterFields();
     }
     public static void AddPlayer(Player player, string fieldId)
     {
@@ -104,13 +103,13 @@ public class GameManager : MonoBehaviour, iFreeze
 
 
     #region Instance 
-    public static Game ActiveGame { get; private set; }
-    public static GameManager Instance { get; private set; }
+    public static Game ActiveGame { get; protected set; }
+    public static GameManager Instance { get; protected set; }
    
     public Player ActivePlayer { get { return turnManager.ActiveTurn.ActivePlayer; } }
     public Turn ActiveTurn { get { return turnManager.ActiveTurn; } }
     
-    public void StartNewGame()
+    public virtual void StartNewGame()
     {
         if (ActiveGame != null) { App.LogError("There is already an active game."); }
 
@@ -119,7 +118,7 @@ public class GameManager : MonoBehaviour, iFreeze
         turnManager.LoadGame(ActiveGame);
         gameLog = GameLog.Create(ActiveGame.gameId, false);
         gameLog.AddLog($"Game '{ActiveGame.gameId}' has been started.");
-        ActiveGame.AddPlayer(App.Account.Id, "1");
+        ActiveGame.AddPlayer(App.Account.Id, "1", true);
         SetGameWatchers();
         
         
@@ -213,15 +212,7 @@ public class GameManager : MonoBehaviour, iFreeze
 
     }
 
-    public void RegisterFields()
-    {
-        //string nearId = arena.NearField.Register();
-        //gameLog.AddLog($"Near Field registered with ID of {nearId}");
-        //string farId = arena.FarField.Register();
-        //gameLog.AddLog($"Far Field registered with ID of {farId}");
-        arena.NearField.Register();
-        arena.FarField.Register();
-    }
+    
 
     public static event Action OnGameLoaded;
     private void Start()
@@ -229,34 +220,38 @@ public class GameManager : MonoBehaviour, iFreeze
         //arena.NearField.Register();
         //arena.FarField.Register();
         OnGameLoaded?.Invoke();
+        LoadGame();
         
-        //if (ActiveGame != null)
-        //{
-        //    SetPlayerFields();
 
-        //}
-        //else
-        //{
-        //    StartNewGame();
-        //    RegisterFields();
-        //    SetPlayerFields();
-        //}
+    }
 
+    protected virtual void LoadGame()
+    {
+        if (ActiveGame != null)
+        {
+            SetPlayerFields();
+
+        }
+        else
+        {
+            StartNewGame();
+            SetPlayerFields();
+        }
     }
 
 
     void SetPlayerFields()
     {
-        //for (int i = 0; i < ActiveGame.players.Count; i++)
-        //{
-        //    Player p = ActiveGame.players[i];
-        //    _arena.SetPlayer(p);
-        //}
+        for (int i = 0; i < ActiveGame.players.Count; i++)
+        {
+            Player p = ActiveGame.players[i];
+            _arena.SetPlayer(p);
+        }
 
         //Go();
     }
 
-    public void ReadyPlayer(Player p)
+    public virtual void ReadyPlayer(Player p)
     {
         _players.Add(p);
 

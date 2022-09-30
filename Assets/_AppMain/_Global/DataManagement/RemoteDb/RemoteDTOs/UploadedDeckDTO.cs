@@ -5,7 +5,8 @@ using UnityEngine;
 [System.Serializable]
 public class UploadedDeckDTO
 {
-    public string uploadCode { get; set; }
+    public string deckKey { get; set; }
+    public string title { get; set; }
     public List<string> deck { get; set; }
-    public string owner { get; set; }
+    
 }

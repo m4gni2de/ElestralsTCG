@@ -10,6 +10,7 @@ using RiptideNetworking;
 using Gameplay.Networking;
 using nsSettings;
 using System.Threading.Tasks;
+using Users;
 
 namespace Gameplay
 {
@@ -25,24 +26,7 @@ namespace Gameplay
         #endregion
 
         #region Networking
-        public static Player CreateRemotePlayer(ushort lobbyID, string userId, string deckId)
-        {
-            Player p = new Player(lobbyID, userId, deckId, false);
-            return p;
-        }
-        public async Task<bool> DownloadDeck(string deckId)
-        {
-            
-            UploadedDeckDTO dto = await RemoteData.SearchDeck(deckId);
-            if (dto == null) { return false; }
-            LoadDeckList(dto);
-            
-            return true;
-            
-
-
-        }
-
+       
         #region Message Senders
         //creates the local player, adds it to the game, then sends it to the Server for it to be Added to the Server players
         public async static void SendLocalPlayer()
@@ -59,25 +43,7 @@ namespace Gameplay
 
 
         #region Message Responses
-        public static async void RegisterPlayer(ushort networkIndex, string userId, string username, string deckId, string gameId, string fieldId)
-        {
-            Player player;
-            if (networkIndex == NetworkManager.Instance.Client.Id)
-            {
-                player = LocalPlayer;
-            }
-            else
-            {
-                player = CreateRemotePlayer(networkIndex, userId, deckId);
-                await player.DownloadDeck(deckId);
-            }
-
-            if (GameManager.ActiveGame == null)
-            {
-                GameManager.LoadConnectedGame(gameId);
-            }
-            GameManager.AddPlayer(player, fieldId);
-        }
+       
         #endregion
 
         #endregion
@@ -165,33 +131,27 @@ namespace Gameplay
         {
             _userId = userName;
             this.IsLocal = isLocal;
+            if (isLocal)
+            {
+                LocalPlayer = this;
+            }
         }
-        public Player(string user, Decklist list) : this(user, true)
+        public Player(ushort tempGameId, string userId, bool isLocal) : this(userId, isLocal)
         {
-            LoadDeckList(list);
-        }
-        public Player(ushort lobbyID, string user, Decklist list, bool isLocal) : this(user, isLocal)
-        {
-            this.lobbyId = lobbyID;
-            deckUploadKey = list.UploadCode;
-            LoadDeckList(list);
-        }
-        public Player(ushort lobbyID, string user, string deckKey, bool isLocal) : this(user, isLocal)
-        {
-            this.lobbyId = lobbyID;
-            this.deckUploadKey = deckKey;
+            lobbyId = tempGameId;
+            
             
         }
-        public static Player CreateLocalPlayer(ushort lobbyID, string user, Decklist list)
-        {
-            LocalPlayer = new Player(lobbyID, user, list, true);
-            return LocalPlayer;
-        }
 
-        public void LoadDeckList(Decklist list)
+        public Player(string user, Decklist list, bool isLocal) : this(user, isLocal)
+        {
+            LoadDeckList(list);
+        }
+        
+        public void LoadDeckList(Decklist list, bool shuffle = true)
         {
             decklist = list;
-            _deck = new GameDeck(list);
+            _deck = new GameDeck(list, shuffle);
             IsLoaded = true;
         }
 

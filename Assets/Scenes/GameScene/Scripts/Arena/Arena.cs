@@ -86,8 +86,15 @@ namespace Gameplay
             //if (NearField._player != null) { f = FarField; }
             f.SetPlayer(p, fieldId);
         }
+        public void SetPlayer(Player p)
+        {
+            Field f = NearField;
+            if (!p.IsLocal) { f = FarField; }
+            //if (NearField._player != null) { f = FarField; }
+            f.SetPlayer(p);
+        }
 
-        
+
 
     }
 }

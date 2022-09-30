@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Policy;
 using UnityEngine;
 
 [System.Serializable]
@@ -46,3 +47,13 @@ public class DataList
 {
     public List<string> items { get; set; }
 }
+
+
+[System.Serializable]
+public class KeyValueItem
+{
+    public string Key { get; set; }
+    public string Value { get; set; }
+}
+
+

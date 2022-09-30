@@ -41,7 +41,7 @@ namespace Decks
         #region operators
         public static implicit operator Decklist(UploadedDeckDTO dto)
         {
-            Decklist deck = new Decklist(dto.owner, dto.uploadCode);
+            Decklist deck = new Decklist(dto.title, dto.deckKey);
             List<DeckCard> cards = new List<DeckCard>();
             for (int i = 0; i < dto.deck.Count; i++)
             {

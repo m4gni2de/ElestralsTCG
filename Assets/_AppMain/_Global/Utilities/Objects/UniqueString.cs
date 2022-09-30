@@ -93,7 +93,7 @@ public class UniqueString
         return key;
     }
 
-    private static string CreateId(int digits, string prefix = "")
+    public static string CreateId(int digits, string prefix = "")
     {
         string id = prefix;
         for (int i = 0; i < digits; i++)

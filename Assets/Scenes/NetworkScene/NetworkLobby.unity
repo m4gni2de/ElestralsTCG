@@ -605,11 +605,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 883608720}
+  - component: {fileID: 883608721}
   - component: {fileID: 883608716}
   - component: {fileID: 883608719}
   - component: {fileID: 883608718}
   - component: {fileID: 883608717}
-  - component: {fileID: 883608721}
   m_Layer: 5
   m_Name: WorldCanvas
   m_TagString: Untagged
@@ -679,8 +679,8 @@ Canvas:
   m_GameObject: {fileID: 883608715}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
-  m_Camera: {fileID: 0}
+  m_RenderMode: 0
+  m_Camera: {fileID: 1666256019}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -725,7 +725,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf35f9653be9a1d4fbc259a973a35f4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ipInput: {fileID: 972356551}
+  lobbyInput: {fileID: 972356551}
   mainObject: {fileID: 1652168804}
   hostButton: {fileID: 944536736}
   connectButton: {fileID: 1809787352}
@@ -808,7 +808,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 944536737}
   m_OnClick:
     m_PersistentCalls:
@@ -876,7 +876,7 @@ GameObject:
   - component: {fileID: 972356552}
   - component: {fileID: 972356551}
   m_Layer: 5
-  m_Name: connectingIp
+  m_Name: connectLobby
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -942,7 +942,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 972356552}
   m_TextViewport: {fileID: 1120145482}
   m_TextComponent: {fileID: 299614832}
@@ -1110,7 +1110,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1652168805
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1206,7 +1206,6 @@ GameObject:
   - component: {fileID: 1666256020}
   - component: {fileID: 1666256019}
   - component: {fileID: 1666256018}
-  - component: {fileID: 1666256021}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1280,25 +1279,6 @@ Transform:
   m_Father: {fileID: 883608720}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1666256021
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1666256017}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06add719c17431149bf64b7e4d9cdc41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ParentCanvas: {fileID: 883608719}
-  minSizePercent: 0.2
-  MaxPercentOfScreen: 0.95
-  isClicked: 0
-  cameraMoveSpeed: 0
-  clickPosition: {x: 0, y: 0, z: 0}
-  IsFrozen: 0
 --- !u!1 &1739328750
 GameObject:
   m_ObjectHideFlags: 0
@@ -1378,7 +1358,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Enter IP to connect to....
+  m_text: Enter Game Id to connect to....
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0ab4af3e1579ecb439bc8fa35c881d49, type: 2}
   m_sharedMaterial: {fileID: 9037450947400198184, guid: 0ab4af3e1579ecb439bc8fa35c881d49, type: 2}
@@ -1405,7 +1385,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36.45
+  m_fontSize: 33.8
   m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1534,7 +1514,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 1809787353}
   m_OnClick:
     m_PersistentCalls:

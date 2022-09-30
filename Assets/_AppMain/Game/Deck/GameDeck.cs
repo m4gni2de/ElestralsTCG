@@ -136,22 +136,19 @@ namespace Gameplay
         }
         #endregion
 
-        public GameDeck(Decklist list)
+        public GameDeck(Decklist list, bool shuffleLocally = true)
         {
-            if (list.IsUploaded)
-            {
-                uniqueId = list.UploadCode;
-            }
-            else
-            {
-                uniqueId = UniqueString.GetShortId("dk");
-            }
-            
+            uniqueId = UniqueString.GetShortId("dk");
+
             _spiritDeck = Deck.SpiritDeck();
             _mainDeck = Deck.MainDeck();
 
             SeparateCards(list);
-            Shuffle(MainDeck);
+            if (shuffleLocally)
+            {
+                Shuffle(MainDeck);
+            }
+            
         }
 
        

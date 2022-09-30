@@ -27,7 +27,7 @@ namespace Gameplay
         #region Network Properties
         public static OnlineGame ServerGame { get; set; }
         public virtual bool IsOnline() { return false; }
-        
+
 
         #endregion
         #region Global Properties
@@ -57,7 +57,7 @@ namespace Gameplay
                 return GameManager.Instance.ActivePlayer;
             }
         }
-        
+
         public Player GetOpponent(Player p)
         {
             for (int i = 0; i < players.Count; i++)
@@ -100,15 +100,19 @@ namespace Gameplay
             g.isOnline = true;
             return g;
         }
-        public static OnlineGame NewGame(string ip, ushort port)
+        public static Game ConnectToNetwork(string gameId)
         {
-            string gameId = UniqueString.Create("game", 8);
-            return new OnlineGame(gameId, ip, port);
+            Game g = new Game();
+            g.gameId = gameId;
+            g.isOnline = true;
+            return g;
         }
+       
         public static Game RandomGame()
         {
             GameData data = GameData.RandomGame();
-            return new Game(data);
+            Game g = new Game(data);
+            return g;
         }
 
        
@@ -120,13 +124,15 @@ namespace Gameplay
         }
 
         
-        public void AddPlayer(string userid, string deckKey)
+        public void AddPlayer(string userid, string deckKey, bool isLocal)
         {
             Decklist decklist = Decklist.Load(deckKey);
-            Player player = new Player(userid, decklist);
+            Player player = new Player(userid, decklist, isLocal);
             AddPlayer(player);
         }
-       
+        
+
+        
         public void AddPlayer(Player p)
         {
             if (!players.Contains(p))

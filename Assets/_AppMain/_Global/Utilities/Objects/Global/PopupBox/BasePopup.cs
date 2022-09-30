@@ -31,6 +31,10 @@ namespace PopupBox
             }
         }
 
+        public virtual void Refresh()
+        {
+
+        }
         public virtual void Confirm()
         {
 

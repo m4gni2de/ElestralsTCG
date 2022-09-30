@@ -20,5 +20,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/NetworkScene/NetworkLobby.unity
     guid: 9d3d056edab58cf4cbebf79bbfb92830
+  - enabled: 1
+    path: Assets/Scenes/NetworkScene/OnlineGameScene/OnlineGame.unity
+    guid: 5e1a3fa9aac1e3540a569305030c852e
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 025501b9daa5fea479bc9199f78222fd, type: 2}

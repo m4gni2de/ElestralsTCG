@@ -189,6 +189,13 @@ public class App
         }
         
     }
+    public static void ShowDropdown(string msg, List<string> options, Action<string> callback)
+    {
+        if (PopupManager.ActivePopup == null)
+        {
+            popUp.ShowDropdown(msg, options, callback);
+        }
+    }
     #endregion
 
     #region Global Functions

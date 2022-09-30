@@ -9,9 +9,12 @@ public class PopupManager : MonoBehaviour
     public static BasePopup ActivePopup;
 
     public GameObject objectPool;
+    public GameObject confirmBase, cancelBase, messageBase;
 
     public YesNoBox YesNo;
     public DisplayBox Message;
+    public DropdownPopup Dropdown;
+
 
 
     private void Awake()
@@ -26,12 +29,15 @@ public class PopupManager : MonoBehaviour
         gameObject.SetActive(false);
         objectPool.SetActive(false);
     }
-    public void Show()
+    public void Show(bool useObjectPool = true)
     {
         gameObject.SetActive(true);
-        objectPool.SetActive(true);
+        objectPool.SetActive(useObjectPool);
+        confirmBase.SetActive(useObjectPool);
+        cancelBase.SetActive(useObjectPool);
+        messageBase.SetActive(useObjectPool);
     }
-    public static void SetActivePopup(BasePopup pop = null)
+    public static void SetActivePopup(BasePopup pop = null, bool useObjectPool = true)
     {
         if (pop == null)
         {
@@ -40,7 +46,7 @@ public class PopupManager : MonoBehaviour
         }
         else
         {
-            Instance.Show();
+            Instance.Show(useObjectPool);
             ActivePopup = pop;
         }
         
@@ -57,6 +63,12 @@ public class PopupManager : MonoBehaviour
     {
         SetActivePopup(Message);
         Message.Show(msg, callback);
+        StartCoroutine(AwaitPopup());
+    }
+    public void ShowDropdown(string title, List<string> options, Action<string> callback)
+    {
+        SetActivePopup(Dropdown, false);
+        Dropdown.Show(title, options, callback);
         StartCoroutine(AwaitPopup());
     }
 

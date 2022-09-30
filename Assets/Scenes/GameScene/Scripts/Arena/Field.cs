@@ -177,8 +177,8 @@ namespace Gameplay
         {
 
         }
-
-        public string Register()
+      
+        public void Register()
         {
             
             int runeCount = 0;
@@ -203,9 +203,20 @@ namespace Gameplay
 
                 cardSlots[i].SetIndex(baseIndex + i);
             }
-            return fieldId;
+            
         }
-       
+
+        public void SetPlayer(Player p)
+        {
+            _player = p;
+            Register();
+            for (int i = 0; i < cardSlots.Count; i++)
+            {
+                cardSlots[i].SetId(p.userId);
+            }
+            AllocateCards();
+        }
+
         public void SetPlayer(Player p, string id)
         {
             fieldId = id;
@@ -248,7 +259,7 @@ namespace Gameplay
             bool displayBack = slot.facing == CardSlot.CardFacing.FaceDown;
             c.LoadCard(card.card);
             c.name = card.name;
-            NetworkPipeline.SpawnNewCard(card.NetworkId, slot.index);
+            //NetworkPipeline.SpawnNewCard(card.NetworkId, slot.index);
             return c;
         }
 

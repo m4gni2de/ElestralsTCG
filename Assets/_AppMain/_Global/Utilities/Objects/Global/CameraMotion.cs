@@ -58,6 +58,7 @@ public class CameraMotion : MonoBehaviour
     {
         GetScales();
         mainCamera.orthographicSize = defaultSize;
+        
     }
 
     void GetScales()
@@ -186,8 +187,8 @@ public class CameraMotion : MonoBehaviour
                     xDiff = clickPosition.x - worldMousePosition.x;
                     yDiff = clickPosition.y - worldMousePosition.y;
 
-                    if (facingDirection.x != 0) { mainCamera.transform.Translate(new Vector3(xDiff / cameraMoveSpeed, 0), Space.Self); }
-                    if (facingDirection.y != 0) { mainCamera.transform.Translate(new Vector3(0, yDiff) / cameraMoveSpeed, Space.Self); }
+                    if (facingDirection.x != 0) { mainCamera.transform.Translate(new Vector3(xDiff / cameraMoveSpeed + 0.01f, 0), Space.Self); }
+                    if (facingDirection.y != 0) { mainCamera.transform.Translate(new Vector3(0, yDiff) / (cameraMoveSpeed + 0.01f), Space.Self); }
 
                 }
             }
@@ -199,7 +200,7 @@ public class CameraMotion : MonoBehaviour
             if (isClicked == true)
             {
                 acumTime += 3;
-                mainCamera.transform.Translate(facingDirection / (cameraMoveSpeed + acumTime), Space.Self);
+                mainCamera.transform.Translate(facingDirection / ((cameraMoveSpeed + 0.01f) + acumTime), Space.Self);
 
                 if (acumTime >= 21 || Input.GetMouseButton(0))
                 {
@@ -215,12 +216,12 @@ public class CameraMotion : MonoBehaviour
 
         if (Input.GetAxis("Mouse ScrollWheel") < 0)
         {
-            mainCamera.orthographicSize += (1 * cameraMoveSpeed);
+            mainCamera.orthographicSize += (1 * (cameraMoveSpeed + 0.01f));
         }
 
         if (Input.GetAxis("Mouse ScrollWheel") > 0)
         {
-            mainCamera.orthographicSize -= (1 * cameraMoveSpeed);
+            mainCamera.orthographicSize -= (1 * (cameraMoveSpeed + 0.01f));
         }
 
         //if (mainCamera.orthographicSize >= maxCameraSize)

@@ -123,39 +123,42 @@ public class NetworkManager : MonoBehaviour
         Client.Connect($"{ip}:{port}");
     }
 
+    public static event Action<ushort> OnClientConnected;
     private void DidConnect(object sender, EventArgs e)
     {
-        PlayerConnected();
-        
+        OnClientConnected?.Invoke(Client.Id);
+
+        //PlayerConnected();
     }
-    private async void PlayerConnected()
-    {
-        string code = await App.ActiveDeck.DoUpload();
-       if (string.IsNullOrEmpty(code)) { Client.Disconnect(); return; }
-        Player.CreateLocalPlayer(Client.Id, App.Account.Id, App.ActiveDeck);
-        GameManager.OnGameLoaded += GameLoaded;
-        App.ChangeScene(GameManager.SceneName);
-    }
+    //private async void PlayerConnected()
+    //{
+    //   string code = await App.ActiveDeck.DoUpload();
+    //   if (string.IsNullOrEmpty(code)) { Client.Disconnect(); return; }
+    //   Player.CreateLocalPlayer(Client.Id, App.Account.Id, App.ActiveDeck);
+    //}
     
     private void GameLoaded()
     {
         GameManager.OnGameLoaded -= GameLoaded;
         Player.SendLocalPlayer();
     }
-   
+
+    public static event Action OnConnectionFailed;
     private void FailedToConnect(object sender, EventArgs e)
     {
         //UIManager.Singleton.BackToMain();
     }
 
+    public static event Action OnClientLeave;
     private void ClientLeft(object sender, ClientDisconnectedEventArgs e)
     {
         //Destroy(OnlinePlayer.list[e.Id].gameObject);
     }
 
+    public static event Action OnClientDisconnected;
     private void DidDisconnect(object sender, EventArgs e)
     {
-        //UIManager.Singleton.BackToMain();
+        OnClientDisconnected?.Invoke();
     }
     
     #endregion

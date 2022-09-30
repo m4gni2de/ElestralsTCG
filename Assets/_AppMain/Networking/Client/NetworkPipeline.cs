@@ -5,6 +5,9 @@ using UnityEngine;
 using Gameplay;
 using Gameplay.Networking;
 using Defective.JSON;
+using System;
+using Decks;
+using UnityEditor;
 
 public enum ServerToClient : ushort
 {
@@ -34,25 +37,123 @@ public enum ClientToServer : ushort
 
 }
 
+
+
 public enum ServerFunction
 {
     HasActiveAction = 1,
 }
 
+
+public enum ToServer : ushort
+{
+    Connected = 99,
+    CreateGame = 98,
+    JoinGame = 97,
+    PlayerJoined = 96,
+    DeckSelection = 95,
+    GameReady = 94,
+}
+public enum FromServer :ushort
+{
+    Connected = 99,
+    CreateGame = 98,
+    JoinGame = 97,
+    PlayerJoined = 96,
+    DeckSelection = 95,
+    GameReady = 94,
+}
+
 public class NetworkPipeline
 {
+    //[MenuItem("Remote DB/Upload Deck")]
+    //public static void UploadDeck()
+    //{
+    //    string key = "ps01";
+    //    List<Decklist> decks = App.Account.DeckLists;
+
+    //    for (int i = 0; i < decks.Count; i++)
+    //    {
+    //        if (decks[i].DeckKey.ToLower() == key.ToLower())
+    //        {
+    //            Decklist deck = decks[i];
+    //            UploadDeckByKey(deck);
+    //            break;
+    //        }
+    //    }
+        
+    //}
+    //private static async void UploadDeckByKey(Decklist d)
+    //{
+    //    await RemoteData.AddDeckToRemoteDB(d);
+    //}
     #region Inbound Messages
-   
+
+
+    #region FromServer enum
+    public static event Action OnPlayerRegistered;
+    [MessageHandler((ushort)FromServer.Connected)]
+    private static void PlayerIdRegistered(Message message)
+    {
+        ushort networkId = message.GetUShort();
+        OnPlayerRegistered?.Invoke();
+    }
+
+    public static event Action<string> OnGameCreated;
+    [MessageHandler((ushort)FromServer.CreateGame)]
+    private static void GameCreated(Message message)
+    {
+        string gameId = message.GetString();
+        OnGameCreated?.Invoke(gameId);
+    }
+
+    public static event Action<string, List<NetworkPlayer>> OnGameJoined;
+    [MessageHandler((ushort)FromServer.JoinGame)]
+    private static void GameJoined(Message message)
+    {
+        string lobbyId = message.GetString();
+        int playersToAdd = message.GetInt();
+
+        List<NetworkPlayer> otherPlayers = new List<NetworkPlayer>();
+        for (int i = 0; i < playersToAdd; i++)
+        {
+            ushort netId = message.GetUShort();
+            string user = message.GetString();
+            NetworkPlayer p = new NetworkPlayer(netId, user, false);
+        }
+        OnGameJoined?.Invoke(lobbyId, otherPlayers);
+    }
+
+    public static event Action<ushort, string> OnPlayerJoined;
+    [MessageHandler((ushort)FromServer.PlayerJoined)]
+    private static void PlayerJoined(Message message)
+    {
+        ushort netId = message.GetUShort();
+        string userId = message.GetString();
+        OnPlayerJoined?.Invoke(netId, userId);
+    }
+
+    public static event Action<ushort, string> OnDeckSelected;
+    [MessageHandler((ushort)FromServer.DeckSelection)]
+    private static void DeckSelected(Message message)
+    {
+        ushort networkId = message.GetUShort();
+        string deck = message.GetString();
+        OnDeckSelected?.Invoke(networkId, deck);
+    }
+
+    #endregion
+
     [MessageHandler((ushort)ServerToClient.playerRegistered)]
     private static void PlayerRegistered(Message message)
     {
-        Player.RegisterPlayer(message.GetUShort(), message.GetString(), message.GetString(), message.GetString(), message.GetString(), message.GetString());
+        //Player.RegisterPlayer(message.GetUShort(), message.GetString(), message.GetString(), message.GetString(), message.GetString(), message.GetString());
     }
 
     [MessageHandler((ushort)ServerToClient.cardSpawned)]
     private static void CardSet(Message message)
     {
-        Player.RegisterPlayer(message.GetUShort(), message.GetString(), message.GetString(), message.GetString(), message.GetString(), message.GetString());
+        //Player.RegisterPlayer(message.GetUShort(), message.GetString(), message.GetString(), message.GetString(), message.GetString(), message.GetString());
     }
 
     [MessageHandler((ushort)ServerToClient.cardMoved)]
@@ -135,7 +236,11 @@ public class NetworkPipeline
     #endregion
     public static void SendMessageToServer(Message message)
     {
-        NetworkManager.Instance.Client.Send(message);
+        if (NetworkManager.Instance != null && NetworkManager.Instance.Client != null)
+        {
+            NetworkManager.Instance.Client.Send(message);
+        }
+        
     }
 
     public static void SpawnNewCard(int cardNetworkId, int slotSpawned)
