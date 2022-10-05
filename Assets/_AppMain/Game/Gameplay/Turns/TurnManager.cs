@@ -119,11 +119,20 @@ namespace Gameplay.Turns
         }
         #endregion
 
+
+        #region Network Turn Events
+        public void StartOnlineGame()
+        {
+            NetworkPipeline.OpeningDrawsOutbound();
+        }
+        #endregion
+
         #region Turn Events/Watchers
         public void StartGame()
         {
             DoOpeningDraws();
         }
+        
         protected IEnumerator NewTurn(Turn turn)
         {
             Game.StartNewTurn(turn);
@@ -192,6 +201,7 @@ namespace Gameplay.Turns
             }
 
         }
+       
 
         protected IEnumerator AwaitOpeningDraws()
         {
@@ -215,6 +225,11 @@ namespace Gameplay.Turns
         #endregion
 
         #region Turn Action Handling
+        public void OnlineStartTurn()
+        {
+            RoundIndex = -1;
+            StartTurn();
+        }
         public void StartTurn()
         {
             RoundIndex += 1;

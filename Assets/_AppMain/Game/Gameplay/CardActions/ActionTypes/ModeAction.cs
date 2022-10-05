@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Gameplay.CardActions
 {
@@ -23,13 +25,40 @@ namespace Gameplay.CardActions
             data.SetSourceCard(sourceCard);
             data.AddData("old_mode", (int)oldCardMode);
             data.AddData("new_mode", (int)newCardMode);
+            data.SetResult(actionResult);
             return data;
+        }
+
+        public static ModeAction FromData(CardActionData data)
+        {
+            return new ModeAction(data);
+        }
+
+        protected ModeAction(CardActionData data) : base(data)
+        {
+
+        }
+        protected override void ParseData(CardActionData data)
+        {
+            base.ParseData(data);
+            player = Game.FindPlayer(data.Value<string>(CardActionData.PlayerKey));
+            sourceCard = Game.FindCard(data.Value<string>(CardActionData.SourceKey));
+            oldCardMode = (CardMode)data.Value<int>("old_mode");
+            newCardMode = (CardMode)data.Value<int>("new_mode");
+            actionResult = data.GetResult();
+            SetDetails();
+
         }
 
         public ModeAction(Player p, GameCard source, CardMode newMode) : base(p, source)
         {
             newCardMode = newMode;
             oldCardMode = source.mode;
+            SetDetails();
+            
+        }
+        protected void SetDetails()
+        {
             _declaredMessage = $"Change {sourceCard.cardStats.title} to {newCardMode} Mode!";
             _actionMessage = $"{sourceCard.cardStats.title} is changed to {newCardMode} Mode!";
         }
@@ -73,11 +102,13 @@ namespace Gameplay.CardActions
                 
                 Vector3 angles = sourceCard.cardObject.transform.localEulerAngles;
                 sourceCard.cardObject.transform.localEulerAngles = new Vector3(angles.x, angles.y, angles.z + anglePerFrame);
+                sourceCard.NetworkCard.SendRotation();
                 yield return new WaitForEndOfFrame();
                 acumTime += Time.deltaTime;
 
             } while (Validate(acumTime, actionTime) || IsValid(goingUp, sourceCard.cardObject.transform.localEulerAngles.z, targetRotation.z));
             sourceCard.SetCardMode(newCardMode);
+            sourceCard.NetworkCard.SendRotation();
             End(ActionResult.Succeed);
         }
 

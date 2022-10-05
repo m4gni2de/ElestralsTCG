@@ -5,6 +5,7 @@ using Cards;
 using CardsUI;
 using Gameplay.GameCommands;
 using System.Security.Cryptography;
+using System;
 
 namespace Gameplay
 {
@@ -26,14 +27,16 @@ namespace Gameplay
         Defense = 2,
     }
 
+   
+
     [System.Serializable]
-    public class GameCard
+    public class GameCard: iGameMover
     {
         public string name;
         public CardStats cardStats;
         #region Visual Properties
         public bool IsFaceUp { get { return cardObject.IsFaceUp; } }
-
+        protected bool isSelected { get; private set; }
         #endregion
 
         #region Network Linking
@@ -44,6 +47,8 @@ namespace Gameplay
         {
             _networkId = id;
         }
+        public bool IsNetwork = false;
+       
         #endregion
 
         #region Static Constructors
@@ -72,12 +77,25 @@ namespace Gameplay
         public int deckPosition;
         public string cardId;
 
-        private int _slotIndex = -1;
-        public int slotIndex { get { return _slotIndex; } }
+        private string _slotId = "";
+            
+        public string slotId { get { return _slotId; } }
 
        
 
         public CardView cardObject { get; set; }
+        private NetworkCard _networkCard = null;
+        public NetworkCard NetworkCard
+        {
+            get
+            {
+                if (_networkCard == null)
+                {
+                    _networkCard = cardObject.GetComponent<NetworkCard>();
+                }
+                return _networkCard;
+            }
+        }
         private RectTransform _rect = null;
         public RectTransform rect
         {
@@ -162,6 +180,7 @@ namespace Gameplay
             location = CardLocation.Deck;
             name = $"{_card.cardData.cardName} - {copy}";
             cardStats = new CardStats(this);
+            isSelected = false;
         }
         public void SetId(string id)
         {
@@ -173,6 +192,8 @@ namespace Gameplay
         {
             //do something to tie the carddata of the Object to the GameCard
             cardObject = obj;
+            obj.CardName = name;
+            obj.CardSessionId = cardId;
         }
 
 
@@ -180,7 +201,7 @@ namespace Gameplay
         {
             deckPosition = index;
         }
-        public void SetCardMode(CardMode cardMode)
+        public void SetCardMode(CardMode cardMode, bool sendToNetwork = true)
         {
             mode = cardMode;
             if (CardType == CardType.Elestral)
@@ -196,6 +217,10 @@ namespace Gameplay
                     rect.sizeDelta = CurrentSlot.rect.sizeDelta;
                 }
                 
+                if (sendToNetwork)
+                {
+                    NetworkCard.SendRotation();
+                }
                 
             }
            
@@ -207,21 +232,19 @@ namespace Gameplay
         {
 
         }
-        public void AllocateTo(CardSlot slot)
+        public void AllocateTo(CardSlot slot, bool sendToServer = true)
         {
-            int currentSlot = -1;
-            if (_CurrentSlot != null)
-            {
-                currentSlot = _CurrentSlot.index;
-            }
-            
-            
+           
             _CurrentSlot = slot;
             location = slot.slotType;
-            _slotIndex = slot.index;
+            _slotId = slot.slotId;
             rect.sizeDelta = slot.rect.sizeDelta;
 
-            NetworkPipeline.SendNewCardSlot(cardId, currentSlot, slot.index);
+            if (sendToServer)
+            {
+                NetworkPipeline.SendNewCardSlot(cardId, _slotId);
+            }
+            
         }
        
        
@@ -240,10 +263,12 @@ namespace Gameplay
             if (CurrentSlot == null) { return; }
             CurrentSlot.RefreshAtSlot(this);
         }
-       
 
-        public void SelectCard(bool toggle)
+
+        public event Action<bool> OnSelectChanged;
+        public void SelectCard(bool toggle, bool sendToServer = true)
         {
+            bool current = isSelected;
             if (toggle)
             {
                 cardObject.Images.SetColor("Border", Color.yellow);
@@ -254,6 +279,17 @@ namespace Gameplay
                 cardObject.Images.SetColor("Border", Color.clear);
                 cardObject.Images.HideSprite("Border");
             }
+
+            isSelected = toggle;
+
+            if (sendToServer)
+            {
+                if (current != toggle)
+                {
+                    OnSelectChanged?.Invoke(toggle);
+                }
+            }
+            
             //cardObject.SelectCard(toggle);
         }
         #endregion
@@ -270,7 +306,90 @@ namespace Gameplay
             Game.OnEnchantmentSend(source, spirit);
             
         }
-       
+
+        #endregion
+
+
+
+        #region Network Events
+        public void ToggleNetwork(bool network)
+        {
+            
+            IsNetwork = network;
+           
+        }
+
+        private void SendSelectStatus(bool isSelected)
+        {
+            if (IsNetwork)
+            {
+                NetworkPipeline.SendCardSelect(this, isSelected);
+            }
+        }
+        public struct NetworkData
+        {
+            //public ushort OwnerId { get; set; }
+            public int networkId { get; set; }
+            public string sessionId { get; set; }
+            public string setKey { get; set; }
+            public string slotId { get; set; }
+        }
+
+        public void SendCardToServer()
+        {
+            NetworkData data = CardNetworkData();
+            NetworkPipeline.SendNewCard(data);
+        }
+
+        public NetworkData CardNetworkData()
+        {
+            NetworkData data = new NetworkData();
+            //data.OwnerId = Owner.lobbyId;
+            data.networkId = NetworkId;
+            data.sessionId = cardId;
+            data.setKey = card.cardData.setKey;
+            data.slotId = slotId;
+
+            return data;
+        }
+
+        #endregion
+
+
+        #region Card Object 
+        public void SetPosition(Vector3 newPos, bool sendToNetwork = true)
+        {
+            cardObject.transform.position = newPos;
+
+            if (sendToNetwork)
+            {
+                NetworkCard.SendPosition();
+            }
+        }
+        public void MovePosition(Vector3 moveBy, bool sendToNetwork = true)
+        {
+            this.MoveGamePosition(cardObject.transform, moveBy);
+            if (sendToNetwork)
+            {
+                NetworkCard.SendPosition();
+            }
+        }
+        public void FlipCard(bool toFaceDown, bool sendToNetwork = true)
+        {
+            cardObject.Flip(toFaceDown);
+            if (sendToNetwork)
+            {
+                NetworkCard.Flip(toFaceDown);
+            }
+        }
+        public void SetScale(Vector3 newScale, bool sendToNetwork = true)
+        {
+            cardObject.SetScale(newScale);
+            if (sendToNetwork)
+            {
+                NetworkCard.SendScale(newScale);
+            }
+        }
         #endregion
 
     }

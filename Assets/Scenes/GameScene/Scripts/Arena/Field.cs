@@ -15,6 +15,7 @@ namespace Gameplay
         private SpriteRenderer spMat;
 
         public List<CardSlot> cardSlots = new List<CardSlot>();
+        
 
         #region Player
         public Player _player { get; set; }
@@ -127,14 +128,20 @@ namespace Gameplay
             }
         }
 
-        public CardSlot ByIndex(int index)
+        public CardSlot SlotById(string id)
         {
             for (int i = 0; i < cardSlots.Count; i++)
             {
-                if (cardSlots[i].index == index) { return cardSlots[i]; }
+                if (cardSlots[i].slotId.ToLower() == id.ToLower())
+                {
+                    return cardSlots[i];
+                    
+                }
             }
             return null;
         }
+
+        
 
         public CardSlot ElestralSlot(int index, bool onlyOpenSlots)
         {
@@ -199,9 +206,14 @@ namespace Gameplay
                 {
                     string s = $"{cardSlots[i].slotType}";
                     cardSlots[i].SetLocationName(s);
+
                 }
 
-                cardSlots[i].SetIndex(baseIndex + i);
+                cardSlots[i].SetPlayer(_player, i);
+                //cardSlots[i].SetIndex(i);
+                //cardSlots[i].SetId(_player.lobbyId.ToString());
+
+
             }
             
         }
@@ -209,13 +221,12 @@ namespace Gameplay
         public void SetPlayer(Player p)
         {
             _player = p;
+            name = _player.lobbyId + "_Field";
+            
             Register();
-            for (int i = 0; i < cardSlots.Count; i++)
-            {
-                cardSlots[i].SetId(p.userId);
-            }
-            AllocateCards();
         }
+
+        
 
         public void SetPlayer(Player p, string id)
         {
@@ -223,11 +234,12 @@ namespace Gameplay
             _player = p;
             for (int i = 0; i < cardSlots.Count; i++)
             {
+                
                 cardSlots[i].SetId(p.userId);
             }
             AllocateCards();
         }
-        private void AllocateCards()
+        public void AllocateCards()
         {
             Deck sp = _deck.SpiritDeck;
             for (int i = 0; i < sp.Cards.Count; i++)
@@ -249,6 +261,22 @@ namespace Gameplay
 
             }
             GameManager.Instance.ReadyPlayer(_player);
+        }
+
+        public void SpawnCard(GameCard card)
+        {
+            if (card.CardType == CardType.Spirit)
+            {
+                CardView co = SpawnCard(card, SpiritDeckSlot);
+                card.SetObject(co);
+                SpiritDeckSlot.AllocateTo(card);
+            }
+            else
+            {
+                CardView co = SpawnCard(card, DeckSlot);
+                card.SetObject(co);
+                DeckSlot.AllocateTo(card);
+            }
         }
 
        

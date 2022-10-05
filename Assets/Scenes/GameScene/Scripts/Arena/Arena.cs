@@ -6,6 +6,65 @@ namespace Gameplay
 {
     public class Arena : MonoBehaviour
     {
+        #region UI
+        private RectTransform Rect;
+       
+       
+        public struct FieldPosition
+        {
+            public Vector2 minAnchor, maxAnchor;
+            public Vector3 rotation;
+
+            public FieldPosition(Vector2 min, Vector2 max, Vector3 rotation)
+            {
+                minAnchor = min;
+                maxAnchor = max;
+                this.rotation = rotation;
+            }
+
+            public static FieldPosition Near
+            {
+                get
+                {
+                    return new FieldPosition(new Vector2(0f, 0f), new Vector2(1f, 0.475f), new Vector3(0f, 0f, 0f));
+                }
+            }
+
+            public static FieldPosition Far
+            {
+                get
+                {
+                    return new FieldPosition(new Vector2(0f, 0.525f), new Vector2(1f, 1f), new Vector3(0f, 0f, 180f));
+                }
+            }
+        }
+
+        
+
+        public float Height(bool useWorldScale = false)
+        {
+            if (!useWorldScale)
+            {
+                return Rect.rect.height;
+            }
+            else
+            {
+                return Rect.rect.height * WorldCanvas.scaleY;
+            }
+        }
+        public float Width(bool useWorldScale = false)
+        {
+            if (!useWorldScale)
+            {
+                return Rect.rect.width;
+            }
+            else
+            {
+                return Rect.rect.width * WorldCanvas.scaleX;
+            }
+        }
+        #endregion
+
         public Field NearField, FarField;
 
         private List<Field> _Fields = null;
@@ -22,6 +81,8 @@ namespace Gameplay
                 return _Fields;
             }
         }
+
+        
 
         #region Player Properties
         public Field GetPlayerField(Player p)
@@ -77,7 +138,7 @@ namespace Gameplay
 
         private void Awake()
         {
-            
+            Rect = GetComponent<RectTransform>();
         }
         public void SetPlayer(Player p, string fieldId)
         {
@@ -89,9 +150,11 @@ namespace Gameplay
         public void SetPlayer(Player p)
         {
             Field f = NearField;
-            if (!p.IsLocal) { f = FarField; }
-            //if (NearField._player != null) { f = FarField; }
+            //if (!p.IsLocal) { f = FarField; }
+            if (NearField._player != null) { f = FarField; }
             f.SetPlayer(p);
+
+
         }
 
 

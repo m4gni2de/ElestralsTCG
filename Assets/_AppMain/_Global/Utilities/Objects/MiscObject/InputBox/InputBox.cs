@@ -29,6 +29,7 @@ public class InputBox : MonoBehaviour
     public void Open()
     {
         IsHandled = false;
+        
     }
     public virtual void Close()
     {

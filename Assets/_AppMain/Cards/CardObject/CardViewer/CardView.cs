@@ -14,15 +14,19 @@ public class CardView : MonoBehaviour, iRemoteAsset
     public static string AssetName { get { return RemoteAssetHelpers.GetAssetName<CardView>(); } }
     public static string BorderMapping = "Border";
 
+    public string CardName;
+    public string CardSessionId;
     public Card ActiveCard;
     public SpriteDisplay sp;
     public TouchObject touch;
     public int cardIndex;
 
+    
+
     private MultiImage _images = null;
     public MultiImage Images { get { _images ??= GetComponent<MultiImage>(); return _images; } }
 
-    protected SpriteDisplay borderSp
+    public SpriteDisplay borderSp
     {
         get
         {
@@ -87,10 +91,9 @@ public class CardView : MonoBehaviour, iRemoteAsset
     }
     public virtual void SetScale(Vector2 newScale)
     {
-
-        
         sp.m_Transform.localScale = newScale;
         transform.position = new Vector3(transform.position.x, transform.position.y, -2f);
+        
 
     }
     public Vector3 GetScale()
@@ -166,6 +169,18 @@ public class CardView : MonoBehaviour, iRemoteAsset
         sp.SetColor(col);
     }
 
-   
-   
+
+
+    #region Network Sync
+    public void SendNetworkTransform()
+    {
+        Vector3 scale = transform.localScale;
+        Vector3 localPos = transform.localPosition;
+        
+    }
+
+    
+    #endregion
+
+
 }

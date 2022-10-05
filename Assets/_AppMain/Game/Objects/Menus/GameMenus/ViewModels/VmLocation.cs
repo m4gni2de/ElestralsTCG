@@ -7,7 +7,8 @@ namespace Gameplay.Menus
 {
     public class VmLocation : ViewModel
     {
-        private GameCard card;
+        private GameCard _card;
+        public GameCard Card { get { return _card; } }
         public SpriteDisplay sp;
         public Toggle toggle;
         public TMP_Dropdown ddLocations;
@@ -30,6 +31,7 @@ namespace Gameplay.Menus
         
 
         protected CardSlot _startLocation { get; set; }
+        protected CardSlot _newLocation { get; set; }
         public CardSlot Location
         {
             get
@@ -47,7 +49,7 @@ namespace Gameplay.Menus
         }
         public override void Refresh()
         {
-            card = null;
+            _card = null;
             toggle.isOn = false;
             ddLocations.ClearOptions();
             slotLocations.Clear();
@@ -62,11 +64,12 @@ namespace Gameplay.Menus
         }
         public void LoadCard(GameCard c, List<CardSlot> slots)
         {
-            card = c;
+            _card = c;
             _startLocation = c.CurrentSlot;
-            slotLocations.AddRange(slots);
+            slotLocations.AddRange(ValidSlots(c, slots));
             ddLocations.AddOptions(SlotOptions);
             toggle.isOn = true;
+            sp.SetSprite(c.cardObject.sp.MainSprite);
             Show();
         }
 
@@ -77,7 +80,45 @@ namespace Gameplay.Menus
         }
         public void OnDropdownChange()
         {
+            _newLocation = Location;
+        }
+        #endregion
 
+        public void Confirm()
+        {
+            if (_startLocation != _newLocation)
+            {
+                GameManager.Instance.MoveCard(Player.LocalPlayer, _card, _newLocation);
+            }
+            
+        }
+        public void Cancel()
+        {
+            Clear();
+        }
+
+        #region Functions
+        protected List<CardSlot> ValidSlots(GameCard card, List<CardSlot> allSlots)
+        {
+            List<CardSlot> slots = new List<CardSlot>();
+            for (int i = 0; i < allSlots.Count; i++)
+            {
+                if (allSlots[i].ValidateCard(card))
+                {
+                    slots.Add(allSlots[i]);
+                }
+            }
+            return slots;
+        }
+        public bool ValidatePlacement()
+        {
+            if (_startLocation != _newLocation)
+            {
+                return _newLocation.ValidateCard(_card);
+            }
+
+            return true;
+            
         }
         #endregion
     }

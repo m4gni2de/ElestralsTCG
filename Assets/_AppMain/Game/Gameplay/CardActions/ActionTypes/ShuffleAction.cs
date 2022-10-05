@@ -5,15 +5,15 @@ using UnityEngine;
 using Gameplay.CardActions;
 using Decks;
 using Gameplay.Decks;
-
+using System.Drawing.Drawing2D;
+using Defective.JSON;
+using Newtonsoft.Json;
 
 [System.Serializable]
 public class ShuffleAction : CardAction
 {
     #region Properties
     public Deck sourceDeck { get; set; }
-    [SerializeField]
-    protected List<string> oldOrder = null;
     [SerializeField]
     protected List<string> newOrder = null;
 
@@ -30,26 +30,54 @@ public class ShuffleAction : CardAction
         CardActionData data = new CardActionData(this);
         data.SetPlayer(player);
         data.AddData("deck", (int)sourceDeck.deckType);
-        data.AddData("old_order", oldOrder.ToJson());
         data.AddData("new_order", newOrder.ToJson());
+        data.AddData("result", (int)actionResult);
         return data;
     }
 
+    public static ShuffleAction FromData(CardActionData data)
+    {
+        return new ShuffleAction(data);
+    }
 
+    protected ShuffleAction(CardActionData data) : base(data)
+    {
+
+    }
+    protected override void ParseData(CardActionData data)
+    {
+        base.ParseData(data);
+        player = Game.FindPlayer(data.Value<string>(CardActionData.PlayerKey));
+        int deckType = data.Value<int>("deck");
+        if (deckType == 0)
+        {
+            sourceDeck = player.deck.SpiritDeck;
+        }
+        else if(deckType == 1)
+        {
+            sourceDeck = player.deck.MainDeck;
+        }
+        string orderString = data.Value<string>("new_order");
+        DataList d = JsonConvert.DeserializeObject<DataList>(orderString);
+        newOrder = d.items;
+        actionResult = data.GetResult();
+        SetDetails();
+
+    }
     #region Initialization
 
     public ShuffleAction(Player p, Deck deck) : base(p)
     {
         sourceDeck = deck;
-        oldOrder = new List<string>();
         newOrder = new List<string>();
-        for (int i = 0; i < deck.InOrder.Count; i++)
-        {
-            oldOrder.Add(deck.InOrder[i].cardId);
-        }
+        SetDetails();
+    }
+
+    public void SetDetails()
+    {
         actionTime = 1.5f;
         _declaredMessage = $"Shuffle their deck.";
-        _actionMessage = $"{p.userId} shuffles their deck!";
+        _actionMessage = $"{player.userId} shuffles their deck!";
     }
 
     public static ShuffleAction Shuffle(Player p, Deck deck)
@@ -115,12 +143,21 @@ public class ShuffleAction : CardAction
             }
 
         } while (Validate(acumTime, actionTime));
-        sourceDeck.Shuffle();
 
-        for (int i = 0; i < sourceDeck.InOrder.Count; i++)
+        if (newOrder.Count == 0)
         {
-            newOrder.Add(sourceDeck.InOrder[i].cardId);
+            sourceDeck.Shuffle();
+
+            for (int i = 0; i < sourceDeck.InOrder.Count; i++)
+            {
+                newOrder.Add(sourceDeck.InOrder[i].cardId);
+            }
         }
+        else
+        {
+            sourceDeck.Shuffle(newOrder);
+        }
+        
         End(ActionResult.Succeed);
     }
 }

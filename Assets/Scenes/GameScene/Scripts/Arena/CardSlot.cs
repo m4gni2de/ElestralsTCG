@@ -105,6 +105,7 @@ namespace Gameplay
         public void SetLocationName(string st)
         {
             SlotLocationName = st;
+            
         }
 
              
@@ -272,14 +273,33 @@ namespace Gameplay
            
         }
 
-        public void SetIndex(int newIndex)
+        public virtual void SetPlayer(Player owner, int count)
         {
-            index = newIndex;
-            name = $"{slotType}{index}";
+            index = count;
+            name = $"{slotType}{count}";
+            string indexString = index.ToString();
+            if (index < 10)
+            {
+                indexString = $"0{index}";
+            }
+            slotId = $"{owner.lobbyId}{indexString}";
+        }
+        public void SetIndex(int count)
+        {
+            index = count;
+            name = $"{slotType}{count}";
+            
         }
         public void SetId(string ownerId)
         {
-            slotId = $"{ownerId}-{name}";
+            string indexString = index.ToString();
+            if (index < 10)
+            {
+                indexString = $"0{index}";
+            }
+            slotId = $"{ownerId}{indexString}";
+            
+            
         }
 
         protected void Start()
@@ -325,17 +345,20 @@ namespace Gameplay
 
     }
 
-    public virtual void AllocateTo(GameCard card)
+    public virtual void AllocateTo(GameCard card, bool sendToServer = true)
     {
+       
         card.RemoveFromSlot();
         cards.Add(card);
-        card.AllocateTo(this);
+        card.AllocateTo(this, sendToServer);
 
         DisplayCardObject(card);
         SetCommands(card);
 
-    }
         
+    }
+    
+    
     public void RefreshAtSlot(GameCard card)
     {
         SetCommands(card);
@@ -360,6 +383,7 @@ namespace Gameplay
             SetCommands(card);
         }
         DisplayCardObject(card);
+        NetworkPipeline.SendNewCardSlot(card.cardId, slotId);
     }
     protected virtual void DisplayCardObject(GameCard card)
     {
@@ -413,6 +437,20 @@ namespace Gameplay
         {
             ClosePopMenu(keepSelected);
         }
+        #endregion
+
+
+        #region Networking
+        /// <summary>
+        /// This is called simply for organization while I am still determining to use this or not. That way, I know exactly where the call for a remote card being allocated comes from.
+        /// </summary>
+        /// <param name="card"></param>
+        public void GetRemoteAllocateTo(GameCard card)
+        {
+            AllocateTo(card, false);
+        }
+
+
         #endregion
     }
 }

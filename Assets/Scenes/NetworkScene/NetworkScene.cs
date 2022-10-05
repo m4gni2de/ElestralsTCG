@@ -68,10 +68,6 @@ public class NetworkScene : MonoBehaviour
 
 
 
-
-
-
-
     #region Buttons
     public void HostMode()
     {
@@ -82,8 +78,7 @@ public class NetworkScene : MonoBehaviour
         //GameManager.HostGame();
         NetworkPipeline.OnGameCreated -= OnGameCreated;
         NetworkPipeline.OnGameCreated += OnGameCreated;
-        Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.CreateGame);
-        NetworkPipeline.SendMessageToServer(message);
+        NetworkPipeline.CreateGame();
 
     }
     private void OnGameCreated(string gameId)
@@ -100,12 +95,8 @@ public class NetworkScene : MonoBehaviour
         lobbyInput.interactable = false;
         mainObject.SetActive(false);
         string lobby = lobbyInput.text;
-
         NetworkPipeline.OnGameJoined += OnGameJoined;
-        Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.JoinGame);
-        message.AddString(lobby);
-        NetworkPipeline.SendMessageToServer(message);
-
+        NetworkPipeline.JoinNetworkLobby(lobby);   
     }
     private void OnGameJoined(string gameId, List<NetworkPlayer> otherPlayers)
     {

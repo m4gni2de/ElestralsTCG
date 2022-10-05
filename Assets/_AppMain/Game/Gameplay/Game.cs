@@ -82,7 +82,7 @@ namespace Gameplay
         public GameData gameData { get; set; }
         public GameMode gameMode { get; set; }
         public bool isOnline { get; private set; } = false;
-
+        
         #endregion
 
 
@@ -138,7 +138,7 @@ namespace Gameplay
             if (!players.Contains(p))
             {
                 players.Add(p);
-                gameLog.WriteLog($"Added Player {p.userId}"!);
+                //gameLog.WriteLog($"Added Player {p.userId}"!);
 
             }
         }
@@ -252,26 +252,14 @@ namespace Gameplay
                 Player p = GameManager.ActiveGame.players[i];
                 foreach (var item in p.gameField.cardSlots)
                 {
-                    if (item.slotId == slotId) { return item; }
+                    if (item.slotId.ToLower() == slotId.ToLower()) { return item; }
                 }
             }
             //App.LogFatal($"No Card Slot with Id {slotId} exists in this Game.");
             return null;
         }
 
-        public static CardSlot FindSlot(int slotIndex)
-        {
-            for (int i = 0; i < GameManager.ActiveGame.players.Count; i++)
-            {
-                Player p = GameManager.ActiveGame.players[i];
-                foreach (var item in p.gameField.cardSlots)
-                {
-                    if (item.index == slotIndex) { return item; }
-                }
-            }
-            //App.LogFatal($"No Card Slot with Id {slotId} exists in this Game.");
-            return null;
-        }
+       
         #endregion
 
     }

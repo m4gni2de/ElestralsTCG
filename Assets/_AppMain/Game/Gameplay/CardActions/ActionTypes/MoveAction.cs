@@ -19,6 +19,7 @@ namespace Gameplay
             
 
         }
+
         protected override IEnumerator DoMove(GameCard card, CardSlot to, float time = 0.65F)
         {
             float acumTime = 0f;
@@ -34,14 +35,17 @@ namespace Gameplay
                 this.Freeze();
                 yield return new WaitForEndOfFrame();
                 float frames = Time.deltaTime / time;
-                card.cardObject.transform.position += (direction * frames);
+                //card.cardObject.transform.position += (direction * frames);
+
+                card.MovePosition((direction * frames));
                 count += 1;
                 acumTime += Time.deltaTime;
             } while (Validate(acumTime, time, intervals, count));
             this.Thaw();
-            card.CurrentSlot.RemoveCard(card);
-            to.AllocateTo(card);
+            sourceCard.CurrentSlot.RemoveCard(sourceCard);
+            toSlot.AllocateTo(sourceCard);
             End(ActionResult.Succeed);
+
         }
         protected bool Validate(float acumTime, float time, float intervals, int count)
         {

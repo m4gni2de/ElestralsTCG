@@ -5,6 +5,8 @@ using Gameplay.Menus.Popup;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using static UnityEditor.Experimental.GraphView.GraphView;
+using UnityEngine.XR;
 
 namespace Gameplay
 {
@@ -24,6 +26,7 @@ namespace Gameplay
         [SerializeField]
         private SpriteDisplay sp;
 
+        #region Overrides
         protected override void SetSlot()
         {
             orientation = Orientation.Vertical;
@@ -31,7 +34,20 @@ namespace Gameplay
 
             
         }
-        
+
+        public override void SetPlayer(Player owner, int count)
+        {
+            base.SetPlayer(owner, count);
+            if (!owner.IsLocal)
+            {
+                facing = CardFacing.FaceDown;
+            }
+            else
+            {
+                facing = CardFacing.FaceUp;
+            }
+           
+        }
         protected override void DisplayCardObject(GameCard card)
         {
             card.cardObject.SetAsChild(Content, CardScale, SortLayer, 0);
@@ -100,7 +116,9 @@ namespace Gameplay
             commands.Add(PopupCommand.Create("Close", () => CloseCommand()));
             return commands;
         }
-        
+
+        #endregion
+
         #region Menu Commands
         protected void EnchantCommand()
         {

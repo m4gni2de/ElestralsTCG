@@ -46,16 +46,27 @@ namespace Decks
             for (int i = 0; i < dto.deck.Count; i++)
             {
                 string cardKey = dto.deck[i];
-                DeckCard card = DeckCard.Empty;
-                if (!deck.ContainsCard(cardKey, out card))
+                //DeckCard card = DeckCard.Empty;
+
+                bool hasCard = false;
+                int countOf = 1;
+                for (int j = 0; j < cards.Count; j++)
                 {
-                    card = CardService.DeckCardFromDownload(cardKey);
-                    cards.Add(card);
+                    DeckCard d = cards[j];
+                   
+                    if (d.key.ToLower() == cardKey.ToLower())
+                    {
+                        hasCard = true;
+                        countOf += 1;
+                    }
                 }
-                else
+
+                DeckCard card = CardService.DeckCardFromDownload(cardKey);
+                if (hasCard)
                 {
-                    card.copy += 1;
+                    card.copy = countOf;
                 }
+                cards.Add(card);
             }
             deck.Cards.AddRange(cards);
             return deck;
@@ -155,7 +166,31 @@ namespace Decks
             return new Decklist(dto, cards);
 
         }
+
+        #region Empty Deck
+        public static Decklist Empty(string owner, string key, string title)
+        {
+            return new Decklist(owner, key, title);
+        }
         #endregion
+
+        Decklist(string owner, string key, string name)
+        {
+            _key = key;
+            _owner = owner;
+            _whenCreated = DateTime.Now;
+            _deckName = name;
+            _uploadCode = "";
+        }
+        public DeckCard AddCard(string setKey)
+        {
+            DeckCard card = DeckCard.Empty;
+            card = CardService.DeckCardFromDownload(setKey);
+            AddCard(card);
+            return card;
+        }
+        #endregion
+
 
         Decklist(string owner, string uploadKey)
         {

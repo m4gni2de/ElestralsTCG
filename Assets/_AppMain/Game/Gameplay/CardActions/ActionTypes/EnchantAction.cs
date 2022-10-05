@@ -75,7 +75,7 @@ namespace Gameplay.CardActions
             {
                 data.SetSpirit(i + 1, spirits[i].cardId);
             }
-            data.AddData("result", actionResult);
+            data.AddData("result", (int)actionResult);
 
             return data;
         }
@@ -99,7 +99,7 @@ namespace Gameplay.CardActions
             enchantType = (EnchantActionType)data.Value<int>("enchant_type");
             cardMode = (CardMode)data.Value<int>("card_mode");
             toSlot = Game.FindSlot(data.Value<string>("slot_to"));
-            actionResult = (ActionResult)data.Value<int>("result");
+            actionResult = data.GetResult();
             int spiritCount = data.CountOfSpiritFields();
             for (int i = 0; i < spiritCount; i++)
             {
@@ -189,7 +189,7 @@ namespace Gameplay.CardActions
 
         }
 
-        
+
         protected override IEnumerator DoMove(GameCard card, CardSlot to, float time = .65f)
         {
             yield return base.DoMove(card, to, time);

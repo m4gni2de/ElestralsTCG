@@ -83,23 +83,37 @@ namespace TouchControls
         protected void OnClick(TouchObject button)
         {
             List<TouchObject> clicked = GetClickedButtons();
-            clicked.Sort(Compare);
-            if (SingleClick) { clicked[0].DoClick(); }
+           
+            if (clicked.Count > 0)
+            {
+                clicked.Sort(Compare);
+                if (SingleClick) { clicked[0].DoClick(); }
+            }
+           
         }
         protected void OnHold(TouchObject button)
         {
             List<TouchObject> clicked = GetClickedButtons();
-            clicked.Sort(Compare);
-            if (SingleClick) { clicked[0].DoHold(); }
+           
+            if (clicked.Count > 0)
+            {
+                clicked.Sort(Compare);
+                if (SingleClick) { clicked[0].DoHold(); }
+            }
         }
         #endregion
 
         protected bool Validate(TouchObject button)
         {
-            Debug.Log(ClickOrder.IndexOf(button));
+           
             List<TouchObject> clicked = GetClickedButtons();
-            clicked.Sort(Compare);
-            if (SingleClick) { return ClickOrder.IndexOf(button) == 0; }
+            
+            if (clicked.Count > 0)
+            {
+                clicked.Sort(Compare);
+                if (SingleClick) { return ClickOrder.IndexOf(button) == 0; }
+            }
+            
 
             return true;
         }

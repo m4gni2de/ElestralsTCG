@@ -4424,13 +4424,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   databaseFile: {fileID: 4900000, guid: e865c6b2d41bb854d839c3a95b9ce44f, type: 3}
   internalDb: {fileID: 4900000, guid: e865c6b2d41bb854d839c3a95b9ce44f, type: 3}
-  playerDb: {fileID: 4900000, guid: 331a2f85b647c2c4f9fd7c2aa497551f, type: 3}
   overrideBasePath: 
-  overridePathMode: 0
+  overridePathMode: 1
   changeWorkingName: 0
   workingName: 
-  overwriteIfExists: 1
-  overwriteMaster: 1
+  overwriteIfExists: 0
+  overwriteMaster: 0
   debugTrace: 0
 --- !u!114 &7528685431084820845
 MonoBehaviour:

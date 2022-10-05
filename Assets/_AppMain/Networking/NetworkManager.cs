@@ -137,11 +137,7 @@ public class NetworkManager : MonoBehaviour
     //   Player.CreateLocalPlayer(Client.Id, App.Account.Id, App.ActiveDeck);
     //}
     
-    private void GameLoaded()
-    {
-        GameManager.OnGameLoaded -= GameLoaded;
-        Player.SendLocalPlayer();
-    }
+   
 
     public static event Action OnConnectionFailed;
     private void FailedToConnect(object sender, EventArgs e)

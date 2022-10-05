@@ -68,7 +68,7 @@ namespace Gameplay.CardActions
             tributedCard = Game.FindCard(data.Value<string>(TributedCardKey));
             cardMode = (CardMode)data.Value<int>("card_mode");
             toSlot = Game.FindSlot(data.Value<string>(SlotToKey));
-            actionResult = (ActionResult)data.Value<int>("result");
+            actionResult = data.GetResult();
             CatalystSpirit = Game.FindCard(data.Value<string>("catalyst_spirit"));
             int spiritCount = data.CountOfSpiritFields();
             for (int i = 0; i < spiritCount; i++)
@@ -127,8 +127,7 @@ namespace Gameplay.CardActions
             GameManager.SelectedCard = sourceCard;
         }
 
-        
-
+       
         protected override IEnumerator DoMove(GameCard card, CardSlot to, float time = .65f)
         {
             yield return base.DoMove(card, to, time);

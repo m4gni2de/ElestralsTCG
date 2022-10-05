@@ -65,7 +65,7 @@ public class SingleSlot : CardSlot, iMainCard
 
     private void Reset()
     {
-        if (GetComponent<TouchGroup>() != null)
+        if (GetComponent<TouchGroup>() == null)
         {
             gameObject.AddComponent<TouchGroup>();
         }
@@ -106,12 +106,12 @@ public class SingleSlot : CardSlot, iMainCard
 
     }
 
-    public override void AllocateTo(GameCard card)
+    public override void AllocateTo(GameCard card,bool sendToServer = true)
     {
 
         card.RemoveFromSlot();
         cards.Add(card);
-        card.AllocateTo(this);
+        card.AllocateTo(this, sendToServer);
         if (card.CardType != CardType.Spirit)
         {
             SetMainCard(card);

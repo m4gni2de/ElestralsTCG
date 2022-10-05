@@ -157,6 +157,7 @@ public class DataService
     public static void DoQuery(string query)
     {
         db.QueryGeneric(query);
+        db.Commit();
     }
 
 
@@ -192,6 +193,12 @@ public class DataService
         }
 
         db.Commit();
+    }
+
+    public static void OverrideAndSave<T>(T obj, string tableName, string colName, string colValue)
+    {
+        TableMapping mapping = db.GetMapping(typeof(T));
+        bool exists = KeyExists(mapping, tableName, colName, colValue);
     }
 
     public static void Insert<T>(T obj, string tableName, string colName, string colValue)

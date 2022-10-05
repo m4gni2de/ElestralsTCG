@@ -99,21 +99,23 @@ namespace Gameplay.CardActions
         public override IEnumerator PerformAction()
         {
             yield return DoMove(sourceCard, toSlot);
-
+            GameDeck deck = player.deck;
+            Decks.Deck sourceDeck = deck.MainDeck;
+            if (!isMainDeck) { sourceDeck = deck.SpiritDeck; }
+            player.SendCardDraw(sourceCard);
+            deck.RemoveCard(sourceCard, sourceDeck);
+            toSlot.AllocateTo(sourceCard);
+            End(ActionResult.Succeed);
         }
 
         
         protected override IEnumerator DoMove(GameCard card, CardSlot to, float time = .65f)
         {
             yield return base.DoMove(card, to, time);
-            GameDeck deck = player.deck;
-            Decks.Deck sourceDeck = deck.MainDeck;
-            if (!isMainDeck) { sourceDeck = deck.SpiritDeck; }
-            player.SendCardDraw(card);
-            deck.RemoveCard(card, sourceDeck);
-            to.AllocateTo(card);
-            End(ActionResult.Succeed);
+            
         }
+
+        
 
         protected override void ResolveAction(ActionResult result)
         {

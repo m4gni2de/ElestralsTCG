@@ -103,7 +103,7 @@ namespace Gameplay
             if (string.IsNullOrEmpty(playerKey)) { playerKey = PlayerKey; }
             return Game.FindPlayer(Value<string>(playerKey));
         }
-        public static readonly string SpiritPrefix = "spirit_";
+        public static readonly string SpiritPrefix = "spirit";
         public void SetSpirit(int index, string cardKey)
         {
             string st = $"{SpiritPrefix}_{index}";
@@ -237,15 +237,17 @@ namespace Gameplay
 
 
         #region Data to Action
-        public static void FromData(string jsonData)
+        public static CardActionData FromData(string jsonData)
         {
             JSONObject obj = new JSONObject(jsonData);
 
             if (obj.type != JSONObject.Type.Null)
             {
                 CardActionData data = new CardActionData(obj);
+                return data;
                 
             }
+            return null;
            
         }
 
@@ -260,11 +262,11 @@ namespace Gameplay
                 case ActionCategory.Draw:
                     return DrawAction.FromData(data);
                 case ActionCategory.Shuffle:
-                    break;
+                    return ShuffleAction.FromData(data);
                 case ActionCategory.Enchant:
                     return EnchantAction.FromData(data);
                 case ActionCategory.Mode:
-                    break;
+                    return ModeAction.FromData(data);
                 case ActionCategory.Attack:
                     break;
                 case ActionCategory.Nexus:

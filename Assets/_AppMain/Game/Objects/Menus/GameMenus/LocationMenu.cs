@@ -44,6 +44,62 @@ namespace Gameplay.Menus
                 MenuItems[i].Clear();
             }
         }
+        public override void Close()
+        {
+            
+            base.Close();
+            
+        }
+        #endregion
+
+        #region Functions
+       
+        public bool Validate()
+        {
+           
+            Dictionary<CardSlot, VmLocation> constraintedSlots = new Dictionary<CardSlot, VmLocation>();
+            for (int i = 0; i < MenuItems.Count; i++)
+            {
+                if (!MenuItems[i].ValidatePlacement())
+                {
+                    string error = $"Error! {MenuItems[i].Location.SlotTitle} is not a valid placement.";
+                    return GameMessage.Error(error);
+                }
+                else
+                {
+        
+                    CardSlot selected = MenuItems[i].Location;
+                    if (selected is SingleSlot)
+                    {
+                        if (constraintedSlots.ContainsKey(MenuItems[i].Location))
+                        {
+                            if (MenuItems[i].Card.CardType != CardType.Spirit)
+                            {
+                                string error = $"Error! {MenuItems[i].Location.SlotTitle} already has a placement";
+                                return GameMessage.Error(error);
+                            }
+                            else
+                            {
+                                constraintedSlots.Add(MenuItems[i].Location, MenuItems[i]);
+                            }
+                           
+                        }
+                        else
+                        {
+                            if (MenuItems[i].Card.CardType != CardType.Spirit)
+                            {
+                                constraintedSlots.Add(MenuItems[i].Location, MenuItems[i]);
+                            }
+                        }
+                       
+                    }
+                }
+
+            }
+
+            return true;
+        }
+
         #endregion
 
         public static void Load(Player p, List<GameCard> cards)
@@ -69,10 +125,10 @@ namespace Gameplay.Menus
         {
             Refresh();
             
-            List<CardSlot> slots = player.gameField.cardSlots;
+            
             for (int i = 0; i < cards.Count; i++)
             {
-                MenuItems[i].LoadCard(cards[i], slots);
+                MenuItems[i].LoadCard(cards[i], player.gameField.cardSlots);
             }
         }
 
@@ -85,6 +141,27 @@ namespace Gameplay.Menus
             }
         }
 
+
+        public void ConfirmButton()
+        {
+            if (Validate())
+            {
+                for (int i = 0; i < MenuItems.Count; i++)
+                {
+                    MenuItems[i].Confirm();
+                }
+                Close();
+            }
+           
+        }
+        public void CancelButton()
+        {
+            for (int i = 0; i < MenuItems.Count; i++)
+            {
+                MenuItems[i].Cancel();
+            }
+            Close();
+        }
        
     }
 }

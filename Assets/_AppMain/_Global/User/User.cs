@@ -5,6 +5,7 @@ using Databases;
 using System;
 using Decks;
 using System.Threading.Tasks;
+using Mono.Data.Sqlite;
 
 namespace Users
 {
@@ -102,8 +103,8 @@ namespace Users
         User(UserData dto)
         {
             data = dto;
+            data.id = UniqueString.Create("usr", 7);
             LoadDecks();
-            
         }
         protected void LoadDecks()
         {
@@ -115,6 +116,8 @@ namespace Users
                 Decklist deck = Decklist.Load(deckKeys[i]);
                 DeckLists.Add(deck);
             }
+            
+            
         }
         #endregion
 
@@ -122,6 +125,16 @@ namespace Users
         public void ToggleDirty(bool dirty)
         {
             _IsDirty = dirty;
+        }
+
+        public void SetNewUserID()
+        {
+            string oldId = data.id;
+            data.id = UniqueString.Create("usr", 7);
+
+            string query = $"UPDATE uUserDTO SET userKey = '{data.id}';";
+            UserService.DoQuery(query);
+            
         }
 
         public void Save()

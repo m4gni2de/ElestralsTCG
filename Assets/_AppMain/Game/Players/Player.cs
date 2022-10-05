@@ -16,7 +16,21 @@ namespace Gameplay
 {
     public class Player 
     {
-       public static Player LocalPlayer { get; private set; }
+       
+
+       public static Player LocalPlayer
+        {
+            get
+            {
+                for (int i = 0; i < GameManager.ActiveGame.players.Count; i++)
+                {
+                    Player p = GameManager.ActiveGame.players[i];
+                    if (p.IsLocal) { return p; }
+                }
+
+                return null;
+            }
+        }
         #region Network Properties
         public ushort lobbyId { get; private set; }
         public bool IsLocal { get; private set; }
@@ -27,20 +41,7 @@ namespace Gameplay
 
         #region Networking
        
-        #region Message Senders
-        //creates the local player, adds it to the game, then sends it to the Server for it to be Added to the Server players
-        public async static void SendLocalPlayer()
-        {
-            bool uploaded = await RemoteData.AddDeckToRemoteDB(LocalPlayer.decklist);
-
-            Message outbound = NetworkPipeline.OutboundMessage(MessageSendMode.reliable, (ushort)ClientToServer.registerPlayer,
-                LocalPlayer.userId, LocalPlayer.username, LocalPlayer.decklist.UploadCode);
-            NetworkPipeline.SendMessageToServer(outbound);
-        }
-
-        #endregion
-
-
+        
 
         #region Message Responses
        
@@ -131,16 +132,11 @@ namespace Gameplay
         {
             _userId = userName;
             this.IsLocal = isLocal;
-            if (isLocal)
-            {
-                LocalPlayer = this;
-            }
+            
         }
         public Player(ushort tempGameId, string userId, bool isLocal) : this(userId, isLocal)
         {
             lobbyId = tempGameId;
-            
-            
         }
 
         public Player(string user, Decklist list, bool isLocal) : this(user, isLocal)
@@ -151,10 +147,37 @@ namespace Gameplay
         public void LoadDeckList(Decklist list, bool shuffle = true)
         {
             decklist = list;
-            _deck = new GameDeck(list, shuffle);
+            _deck = new GameDeck(list);
+            deck.SeparateCards(list);
+            if (shuffle)
+            {
+                deck.Shuffle(deck.MainDeck);
+            }
             IsLoaded = true;
         }
+        //public void VerifyDeck(UploadedDeckDTO dto)
+        //{
+        //    if (decklist == null)
+        //    {
+        //        Decklist de = dto;
+        //        LoadDeckList(de, false);
+        //    }
+           
+        //}
+        public void SetBlankDeck(string key, string title)
+        {
+            decklist = Decklist.Empty(userId, key, title);
+            _deck = GameDeck.FromRemote(key, title);
 
+        }
+        public void AddRemoteCardToDecklist(int cardIndex, string realId, string uniqueId)
+        {
+            Decklist.DeckCard card = decklist.AddCard(realId);
+            GameCard remoteCard = deck.NewCard(card.key, card.cardType, card.copy);
+            remoteCard.SetId(uniqueId);
+            remoteCard.SetNetId(cardIndex);
+            _deck.AddCard(remoteCard, false);
+        }
         #endregion
 
         #region In Game Properties

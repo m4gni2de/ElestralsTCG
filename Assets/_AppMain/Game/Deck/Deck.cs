@@ -67,12 +67,20 @@ namespace Gameplay.Decks
             _deckType = type;
         }
 
-        public void AddCard(GameCard card)
+        public void AddCard(GameCard card, bool toTop = true)
         {
             if (card != null)
             {
                 Cards.Add(card);
-                ToTop(card);
+                if (toTop)
+                {
+                    ToTop(card);
+                }
+                else
+                {
+                    ToBottom(card);
+                }
+                
             }
         }
 
@@ -100,15 +108,33 @@ namespace Gameplay.Decks
             AddAtIndex(0, card);
         }
 
-        public void Shuffle()
+        public void ToBottom(GameCard card)
+        {
+            int index = InOrder.Count;
+            AddAtIndex(index, card);
+        }
+
+        public void Shuffle(List<string> idsInOrder = null)
         {
             List<GameCard> newOrder = new List<GameCard>();
 
-            for (int i = 0; i < InOrder.Count; i++)
+            if (idsInOrder == null)
             {
-                int rand = Random.Range(0, newOrder.Count);
-                newOrder.Insert(rand, InOrder[i]);
+                for (int i = 0; i < InOrder.Count; i++)
+                {
+                    int rand = Random.Range(0, newOrder.Count);
+                    newOrder.Insert(rand, InOrder[i]);
+                }
             }
+            else
+            {
+                for (int i = 0; i < idsInOrder.Count; i++)
+                {
+                    GameCard card = Game.FindCard(idsInOrder[i]);
+                    newOrder.Insert(i, card);
+                }
+            }
+            
 
             _inOrder = newOrder;
             ReorderCards();

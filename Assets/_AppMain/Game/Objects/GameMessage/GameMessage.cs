@@ -59,6 +59,12 @@ namespace Gameplay
         {
             return new ActionMessage(msg, ac, closeOnTouch, displayTime);
         }
+        public static bool Error(string errorMsg)
+        {
+            GameMessage message = GameMessage.JustMessage(errorMsg);
+            message.Show();
+            return false;
+        }
 
         public virtual void CloseMessage()
         {
@@ -67,6 +73,11 @@ namespace Gameplay
         public virtual void ForceClose()
         {
 
+        }
+
+        public void Show()
+        {
+            GameManager.Instance.messageControl.ShowMessage(this);
         }
   
     }

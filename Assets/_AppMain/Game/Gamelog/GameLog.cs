@@ -127,7 +127,7 @@ private static readonly string LogPath = $"{Application.persistentDataPath}/Logg
         public void AddLog(string msg)
         {
             logs.Add(msg);
-            CardActionData.FromData(msg);
+            //CardActionData.FromData(msg);
             if (WritesFile)
             {
                 WriteLog(msg);

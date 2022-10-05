@@ -17,11 +17,11 @@ namespace Gameplay
 
        
 
-        public override void AllocateTo(GameCard card)
+        public override void AllocateTo(GameCard card, bool sendToServer = true)
         {
             card.RemoveFromSlot();
             cards.Insert(0, card);
-            card.AllocateTo(this);
+            card.AllocateTo(this, sendToServer);
 
             DisplayCardObject(card);
             SetCommands(card);

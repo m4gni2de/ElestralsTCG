@@ -72,9 +72,11 @@ public class GameManager : MonoBehaviour, iFreeze
     {
         for (int i = 0; i < ActiveGame.players.Count; i++)
         {
-            if (ActiveGame.players[i].lobbyId == id)
+            Player p = ActiveGame.players[i];
+            if (p.lobbyId == id)
             {
-                return ActiveGame.players[i];
+                
+                return p;
             }
         }
         return null;
@@ -127,7 +129,23 @@ public class GameManager : MonoBehaviour, iFreeze
     #endregion
 
     #region Properties
-    public GameLog gameLog;
+    private GameLog _gameLog = null;
+    public GameLog gameLog
+    {
+        get
+        {
+            if (_gameLog == null)
+            {
+                _gameLog = GameLog.Create(ActiveGame.gameId, false);
+                gameLog.AddLog($"Game '{ActiveGame.gameId}' has been started.");
+            }
+            return _gameLog;
+        }
+        set
+        {
+            _gameLog = value;
+        }
+    }
     public int ExpectedPlayers = 2;
     [SerializeField]
     private Arena _arena;
@@ -256,17 +274,36 @@ public class GameManager : MonoBehaviour, iFreeze
         _players.Add(p);
 
         CardSlot deck = p.gameField.DeckSlot;
-        NetworkPipeline.SendDeckOrder(deck.index, p.deck.DeckOrder.ToList(), p.deck.NetworkDeckOrder.ToList());
+        //NetworkPipeline.SendDeckOrder(deck.index, p.deck.DeckOrder.ToList(), p.deck.NetworkDeckOrder.ToList());
         CardSlot spiritDeck = p.gameField.SpiritDeckSlot;
-        NetworkPipeline.SendDeckOrder(spiritDeck.index, p.deck.SpiritOrder.ToList(),p.deck.NetworkSpiritOrder.ToList());
+        //NetworkPipeline.SendDeckOrder(spiritDeck.index, p.deck.SpiritOrder.ToList(),p.deck.NetworkSpiritOrder.ToList());
         //DO A NETWORK CALL HERE TO MAKE SURE EVERYONE IS READY
 
         if (_players.Count == ExpectedPlayers)
         {
-            turnManager.StartGame();
+            Go();
         }
 
 
+    }
+
+    public void SyncPlayer(ushort playerId, UploadedDeckDTO dto)
+    {
+        for (int i = 0; i < ActiveGame.players.Count; i++)
+        {
+            Player p = ActiveGame.players[i];
+            if (p.lobbyId == playerId)
+            {
+                //p.VerifyDeck(dto);
+                arena.SetPlayer(p);
+                Go();
+            }
+        }
+    }
+    public virtual void Go()
+    {
+        
+        turnManager.StartGame();
     }
 
     #endregion
@@ -282,23 +319,28 @@ public class GameManager : MonoBehaviour, iFreeze
 
     #region Card Actions
 
-    public void AddAction(CardAction ac)
+    public virtual void AddAction(CardAction ac)
     {
-        if (!ActiveGame.isOnline)
-        {
-            CardActions.Add(ac);
-            if (CardActions.Count == 1)
-            {
-                StartCoroutine(DoActions());
-            }
-        }
-        else
-        {
+        //if (!ActiveGame.isOnline)
+        //{
+        //    CardActions.Add(ac);
+        //    if (CardActions.Count == 1)
+        //    {
+        //        StartCoroutine(DoActions());
+        //    }
+        //}
+        //else
+        //{
 
-            TryNetworkAction(ac);
+        //    TryNetworkAction(ac);
 
+        //}
+        CardActions.Add(ac);
+        if (CardActions.Count == 1)
+        {
+            StartCoroutine(DoActions());
         }
-        
+
     }
     
     protected IEnumerator DoActions()
@@ -318,42 +360,19 @@ public class GameManager : MonoBehaviour, iFreeze
         DoThaw();
     }
 
-    private void TryNetworkAction(CardAction ac)
-    {
-
-        CardAction activeAction = ac;
-        DeclareNetworkAction(activeAction);
-    }
-    //once action is sent by client, it is confirmed once the server recieves it, and sends it back to both players
-    public void DeclareNetworkAction(CardAction ac = null)
-    {
-        if (ac != null)
-        {
-            DoFreeze();
-            CardActions.Add(ac);
-            ActiveAction = ac;
-            ac.SendAction(true);
-            //allow the server to wait for this. if after X seconds, the server will automatically send a response. client response will be sent to server, and then sent back to both clients at once to keep sync.
-            //this only changes from server response
-        }
-        else
-        {
-            //do some sort of visual indicator that the action is about to happen. hourglass icon stops turning, etc
-            //as of now, actions will not complete because only 1 player is confiring them. 
-        }
-    }
-    public void ConfirmActiveAction(ActionResult result)
-    {
-        ActiveAction.ConfirmAttempt(result);
-        StartCoroutine(DoNetworkAction());
-    }
-    private IEnumerator DoNetworkAction()
-    {
-        yield return StartCoroutine(ActiveAction.Do());
-        NetworkPipeline.SendActionEnd(ActiveAction.ActionData);
-        gameLog.LogAction(ActiveAction);
-        DoThaw();
-    }
+   
+    //public void ConfirmActiveAction(ActionResult result)
+    //{
+    //    ActiveAction.ConfirmAttempt(result);
+    //    StartCoroutine(DoNetworkAction());
+    //}
+    //private IEnumerator DoNetworkAction()
+    //{
+    //    yield return StartCoroutine(ActiveAction.Do());
+    //    //NetworkPipeline.SendActionEnd(ActiveAction.ActionData);
+    //    gameLog.LogAction(ActiveAction);
+    //    DoThaw();
+    //}
    
 
     public static void DeclareCardAction(CardAction ac)
@@ -362,17 +381,7 @@ public class GameManager : MonoBehaviour, iFreeze
         Instance.OnActionDeclared?.Invoke(declaredAction);
     }
 
-    public void DecideOnRemoteAction(CardAction ac = null)
-    {
-        if (ac != null)
-        {
-            DoFreeze();
-            ActiveAction = ac;
-            ac.SendAction(false);
-            //allow the server to wait for this. if after X seconds, the server will automatically send a response. client response will be sent to server, and then sent back to both clients at once to keep sync.
-            //this only changes from server response
-        }
-    }
+    
    
 
     public void AddRemoteAction(CardAction ac)
@@ -449,6 +458,11 @@ public class GameManager : MonoBehaviour, iFreeze
     public void Ascend(AscendAction ac)
     {
         AddAction(ac);
+    }
+    public void MoveCard(Player p, GameCard source, CardSlot to)
+    {
+        MoveAction ac = new MoveAction(p, source, to);
+        MoveCard(ac);
     }
     public void MoveCard(MoveAction ac)
     {
@@ -532,7 +546,7 @@ public class GameManager : MonoBehaviour, iFreeze
 
     #region Card Dragging
     
-    public void DragCard(GameCard card, CardSlot from)
+    public virtual void DragCard(GameCard card, CardSlot from)
     {
 
 
@@ -551,7 +565,7 @@ public class GameManager : MonoBehaviour, iFreeze
         }));
     }
 
-    protected IEnumerator DoDragCard(GameCard card, CardSlot from, System.Action<CardSlot> callBack)
+    protected virtual IEnumerator DoDragCard(GameCard card, CardSlot from, System.Action<CardSlot> callBack)
     {
         Field f = arena.GetPlayerField(ActiveGame.You);
 
@@ -598,23 +612,23 @@ public class GameManager : MonoBehaviour, iFreeze
     #endregion
 
     #region Game Freezing
-    protected void DoFreeze()
+    protected virtual void DoFreeze()
     {
         this.Freeze();
     }
 
-    protected void DoThaw()
+    protected virtual void DoThaw()
     {
         this.Thaw();
     }
     #endregion
 
     #region Event Watching
-    protected void SetGameWatchers()
+    protected virtual void SetGameWatchers()
     {
         //Game.OnNewTargetParams += TargetModeWatcher;
     }
-    protected void RemoveGameWatchers()
+    protected virtual void RemoveGameWatchers()
     {
         //Game.OnNewTargetParams -= TargetModeWatcher;
     }

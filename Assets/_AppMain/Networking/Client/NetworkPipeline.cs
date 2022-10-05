@@ -8,34 +8,10 @@ using Defective.JSON;
 using System;
 using Decks;
 using UnityEditor;
+using System.Linq;
+using Gameplay.Decks;
 
-public enum ServerToClient : ushort
-{
-    serverValue = 0,
-    playerRegistered = 1,
-    cardSpawned = 2,
-    cardMoved = 3,
-    deckOrderChanged = 4,
-    actionDeclared = 5,
-    actionCancelled = 6,
-    actionConfirmed = 7,
-    actionEnd = 8,
 
-}
-
-public enum ClientToServer : ushort
-{
-    serverValue = 0,
-    registerPlayer = 1,
-    cardSpawned = 2,
-    cardMoved = 3,
-    deckOrderChanged = 4,
-    actionDeclared = 5,
-    actionCancelled = 6,
-    actionConfirmed = 7,
-    actionEnd = 8,
-
-}
 
 
 
@@ -53,6 +29,18 @@ public enum ToServer : ushort
     PlayerJoined = 96,
     DeckSelection = 95,
     GameReady = 94,
+    NewCardData = 93,
+    CardSelectChange = 92,
+    DeckOrder = 91,
+    CardMoved = 90,
+    FreezeGame = 89,
+    ActionDeclared = 88,
+    ActionRecieved = 87,
+    ActionEnd = 86,
+    OpeningDraw = 85,
+    SlotMapping = 84,
+    StartGame = 83,
+    CardPosition = 82,
 }
 public enum FromServer :ushort
 {
@@ -62,6 +50,20 @@ public enum FromServer :ushort
     PlayerJoined = 96,
     DeckSelection = 95,
     GameReady = 94,
+    NewCardData = 93,
+    CardSelectChange = 92,
+    DeckOrder = 91,
+    CardMoved = 90,
+    FreezeGame = 89,
+    ActionDeclared = 88,
+    ActionRecieved = 87,
+    ActionEnd = 86,
+    OpeningDraw = 85,
+    SlotMapping = 84,
+    StartGame = 83,
+    CardPosition = 82,
+
+
 }
 
 public class NetworkPipeline
@@ -81,7 +83,7 @@ public class NetworkPipeline
     //            break;
     //        }
     //    }
-        
+
     //}
     //private static async void UploadDeckByKey(Decklist d)
     //{
@@ -119,7 +121,10 @@ public class NetworkPipeline
         {
             ushort netId = message.GetUShort();
             string user = message.GetString();
-            NetworkPlayer p = new NetworkPlayer(netId, user, false);
+            string deckKey = message.GetString();
+            string deckName = message.GetString();
+            NetworkPlayer p = new NetworkPlayer(netId, user, deckKey, deckName, false);
+            otherPlayers.Add(p);
         }
         OnGameJoined?.Invoke(lobbyId, otherPlayers);
     }
@@ -133,78 +138,88 @@ public class NetworkPipeline
         OnPlayerJoined?.Invoke(netId, userId);
     }
 
-    public static event Action<ushort, string> OnDeckSelected;
     [MessageHandler((ushort)FromServer.DeckSelection)]
     private static void DeckSelected(Message message)
     {
         ushort networkId = message.GetUShort();
         string deck = message.GetString();
-        OnDeckSelected?.Invoke(networkId, deck);
+        string title = message.GetString();
+
+        OnlineGameManager.LoadPlayer(networkId, deck, title);
+
     }
 
-    #endregion
 
-    [MessageHandler((ushort)ServerToClient.playerRegistered)]
-    private static void PlayerRegistered(Message message)
-    {
-        //Player.RegisterPlayer(message.GetUShort(), message.GetString(), message.GetString(), message.GetString(), message.GetString(), message.GetString());
-    }
-
-    [MessageHandler((ushort)ServerToClient.cardSpawned)]
-    private static void CardSet(Message message)
-    {
-        //Player.RegisterPlayer(message.GetUShort(), message.GetString(), message.GetString(), message.GetString(), message.GetString(), message.GetString());
-    }
-
-    [MessageHandler((ushort)ServerToClient.cardMoved)]
-    private static void MoveCard(Message message)
+    [MessageHandler((ushort)FromServer.GameReady)]
+    private static void GameReady(Message message)
     {
         ushort sender = message.GetUShort();
-        string card = message.GetString();
-        int oldSlot = message.GetInt();
-        int newSlot = message.GetInt();
-
-        if (sender != NetworkManager.Instance.Client.Id)
+        if (sender != Player.LocalPlayer.lobbyId)
         {
-            MoveAction ac = new MoveAction(GameManager.ByNetworkId(sender), Game.FindCard(card), Game.FindSlot(newSlot));
-            GameManager.Instance.AddRemoteAction(ac);
+            UploadedDeckDTO dto = new UploadedDeckDTO();
+            dto.deckKey = message.GetString();
+            dto.title = message.GetString();
+            string[] realIds = message.GetStrings(true);
+            dto.deck = realIds.ToList();
+            GameManager.Instance.SyncPlayer(sender, dto);
+
         }
-        //
+
+
     }
-    //when a new action is declare by another player, the opponent chooses a response action. 
-    [MessageHandler((ushort)ServerToClient.actionDeclared)]
-    private static void ActionDeclared(Message message)
+
+    [MessageHandler((ushort)FromServer.NewCardData)]
+    private static void GetCardData(Message message)
     {
-       
-        JSONObject obj = new JSONObject(message.GetString());
+        ushort sender = message.GetUShort();
+        int cardIndex = message.GetInt();
+        string cardRealId = message.GetString();
+        string cardNetworkId = message.GetString();
 
-        if (obj.type == JSONObject.Type.Null)
-        {
-            return;
-        }
-        CardActionData data = new CardActionData(obj);
-        bool isLocal = data.Value<string>(CardActionData.PlayerKey) == App.Account.Id;
-       
-        if (!isLocal)
-        {
-            CardAction ca = CardActionData.ParseData(data);
-            GameManager.Instance.DeclareNetworkAction(ca);
-        }
-        else
-        {
-            GameManager.Instance.DeclareNetworkAction();
-        }
-        
+
+        OnlineGameManager.SyncPlayerCard(sender, cardIndex, cardRealId, cardNetworkId);
+
     }
 
-    [MessageHandler((ushort)ServerToClient.actionConfirmed)]
-    private static void ActionConfirmed(Message message)
+    [MessageHandler((ushort)FromServer.CardSelectChange)]
+    private static void SelectionChanged(Message message)
     {
-        bool isLocal = message.DidYouSend();
-        string key = message.GetString();
-        ActionResult result = (ActionResult)message.GetInt();
-        GameManager.Instance.ConfirmActiveAction(result);
+        string cardId = message.GetString();
+        bool isSelected = message.GetBool();
+
+        GameCard card = Game.FindCard(cardId);
+        card.SelectCard(isSelected, false);
+
     }
+
+    [MessageHandler((ushort)FromServer.CardMoved)]
+    private static void CardMoved(Message message)
+    {
+        ushort owner = message.GetUShort();
+        string cardId = message.GetString();
+        string newIndex = message.GetString();
+
+        OnlineGameManager.RemoteCardSlotChange(owner, cardId, newIndex);
+
+    }
+
+
+    [MessageHandler((ushort)FromServer.CardPosition)]
+    private static void CardPositionChange(Message message)
+    {
+        ushort owner = message.GetUShort();
+        string cardId = message.GetString();
+        Vector3 localPos = message.GetVector3();
+
+        //OnlineGameManager.RemoteCardSlotChange(owner, cardId, newIndex);
+
+    }
+
+
+    //LEAVING OFF WITH NOT HAVING A CLIENT RECEIVER METHOD FOR THE CARD MOVED MESSAGE
+    #endregion
+
+
     #endregion
 
 
@@ -240,72 +255,214 @@ public class NetworkPipeline
         {
             NetworkManager.Instance.Client.Send(message);
         }
-        
+
     }
 
-    public static void SpawnNewCard(int cardNetworkId, int slotSpawned)
+    #region To Server Messages
+    public static void CreateGame()
     {
-        //Message outbound = OutboundMessage(MessageSendMode.reliable, (ushort)ClientToServer.cardSpawned, cardNetworkId, slotSpawned);
-        //SendMessageToServer(outbound);
+        Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.CreateGame);
+        NetworkPipeline.SendMessageToServer(message);
     }
-    public static void SendDeckOrder(int deckSlotId, List<string> cardIds, List<string> cardBaseNames)
+    public static void JoinNetworkLobby(string lobby)
     {
-        Message outbound = OutboundMessage<int>(MessageSendMode.reliable, (ushort)ClientToServer.deckOrderChanged, deckSlotId);
-        outbound.AddStrings(cardIds.ToArray(), true, true);
-        outbound.AddStrings(cardBaseNames.ToArray(), true, true);
+
+        Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.JoinGame);
+        message.AddString(lobby);
+        SendMessageToServer(message);
+    }
+    public static void SendDeckSelection(string deckKey, string deckName)
+    {
+        Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.DeckSelection);
+        message.Add<string>(deckKey);
+        message.Add<string>(deckName);
+        SendMessageToServer(message);
+    }
+    public static void SendNewCard(GameCard.NetworkData data)
+    {
+        Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.NewCardData);
+        message.AddInt(data.networkId);
+        message.AddString(data.sessionId);
+        message.AddString(data.setKey);
+        message.AddString(data.slotId);
+        SendMessageToServer(message);
+    }
+
+    public static void SendCardSelect(GameCard card, bool isSelected)
+    {
+        Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.CardSelectChange);
+        message.AddString(card.cardId);
+        message.AddBool(isSelected);
+        SendMessageToServer(message);
+    }
+
+    public static void SendDeckOrder(List<string> deckInOrder)
+    {
+        Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.DeckOrder);
+        message.AddStrings(deckInOrder.ToArray(), true, true);
+        SendMessageToServer(message);
+
+    }
+    public static void SendClientReady()
+    {
+        Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.GameReady);
+        SendMessageToServer(message);
+    }
+
+    public static void SendNewCardSlot(string cardId, string newSlot)
+    {
+        Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.CardMoved);
+        message.AddString(cardId);
+        message.AddString(newSlot);
+        SendMessageToServer(message);
+
+
+    }
+
+    public static void SendGameFreeze(bool isFreeze)
+    {
+        Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.FreezeGame);
+        message.AddBool(isFreeze);
+        SendMessageToServer(message);
+    }
+
+    public static void SendActionDeclare(CardAction action)
+    {
+        Message outbound = Message.Create(MessageSendMode.reliable, (ushort)ToServer.ActionDeclared);
+        outbound.Add(action.ActionData.GetJson);
+        SendMessageToServer(outbound);
+
+    }
+
+
+    public static void ConfirmActionRecieved(string actionId)
+    {
+        Message outbound = Message.Create(MessageSendMode.reliable, (ushort)ToServer.ActionRecieved);
+        outbound.Add(actionId);
         SendMessageToServer(outbound);
     }
-    
-    //-1 new slot means it did not yet have a slot before being added to one(aka, the start of the game)
-    public static void SendNewCardSlot(string cardId, int oldSlot, int newSlot)
+    public static void EndActionOutbound(string actionId, ActionResult result)
     {
-        Message outbound = OutboundMessage<string, int, int>(MessageSendMode.reliable, (ushort)ClientToServer.cardMoved, cardId, oldSlot, newSlot);
+        Message outbound = Message.Create(MessageSendMode.reliable, (ushort)ToServer.ActionEnd);
+        outbound.Add(actionId);
+        outbound.AddInt((int)result);
         SendMessageToServer(outbound);
     }
 
-    public static void SendActionDeclare(CardAction ac)
+    public static void OpeningDrawsOutbound()
     {
-        Message outbound = OutboundMessage<string>(MessageSendMode.reliable, (ushort)ClientToServer.actionDeclared, ac.ActionData.GetJson);
-        SendMessageToServer(outbound);
-        NetworkPipeline.GetValue("bool", "HasActiveAction");
-    }
-    //use this eventually for allowing the other player to counter plays or cards. for now, just send action end
-    public static void SendActionDecision(CardActionData ac)
-    {
-        Message outbound = OutboundMessage<string, int>(MessageSendMode.reliable, (ushort)ClientToServer.actionConfirmed, ac.actionKey, (int)ac.GetResult());
+        Message outbound = Message.Create(MessageSendMode.reliable, (ushort)ToServer.OpeningDraw);
         SendMessageToServer(outbound);
     }
-    public static void SendActionEnd(CardActionData ac)
-    {
-        Message outbound = OutboundMessage<string>(MessageSendMode.reliable, (ushort)ClientToServer.actionEnd, ac.actionKey);
-        SendMessageToServer(outbound);
+    //public static void SlotMappingOutbound(int index, string slotId, CardLocation slotType)
+    //{
+    //    Message outbound = Message.Create(MessageSendMode.reliable, (ushort)ToServer.SlotMapping);
+    //    outbound.AddInt(index);
+    //    outbound.AddString(slotId);
+    //    outbound.Add((int)slotType);
+    //    SendMessageToServer(outbound);
+    //}
 
-        
-    }
-
-    public static void GetValue(string valType, string methodName)
+    public static void SendCardPosition(string cardId, Vector3 pos)
     {
-        Message outbound = OutboundMessage(MessageSendMode.reliable, (ushort)ClientToServer.serverValue, valType, methodName);
+        Message outbound = Message.Create(MessageSendMode.unreliable, (ushort)ToServer.CardPosition);
+        outbound.Add(cardId);
+        outbound.AddVector3(pos);
         SendMessageToServer(outbound);
     }
     #endregion
 
 
-}
+    #endregion
 
-public class TransportMessage<T>
-{
-    public T Value { get; set; }
-    public ushort fromCliendId
+
+
+    #region Network Card
+    [MessageHandler((ushort)Receivers.Position)]
+    private static void PositionChange(Message message)
     {
-        get
-        {
-            return (ushort)ClientToServer.serverValue;
-        }
+        string cardId = message.GetString();
+        GameCard card = Game.FindCard(cardId);
+
+        Vector3 pos = message.GetVector3();
+       
+        float height = WorldCanvas.Height;
+        float width = WorldCanvas.Width;
+
+        float percWidth = width * pos.x;
+        float percHeight = height * pos.y;
+
+        card.cardObject.transform.position = new Vector3(percWidth, percHeight, 0f);
+
+
+
     }
 
-    public TransportMessage(string propName)
+    [MessageHandler((ushort)Receivers.Rotation)]
+    private static void RotationChange(Message message)
     {
+        string cardId = message.GetString();
+        GameCard card = Game.FindCard(cardId);
 
+        Vector3 rotation = message.GetVector3();
+
+        card.cardObject.transform.localEulerAngles = rotation;
     }
+
+    [MessageHandler((ushort)Receivers.Parent)]
+    private static void ParentChange(Message message)
+    {
+        string cardId = message.GetString();
+        GameCard card = Game.FindCard(cardId);
+
+        string parent = message.GetString();
+        int sibling = message.GetInt();
+        Vector2 scale = message.GetVector2();
+
+
+        CardSlot parentSlot = Game.FindSlot(parent);
+        card.cardObject.SetAsChild(parentSlot.transform, scale, "", sibling);
+    }
+
+
+    [MessageHandler((ushort)Receivers.Sorting)]
+    private static void SortingChange(Message message)
+    {
+        string cardId = message.GetString();
+        GameCard card = Game.FindCard(cardId);
+
+        string layer = message.GetString();
+        int cardOrder = message.GetInt();
+
+        if (!string.IsNullOrEmpty(layer)) { card.cardObject.SetSortingLayer(layer); }
+        card.cardObject.SetSortingOrder(cardOrder);
+    }
+
+    [MessageHandler((ushort)Receivers.Scale)]
+    private static void ScaleChange(Message message)
+    {
+        string cardId = message.GetString();
+        GameCard card = Game.FindCard(cardId);
+
+        Vector2 scale = message.GetVector2();
+
+
+        card.cardObject.SetScale(scale);
+    }
+
+    [MessageHandler((ushort)Receivers.Flip)]
+    private static void FlipCard(Message message)
+    {
+        string cardId = message.GetString();
+        GameCard card = Game.FindCard(cardId);
+
+        bool toFacedown = message.GetBool();
+
+
+        card.cardObject.Flip(toFacedown);
+    }
+    #endregion
+
 }
+
+

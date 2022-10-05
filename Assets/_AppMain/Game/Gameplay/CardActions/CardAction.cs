@@ -81,11 +81,7 @@ namespace Gameplay
         {
             get
             {
-                if (_ActionData == null)
-                {
-                    //if (!_isResolved || _isRunning) { return null; }
-                    _ActionData = GetActionData();
-                }
+                _ActionData = GetActionData();
                 return _ActionData;
             }
         }
@@ -136,7 +132,6 @@ namespace Gameplay
             {
                 _isRunning = true;
                 actionResult = ActionResult.Succeed;
-                yield return null;
             }
             else
             {
@@ -178,8 +173,10 @@ namespace Gameplay
                 FailAction();
             }
 
+            if (player.IsLocal) { NetworkPipeline.SendActionDeclare(this); }
             yield return new WaitUntil(() => isResolved);
         }
+        
         public void FailAction()
         {
             End(ActionResult.Failed);
@@ -188,7 +185,7 @@ namespace Gameplay
         {
             yield return null;
         }
-        
+       
         public void Cancel()
         {
             CancelAction();
@@ -217,6 +214,7 @@ namespace Gameplay
             _isRunning = false;
             Movements.Clear();
             OnActionEnd?.Invoke();
+            OnActionEnd.RemoveAllListeners();
         }
         
         protected virtual void ResolveAction(ActionResult result)
@@ -238,7 +236,10 @@ namespace Gameplay
                 this.Freeze();
                 yield return new WaitForEndOfFrame();
                 float frames = Time.deltaTime / time;
-                card.cardObject.transform.position += (direction * frames);
+                Vector3 moveBy = direction * frames;
+                card.MovePosition(moveBy);
+                //card.cardObject.transform.position += (direction * frames);
+                //card.NetworkCard.SendPosition();
                 acumTime += Time.deltaTime;
             } while (Validate(acumTime, time));
             this.Thaw();
@@ -264,7 +265,10 @@ namespace Gameplay
                 {
                     if (acumTime > staggerTime * i)
                     {
-                        cards[i].cardObject.transform.position += directions[i] * Time.deltaTime;
+                        //cards[i].cardObject.transform.position += directions[i] * Time.deltaTime;
+                        //cards[i].NetworkCard.SendPosition();
+                        Vector3 moveBy = directions[i] * Time.deltaTime;
+                        cards[i].MovePosition(moveBy);
                     }
                     
 
@@ -299,14 +303,21 @@ namespace Gameplay
             {
                 Vector3 cardScale = card.cardObject.GetScale();
                 Vector2 newScale = cardScale - new Vector3((startScale.x * (Time.deltaTime * 2f)), 0f, 0f);
-                card.cardObject.SetScale(newScale);
+                //card.cardObject.SetScale(newScale);
+                //card.NetworkCard.SendScale(newScale);
+                card.SetScale(newScale);
                 yield return new WaitForEndOfFrame();
                 acumTime += time;
 
             } while (Validate(acumTime, time) || card.cardObject.GetScale().x > targetVal);
             card.SetCardMode(newMode);
-            card.cardObject.SetScale(startScale);
-            card.cardObject.Flip(toFaceDown);
+            //card.NetworkCard.SendRotation();
+            //card.cardObject.SetScale(startScale);
+            //card.NetworkCard.SendScale(startScale);
+            card.SetScale(startScale);
+            card.FlipCard(toFaceDown);
+            //card.cardObject.Flip(toFaceDown);
+            //card.NetworkCard.Flip(toFaceDown);
         }
         #endregion
 
@@ -354,16 +365,23 @@ namespace Gameplay
 
         #region Network Actions
 
-        public void SendAction(bool send)
+        
+        
+        
+        public IEnumerator DisplayRemoteAction()
         {
-            _isRunning = true;
-            GameMessage message = GameMessage.FromAction(DeclaredMessage, this, false, -1f);
+            this.Freeze();
+            float waitTime = .45f;
+            GameMessage message = GameMessage.FromAction(_actionMessage, this, true, waitTime);
             GameManager.Instance.messageControl.ShowMessage(message);
-            if (send)
+
+            float acumTime = 0;
+            do
             {
-                NetworkPipeline.SendActionDeclare(this);
-            }
-            
+                acumTime += Time.deltaTime;
+                yield return new WaitForEndOfFrame();
+            } while (acumTime <= waitTime && !isResolved);
+            this.Thaw();
         }
        
         public void ConfirmAttempt(ActionResult result)

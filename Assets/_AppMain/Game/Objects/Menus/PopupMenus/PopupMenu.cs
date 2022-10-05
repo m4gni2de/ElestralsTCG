@@ -8,7 +8,7 @@ using System;
 
 namespace Gameplay.Menus
 {
-    public class PopupMenu : MonoBehaviour
+    public class PopupMenu : MonoBehaviour, iGameMover
     {
         #region Properties
         public static PopupMenu Instance { get { return GameManager.Instance.popupMenu; } }
@@ -220,6 +220,7 @@ namespace Gameplay.Menus
         #region User Inputs
         public void InputNumber(string title, Action<int> returnedVal, int min = -1, int max = -1)
         {
+            this.Orient(transform);
             StartCoroutine(AwaitNumericInput(title, min, max, callback =>
             {
                 if (callback)

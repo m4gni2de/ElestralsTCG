@@ -30,7 +30,6 @@ namespace Databases
         public SQLiteConnection _conn;
         public TextAsset databaseFile;
         public TextAsset internalDb;
-        public TextAsset playerDb;
 
         public string overrideBasePath = "";
 

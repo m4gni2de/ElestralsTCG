@@ -12,28 +12,25 @@ namespace Gameplay
     {
         #region Properties
         public string uniqueId { get; set; }
+        public string deckName { get; set; }
         private Deck _mainDeck = null;
         public Deck MainDeck { get { return _mainDeck; } }
 
         private Deck _spiritDeck = null;
         public Deck SpiritDeck { get { return _spiritDeck; } }
 
-        private List<GameCard> _cards = null;
         public List<GameCard> Cards
         {
             get
             {
-                if (_cards == null)
+                List<GameCard> _cards = new List<GameCard>();
+                for (int i = 0; i < SpiritDeck.Cards.Count; i++)
                 {
-                    _cards = new List<GameCard>();
-                    for (int i = 0; i < SpiritDeck.Cards.Count; i++)
-                    {
-                        _cards.Add(SpiritDeck.Cards[i]);
-                    }
-                    for (int i = 0; i < MainDeck.Cards.Count; i++)
-                    {
-                        _cards.Add(MainDeck.Cards[i]);
-                    }
+                    _cards.Add(SpiritDeck.Cards[i]);
+                }
+                for (int i = 0; i < MainDeck.Cards.Count; i++)
+                {
+                    _cards.Add(MainDeck.Cards[i]);
                 }
                 return _cards;
             }
@@ -83,78 +80,47 @@ namespace Gameplay
         }
         #endregion
 
-        #region Functions
-        public string[] SpiritOrder
-        {
-            get
-            {
-                List<string> cards = new List<string>();
-                for (int i = 0; i < SpiritDeck.InOrder.Count; i++)
-                {
-                    cards.Add(SpiritDeck.InOrder[i].cardId);
-                }
-                return cards.ToArray();
-            }
-        }
+       
 
-        public string[] NetworkSpiritOrder
-        {
-            get
-            {
-                List<string> cards = new List<string>();
-                for (int i = 0; i < SpiritDeck.InOrder.Count; i++)
-                {
-                    cards.Add(SpiritDeck.InOrder[i].card.cardData.cardName);
-                }
-                return cards.ToArray();
-            }
-        }
-        public string[] DeckOrder
-        {
-            get
-            {
-                List<string> cards = new List<string>();
-                for (int i = 0; i < MainDeck.InOrder.Count; i++)
-                {
-                    cards.Add(MainDeck.InOrder[i].cardId);
-                }
-                return cards.ToArray();
-            }
-        }
-
-        public string[] NetworkDeckOrder
-        {
-            get
-            {
-                List<string> cards = new List<string>();
-                for (int i = 0; i < MainDeck.InOrder.Count; i++)
-                {
-                    cards.Add(MainDeck.InOrder[i].card.cardData.cardName);
-                }
-                return cards.ToArray();
-            }
-        }
-        #endregion
-
-        public GameDeck(Decklist list, bool shuffleLocally = true)
+        public GameDeck(Decklist list)
         {
             uniqueId = UniqueString.GetShortId("dk");
+            deckName = list.Name;
 
             _spiritDeck = Deck.SpiritDeck();
-            _mainDeck = Deck.MainDeck();
+            _mainDeck = Deck.MainDeck(); 
+        }
 
-            SeparateCards(list);
-            if (shuffleLocally)
-            {
-                Shuffle(MainDeck);
-            }
-            
+        #region From Remote
+        public GameDeck(string key, string title)
+        {
+            uniqueId = key;
+            deckName = title;
+            _spiritDeck = Deck.SpiritDeck();
+            _mainDeck = Deck.MainDeck();
+        }
+        public static GameDeck FromRemote(string key, string title)
+        {
+            return new GameDeck(key, title);
         }
 
        
+        public void AddCard(GameCard card, bool toTop = true)
+        {
+            if (card.CardType == CardType.Spirit)
+            {
+                SpiritDeck.AddCard(card);
+            }
+            else
+            {
+                MainDeck.AddCard(card, toTop);
+            }
+        }
+
+        #endregion
 
 
-        protected void SeparateCards(Decklist list)
+        public void SeparateCards(Decklist list)
         {
 
             for (int i = 0; i < list.Cards.Count; i++)
@@ -166,6 +132,8 @@ namespace Gameplay
                     card.SetNetId(i);
                     card.SetId($"{uniqueId}-{i}");
                     SpiritDeck.AddCard(card);
+                    card.SendCardToServer();
+                    card.ToggleNetwork(true);
 
                 }
                 else
@@ -174,14 +142,22 @@ namespace Gameplay
                     card.SetNetId(i);
                     card.SetId($"{uniqueId}-{i}");
                     MainDeck.AddCard(card);
+                    card.SendCardToServer();
+                    card.ToggleNetwork(true);
                 }
+
+                
 
             }
         }
 
        
-        protected void Shuffle(Deck deck)
+        public void Shuffle(Deck deck = null)
         {
+            if (deck == null)
+            {
+                deck = MainDeck;
+            }
             deck.Shuffle();
         }
 

@@ -10,6 +10,9 @@ namespace Gameplay.Menus
         public bool IsOpen { get { return gameObject.activeSelf; } }
         [SerializeField]
         protected GameObject menuObject;
+
+        protected bool _isDirty = false;
+        public bool isDirty { get { return _isDirty; } }
         #endregion
 
         private void Awake()
@@ -43,6 +46,13 @@ namespace Gameplay.Menus
         public virtual void Close()
         {
             menuObject.SetActive(false);
+        }
+
+        public virtual void DisplayError(string error)
+        {
+            GameMessage message = GameMessage.JustMessage($"Error! {error}.");
+            message.Show();
+            
         }
     }
 }

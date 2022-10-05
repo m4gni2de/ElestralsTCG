@@ -1,16 +1,18 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Decks;
 using Defective.JSON;
 using Gameplay;
+using Gameplay.Turns;
 using RiptideNetworking;
-
-
+using UnityEngine;
 
 public class OnlineGameManager : GameManager
 {
+    #region Static Functions
     public static readonly string OnlineGameScene = "OnlineGame";
     private static OnlineGameManager OnlineInstance
     {
@@ -20,13 +22,35 @@ public class OnlineGameManager : GameManager
         }
     }
 
+    public static bool isInverted
+    {
+        get
+        {
+            if (OnlineInstance == null) { return false; }
+
+            return Player.LocalPlayer.gameField == OnlineInstance.arena.FarField;
+        }
+    }
+    #endregion
+
     protected List<UploadedDeckDTO> RemoteDeckChoices  = new List<UploadedDeckDTO>();
+
+    #region General Overrides
+    protected override void LoadGame() { }
+   
+    public override void Go()
+    {
+        NetworkPipeline.SendClientReady();
+    }
+    
+    #endregion
+
 
     #region Message Pairs
     public static void CreateGame(string gameId)
     {
         ActiveGame = Game.ConnectToNetwork(gameId);
-        OnGameLoaded += PrepareLocalPlayer;
+        OnGameLoaded += AsHost;
         NetworkPipeline.OnPlayerJoined += NewPlayerJoined;
         App.ChangeScene(OnlineGameScene);
     }
@@ -34,8 +58,9 @@ public class OnlineGameManager : GameManager
     {
         ActiveGame = Game.ConnectToNetwork(gameId);
         Player opp = new Player(opponent.networkId, opponent.userId, false);
+        opp.SetBlankDeck(opponent.deckKey, opponent.deckName);
         ActiveGame.AddPlayer(opp);
-        OnGameLoaded += PrepareLocalPlayer;
+        OnGameLoaded += AsJoinedPlayer;
         App.ChangeScene(OnlineGameScene);
     }
     public static void NewPlayerJoined(ushort networkId, string userId)
@@ -43,25 +68,54 @@ public class OnlineGameManager : GameManager
         NetworkPipeline.OnPlayerJoined -= NewPlayerJoined;
         Player opp = new Player(networkId, userId, false);
         ActiveGame.AddPlayer(opp);
+        OnlineInstance.arena.SetPlayer(opp);
     }
     #endregion
 
-
-    protected override void LoadGame() { }
-    public static void PrepareLocalPlayer()
+    #region Watchers
+    protected override void SetGameWatchers()
     {
-        OnGameLoaded -= PrepareLocalPlayer;
+        
+    }
+    protected override void RemoveGameWatchers()
+    {
+       
+    }
+
+    
+    
+    #endregion
+
+
+    
+   
+    private static void AsHost()
+    {
+        OnGameLoaded -= AsHost;
+        Camera.main.transform.localEulerAngles = new Vector3(0f, 0f, 0f);
         OnlineInstance.LoadLocalPlayer();
     }
+    private static void AsJoinedPlayer()
+    {
+        OnGameLoaded -= AsJoinedPlayer;
+        Camera.main.transform.localEulerAngles = new Vector3(0f, 0f, 180f);
+        OnlineInstance.arena.SetPlayer(ActiveGame.players[0]);
+        OnlineInstance.LoadLocalPlayer();
+
+    }
+    
+   
     protected void LoadLocalPlayer()
     {
-           
         Player p = new Player(NetworkManager.Instance.Client.Id, App.Account.Id, true);
         Instance.turnManager.LoadGame(ActiveGame);
         ActiveGame.AddPlayer(p);
+        arena.SetPlayer(p);
         ChooseDeck();
-       
     }
+   
+
+   
 
     protected async void ChooseDeck()
     {
@@ -75,6 +129,7 @@ public class OnlineGameManager : GameManager
             List<string> titles = new List<string>();
             for (int i = 0; i < RemoteDeckChoices.Count; i++)
             {
+            
                 titles.Add(RemoteDeckChoices[i].title);
             }
         
@@ -116,55 +171,72 @@ public class OnlineGameManager : GameManager
    
     private void SendDeckSelection(UploadedDeckDTO deck)
     {
+        
+        NetworkPipeline.SendDeckSelection(deck.deckKey, deck.title);
         //send deck to server here
         Decklist decklist = deck;
-        Player.LocalPlayer.LoadDeckList(decklist, false);
-        NetworkPipeline.OnDeckSelected += LoadPlayer;
+        //send each card from the deck as they get their network IDs, instead of sending all info as one long array. this way, server and client will have synced CardIDs
 
-        
-        string[] ids = new string[Player.LocalPlayer.deck.Cards.Count];
-        string[] realIds = new string[Player.LocalPlayer.deck.Cards.Count];
-
-        Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.DeckSelection);
-        message.Add<string>(deck.deckKey);
-
-        for (int i = 0; i < Player.LocalPlayer.deck.Cards.Count; i++)
-        {
-            ids[i] = Player.LocalPlayer.deck.Cards[i].NetworkId.ToString();
-            realIds[i] = Player.LocalPlayer.deck.Cards[i].card.cardData.setKey;
-        }
-
-       
-        message.AddStrings(ids, true, true);
-        message.AddStrings(realIds, true, true);
-        NetworkPipeline.SendMessageToServer(message);
+        Player p = Player.LocalPlayer;
+        p.LoadDeckList(decklist, false);
+        ShuffleDeck(p);
+        SendDeck(p);
+        p.gameField.AllocateCards();
     }
-
-    private void LoadPlayer(ushort playerId, string deck)
+    private void ShuffleDeck(Player p)
     {
-        if (playerId != Player.LocalPlayer.lobbyId) { return; }
-        NetworkPipeline.OnDeckSelected -= LoadPlayer;
+        p.deck.Shuffle();
     }
+    private void SendDeck(Player p)
+    {
+        List<string> deckInOrder = new List<string>();
+        for (int i = 0; i < p.deck.MainDeck.InOrder.Count; i++)
+        {
+            GameCard c = p.AtPosition(true, i);
+            deckInOrder.Add(c.cardId);
+        }
+        NetworkPipeline.SendDeckOrder(deckInOrder);
+    }
+
     
-    public override void ReadyPlayer(Player p)
+    public static void LoadPlayer(ushort playerId, string deckKey, string title)
     {
-        _players.Add(p);
 
-        CardSlot deck = p.gameField.DeckSlot;
-        NetworkPipeline.SendDeckOrder(deck.index, p.deck.DeckOrder.ToList(), p.deck.NetworkDeckOrder.ToList());
-        CardSlot spiritDeck = p.gameField.SpiritDeckSlot;
-        NetworkPipeline.SendDeckOrder(spiritDeck.index, p.deck.SpiritOrder.ToList(), p.deck.NetworkSpiritOrder.ToList());
-        //DO A NETWORK CALL HERE TO MAKE SURE EVERYONE IS READY
-
-        if (_players.Count == ExpectedPlayers)
+        Player player = ByNetworkId(playerId);
+        if (!player.IsLocal)
         {
-            turnManager.StartGame();
+            player.SetBlankDeck(deckKey, title);
         }
-
-
+        
+    }
+    public static void SyncPlayerCard(ushort playerId, int cardIndex, string realId, string uniqueId)
+    {
+        Player player = ByNetworkId(playerId);
+        if (!player.IsLocal)
+        {
+            player.AddRemoteCardToDecklist(cardIndex, realId, uniqueId);
+            int cardCount = player.deck.Cards.Count;
+            if (cardCount == 60)
+            {
+                player.gameField.AllocateCards();
+                //OnlineInstance.arena.SetPlayer(player);
+            }
+        }
     }
 
 
+    #region Card Action Management
+    public static void RemoteCardSlotChange(ushort player,string cardId, string newIndex)
+    {
+        Player p = ByNetworkId(player);
+        if (p.IsLocal) { return; }
+        GameCard card = Game.FindCard(cardId);
+        CardSlot slot = Game.FindSlot(newIndex);
+        slot.GetRemoteAllocateTo(card);
+
+
+    }
+    #endregion
 
     #region Messages
     public static void CreateGame()
@@ -184,6 +256,147 @@ public class OnlineGameManager : GameManager
         //string f2 = message.GetString();
         //CreateGame(gameId, f1, f2);
     }
+
+    #endregion
+
+
+    public override void DragCard(GameCard card, CardSlot from)
+    {
+
+
+        StartCoroutine(DoDragCard(card, from, newSlot =>
+        {
+            if (newSlot == from)
+            {
+                card.ReAddToSlot(false);
+
+
+            }
+            else
+            {
+                newSlot.AllocateTo(card);
+            }
+        }));
+    }
+    protected override IEnumerator DoDragCard(GameCard card, CardSlot from, System.Action<CardSlot> callBack)
+    {
+        Field f = arena.GetPlayerField(ActiveGame.You);
+
+        // card.cardObject.transform.SetParent(f.transform);
+        Vector2 newScale = new Vector3(8f, 8f, 1f);
+        card.cardObject.SetScale(newScale);
+
+        card.cardObject.SetAsChild(f.transform, newScale);
+
+        card.NetworkCard.SendParent(from.slotId);
+        card.NetworkCard.SendSorting();
+        do
+        {
+            DoFreeze();
+            yield return new WaitForEndOfFrame();
+            var newPos = Camera.main.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
+
+            card.cardObject.transform.position = new Vector3(newPos.x, newPos.y, -2f);
+            card.NetworkCard.SendPosition();
+            f.ValidateSlots(card);
+
+        } while (true && Input.GetMouseButton(0));
+
+        card.cardObject.SetColor(Color.white);
+        CardSlot slot = f.SelectedSlot;
+
+        if (slot == null)
+        {
+            callBack(from);
+            f.SetSlot();
+        }
+        else
+        {
+            if (slot.ValidateCard(card))
+            {
+
+                callBack(slot);
+            }
+            else
+            {
+
+                callBack(from);
+            }
+
+        }
+        f.SetSlot();
+        DoThaw();
+    }
+
+
+    #region Action Management
+    [MessageHandler((ushort)FromServer.ActionDeclared)]
+    private static void ActionDeclared(Message message)
+    {
+        string dataString = message.GetString();
+        CardActionData data = CardActionData.FromData(dataString);
+        CardAction ac = CardActionData.ParseData(data);
+        OnlineInstance.ShowRemoteAction(ac);
+        //OnlineInstance.AddAction(ac);
+       
+    }
+
+    
+
+    [MessageHandler((ushort)FromServer.ActionRecieved)]
+    private static void ActionRecieved(Message message)
+    {
+        string id = message.GetString();
+        if (id == OnlineInstance.ActiveAction.id)
+        {
+            
+            //OnlineInstance.DoRemoteAction();
+            
+        }
+
+    }
+    [MessageHandler((ushort)FromServer.ActionEnd)]
+    private static void ActionEnd(Message message)
+    {
+        string id = message.GetString();
+        int result = message.GetInt();
+        if (id == OnlineInstance.ActiveAction.id)
+        {
+            //OnlineInstance.EndRemoteAction();
+        }
+
+    }
+
+    [MessageHandler((ushort)FromServer.OpeningDraw)]
+    private static void OpeningDraw(Message message)
+    {
+        OnlineInstance.OpeningDraw();
+
+    }
+    protected void OpeningDraw()
+    {
+        StartCoroutine(AwaitOpeningDraw());
+        Player.LocalPlayer.StartingDraw();
+    }
+    private IEnumerator AwaitOpeningDraw()
+    {
+        do
+        {
+            yield return new WaitForEndOfFrame();
+
+        } while (true && Player.LocalPlayer.gameField.HandSlot.cards.Count < 5);
+        Instance.turnManager.OnlineStartTurn();
+
+
+    }
+
+
+    public void ShowRemoteAction(CardAction ac)
+    {
+        gameLog.LogAction(ac);
+        StartCoroutine(ac.DisplayRemoteAction());
+    }
+   
 
     #endregion
 }

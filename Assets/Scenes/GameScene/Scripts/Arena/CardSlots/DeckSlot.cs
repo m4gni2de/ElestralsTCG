@@ -25,9 +25,9 @@ namespace Gameplay
 
        
 
-        public override void AllocateTo(GameCard card)
+        public override void AllocateTo(GameCard card, bool sendToServer = true)
         {
-            base.AllocateTo(card);
+            base.AllocateTo(card, sendToServer);
             DisplayCardObject(card);
             SetCommands(card);
 
@@ -77,6 +77,7 @@ namespace Gameplay
         protected void DrawCommand()
         {
             GameManager.Instance.popupMenu.InputNumber("How many cards do you want to Draw?", Owner.Draw, 0, Owner.deck.MainDeck.InOrder.Count);
+            
         }
         protected void MillCommand()
         {
