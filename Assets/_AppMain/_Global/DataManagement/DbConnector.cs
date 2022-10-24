@@ -8,6 +8,9 @@ using UnityEditor;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.AddressableAssets;
 using System.Threading.Tasks;
+#if UNITY_EDITOR
+using ParrelSync;
+#endif
 
 namespace Databases
 {
@@ -19,17 +22,24 @@ namespace Databases
             Player = 1,
         }
 
-        protected readonly string dbPath = "Assets/_AppMain/_Global/DataManagement/Databases/dbInternal.bytes";
+        public string fileName;
+        protected string dbPath
+        {
+            get
+            {
+                return $"Assets/_AppMain/_Global/DataManagement/Databases/{fileName}.bytes";
+            }
+        }
+
         public enum OverridePathMode
         {
             Absolute,
             RelativeToPersistentData
         }
 
-       
+
         public SQLiteConnection _conn;
         public TextAsset databaseFile;
-        public TextAsset internalDb;
 
         public string overrideBasePath = "";
 
@@ -40,13 +50,17 @@ namespace Databases
         public string workingName = "";
 
         public bool overwriteIfExists;
+
+        /// <summary>
+        /// This is only for Editor Mode. Allows changes to be made to the Database from Unity Editor. In a live build, this is not used. 
+        /// </summary>
         public bool overwriteMaster = false;
 
         public bool debugTrace;
 
         public DatabaseCreatedDelegate databaseCreated;
 
-        
+
         public bool DebugTrace
         {
             get
@@ -98,29 +112,85 @@ namespace Databases
         private void Awake()
         {
             LoadRuntimeLibrary();
-            Initialize(forceReinitialization: false);
+
+#if UNITY_EDITOR
+
+            if (overwriteMaster)
+            {
+                Initialize();
+            }
+            else
+            {
+                if (!ClonesManager.IsClone())
+                {
+                    Initialize(forceReinitialization: false);
+                }
+
+            }
+#else
+ if (overwriteMaster)
+            {
+                Initialize();
+            }
+            else
+            {
+                Initialize(forceReinitialization: false);
+            }
+#endif
+
+
+
         }
 
         public async Task<bool> ConnectAsync()
         {
-            AsyncOperationHandle<TextAsset> db = Addressables.LoadAssetAsync<TextAsset>("dbInternal");
+            AsyncOperationHandle<TextAsset> db = Addressables.LoadAssetAsync<TextAsset>(fileName);
 
             await db.Task;
+#if UNITY_EDITOR
+            return InitializeEditor(db);
+#else
+            return InitializePlayer(db);
+#endif
 
+
+        }
+#if UNITY_EDITOR
+        private bool InitializeEditor(AsyncOperationHandle<TextAsset> db)
+        {
             if (db.Status == AsyncOperationStatus.Succeeded && db.IsDone)
             {
-                
                 databaseFile = db.Result;
-                Initialize();
+                if (ClonesManager.IsClone())
+                {
+                    Initialize();
+                }
+                else
+                {
+                    Initialize(true);
+                }
+
                 return true;
             }
             else
             {
                 return false;
             }
-
         }
-
+#endif
+        private bool InitializePlayer(AsyncOperationHandle<TextAsset> db)
+        {
+            if (db.Status == AsyncOperationStatus.Succeeded && db.IsDone)
+            {
+                databaseFile = db.Result;
+                Initialize(true);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         public void Flush()
         {
             Close();
@@ -208,17 +278,18 @@ namespace Databases
         public void OverrideMaster()
         {
             //string path = _conn.DatabasePath;
+#if UNITY_EDITOR
 
-            
             string cloneLoc = Path.Combine(string.IsNullOrEmpty(overrideBasePath) ? Application.persistentDataPath : Path.Combine((overridePathMode == OverridePathMode.Absolute) ? "" : Application.persistentDataPath, overrideBasePath), changeWorkingName ? workingName.Trim() : (databaseFile.name + ".bytes"));
             bool flag = File.Exists(cloneLoc);
 
-            string origLoc = dbPath;
+            string origLoc = AssetDatabase.GetAssetPath(databaseFile);
 
 
             bool flag2 = true;
             try
             {
+
 
                 using (FileStream fs = File.OpenRead(cloneLoc))
                 {
@@ -252,7 +323,7 @@ namespace Databases
             //    _conn.Trace = debugTrace;
             //}
 
-#if UNITY_EDITOR
+
             AssetDatabase.Refresh();
 #endif
 

@@ -21,6 +21,7 @@ public class DataService
     }
 
     protected static DbConnector db { get { return AppManager.Instance.dbConnector; } }
+   
 
 
     
@@ -97,6 +98,7 @@ public class DataService
     public static List<T> GetAllWhere<T>(string tableName, string whereClause) where T : new()
     {
         string query = $"SELECT * FROM {tableName} WHERE {whereClause}";
+        Debug.Log(query);
         return db.Query<T>(query);
     }
 
@@ -210,6 +212,10 @@ public class DataService
             db.Insert(obj, tableName);
         }
 
+    }
+    public static void Insert<T>(T obj, string tableName)
+    {
+        db.Insert(obj, tableName);
     }
 #endregion
 }

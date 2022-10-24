@@ -6,6 +6,7 @@ using Cards;
 using System;
 using Gameplay.Decks;
 using System.Threading.Tasks;
+using UnityEngine.Networking;
 
 namespace Decks
 {
@@ -167,6 +168,42 @@ namespace Decks
 
         }
 
+        
+        public static List<Decklist> LoadAllLocalDecks(List<DeckDTO> dto, List<DeckCardDTO> cards)
+        {
+            List<Decklist> list = new List<Decklist>();
+            for (int i = 0; i < dto.Count; i++)
+            {
+                Decklist deck = new Decklist(dto[i].owner, dto[i].deckKey, dto[i].title);
+                list.Add(deck);
+            }
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                Decklist d = list[i];
+                for (int j = 0; j < cards.Count; j++)
+                {
+                    DeckCardDTO card = cards[j];
+                    int qty = card.qty;
+                    if (card.deckKey == d.DeckKey)
+                    {
+                        for (int c = 1; c <= qty; c++)
+                        {
+                            DeckCardDTO copy = new DeckCardDTO { deckKey = card.deckKey, setKey = card.setKey, qty = c };
+                            d.AddCard(copy);
+                        }
+                    }
+                    
+                }
+            }
+
+            return list;
+        }
+        public static Decklist Load(DeckDTO deck)
+        {
+            return Load(deck.deckKey);
+        }
+
         #region Empty Deck
         public static Decklist Empty(string owner, string key, string title)
         {
@@ -186,6 +223,13 @@ namespace Decks
         {
             DeckCard card = DeckCard.Empty;
             card = CardService.DeckCardFromDownload(setKey);
+            AddCard(card);
+            return card;
+        }
+        public DeckCard AddCard(DeckCardDTO dto)
+        {
+            DeckCard card = DeckCard.Empty;
+            card = CardService.DeckCardFromDTO(dto);
             AddCard(card);
             return card;
         }

@@ -48,11 +48,17 @@ TagManager:
   - name: Playmat
     uniqueID: 2521831539
     locked: 0
+  - name: SpiritCard
+    uniqueID: 1680533205
+    locked: 0
   - name: Card
     uniqueID: 3816955839
     locked: 0
   - name: CardL2
     uniqueID: 2574460451
+    locked: 0
+  - name: CardSpotlight
+    uniqueID: 1671384291
     locked: 0
   - name: InputBlocker
     uniqueID: 3487167371

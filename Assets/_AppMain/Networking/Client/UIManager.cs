@@ -37,7 +37,7 @@ public class UIManager : MonoBehaviour
         usernameField.interactable = false;
         connectUI.SetActive(false);
 
-        ClientManager.Instance.Connect();
+        //ClientManager.Instance.Connect();
     }
 
     public void BackToMain()
@@ -48,9 +48,9 @@ public class UIManager : MonoBehaviour
 
     public void SendName()
     {
-        Message message = Message.Create(MessageSendMode.reliable, (ushort)c2s.registerPlayer);
-        message.AddString(usernameField.text);
-        ClientManager.Instance.Client.Send(message);
+        //Message message = Message.Create(MessageSendMode.reliable, (ushort)c2s.registerPlayer);
+        //message.AddString(usernameField.text);
+        //ClientManager.Instance.Client.Send(message);
     }
 
 }

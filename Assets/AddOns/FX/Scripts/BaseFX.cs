@@ -19,7 +19,23 @@ namespace FX
         public bool AutoSetMaterial = true;
         [HideInInspector] public int ShaderChange = 0;
         protected Material tempMaterial;
-        protected Material defaultMaterial;
+        [SerializeField]
+        private Material _defaultMaterial = null;
+        protected Material defaultMaterial
+        {
+            get
+            {
+                if (_defaultMaterial == null)
+                {
+                    _defaultMaterial = new Material(Shader.Find("Sprites/Default"));
+                }
+                return _defaultMaterial;
+            }
+            set
+            {
+                _defaultMaterial = value;
+            }
+        }
         protected Image CanvasImage;
         protected SpriteRenderer CanvasSpriteRenderer; [HideInInspector] public bool ActiveUpdate = true;
 
@@ -35,6 +51,8 @@ namespace FX
                 return _shaderString; 
             }
         }
+
+       
 
         #region Overrides
         protected virtual string GetShader()
@@ -66,6 +84,11 @@ namespace FX
             {
                 if (this.gameObject.GetComponent<SpriteRenderer>() != null) CanvasSpriteRenderer = this.gameObject.GetComponent<SpriteRenderer>();
             }
+        }
+
+        public void CheckForNullMaterial()
+        {
+            
         }
 
         void Start()

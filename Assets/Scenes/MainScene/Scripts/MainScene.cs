@@ -5,6 +5,21 @@ using Packs;
 
 public class MainScene : MonoBehaviour
 {
+    #region Scene Loading
+    public static string SceneName
+    {
+        get
+        {
+            return SceneHelpers.SceneName(typeof(MainScene));
+        }
+    }
+    public static void LoadScene()
+    {
+        App.ChangeScene(SceneName);
+    }
+    #endregion
+
+
     public GameObject menuButtons;
 
     // Start is called before the first frame update
@@ -12,8 +27,8 @@ public class MainScene : MonoBehaviour
     {
         //CardCatalog.Open();
         menuButtons.SetActive(true);
-        App.StartApp();
-        AssetPipeline.DoRedownloadAllCards();
+        //App.StartApp();
+        //AssetPipeline.DoRedownloadAllCards();
         
     }
     
@@ -29,7 +44,7 @@ public class MainScene : MonoBehaviour
     #region Buttons
     public void CardCatalogLoad()
     {
-        App.ChangeScene("CatalogScene");
+        App.ChangeScene(CatalogScene.SceneName);
         menuButtons.SetActive(false);
     }
 
@@ -41,7 +56,9 @@ public class MainScene : MonoBehaviour
     public void PlayGameButton()
     {
         menuButtons.SetActive(false);
-        App.ChangeScene("GameScene");
+        //App.ChangeScene("GameScene");
+        // App.ChangeScene(OnlineGameManager.SceneName);
+        GameManager.StartLocalGame();
     }
     public void PvPButton()
     {

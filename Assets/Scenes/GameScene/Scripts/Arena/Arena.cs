@@ -153,9 +153,16 @@ namespace Gameplay
             //if (!p.IsLocal) { f = FarField; }
             if (NearField._player != null) { f = FarField; }
             f.SetPlayer(p);
-
-
         }
+
+        public void SetPlayerOffline(Player p)
+        {
+            Field f = NearField;
+            if (p != GameManager.ActiveGame.You) { f = FarField; }
+            f.SetPlayer(p);
+            f.AllocateCards();
+        }
+        
 
 
 

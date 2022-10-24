@@ -191,17 +191,18 @@ public class AssetPipeline
     public static async void DoRedownloadAllCards()
     {
 
-        List<qCards> allCards = DataService.GetAllWhere<qCards>(Cards.CardService.CardsByImageTable, "image is not null");
+        List<qCards> allCards = DataService.GetAllWhere<qCards>(Cards.CardService.CardsByImageTable, "setName is not null");
         isDownloading = true;
         LoadingBar.Instance.Display("Initializing Card Assets", 0f, allCards.Count, 0f);
 
         int count = 0;
         foreach (qCards card in allCards)
-        { 
-            string imageKey = card.image.ToLower() + "_c";
+        {
+            //string imageKey = card.image.ToLower() + "_c";
+            string imageKey = card.image.ToLower();
             AsyncOperationHandle<long> size = Addressables.GetDownloadSizeAsync(imageKey);
             await size.Task;
-            if (size.Result > 0f)
+            if (size.Result > 0f && size.Status == AsyncOperationStatus.Succeeded)
             {
                 Sprite s = await AwaitDownload<Sprite>(Addressables.LoadAssetAsync<Sprite>(imageKey), size.Result);
                 if (LoadingBar.Instance == null) { return; }
@@ -213,7 +214,7 @@ public class AssetPipeline
             }
             else
             {
-                Sprite sp = await ByKeyAsync<Sprite>(imageKey, CardLibrary.DefaultCardKey);
+                //Sprite sp = await ByKeyAsync<Sprite>(imageKey, CardLibrary.DefaultCardKey);
                 LoadingBar.Instance.MoveSlider(1f);
                 count += 1;
 
@@ -272,6 +273,26 @@ public class AssetPipeline
     }
 
   
+    public static async void DownloadDefaults()
+    {
+        AsyncOperationHandle<IList<IResourceLocation>> locations = Addressables.LoadResourceLocationsAsync("default");
+
+        await locations.Task;
+
+        int expectedCount = locations.Result.Count;
+        LoadingBar.Instance.Display("Downloading Assets", 0f, (float)expectedCount, 0f);
+
+        int count = 0;
+        foreach (IResourceLocation location in locations.Result)
+        {
+           AsyncOperationHandle handle = Addressables.DownloadDependenciesAsync(location.Data);
+           await handle.Task;
+            count += 1;
+            LoadingBar.Instance.MoveSlider(1f);
+        }
+        LoadingBar.Instance.Hide();
+        DownloadComplete();
+    }
 #endregion
     public static T ByKey<T>(string key, string fallback = "")
     {
@@ -317,10 +338,16 @@ public class AssetPipeline
     }
 
    
+    public static T OfGameObject<T>(string key)
+    {
+        GameObject go = ByKey<GameObject>(key);
+        return go.GetComponent<T>();
+    }
     public static GameObject GameObjectClone(string key, Transform parent)
     {
         GameObject go = ByKey<GameObject>(key);
         GameObject clone = MonoBehaviour.Instantiate(go, parent);
+        clone.transform.localEulerAngles = new Vector3(0f, 0f, 0f);
         return clone;
 
     }

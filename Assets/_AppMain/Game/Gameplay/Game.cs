@@ -12,6 +12,8 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Users;
 using RiptideNetworking;
 using Gameplay.Networking;
+using UnityEditor;
+using UnityEngine.SocialPlatforms;
 
 namespace Gameplay
 {
@@ -25,7 +27,7 @@ namespace Gameplay
     public class Game
     {
         #region Network Properties
-        public static OnlineGame ServerGame { get; set; }
+        
         public virtual bool IsOnline() { return false; }
 
 
@@ -128,6 +130,21 @@ namespace Gameplay
         {
             Decklist decklist = Decklist.Load(deckKey);
             Player player = new Player(userid, decklist, isLocal);
+            AddPlayer(player);
+        }
+
+        public void AddLocalPlayer(string userid, string deckKey)
+        {
+            Decklist decklist = null;
+            for (int i = 0; i < App.Account.DeckLists.Count; i++)
+            {
+                Decklist d = App.Account.DeckLists[i];
+                if (d.DeckKey == deckKey)
+                {
+                    decklist = d;
+                }
+            }
+            Player player = new Player(userid, decklist, true);
             AddPlayer(player);
         }
         
@@ -259,7 +276,50 @@ namespace Gameplay
             return null;
         }
 
-       
+
+        #endregion
+
+
+        #region Rune Empowering
+        private Dictionary<GameCard, GameCard> _EmpoweredRunes = null;
+        public Dictionary<GameCard, GameCard> EmpoweredRunes
+        {
+            get
+            {
+                _EmpoweredRunes ??= new Dictionary<GameCard, GameCard>();
+                return _EmpoweredRunes;
+            }
+        }
+
+        public static void Empower(GameCard rune, GameCard elestral)
+        {
+            Game active = GameManager.ActiveGame;
+
+            if (!active.EmpoweredRunes.ContainsKey(rune))
+            {
+                active.EmpoweredRunes.Add(rune, elestral);
+                elestral.EmpoweredChange();
+                NetworkPipeline.SendEmpowerChange(rune.cardId, elestral.cardId, true);
+            }
+                
+            
+
+           
+        }
+
+        public static void UnEmpower(GameCard rune)
+        {
+            Game active = GameManager.ActiveGame;
+
+
+            if (active.EmpoweredRunes.ContainsKey(rune))
+            {
+                GameCard elestral = active.EmpoweredRunes[rune];
+                active.EmpoweredRunes.Remove(rune);
+                elestral.EmpoweredChange();
+                NetworkPipeline.SendEmpowerChange(rune.cardId, elestral.cardId, false);
+            }
+        }
         #endregion
 
     }

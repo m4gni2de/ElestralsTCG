@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Gameplay;
+using Gameplay.Messaging;
 using UnityEngine;
 
 public static class RemoteAssetHelpers 
@@ -22,6 +24,8 @@ public static class RemoteAssetHelpers
         Dictionary<Type, string> assets = new Dictionary<Type, string>();
         assets.Add(typeof(NumberInput), "NumberInput");
         assets.Add(typeof(CardView), "CardView");
+        assets.Add(typeof(MessageViewModel), "vmMessage");
+        assets.Add(typeof(TextInput), "TextInput");
         
 
 

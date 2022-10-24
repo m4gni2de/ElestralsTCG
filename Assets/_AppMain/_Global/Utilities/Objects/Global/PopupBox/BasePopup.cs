@@ -30,6 +30,10 @@ namespace PopupBox
                 CancelButton.onClick.RemoveAllListeners();
             }
         }
+        public void ForceClose()
+        {
+            ToggleHandled(false);
+        }
 
         public virtual void Refresh()
         {

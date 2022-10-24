@@ -17,182 +17,182 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 7fc345faebc713845a5e278f9ec5122f
   m_SerializeEntries:
-  - m_GUID: d154ede27a5e81d4ca5909f9a77a14aa
-    m_Address: sd01_glydesdale_c
+  - m_GUID: a74448acc1794584d89d73d4f52029a1
+    m_Address: ambrosia_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 321844dc5a480794aa52646e328dcb67
-    m_Address: sd01_restingonyourlaurels_c
+  - m_GUID: 8c86fd0064bbfd24988e441f773e72d8
+    m_Address: nectarofthegods_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b2e98eecefa5a9b4280b77a1229e0a99
-    m_Address: sd01_lycarus_c
+  - m_GUID: fdfcdf4e72c008949aa4110db3a92857
+    m_Address: leviaphin_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f17301ea4f9427e46af09bc1411e340b
-    m_Address: sd01_penterror_c
+  - m_GUID: b1c874feac46ffa4a816bc971a67a7c3
+    m_Address: penterror_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3cd267801eef11946af4f15f5abc2452
-    m_Address: sd01_chrysoar_c
+  - m_GUID: ebb1fe2993fa5444180c8ab50c9be85f
+    m_Address: glydesdale_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 2630c290d2324904ebe28e849bc3f30c
-    m_Address: sd01_astrabbit_c
+  - m_GUID: 1fab4fd9e5cf1594fb4b46fef4503a5f
+    m_Address: aeolus_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 18d16dd83d9fb6c46b5da3e5c40e4587
-    m_Address: sd01_aeolus_c
+  - m_GUID: b7f25425635d0ed48861c0393a589fbc
+    m_Address: boombatt_1_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 1fa468c5797cb0e44a0e7317f7dd2fb9
-    m_Address: sd01_exaltair_c
+  - m_GUID: 344e43685bc9ce443b5e3df60bcbcaba
+    m_Address: bagofwinds_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c2dc27fb028404a43aa823128646891d
-    m_Address: sd01_carryon_c
+  - m_GUID: 150cb51dd8d235242b938a213f357f64
+    m_Address: soarlet_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 373ba87fd16e80d4d92c1223a0bfebc8
-    m_Address: sd01_zaptor_c
+  - m_GUID: c8187a5a85414d54dbbe70cfc2e284cc
+    m_Address: circlethesky_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9f0fb671afce8d949a9fe83481ce74d8
-    m_Address: sd01_ambrosia_c
+  - m_GUID: acece29a63a948147a2e28d1884b5b6a
+    m_Address: elechik_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c865b1f610767e148a789238222eaecc
-    m_Address: sd01_jolten_c
+  - m_GUID: da59f36fdc8dbb349833fbd66f050ea3
+    m_Address: restingonyourlaurels_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: fa7b75bc3b8cce249943f999df1079a0
-    m_Address: sd01_peagust_c
+  - m_GUID: 8ced1abf6cb026b4d90990f78e6fc4c5
+    m_Address: fowlicane_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 46b73ea2da7b21045918a4b183c4ee3b
-    m_Address: sd01_fowlicane_c
+  - m_GUID: b795dd65af325084185f92ff53943e6e
+    m_Address: jolten_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ddcd46840e7abcb4886d90303a7f7469
-    m_Address: sd01_pandorasbox_c
+  - m_GUID: 2c0e372da7027924ab7f230f981989d3
+    m_Address: peagust_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f357f697c0a251749b1c1f35b11c4cf4
-    m_Address: sd01_aeromare_c
+  - m_GUID: 7ab5d3b6815f7794ca0adbef151a424c
+    m_Address: dropsoflethe_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 30a1ccb2b780d9547b2584bf758bfb49
-    m_Address: sd01_soarlet_c
+  - m_GUID: 23489ef8f43b7d94c8be740e13a59d4d
+    m_Address: hydrake_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: bfd51bee65137fb43a867a4e99c75560
-    m_Address: sd01_dropsoflethe_c
+  - m_GUID: e6830fd2b6516a044938b41e02d44546
+    m_Address: tornado_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 735e8567172923c41a523d8c963f463c
-    m_Address: sd01_hydrake_c
+  - m_GUID: 78b5fcd4b0d2d944fa70e5b5dc5ad77c
+    m_Address: twindra_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 73fa36d9fdc9e024d8a920fc525d7059
-    m_Address: sd01_nectarofthegods_c
+  - m_GUID: 401d53969c245944c8991a52253be382
+    m_Address: carryon_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 45089c58169d4654d97dadb833a878ac
-    m_Address: sd01_verutaqua_c
+  - m_GUID: 8088979cf0c88c9428fc790abe3871c2
+    m_Address: exaltair_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: a9f0f0d583cea294db33aa9eb82e8a2f
-    m_Address: sd01_thunderstorm_c
+  - m_GUID: 83f22077b5b5df1468f245d607bd47c9
+    m_Address: islandofaeolia_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 68ab0e9e0f48a5743847c5841026bf91
-    m_Address: sd01_circlethesky_c
+  - m_GUID: 49c5dddef43227e449c25b4bf21de824
+    m_Address: pandorasbox_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: db29873309270214c87db51753c40b37
-    m_Address: sd01_boombatt_1_c
+  - m_GUID: d93b3a217aee7c84ea7c859b6266cd65
+    m_Address: zaptor_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: da8b62b7d5254e94e863c20245699074
-    m_Address: sd01_twindra_c
+  - m_GUID: 07cfd6a14955400419b24d10bc82b3af
+    m_Address: aeromare_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b5642e0dbb5ad2342ba921b39efd1540
-    m_Address: sd01_elechik_c
+  - m_GUID: 4888e88ef428ecf4ebae44927919852a
+    m_Address: verutaqua_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 93a4f19e317409f4597742af74eed8e6
-    m_Address: sd01_bagofwinds_c
+  - m_GUID: 585a1bd348264cd4bb75c364ad22a586
+    m_Address: astrabbit_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 072c2496108e535499f4f4d11df8c7a1
-    m_Address: sd01_leviaphin_c
+  - m_GUID: 35dd9b081e18d274bb5516683d8a1992
+    m_Address: chrysoar_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9dac51c77c775854393a4c181f7f722b
-    m_Address: sd01_islandofaeolia_c
+  - m_GUID: d8cfeee8c229858458390291f4b1240a
+    m_Address: thunderstorm_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 579b3935d74ac4b4fbc5457756c46bcd
-    m_Address: sd01_tornado_c
+  - m_GUID: e94498dc1b6a63047bf7da6e782ea86f
+    m_Address: lycarus_c
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard

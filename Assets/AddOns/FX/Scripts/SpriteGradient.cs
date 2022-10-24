@@ -126,33 +126,33 @@ namespace FX
             m_object.Update();
 
             DrawDefaultInspector();
-            SpriteGradient _2dxScript = (SpriteGradient)target;
+            SpriteGradient fx = (SpriteGradient)target;
 
 
             EditorGUILayout.PropertyField(m_object.FindProperty("ActiveUpdate"), new GUIContent("Active Update", "Active Update, for animation / Animator only"));
             EditorGUILayout.PropertyField(m_object.FindProperty("ForceMaterial"), new GUIContent("Shared Material", "Use a unique material, reduce drastically the use of draw call"));
 
-            if (_2dxScript.ForceMaterial == null)
+            if (fx.ForceMaterial == null)
             {
-                _2dxScript.ActiveChange = true;
+                fx.ActiveChange = true;
             }
             else
             {
                 if (GUILayout.Button("Remove Shared Material"))
                 {
-                    _2dxScript.ForceMaterial = null;
-                    _2dxScript.ShaderChange = 1;
-                    _2dxScript._Color1 = new Color(1, 0, 0, 1);
-                    _2dxScript._Color2 = new Color(0, 0, 1, 1);
-                    _2dxScript._Color3 = new Color(0, 1, 0, 1);
-                    _2dxScript._Color4 = new Color(0, 1, 1, 1);
-                    _2dxScript.ActiveChange = true;
-                    _2dxScript.CallUpdate();
+                    fx.ForceMaterial = null;
+                    fx.ShaderChange = 1;
+                    fx._Color1 = new Color(1, 0, 0, 1);
+                    fx._Color2 = new Color(0, 0, 1, 1);
+                    fx._Color3 = new Color(0, 1, 0, 1);
+                    fx._Color4 = new Color(0, 1, 1, 1);
+                    fx.ActiveChange = true;
+                    fx.CallUpdate();
                 }
                 EditorGUILayout.PropertyField(m_object.FindProperty("ActiveChange"), new GUIContent("Change Material Property", "Change The Material Property"));
             }
 
-            if (_2dxScript.ActiveChange)
+            if (fx.ActiveChange)
             {
                 EditorGUILayout.BeginVertical("Box");
                 Texture2D icone = Resources.Load("2dxfx-icon-corner-1") as Texture2D;
@@ -178,55 +178,56 @@ namespace FX
 
                 if (GUILayout.Button(preview))
                 {
-                    _2dxScript._Color1 = new Color(1, 0, 0, 1);
-                    _2dxScript._Color2 = new Color(0, 0, 1, 1);
-                    _2dxScript._Color3 = new Color(0, 1, 0, 1);
-                    _2dxScript._Color4 = new Color(0, 1, 1, 1);
-                    _2dxScript._Alpha = 1;
+                    fx._Color1 = new Color(1, 0, 0, 1);
+                    fx._Color2 = new Color(0, 0, 1, 1);
+                    fx._Color3 = new Color(0, 1, 0, 1);
+                    fx._Color4 = new Color(0, 1, 1, 1);
+                    fx._Alpha = 1;
                     m_object.ApplyModifiedProperties();
-                    _2dxScript.CallUpdate();
+                    fx.CallUpdate();
                 }
 
                 preview = Resources.Load("2dxfx-p-4g2") as Texture2D;
                 if (GUILayout.Button(preview))
                 {
-                    _2dxScript._Color1 = new Color(0, 1, 0.7f, 0);
-                    _2dxScript._Color2 = new Color(0, 1, 0.7f, 0);
-                    _2dxScript._Color3 = new Color(0, 1, 0.7f, 1);
-                    _2dxScript._Color4 = new Color(0, 1, 0.7f, 1);
-                    _2dxScript._Alpha = 1;
+                    fx._Color1 = new Color(0, 1, 0.7f, 0);
+                    fx._Color2 = new Color(0, 1, 0.7f, 0);
+                    fx._Color3 = new Color(0, 1, 0.7f, 1);
+                    fx._Color4 = new Color(0, 1, 0.7f, 1);
+                    fx._Alpha = 1;
                     m_object.ApplyModifiedProperties();
-                    _2dxScript.CallUpdate();
+                    fx.CallUpdate();
                 }
 
                 preview = Resources.Load("2dxfx-p-4g3") as Texture2D;
                 if (GUILayout.Button(preview))
                 {
-                    _2dxScript._Color1 = new Color(1, 1, 0, 1);
-                    _2dxScript._Color2 = new Color(1, 0.8f, 0, 0);
-                    _2dxScript._Color3 = new Color(1, 0.6f, 0, 0);
-                    _2dxScript._Color4 = new Color(1, 0.6f, 0, 0);
-                    _2dxScript._Alpha = 1;
+                    fx._Color1 = new Color(1, 1, 0, 1);
+                    fx._Color2 = new Color(1, 0.8f, 0, 0);
+                    fx._Color3 = new Color(1, 0.6f, 0, 0);
+                    fx._Color4 = new Color(1, 0.6f, 0, 0);
+                    fx._Alpha = 1;
                     m_object.ApplyModifiedProperties();
-                    _2dxScript.CallUpdate();
+                    fx.CallUpdate();
                 }
 
                 preview = Resources.Load("2dxfx-p-4g4") as Texture2D;
                 if (GUILayout.Button(preview))
                 {
-                    _2dxScript._Color1 = new Color(1, 0, 0, 1);
-                    _2dxScript._Color2 = new Color(1, 0, 0, 1);
-                    _2dxScript._Color3 = new Color(1, 0, 0, 0);
-                    _2dxScript._Color4 = new Color(1, 0, 0, 0);
-                    _2dxScript._Alpha = 1;
+                    fx._Color1 = new Color(1, 0, 0, 1);
+                    fx._Color2 = new Color(1, 0, 0, 1);
+                    fx._Color3 = new Color(1, 0, 0, 0);
+                    fx._Color4 = new Color(1, 0, 0, 0);
+                    fx._Alpha = 1;
                     m_object.ApplyModifiedProperties();
-                    _2dxScript.CallUpdate();
+                    fx.CallUpdate();
                 }
                 EditorGUILayout.EndHorizontal();
                 EditorGUILayout.EndVertical();
 
             }
 
+            //fx.CheckForNullMaterial();
             m_object.ApplyModifiedProperties();
 
         }

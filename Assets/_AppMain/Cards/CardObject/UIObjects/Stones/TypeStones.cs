@@ -23,6 +23,7 @@ namespace CardsUI
         {
             TypeStone[] stones = new TypeStone[count];
 
+          
             if (count == 1)
             {
                 stones[0] = Stones[0];
@@ -69,6 +70,10 @@ namespace CardsUI
             HideAll();
             int count = card.SpiritsReq.Count;
 
+            if (count == 0)
+            {
+                Debug.Log(card.cardData.cardName);
+            }
             TypeStone[] stones = UseStones(count);
 
             for (int i = 0; i < stones.Length; i++)

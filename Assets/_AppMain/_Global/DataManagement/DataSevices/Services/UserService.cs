@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,10 +8,12 @@ using Users;
 
 namespace Databases
 {
-    public class UserService : DataService
+    public class UserService : PlayerService
     {
         protected static readonly string UserTable = "uUserDTO";
         protected static readonly string KeyColumn = "userKey";
+        protected static readonly string DeckTable = "DeckCardDTO";
+        protected static readonly string DeckListTable = "uDeckDTO";
 
         public static UserDTO CreateUser(string username)
         {
@@ -21,6 +24,8 @@ namespace Databases
                 whenCreated = System.DateTime.Now,
                 email = ""
             };
+
+            UpdateLocalDecksOwner(dto.username, "");
 
             SaveUser(dto);
             return dto;
@@ -52,7 +57,7 @@ namespace Databases
             return list.Count > 0;
         }
 
-        public static bool SaveUser(UserDTO dto)
+        public static bool SaveUser(UserDTO dto, bool isNew = false)
         {
             
             Save<UserDTO>(dto, UserTable, KeyColumn, dto.userKey);
@@ -61,15 +66,26 @@ namespace Databases
 
 
         #region Other table Management
-        public static List<string> UserDecks(string userKey)
+       
+        public static List<DeckCardDTO> LocalDecklists()
         {
-            List<string> list = new List<string>();
-            List<DeckDTO> decks = DeckService.GetUserDecklist(userKey);
-            for (int i = 0; i < decks.Count; i++)
-            {
-                list.Add(decks[i].deckKey);
-            }
-            return list;
+            List<DeckCardDTO> cards = GetAll<DeckCardDTO>(DeckTable);
+            return cards;
+
+        }
+
+        public static List<DeckDTO> LocalUserDeckDTOs()
+        {
+            List<DeckDTO> cards = GetAll<DeckDTO>(DeckListTable);
+            return cards;
+
+        }
+        public static void UpdateLocalDecksOwner(string newName, string oldName)
+        {
+            
+            string query = $"Update {DeckListTable} SET owner = '{newName}', whenCreated = '{DateTime.Now}' WHERE owner is null OR owner = '{oldName}'";
+            db.QueryGeneric(query);
+            db.Commit();
         }
         #endregion
 

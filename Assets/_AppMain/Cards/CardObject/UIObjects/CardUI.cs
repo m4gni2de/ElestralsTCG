@@ -31,6 +31,9 @@ public static class CardUI
     public static readonly string StellarRareSprite = "stellarRareSp";
     public static readonly string LegendaryRareSprite = "legendaryRareSp";
     public static readonly string ExtraRareSprite = "extraRareSp";
+
+    public static readonly string BorderSprite = "borderSpWhite";
+    public static readonly string BlankSprite = "blankCardSp";
     #endregion
 
 
@@ -67,7 +70,7 @@ public static class CardUI
         string st = RuneSpriteCode(subClass);
         return AssetPipeline.ByKey<Sprite>(st);
     }
-    private static string RuneSpriteCode(Rune.RuneType rType)
+    public static string RuneSpriteCode(Rune.RuneType rType)
     {
         switch (rType)
         {

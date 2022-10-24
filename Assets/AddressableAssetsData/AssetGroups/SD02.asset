@@ -1,0 +1,151 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: SD02
+  m_EditorClassIdentifier: 
+  m_GroupName: SD02
+  m_Data:
+    m_SerializedData: []
+  m_GUID: b4d7d279de9005a4caf7f05ee905c8f5
+  m_SerializeEntries:
+  - m_GUID: 5ea3c262b9bec1e4db7e95bce0a67251
+    m_Address: clovie
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fdd57efa81a822746be5f0f9c6b61ad5
+    m_Address: centaurbor
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 820858ae1dcea2d439f8f98e81ab96c7
+    m_Address: tectaurus
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0f532596e89a8a146a5b0a3d7debf63a
+    m_Address: sakurasaur
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bbe286d5d8a8fc04590b75bbcdfcb732
+    m_Address: satymber
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6de33eed3e7f1f4429b715632afda111
+    m_Address: sproutyr
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 472fb6734448bf44e967a7f59074bdaf
+    m_Address: spinymph
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 621baa144d24ac84eaa7be708b40cd43
+    m_Address: ladogon
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1976ddde47997c24d82136b7468a6e24
+    m_Address: drataya
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cb2cf30fbb27c0b488c0028ad4574924
+    m_Address: rummagem
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f7b06a1eacf9e8e419c8d62bda1f0e99
+    m_Address: girafflora
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 344817d31fb00e8478241be83f0868e4
+    m_Address: equilynx
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5bd6d4f8df7975545a8d3b4ac9839a39
+    m_Address: warmite
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d470c5ef8bdab4f438f7f608b0439a8a
+    m_Address: sinder
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7bd492fe58d6eb64ba59b5859b50107e
+    m_Address: scytheofdemeter
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Rune
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a85d8564b868ebd4d91e2387915f53b8
+    m_Address: earthquake
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Rune
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 656d602938feae14bb0d005141450de8
+    m_Address: demeter
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Rune
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 758380c101f883546801ff4384f9e611
+    m_Address: foloiforest
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Rune
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: ca17f31a06177cd449fb331469354d04, type: 2}
+    - {fileID: 11400000, guid: 2e8cb22005a77274ab9a6c49e62b3036, type: 2}

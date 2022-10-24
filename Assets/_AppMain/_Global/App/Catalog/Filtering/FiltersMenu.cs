@@ -92,7 +92,7 @@ namespace CardsUI.Filtering
 
         public string GenerateQuery()
         {
-            string query = "image is not null";
+            string query = "setName is not null";
 
             List<string> wheres = GetQueryWheres();
 

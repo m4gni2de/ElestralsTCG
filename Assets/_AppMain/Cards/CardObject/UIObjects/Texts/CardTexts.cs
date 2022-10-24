@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 namespace CardsUI
 {
@@ -29,6 +30,31 @@ namespace CardsUI
         public TMP_Text trademark;
         public TMP_Text edition;
         public FormattedText Effect;
+
+
+        private List<Renderer> _TextRenderers = null;
+        protected List<Renderer> TextRenderers
+        {
+            get
+            {
+                _TextRenderers ??= GetTextRenderers();
+                return _TextRenderers;
+            }
+        }
+        protected virtual List<Renderer> GetTextRenderers()
+        {
+            List<Renderer> list = new List<Renderer>();
+            list.AddRange(title.GetComponentsInChildren<Renderer>(true));
+            list.AddRange(artist.GetComponentsInChildren<Renderer>(true));
+            list.AddRange(cardNumber.GetComponentsInChildren<Renderer>(true));
+            list.AddRange(trademark.GetComponentsInChildren<Renderer>(true));
+            list.AddRange(edition.GetComponentsInChildren<Renderer>(true));
+            list.AddRange(Effect.GetComponentsInChildren<Renderer>(true));
+
+          
+;           
+            return list;
+        }
 
 
         private List<SpecialWord> _specialWords = null;
@@ -216,6 +242,22 @@ namespace CardsUI
             return new Color32(255, 255, 255, 255);
         }
         #endregion
+
+        public void SetSortOrder(int order)
+        {
+            for (int i = 0; i < TextRenderers.Count; i++)
+            {
+                TextRenderers[i].sortingOrder = order;
+            }
+        }
+        public void SetSortLayer(string layer)
+        {
+            for (int i = 0; i < TextRenderers.Count; i++)
+            {
+                TextRenderers[i].sortingLayerName = layer;
+            }
+
+        }
     }
 }
 

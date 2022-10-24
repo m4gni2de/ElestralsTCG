@@ -281,6 +281,7 @@ namespace Gameplay.Turns
                 Instance.CraftingAction = data;
             }
         }
+       
         public static CardActionData NewAction(ActionCategory cat, Player p)
         {
             if (Instance == null) { return null; }

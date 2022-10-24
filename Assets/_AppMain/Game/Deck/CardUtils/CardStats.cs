@@ -7,6 +7,7 @@ namespace Gameplay
     [System.Serializable]
     public class CardStats
     {
+      
         public string name;
         public string title;
         public int attack;
@@ -18,6 +19,13 @@ namespace Gameplay
         public string effect;
         public CardTags Tags = null;
         public List<ElementCode> CardElements = null;
+        public string slotLocation;
+
+      
+        #region Change History
+        private List<string> _history = null;
+        public List<string> History { get { _history ??= new List<string>(); return _history; } }
+        #endregion
 
         #region Initialization
         public CardStats(GameCard card)
@@ -40,6 +48,16 @@ namespace Gameplay
             }
 
             SetElements(card.card);
+
+            if (card.CurrentSlot != null)
+            {
+                slotLocation = card.CurrentSlot.slotId;
+            }
+            else
+            {
+                slotLocation = null;
+            }
+
         }
 
         protected void SetElestral(Elestral card)
@@ -49,7 +67,7 @@ namespace Gameplay
             cardType = CardType.Elestral;
             Tags = CardTags.OfElestral(card);
             effect = card.Data.effect;
-            
+
         }
         protected void SetRune(Rune card)
         {
@@ -80,7 +98,20 @@ namespace Gameplay
         #endregion
 
         #region Updating
-        
+
+       
+        protected void LogChange<T>(string propName, T newVal)
+        {
+
+        }
+        public void UpdateCardType(CardType type)
+        {
+            cardType = type;
+        }
+        public void UpdateAttackDefense(int newAtk, int newDef)
+        {
+
+        }
         #endregion
     }
 }

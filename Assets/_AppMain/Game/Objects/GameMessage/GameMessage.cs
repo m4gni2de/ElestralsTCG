@@ -9,6 +9,14 @@ namespace Gameplay
 {
     public class GameMessage 
     {
+
+
+        #region Operators
+        public static implicit operator GameMessage(string msg)
+        {
+            return JustMessage(msg);
+        }
+        #endregion
         public enum MessageType
         {
             Game = 0,

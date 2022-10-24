@@ -23,6 +23,7 @@ public enum ServerFunction
 
 public enum ToServer : ushort
 {
+    
     Connected = 99,
     CreateGame = 98,
     JoinGame = 97,
@@ -40,10 +41,13 @@ public enum ToServer : ushort
     OpeningDraw = 85,
     SlotMapping = 84,
     StartGame = 83,
-    CardPosition = 82,
+    PlayerLeft = 82,
+    JoinFailed = 81,
+    EmpowerChanged = 80,
 }
 public enum FromServer :ushort
 {
+    
     Connected = 99,
     CreateGame = 98,
     JoinGame = 97,
@@ -61,9 +65,19 @@ public enum FromServer :ushort
     OpeningDraw = 85,
     SlotMapping = 84,
     StartGame = 83,
-    CardPosition = 82,
+    PlayerLeft = 82,
+    JoinFailed = 81,
+    EmpowerChanged = 80,
 
 
+}
+
+public enum PlayerActivity
+{
+    Joined = 899,
+    LostConnection = 898,
+    Reconnected = 897,
+    Left = 896
 }
 
 public class NetworkPipeline
@@ -93,6 +107,15 @@ public class NetworkPipeline
 
 
     #region FromServer enum
+    public static event Action<string> OnJoinedFailed;
+    [MessageHandler((ushort)FromServer.JoinFailed)]
+    private static void JoinLobbyFailed(Message message)
+    {
+        string lobbyId = message.GetString();
+        OnJoinedFailed?.Invoke(lobbyId);
+    }
+
+
     public static event Action OnPlayerRegistered;
     [MessageHandler((ushort)FromServer.Connected)]
     private static void PlayerIdRegistered(Message message)
@@ -138,6 +161,9 @@ public class NetworkPipeline
         OnPlayerJoined?.Invoke(netId, userId);
     }
 
+
+
+
     [MessageHandler((ushort)FromServer.DeckSelection)]
     private static void DeckSelected(Message message)
     {
@@ -145,7 +171,7 @@ public class NetworkPipeline
         string deck = message.GetString();
         string title = message.GetString();
 
-        OnlineGameManager.LoadPlayer(networkId, deck, title);
+        GameManager.LoadPlayer(networkId, deck, title);
 
     }
 
@@ -177,7 +203,7 @@ public class NetworkPipeline
         string cardNetworkId = message.GetString();
 
 
-        OnlineGameManager.SyncPlayerCard(sender, cardIndex, cardRealId, cardNetworkId);
+        GameManager.SyncPlayerCard(sender, cardIndex, cardRealId, cardNetworkId);
 
     }
 
@@ -185,10 +211,12 @@ public class NetworkPipeline
     private static void SelectionChanged(Message message)
     {
         string cardId = message.GetString();
-        bool isSelected = message.GetBool();
+        int boolVal = message.GetInt();
+        bool isSelected = boolVal == 1;
+        ushort sender = message.GetUShort();
 
         GameCard card = Game.FindCard(cardId);
-        card.SelectCard(isSelected, false);
+        card.SelectCardAsPlayer(isSelected, sender, false);
 
     }
 
@@ -199,24 +227,27 @@ public class NetworkPipeline
         string cardId = message.GetString();
         string newIndex = message.GetString();
 
-        OnlineGameManager.RemoteCardSlotChange(owner, cardId, newIndex);
+        GameManager.RemoteCardSlotChange(owner, cardId, newIndex);
 
     }
 
 
-    [MessageHandler((ushort)FromServer.CardPosition)]
-    private static void CardPositionChange(Message message)
+
+
+    [MessageHandler((ushort)FromServer.EmpowerChanged)]
+    private static void CardEmpowerChange(Message message)
     {
+        Message outbound = Message.Create(MessageSendMode.reliable, (ushort)ToServer.EmpowerChanged);
         ushort owner = message.GetUShort();
-        string cardId = message.GetString();
-        Vector3 localPos = message.GetVector3();
+        string rune = message.GetString();
+        string elestral = message.GetString();
+        bool toAdd = message.GetBool();
 
-        //OnlineGameManager.RemoteCardSlotChange(owner, cardId, newIndex);
+        GameManager.RemoteEmpowerChange(owner, rune, elestral, toAdd);
 
     }
 
 
-    //LEAVING OFF WITH NOT HAVING A CLIENT RECEIVER METHOD FOR THE CARD MOVED MESSAGE
     #endregion
 
 
@@ -283,7 +314,7 @@ public class NetworkPipeline
         Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.NewCardData);
         message.AddInt(data.networkId);
         message.AddString(data.sessionId);
-        message.AddString(data.setKey);
+        message.AddString(data.cardKey);
         message.AddString(data.slotId);
         SendMessageToServer(message);
     }
@@ -292,7 +323,10 @@ public class NetworkPipeline
     {
         Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.CardSelectChange);
         message.AddString(card.cardId);
-        message.AddBool(isSelected);
+
+        int boolVal = 0;
+        if (isSelected) { boolVal = 1; }
+        message.AddInt(boolVal);
         SendMessageToServer(message);
     }
 
@@ -354,22 +388,16 @@ public class NetworkPipeline
         Message outbound = Message.Create(MessageSendMode.reliable, (ushort)ToServer.OpeningDraw);
         SendMessageToServer(outbound);
     }
-    //public static void SlotMappingOutbound(int index, string slotId, CardLocation slotType)
-    //{
-    //    Message outbound = Message.Create(MessageSendMode.reliable, (ushort)ToServer.SlotMapping);
-    //    outbound.AddInt(index);
-    //    outbound.AddString(slotId);
-    //    outbound.Add((int)slotType);
-    //    SendMessageToServer(outbound);
-    //}
-
-    public static void SendCardPosition(string cardId, Vector3 pos)
+    public static void SendEmpowerChange(string runeId, string elestralId, bool adding)
     {
-        Message outbound = Message.Create(MessageSendMode.unreliable, (ushort)ToServer.CardPosition);
-        outbound.Add(cardId);
-        outbound.AddVector3(pos);
+        Message outbound = Message.Create(MessageSendMode.reliable, (ushort)ToServer.EmpowerChanged);
+        outbound.Add(runeId);
+        outbound.Add(elestralId);
+        outbound.AddBool(adding);
         SendMessageToServer(outbound);
     }
+
+
     #endregion
 
 
@@ -385,14 +413,10 @@ public class NetworkPipeline
         GameCard card = Game.FindCard(cardId);
 
         Vector3 pos = message.GetVector3();
-       
-        float height = WorldCanvas.Height;
-        float width = WorldCanvas.Width;
 
-        float percWidth = width * pos.x;
-        float percHeight = height * pos.y;
 
-        card.cardObject.transform.position = new Vector3(percWidth, percHeight, 0f);
+        Vector3 newPos = Camera.main.ScreenToWorldPoint(pos);
+        card.cardObject.transform.position = pos / WorldCanvas.Instance.ScreenScale;
 
 
 
@@ -461,6 +485,26 @@ public class NetworkPipeline
 
         card.cardObject.Flip(toFacedown);
     }
+    #endregion
+
+    #region Player Activity
+    [MessageHandler((ushort)PlayerActivity.LostConnection)]
+    private static void PlayerDisconnected(Message message)
+    {
+        ushort netId = message.GetUShort();
+        string userId = message.GetString();
+        GameManager.PlayerDisconnected(netId, userId);
+    }
+
+    
+    
+    public static void SendPlayerQuit(Player player)
+    {
+        Message outbound = Message.Create(MessageSendMode.reliable, (ushort)PlayerActivity.Left);
+        outbound.AddString(player.userId);
+        SendMessageToServer(outbound);
+    }
+
     #endregion
 
 }

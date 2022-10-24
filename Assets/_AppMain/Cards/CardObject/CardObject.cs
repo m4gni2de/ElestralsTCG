@@ -13,12 +13,14 @@ public class CardObject : MonoBehaviour, iHold
     #region Static Functions
 
     public static readonly string CardKey = "CardObject";
+   
 
     #endregion
 
 
     #region Art Types
     public CardConfig Default, FullArt;
+    public StoneBottom defaultBottom, faBottom;
 
     private bool _isFullArt = false;
     public bool IsFullArt
@@ -61,7 +63,8 @@ public class CardObject : MonoBehaviour, iHold
             if (IsFullArt) { return FullArt.Texts; } return Default.Texts; 
         }
     }
-    public StoneBottom Bottom { get { if (IsFullArt) { return FullArt.Bottom; } return Default.Bottom; } }
+    public StoneBottom Bottom { get { if (IsFullArt) { return faBottom; } return defaultBottom; } }
+    //public StoneVariant Bottom { get { if (IsFullArt) { return FullArt.StoneVariant; } return Default.StoneVariant; } }
 
 
     #endregion
@@ -117,7 +120,7 @@ public class CardObject : MonoBehaviour, iHold
     public virtual void SetSortingLayer(string sortLayer)
     {
         Renderer[] rends = GetComponentsInChildren<Renderer>(true);
-        Bottom.SetSortingLayer(sortLayer);
+        //Bottom.SetSortingLayer(sortLayer);
 
         for (int i = 0; i < rends.Length; i++)
         {
@@ -143,62 +146,7 @@ public class CardObject : MonoBehaviour, iHold
 
     //}
 
-    public void RandomCard()
-    {
-        Card c;
-
-
-        int rand = Random.Range(7, 80);
-        string rString = rand.ToString();
-
-        if (rand < 10)
-        {
-            rString = $"00{rand}";
-        }
-        else if (rand < 99)
-        {
-            rString = $"0{rand}";
-        }
-
-
-
-        string key = $"bs-{rString}";
-
-        CardData data = CardService.FindCard(key);
-
-        CardType cType = (CardType)data.cardType;
-        if (cType == CardType.Elestral)
-        {
-            
-            ElestralData eData = CardService.FindElestralCard(key);
-            if (eData == null)
-            {
-                //eData = CardService.FindElestralByTitle(data.cardName, data.setCode);
-            }
-            c = new Elestral(eData);
-            LoadCard(c);
-
-        }
-        if (cType == CardType.Rune)
-        {
-            RuneData eData = CardService.FindRuneCard(key);
-            c = new Rune(eData);
-            LoadCard(c);
-
-        }
-        if (cType == CardType.Spirit)
-        {
-            c = new Spirit(data);
-            LoadCard(c);
-        }
-
-        
-
-        //
-        //
-
-
-    }
+    
 
     #region Initialization
 
@@ -219,14 +167,7 @@ public class CardObject : MonoBehaviour, iHold
     }
 
     
-    protected IEnumerator TypeText()
-    {
-        do
-        {
-
-        } while (true);
-    }
-
+   
     #region Loading Card
 
     public void SetBlank()

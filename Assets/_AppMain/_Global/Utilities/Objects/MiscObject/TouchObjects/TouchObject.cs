@@ -64,6 +64,8 @@ public class TouchObject : MonoBehaviour, iFreeze
     public bool bypassFreeze;
     [Tooltip("If true, this object's touches ignore all Validation aside from if the object was clicked on. Override Listeners will be used.")]
     public bool ForceClickOverride = false;
+    [Tooltip("If true, button will only register clicks if it's within a UI Object, like a Button")]
+    public bool UIMode = false;
     #endregion
 
     #region Group Management
@@ -226,6 +228,10 @@ public class TouchObject : MonoBehaviour, iFreeze
         if (IsMaskable && UIHelpers.IsPointerOverUIObject())
         {
             AddError("This button is Maskable and is behind a UI Item.");
+        }
+        if (UIMode && !UIHelpers.IsPointerOverUIObject())
+        {
+            AddError("This button is in UI mode and needs to be behind a UI item.");
         }
 
         if (LayerFilters.Count > 0)

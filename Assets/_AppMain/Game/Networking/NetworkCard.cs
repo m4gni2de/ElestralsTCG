@@ -47,10 +47,9 @@ public class NetworkCard : MonoBehaviour
     {
         get
         {
-            float xMove = transform.position.x / WorldCanvas.Width;
-            float yMove = transform.position.y / WorldCanvas.Height;
-            Vector3 move = new Vector3(xMove, yMove, 0f);
-            return move;
+
+            return transform.position * WorldCanvas.Instance.ScreenScale;
+
         }
     }
 
@@ -121,8 +120,11 @@ public class NetworkCard : MonoBehaviour
    
     public void SendSorting()
     {
-        lastSortLayer = _cardView.sp.SortLayerName;
-        lastCardSort = _cardView.sp.SortOrder;
+        //lastSortLayer = _cardView.sp.SortLayerName;
+        //lastCardSort = _cardView.sp.SortOrder;
+
+        lastSortLayer = _cardView.CurrentConfig.BaseSortLayer;
+        lastCardSort = _cardView.CurrentConfig.BaseSortOrder;
 
         Message message = Message.Create(MessageSendMode.unreliable, Senders.Sorting);
         message.AddString(_cardView.CardSessionId);

@@ -14,10 +14,12 @@ namespace Cards
         public static readonly string RuneDTOTable = "cRuneDTO";
         public static readonly string vElestralsView = "vElestrals";
         public static readonly string vRunesView = "vRunes";
+        
 
 
         public static readonly string CardTable = "qCard";
         public static readonly string CardsByImageTable = "qCards";
+        public static readonly string CardArtView = "qCardArt";
 
 
 
@@ -108,6 +110,13 @@ namespace Cards
             return dto.image;
         }
 
+        public static string CardArtFile(string imageKey)
+        {
+            string qWhere = $"cardKey = '{imageKey}'";
+            qCardArt dto = GetFirstWhere<qCardArt>(CardArtView, qWhere);
+            return dto.image;
+        }
+
 
         #region Runes
 
@@ -120,6 +129,11 @@ namespace Cards
         {
             qCards dto = CardService.ByKey<qCards>(CardService.CardsByImageTable, "setKey", cardKey);
             return new Decks.Decklist.DeckCard { cardType = (CardType)dto.cardClass, copy = 1, key = cardKey };
+        }
+        public static Decks.Decklist.DeckCard DeckCardFromDTO(DeckCardDTO card)
+        {
+            qCards dto = ByKey<qCards>(CardsByImageTable, "setKey", card.setKey);
+            return new Decks.Decklist.DeckCard { cardType = (CardType)dto.cardClass, copy = card.qty, key = card.setKey };
         }
         #endregion
     }

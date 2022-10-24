@@ -20,6 +20,11 @@ namespace Gameplay
             }
         }
         #endregion
+
+        protected override bool GetIsOpen()
+        {
+            return true;
+        }
         protected override void SetSlot()
         {
             facing = CardFacing.Both;

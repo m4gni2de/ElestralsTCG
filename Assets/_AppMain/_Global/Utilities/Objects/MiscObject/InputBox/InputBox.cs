@@ -1,16 +1,29 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class InputBox : MonoBehaviour
 {
-    
-
+    [SerializeField]
+    protected TMP_InputField _input;
+    [SerializeField]
+    protected TMP_Text placeHolder;
+    [SerializeField]
+    protected TMP_Text titleText;
     public Button confirmButton, cancelButton;
     public bool IsHandled;
+
+    protected int _minVal;
+    public int minVal { get { return _minVal; } set { _minVal = value; } }
+    protected int _maxVal;
+    public int maxVal { get { return _maxVal; } set { _maxVal = value; } }
+
+
+    protected CanvasGroup canvasGroup;
 
     public enum InputResult
     {
@@ -26,6 +39,10 @@ public class InputBox : MonoBehaviour
         
     }
 
+    private void Awake()
+    {
+        canvasGroup = GetComponent<CanvasGroup>();
+    }
     public void Open()
     {
         IsHandled = false;
@@ -36,7 +53,18 @@ public class InputBox : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-   
+    public virtual void Hide()
+    {
+        canvasGroup.alpha = 0;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+    }
+    public virtual void Show()
+    {
+        canvasGroup.alpha = 1;
+        canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
+    }
     public virtual void Confirm()
     {
         SetHandled(InputResult.Confirm);

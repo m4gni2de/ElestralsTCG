@@ -39,6 +39,20 @@ namespace CardsUI
            
             
         }
+
+        protected override List<Renderer> GetTextRenderers()
+        {
+            List<Renderer> list = new List<Renderer>();
+            list.AddRange(title.GetComponentsInChildren<Renderer>(true));
+            list.AddRange(artist.GetComponentsInChildren<Renderer>(true));
+            list.AddRange(cardNumber.GetComponentsInChildren<Renderer>(true));
+            list.AddRange(trademark.GetComponentsInChildren<Renderer>(true));
+            list.AddRange(edition.GetComponentsInChildren<Renderer>(true));
+            list.AddRange(Effect.GetComponentsInChildren<Renderer>(true));
+            list.AddRange(Attack.GetComponentsInChildren<Renderer>(true));
+            list.AddRange(Defense.GetComponentsInChildren<Renderer>(true));
+            return list;
+        }
     }
 }
 

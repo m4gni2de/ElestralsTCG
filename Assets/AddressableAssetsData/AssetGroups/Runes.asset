@@ -17,13 +17,6 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: d139f41da20f89044931caecca3f3139
   m_SerializeEntries:
-  - m_GUID: eb060eb2c2a6b744eb287425be7140ca
-    m_Address: aeolus
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Rune
-    - Card
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 37e73def5069d5446a3efd8fc4c153c6
     m_Address: altarofstars
     m_ReadOnly: 0
@@ -45,13 +38,6 @@ MonoBehaviour:
     - Rune
     - Card
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7f6fb8da4c81dfc47b00c3bfd27d6746
-    m_Address: bagofwinds
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Rune
-    - Card
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 49b8805ac87bd6a449db5292b47c0c2d
     m_Address: charonsobol
     m_ReadOnly: 0
@@ -60,21 +46,14 @@ MonoBehaviour:
     - Card
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9cb4d9c5c39d52f49b5221b7570e1e43
-    m_Address: circlethesky1
+    m_Address: circlethesky
     m_ReadOnly: 0
     m_SerializedLabels:
     - Rune
     - Card
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a6627d3a1cb9c5b4dbf41ba19ed838a2
-    m_Address: circlethesky2
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Rune
-    - Card
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 656d602938feae14bb0d005141450de8
-    m_Address: demeter
+    m_Address: circlethesky_1
     m_ReadOnly: 0
     m_SerializedLabels:
     - Rune
@@ -87,22 +66,8 @@ MonoBehaviour:
     - Rune
     - Card
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: a85d8564b868ebd4d91e2387915f53b8
-    m_Address: earthquake
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Rune
-    - Card
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2f91b425243463f49aa63b113243a7ef
     m_Address: eruption
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Rune
-    - Card
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 758380c101f883546801ff4384f9e611
-    m_Address: foloiforest
     m_ReadOnly: 0
     m_SerializedLabels:
     - Rune
@@ -145,13 +110,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7c5d486202d8a424d8041a1c5ef5e97e
     m_Address: hephaestus
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Rune
-    - Card
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 84d6ac4923f4a614596f6d811246a0c2
-    m_Address: islandofaeolia
     m_ReadOnly: 0
     m_SerializedLabels:
     - Rune
@@ -207,7 +165,7 @@ MonoBehaviour:
     - Card
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 873a17d87b5a94b4b89df7ae8aea9d20
-    m_Address: risefromthe ashes
+    m_Address: risefromtheashes
     m_ReadOnly: 0
     m_SerializedLabels:
     - Rune
@@ -215,13 +173,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 40ffdb3e976050c468708ca015464fee
     m_Address: riveroffire
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Rune
-    - Card
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7bd492fe58d6eb64ba59b5859b50107e
-    m_Address: scytheofdemeter
     m_ReadOnly: 0
     m_SerializedLabels:
     - Rune
@@ -250,13 +201,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8c4b949be6f9a494a95383dd5a02c584
     m_Address: thunderstorm
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Rune
-    - Card
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 2c6f94da9ad037740b68fd9b83032986
-    m_Address: tornado
     m_ReadOnly: 0
     m_SerializedLabels:
     - Rune

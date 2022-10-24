@@ -23,7 +23,7 @@ namespace Databases
         public string image { get; set; }
         public string setKey { get; set; }
         public string setName { get; set; }
-        public int setNumber { get; set;  }
+        public int setNumber { get; set; }
         public int rarity { get; set; }
         public int artType { get; set; }
 
@@ -58,13 +58,21 @@ namespace Databases
         public int? subType1 { get; set; }
         public int? subType2 { get; set; }
         public string image { get; set; }
-        public string cardKey { get; set; }
         public string setName { get; set; }
         public int setNumber { get; set; }
         public int rarity { get; set; }
         public int artType { get; set; }
 
 
+    }
+
+    [System.Serializable]
+
+    public class qCardArt
+    {
+        [PrimaryKey]
+        public string cardKey { get; set; }
+        public string image { get; set; }
     }
 }
 

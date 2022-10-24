@@ -76,24 +76,7 @@ public class SingleSlot : CardSlot, iMainCard
     }
 
    
-    protected override void ToggleSelect(bool isSelected)
-    {
-       if (!isSelected)
-        {
-            if (SelectedCard != null)
-            {
-                SelectedCard.SelectCard(false);
-            }
-        }
-        else
-        {
-            if (SelectedCard != null)
-            {
-                SelectedCard.SelectCard(true);
-            }
-        }
-    }
-
+    
     public override void RemoveCard(GameCard card)
     {
         base.RemoveCard(card);
@@ -181,8 +164,9 @@ public class SingleSlot : CardSlot, iMainCard
         card.SetCardMode(card.mode);
     }
     
-    protected void Refresh()
+    protected override void Refresh()
     {
+        base.Refresh();
         GameManager.Instance.browseMenu.SelectedCards.Clear();
         SelectedCard = null;
         GameManager.SelectedCard = null;
@@ -220,9 +204,9 @@ public class SingleSlot : CardSlot, iMainCard
             int minCount = 1;
             List<GameCard> toShow = sourceSlot.EnchantingSpirits;
             string title = $"Select up to {maxCount} Spirits to Nexus from {source.cardStats.title} to {target.cardStats.title}!";
-            ShowCardBrowse(toShow, title, true, maxCount, minCount);
+            BrowseCards(toShow, title, true, maxCount, minCount);
             GameManager.Instance.browseMenu.OnMenuClose += DoNexusCommand;
-            GameManager.Instance.browseMenu.EnchantMode(source, false);
+            GameManager.Instance.browseMenu.EnchantMode(source, null, false);
         }
         else
         {
@@ -254,12 +238,7 @@ public class SingleSlot : CardSlot, iMainCard
     
 
    
-    protected void ShowCardBrowse(List<GameCard> toShow, string title, bool faceUp, int max, int min)
-    {
-        GameManager.Instance.browseMenu.LoadCards(toShow, title, faceUp, max, min);
-        ClosePopMenu();
-        
-    }
+   
     #endregion
 
     #endregion

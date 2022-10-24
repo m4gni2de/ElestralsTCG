@@ -43,7 +43,8 @@ public class CardLibrary
    
     public static Sprite GetCardArt(Card card)
     {
-        string cardKey = ArtImageText(card).ToLower();
+        //string cardKey = ArtImageText(card).ToLower();
+        string cardKey = card.cardData.image.ToLower();
         if (CardArt.ContainsKey(cardKey)) { return CardArt[cardKey]; }
         Sprite sp = AssetPipeline.ByKey<Sprite>(cardKey, DefaultCardKey);
         if (!CardArt.ContainsKey(cardKey)) { CardArt.Add(cardKey, sp); }
@@ -74,28 +75,7 @@ public class CardLibrary
     #endregion
 
 
-    protected static string ArtImageText(Card card)
-    {
-        string cardKey = card.cardData.cardKey;
-        bool useSetKey = false;
-        if (!string.IsNullOrEmpty(card.cardData.setKey))
-        {
-            cardKey = card.cardData.setKey;
-            useSetKey = true;
-        }
-
-        string artCode = "";
-        if (useSetKey)
-        {
-            artCode = CardService.CardArtString(cardKey, "setKey");
-        }
-        else
-        {
-            artCode = CardService.CardArtString(cardKey, "cardKey");
-        }
-        
-        return artCode;
-    }
+   
 
    
     public static Sprite GetBackground(Card card)

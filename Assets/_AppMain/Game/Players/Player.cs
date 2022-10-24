@@ -14,11 +14,11 @@ using Users;
 
 namespace Gameplay
 {
-    public class Player 
+    public class Player
     {
-       
 
-       public static Player LocalPlayer
+
+        public static Player LocalPlayer
         {
             get
             {
@@ -40,11 +40,11 @@ namespace Gameplay
         #endregion
 
         #region Networking
-       
-        
+
+
 
         #region Message Responses
-       
+
         #endregion
 
         #endregion
@@ -61,7 +61,7 @@ namespace Gameplay
                 return false;
             }
         }
-        
+
         public Player Opponent
         {
             get
@@ -132,7 +132,7 @@ namespace Gameplay
         {
             _userId = userName;
             this.IsLocal = isLocal;
-            
+
         }
         public Player(ushort tempGameId, string userId, bool isLocal) : this(userId, isLocal)
         {
@@ -143,7 +143,7 @@ namespace Gameplay
         {
             LoadDeckList(list);
         }
-        
+
         public void LoadDeckList(Decklist list, bool shuffle = true)
         {
             decklist = list;
@@ -162,7 +162,7 @@ namespace Gameplay
         //        Decklist de = dto;
         //        LoadDeckList(de, false);
         //    }
-           
+
         //}
         public void SetBlankDeck(string key, string title)
         {
@@ -186,6 +186,12 @@ namespace Gameplay
         {
             isReady = ready;
         }
+        public bool CanEnchantCard(GameCard card, int spiritCount = -1)
+        {
+            if (spiritCount < 0) { spiritCount = card.card.SpiritsReq.Count; }
+
+            return deck.SpiritDeck.InOrder.Count >= spiritCount;
+        }
         #endregion
 
 
@@ -197,7 +203,7 @@ namespace Gameplay
                 return deck.Top;
             }
             return deck.SpiritDeck.AtPosition(0);
-            
+
         }
 
 
@@ -224,7 +230,7 @@ namespace Gameplay
                 GameManager.Instance.PlayerDraw(ac);
             }
         }
-        
+
         public void Draw(int count)
         {
             for (int i = 0; i < count; i++)
@@ -259,8 +265,10 @@ namespace Gameplay
         #endregion
 
         #region Remote Connection
-        
+
         #endregion
+
+
     }
 }
 

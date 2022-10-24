@@ -70,6 +70,11 @@ public abstract class Card : iCard
         }
         return new Spirit(data);
     }
+
+
+    public static string CardLayer1 = "Card";
+    public static string CardLayer2 = "CardL2";
+    public static string CardLayer3 = "CardSpotlight";
     #endregion
 
     #region Properties
@@ -151,13 +156,17 @@ public abstract class Card : iCard
     #endregion
 
     #endregion
+
+
+
+   
 }
 
-    
 
-    
 
-    
+
+
+
 
 
 

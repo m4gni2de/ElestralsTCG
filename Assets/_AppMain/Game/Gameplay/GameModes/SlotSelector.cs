@@ -37,7 +37,11 @@ public class SlotSelector
     public event Action<bool, CardSlot> OnSelectionChanged;
     protected void DoSelection(bool isSuccess)
     {
+        
         OnSelectionHandled?.Invoke(isSuccess, this);
+        MessageController.Instance.HideSlotSelector();
+
+
     }
     protected void ChangeSelection(bool selectionChanged, CardSlot selection)
     {
@@ -45,6 +49,7 @@ public class SlotSelector
         if (selectionChanged)
         {
             GameManager.Instance.messageControl.ShowMessage(SelectionStrings[SelectedSlots.Count]);
+
         }
         
     }
@@ -67,7 +72,8 @@ public class SlotSelector
             TargetSlots.Add(targets[i]);
         }
 
-        GameManager.Instance.messageControl.ShowMessage(SelectionStrings[0]);
+        MessageController.Instance.DisplaySlotSelector(this, SelectionStrings[0]);
+       
     }
 
    
@@ -109,8 +115,21 @@ public class SlotSelector
         }
         else
         {
-            OnSelectionHandled(false, this);
+            TryCancel();
         }
+    }
+
+    public void TryCancel()
+    {
+        App.AskYesNo($"Would you like you stop making this selection?", ResolveCancel);
+    }
+    protected void ResolveCancel(bool doCancel)
+    {
+        if (doCancel)
+        {
+            DoSelection(false);
+        }
+        
     }
 
     protected void ConfirmSelection(bool confirm)
@@ -126,6 +145,7 @@ public class SlotSelector
             SelectedSlots[SelectedSlots.Count - 1].MainCard.SelectCard(true);
         }
         GameManager.Instance.messageControl.ShowMessage(SelectionStrings[SelectedSlots.Count]);
+
 
     }
 
@@ -195,7 +215,9 @@ public class SlotSelector
         return CreateMulti(msgs, "Attack", targets, attacks, true);
     }
 
-   
+    
+
+
 }
 
 

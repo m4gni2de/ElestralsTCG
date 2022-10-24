@@ -32,6 +32,8 @@ namespace Gameplay
         Insectoid = 23,
         Oceanic = 24,
         MultiColor = 25,
+        Empowered = 26,
+        Empowering = 27,
 
     }
     public class CardTags 
@@ -51,6 +53,18 @@ namespace Gameplay
 
 
         #region Initilization
+        public static CardTags Create(Card card)
+        {
+            if (card.CardType == CardType.Elestral)
+            {
+                return OfElestral((Elestral)card);
+            }
+            if (card.CardType == CardType.Rune)
+            {
+                return OfRune((Rune)card);
+            }
+            return new CardTags(SpiritTags(card));
+        }
         public static CardTags OfElestral(Elestral card)
         {
             List<CardTag> tags = ElestralTags(card);
@@ -116,7 +130,7 @@ namespace Gameplay
         {
             List<CardTag> tags = new List<CardTag>();
 
-            tags.Add(CardTag.Elestral);
+            tags.Add(CardTag.Rune);
             tags.Add(Enums.ConvertTo<CardTag>(card.GetRuneType.ToString()));
 
             bool isMulti = false;
@@ -129,6 +143,35 @@ namespace Gameplay
             return tags;
         }
 
+        public static List<CardTag> SpiritTags(Card card)
+        {
+            List<CardTag> tags = new List<CardTag>();
+            tags.Add(CardTag.Spirit);
+            return tags;
+        }
+
+        #endregion
+
+
+        #region Tag Management
+        public void SetMode(CardMode mode)
+        {
+            CardMode other = CardMode.Defense;
+            if (mode == CardMode.Defense) { other = CardMode.Attack; }
+
+            if (mode == CardMode.Defense)
+            {
+                if (Contains(CardTag.AttackMode)) { Tags.Remove(CardTag.AttackMode); }
+                Add(CardTag.DefenseMode);
+            }
+            else
+            {
+                if (Contains(CardTag.DefenseMode)) { Tags.Remove(CardTag.DefenseMode); }
+                Add(CardTag.AttackMode);
+            }
+
+            
+        }
         #endregion
     }
 }

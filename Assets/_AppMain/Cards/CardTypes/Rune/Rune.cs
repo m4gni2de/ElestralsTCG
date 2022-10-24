@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cards;
+using Gameplay;
+using Gameplay.CardActions;
 
 public class Rune : Card
 {
@@ -37,4 +39,19 @@ public class Rune : Card
     {
         _data = data;
     }
+
+
+   //public static void EquipRune(Player p, GameCard source, CardSlot to, List<GameCard> spirits, GameCard equippedElestral, bool fromFaceDown)
+   // {
+   //     EnchantActionType en = EnchantActionType.Normal;
+   //     if (fromFaceDown) { en = EnchantActionType.FromFaceDown; }
+
+   //     EnchantAction ac = EnchantAction.EquipEnchant(p, source, to, spirits, equippedElestral, en);
+   //     GameManager.Instance.DoEnchant(ac);
+   // }
+
+
+   
+
+
 }

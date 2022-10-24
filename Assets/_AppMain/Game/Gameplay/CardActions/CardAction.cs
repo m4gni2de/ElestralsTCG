@@ -26,10 +26,11 @@ namespace Gameplay
         Attack = 4,
         Nexus = 5,
         Ascend = 6,
+        Empower = 7,
     }
     public class CardAction : iFreeze
     {
-       
+
 
         public string id;
         public GameCard sourceCard;
@@ -57,7 +58,7 @@ namespace Gameplay
 
         protected float actionTime;
         protected bool IsCounterable;
-        
+
 
         private List<CardAction> _responses = null;
         public List<CardAction> Resposnes { get { _responses ??= new List<CardAction>(); return _responses; } }
@@ -77,7 +78,7 @@ namespace Gameplay
             return null;
         }
         protected CardActionData _ActionData = null;
-        public  CardActionData ActionData
+        public CardActionData ActionData
         {
             get
             {
@@ -104,7 +105,7 @@ namespace Gameplay
             id = UniqueString.GetShortId($"ca", 5);
             _isResolved = false;
         }
-        
+
         public CardAction(Player p) : this()
         {
             player = p;
@@ -148,7 +149,7 @@ namespace Gameplay
             do
             {
                 acumTime += Time.deltaTime;
-              yield return new WaitForEndOfFrame();
+                yield return new WaitForEndOfFrame();
             } while (acumTime <= waitTime && actionResult == ActionResult.Pending);
 
             //figure out how to respond to actions here, but for now, just allow players to undo an action if it's been countered
@@ -157,7 +158,7 @@ namespace Gameplay
 
 
 
-        
+
         #region Doing Action
 
         public IEnumerator Do()
@@ -176,7 +177,7 @@ namespace Gameplay
             if (player.IsLocal) { NetworkPipeline.SendActionDeclare(this); }
             yield return new WaitUntil(() => isResolved);
         }
-        
+
         public void FailAction()
         {
             End(ActionResult.Failed);
@@ -185,7 +186,7 @@ namespace Gameplay
         {
             yield return null;
         }
-       
+
         public void Cancel()
         {
             CancelAction();
@@ -216,11 +217,11 @@ namespace Gameplay
             OnActionEnd?.Invoke();
             OnActionEnd.RemoveAllListeners();
         }
-        
+
         protected virtual void ResolveAction(ActionResult result)
         {
             actionResult = result;
-            
+
         }
 
 
@@ -270,7 +271,7 @@ namespace Gameplay
                         Vector3 moveBy = directions[i] * Time.deltaTime;
                         cards[i].MovePosition(moveBy);
                     }
-                    
+
 
                 }
 
@@ -365,10 +366,9 @@ namespace Gameplay
 
         #region Network Actions
 
-        
-        
-        
-        public IEnumerator DisplayRemoteAction()
+
+
+        public virtual IEnumerator DisplayRemoteAction()
         {
             this.Freeze();
             float waitTime = .45f;
@@ -383,6 +383,7 @@ namespace Gameplay
             } while (acumTime <= waitTime && !isResolved);
             this.Thaw();
         }
+        
        
         public void ConfirmAttempt(ActionResult result)
         {

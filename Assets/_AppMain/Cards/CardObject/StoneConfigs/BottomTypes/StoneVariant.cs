@@ -6,13 +6,9 @@ using CardsUI;
 
 public class StoneVariant : MonoBehaviour
 {
-    #region Static Sprites
-    
-    
+    #region Static Variants
    
-    
 
-  
     #endregion
 
     #region Sprite Strings

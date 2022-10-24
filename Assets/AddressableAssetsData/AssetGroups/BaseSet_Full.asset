@@ -635,12 +635,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - FullCard
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 97d32054b91aa60428e97709f6487f3d
-    m_Address: dropsoflethe_c
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - FullCard
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5d73af6e38dc1d9499f53198ee3cdc43
     m_Address: poseidon_c
     m_ReadOnly: 0
@@ -772,6 +766,19 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b26c17d210cda184dbf67b8948ef4221
+    m_Address: galvenom_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c2d6bb381bd519f49b7200f694a1eab5
+    m_Address: toxion_c
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - FullCard
+    - Elestral
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}

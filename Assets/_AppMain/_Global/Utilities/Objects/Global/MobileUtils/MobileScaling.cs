@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Device;
 using UnityEngine.UI;
 
 public class MobileScaling : MonoBehaviour
@@ -18,21 +19,26 @@ public class MobileScaling : MonoBehaviour
         worldCanvas = WorldCanvas.Instance.GetComponent<RectTransform>();
         scalerCanvas = GetComponent<RectTransform>();
 
-        height = worldCanvas.rect.height;
-        width = worldCanvas.rect.width;
-        widthVal = 960f;
-        heightVal = 640f;
-        offset = 1f;
-        Scale();
+       
+        //width = worldCanvas.rect.width;
+        
+       
         //Scale();
 
 #if UNITY_EDITOR
 
+        width = worldCanvas.rect.width;
+        height = worldCanvas.rect.height;
 
 
 #else
+ width = UnityEngine.Device.Screen.safeArea.width;
+        height = UnityEngine.Device.Screen.safeArea.height;
 #endif
-
+        widthVal = 960f;
+        heightVal = 640f;
+        offset = 1f;
+        Scale();
     }
 
     public void Scale()

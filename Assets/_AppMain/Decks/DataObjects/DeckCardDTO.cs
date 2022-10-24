@@ -10,7 +10,7 @@ namespace Databases
     {
        
         public string deckKey { get; set; }
-        public string cardKey { get; set; }
+        public string setKey { get; set; }
         public int qty { get; set; }
     }
 

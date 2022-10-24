@@ -1,0 +1,165 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: SD01
+  m_EditorClassIdentifier: 
+  m_GroupName: SD01
+  m_Data:
+    m_SerializedData: []
+  m_GUID: b41a1ad9924a50141937c56a281d432d
+  m_SerializeEntries:
+  - m_GUID: 23a6393bc4addad45aee71450e776158
+    m_Address: penterror
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a4586009dd28db54ea64564b83dd6044
+    m_Address: hydrake
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 89062905d92658d49908090944e79649
+    m_Address: twindra
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8f114bd38bf79b944a09a58d7374b4e8
+    m_Address: soarlet
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f7227c971e7721a4d95a1443bd8b9c63
+    m_Address: fowlicane
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b9586e6e09f515947976c75f35046b28
+    m_Address: chrysoar
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2deb43b1a601f184caba4cbe75be9f66
+    m_Address: aeromare
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c26811e7b04fb3647a5850b4b1014fff
+    m_Address: peagust
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0b59e91d9224fac4e93c01bd07db8f57
+    m_Address: glydesdale
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 72d633d1db2208046a5997a67644b21a
+    m_Address: exaltair
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 360946caf7310a4499ce9d4028664469
+    m_Address: elechik
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 86a799b39e6a446418417306794f2949
+    m_Address: carryon
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 03a54165f8a975644b6c4aba978da10a
+    m_Address: jolten
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: baa505b392c310f4eabe9c1ee8a822ad
+    m_Address: astrabbit
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: abc99b5cbaf7caa4bb8c81ed0b0c38c6
+    m_Address: boombatt_1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bb5dae8f9fcfa3241b3ebbaf68be2beb
+    m_Address: verutaqua
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2c6f94da9ad037740b68fd9b83032986
+    m_Address: tornado
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Rune
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7f6fb8da4c81dfc47b00c3bfd27d6746
+    m_Address: bagofwinds
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Rune
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 84d6ac4923f4a614596f6d811246a0c2
+    m_Address: islandofaeolia
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Rune
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eb060eb2c2a6b744eb287425be7140ca
+    m_Address: aeolus
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Rune
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 4ea4c62b347be4540b0c9e98340ca6c7, type: 2}
+    - {fileID: 11400000, guid: d961a71982f367d47a9e20a837c03522, type: 2}

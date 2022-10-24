@@ -20,7 +20,62 @@ MonoBehaviour:
   - m_GUID: e397c5c52552534499e8f8cf85df85b2
     m_Address: NumberInput
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e7bc7bb50b8304a449511fc1ecd2b229
+    m_Address: vmMessage
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f363fad03ab251742ab8cb98bd79c448
+    m_Address: AppManager
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ff52536d183481442890bf90f80ee728
+    m_Address: TextInput
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7265ef2bd29e19149836f9f375ced98f
+    m_Address: ElestralCard
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 73c0742a70123bd40bded03effa896a6
+    m_Address: RuneCard
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9ce33905d77fa2e49a6433d7eaf68843
+    m_Address: SpiritCard
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 44754e10353bcf44d95ee375989793e0
+    m_Address: ElestralCardFA
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4dea22a0f7c37be439d68acfaa93ab6a
+    m_Address: RuneCardFA
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8eda37844aa55f64e8b79b2dfafc9bb1
+    m_Address: SpiritCardFA
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}

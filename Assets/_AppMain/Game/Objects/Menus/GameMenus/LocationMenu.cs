@@ -9,6 +9,7 @@ namespace Gameplay.Menus
     public class LocationMenu : GameMenu
     {
         #region Properties
+        public bool ShowMovedCards { get; private set;}
         private List<VmLocation> _menuItems = null;
         public List<VmLocation> MenuItems
         {
@@ -102,13 +103,13 @@ namespace Gameplay.Menus
 
         #endregion
 
-        public static void Load(Player p, List<GameCard> cards)
+        public static void Load(Player p, List<GameCard> cards, bool showOnMove = false)
         {
             if (GameManager.Instance == null) { return; }
-            GameManager.Instance.locationMenu.LoadMenu(p, cards);
+            GameManager.Instance.locationMenu.LoadMenu(p, cards, showOnMove);
         }
 
-        public void LoadMenu(Player p, List<GameCard> cards)
+        public void LoadMenu(Player p, List<GameCard> cards, bool showOnMove)
         {
             
             int modelCount = MenuItems.Count;
@@ -116,6 +117,7 @@ namespace Gameplay.Menus
             {
                 CreateModels(cards.Count - modelCount);
             }
+            ShowMovedCards = showOnMove;
             Open();
             DisplayMenu(p, cards);
 
@@ -148,7 +150,7 @@ namespace Gameplay.Menus
             {
                 for (int i = 0; i < MenuItems.Count; i++)
                 {
-                    MenuItems[i].Confirm();
+                    MenuItems[i].Confirm(ShowMovedCards);
                 }
                 Close();
             }

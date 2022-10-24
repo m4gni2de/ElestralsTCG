@@ -122,7 +122,7 @@ namespace Gameplay
 
         public void SeparateCards(Decklist list)
         {
-
+            int count = 0;
             for (int i = 0; i < list.Cards.Count; i++)
             {
                 
@@ -132,7 +132,6 @@ namespace Gameplay
                     card.SetNetId(i);
                     card.SetId($"{uniqueId}-{i}");
                     SpiritDeck.AddCard(card);
-                    card.SendCardToServer();
                     card.ToggleNetwork(true);
 
                 }
@@ -142,7 +141,6 @@ namespace Gameplay
                     card.SetNetId(i);
                     card.SetId($"{uniqueId}-{i}");
                     MainDeck.AddCard(card);
-                    card.SendCardToServer();
                     card.ToggleNetwork(true);
                 }
 

@@ -1,0 +1,683 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: BaseSet
+  m_EditorClassIdentifier: 
+  m_GroupName: BaseSet
+  m_Data:
+    m_SerializedData: []
+  m_GUID: df559f1281c5de1468544753ce5621ec
+  m_SerializeEntries:
+  - m_GUID: 173313ee8aea50a4a9a1835232177578
+    m_Address: waspyre
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5b9195ab9a29e2b4fa5eb2be149629e2
+    m_Address: autumore
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Elestral
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2db0d06c88bd969499b161ea86688aa9
+    m_Address: blitzera
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Elestral
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fd8d6202ee9711b498bfc9b06976c20d
+    m_Address: flarachne
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9d2f1a6d9bef2884893b1ffac7843f3b
+    m_Address: boombatt
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Elestral
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f4d91eb8dbcf85e45aea3d2737d026eb
+    m_Address: moustacean
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 58161e64aee3f7a4997955b2cc44de72
+    m_Address: voltempest
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 54e86570e81a5e14e93bbeaac9f9e852
+    m_Address: toxion
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 62dd08c727667764ab3d762c3842caa0
+    m_Address: zephrog
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 32087c3ba7c0b9d47af944e4906a1cd2
+    m_Address: tarandspose
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a275c09a2e981e24b8606f54a34e457f
+    m_Address: griffuse
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0e967f740f8dde146955fbb351c57c4f
+    m_Address: ursear
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f4e8091227d4aa642b860db83252dde5
+    m_Address: vysceris
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6152c681a0c829d4c8c9d2800bf805a4
+    m_Address: zippad
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cb8a4bed063f5c840a3b1456e6390cab
+    m_Address: necruff
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 69112a97ab4f168469888824f3f5d340
+    m_Address: raiceros
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0d781df50dc5f1846a21a89288be4604
+    m_Address: kindleo
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 46ef671fcce0c6648b1132711438022f
+    m_Address: lycavolt_1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 83df022ddecd9c649b9be4f5f83c29c2
+    m_Address: moustacean_s
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3b98e786d4b232e43badaae4666c7bc3
+    m_Address: magmatrius
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c686220e213636d429b056c1ccf2a21e
+    m_Address: lavaling
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 56c9021493c9476409ff721dbfcb0e7e
+    m_Address: zoomata
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5952a2b59da49eb47802c51a86209bf3
+    m_Address: spinosect
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2c7e0589c93fcfe4893d0ef64f1a38ca
+    m_Address: emphyrix
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fb700965a148d2b48a5870af06710bc1
+    m_Address: peliquarius
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d8486d840d100d54096f77990573d712
+    m_Address: capregal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Elestral
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0d8c6d062c6fde84cb0b78dacc925610
+    m_Address: sparkitt
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4f4854989d11f9843add8a97227d6485
+    m_Address: scavagem
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6a62b4a15bd3487429ada71fa9a75ad1
+    m_Address: krakking
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f60c510df1968bb41ac7c2a452e81380
+    m_Address: nyctosail
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 17239e1a281751941a4ea98719bfe133
+    m_Address: leonite
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 83d826247ae8aea4abe3e289cef17705
+    m_Address: gleamush
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 99efe9ae757c2ac479d496f29da6f95d
+    m_Address: ampup
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Elestral
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ac0c3e4300e6658438bc2995fbb9d1c9
+    m_Address: voltempest_1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 62b9e8023bb938741868b0cd99699898
+    m_Address: blazerus
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Elestral
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4aab4f15cb7c57146b7f4ca366024c24
+    m_Address: urscout
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5f2c7abafb3e8254bb661cc0530d6c4b
+    m_Address: sonicore
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3c34143398c677d498e842fec843fa6f
+    m_Address: cygnetrik
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e0b28020ada13904e87aea7b4d3de6ee
+    m_Address: necruff_s
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 40533749e512d5843b672fc064280d55
+    m_Address: tadpuff
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6e08dc63dd762c94e8a7b0d85eaa0229
+    m_Address: majesea
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 00697d930380b004583d63b60696b694
+    m_Address: gatobolt
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 94c82fc9abf52584587acc01e9614aad
+    m_Address: eyevory
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 864c79f1677f9904d9b0fd427959b07d
+    m_Address: ohmperial
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b3531f755d1562f419b479e6b3dec1ac
+    m_Address: titanostalk
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9da1f7d08c6df2242aa62f76f7960a6a
+    m_Address: galaxea
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a8b4451b49952764f8d794cd5dc11b9e
+    m_Address: glauby
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3fe4e3573ecc3fa4680bb8bd0e0855c1
+    m_Address: stratomoth
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d80ceb19d10ecf74d9651b4beeb2d920
+    m_Address: nemisail
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4ac0b272ae837714ebaa83e1e18569c0
+    m_Address: vysceris_s
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8a82f2116318d8f4da0a646e89a40f02
+    m_Address: sproutyr_s
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3229622f05cfa774f9149392c3c94cc9
+    m_Address: nimbug
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a59ecb638e4e21a4e8498048dabe7922
+    m_Address: quackle
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 178bf658b1f3b2e408152bef5656cb96
+    m_Address: foamee
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d3ca32865c1999e46bb2da8165a912aa
+    m_Address: galvenom
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8c90726ac3994d944a254b74519862f2
+    m_Address: lycavolt
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 684cb9dd840eefe4397e5c1db94ba39c
+    m_Address: sluggle
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f2497b6256e89e44aa87bdaf26c4f781
+    m_Address: nimbug_s
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: febc2c19ba8d0dd4287b39a11589071d
+    m_Address: typhlant
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 09d8edc77ea35074c8fbfadb7cf93866
+    m_Address: ignectar
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bd863881355eeda459d36bcea94a5288
+    m_Address: krakkid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 47eede8974943574ea8c4b7f974a9285
+    m_Address: javelantis
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2d39195c7fbbd3d4e974196a0ddded98
+    m_Address: majursa
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 542e768939164a0489b29190cf198633
+    m_Address: krakatuga
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b1b4034006327bf4a976ba4c14d398cf
+    m_Address: sluggle_s
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 97a4268cf26c2cb478831b4c0461a478
+    m_Address: glimmush
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f7fdc4d605e78444ab64ab0086e85461
+    m_Address: smoltuga
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f15a95134cb35b949a73518abe4a9263
+    m_Address: cirrucoon
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e20b98332db0b4c4d823d72e2c02480c
+    m_Address: sparkitt_s
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d8cc14a2b48b52d4ea3156a62b90e5de
+    m_Address: volcaries
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 33a5e2a17386c6d4497ea01b196f28d3
+    m_Address: ursmog
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a3e7903d21f370b4b83f57f882011391
+    m_Address: transfawn
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0b6f05ec6c2c50b4fa14a28e6e2c7664
+    m_Address: trifernal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Card
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cddc952a1c7cf034b871b5a07c02bc9d
+    m_Address: apheros
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Elestral
+    - Card
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 085f8f842a731fb489968292012672eb
+    m_Address: sonicore_fa
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f8436cb2b1ad1b94494126973f0fa08e
+    m_Address: barabog
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c93c51fe4b41ca348af32ba17762e0f6
+    m_Address: pandicine
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b82df4b07e751ae4aae7a66054344271
+    m_Address: mtolympus
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Rune
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ae001d8ba67c3d44888d7891baa79ce1
+    m_Address: glydesdale_fa
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c97d3209ef0ff954dbe7de3ea960c67e
+    m_Address: emphyrix_fa
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d35333e5e463f0d46b7b6b377f4448b7
+    m_Address: ohmperial_fa
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 956b40c4f10f35748aeaa818de4e9b52
+    m_Address: centaurbor_fa
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ec9b1d51695a24743928beac857cf281
+    m_Address: trifernal_fa
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7e6e73ecec444c24686f5233de8b462a
+    m_Address: majesea_fa
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c9a67ceb38b2da14daffe9177fd42356
+    m_Address: stratomoth_fa
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f5732846ad3841443a26eccdc6e8fb38
+    m_Address: penterror_fa_s
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2538ac9202bc81e4a896a0610de8a9cc
+    m_Address: penterror_fa
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e6d46085b558eb74ba995575c08a60ee
+    m_Address: teratlas_1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Spirit
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3a3d298ae870eca44a363e6021079fb8
+    m_Address: vipyro_1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Spirit
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 45ae33f5ac8fa4545909fb3dcad73c7d
+    m_Address: leviaphin_1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Spirit
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ebb6607928efbb14da981fb3f9efbb8d
+    m_Address: zaptor_1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Spirit
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c506ea16d81e8a5409ec27e45b0c7248
+    m_Address: lycarus_1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Spirit
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ee0928d6811bb89449c2519f633e47b9
+    m_Address: emphyrix_s
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1ea02c8a4fb85a7478fd750631272f33
+    m_Address: sonicore_s
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 1101ea0fa7fc4154c9cdc2a9d4f417f3, type: 2}
+    - {fileID: 11400000, guid: 5dcc48a2626e91242a9668c29694c834, type: 2}

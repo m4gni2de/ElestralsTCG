@@ -19,6 +19,9 @@ namespace Gameplay.Menus
             public int Maximum { get; set; }
             public bool IsConfirm { get; set; }
 
+            public CardSlot SelectedSlot { get; set; }
+            public GameCard SourceCard { get; set; }
+
             public BrowseArgs(CardBrowseMenu menu, CardMode mode)
             {
                 Selections = new List<GameCard>();
@@ -27,6 +30,9 @@ namespace Gameplay.Menus
                 Minimum = menu.minSelectCount;
                 Maximum = menu.maxSelectCount;
                 IsConfirm = menu.IsConfirmed;
+                SelectedSlot = menu.SelectedSlot;
+                SourceCard = menu.SourceCard;
+
             }
         }
         public BrowseArgs menuArgs { get; set; }
@@ -55,6 +61,11 @@ namespace Gameplay.Menus
         public GameToggleGroup CardModeGroup;
         public GameToggle AttackToggle, DefenseToggle;
         protected bool isEnchantMode = false;
+        #endregion
+
+        #region Menu Origin Properties
+        protected CardSlot SelectedSlot { get; private set; }
+        protected GameCard SourceCard { get; private set; }
         #endregion
 
         private UnityEvent _OnSelection = null;
@@ -94,14 +105,12 @@ namespace Gameplay.Menus
         {
             if (isSelected)
             {
-                clone.sp.SetColor(Color.white);
+                clone.MaskCard(Color.white);
 
             }
             else
             {
-                Color spColor = clone.sp.GetColor();
-                Color newColor = new Color(spColor.r, spColor.g, spColor.b, .5f);
-                clone.sp.SetColor(newColor);
+                clone.MaskCard(new Color(Color.white.r, Color.white.g, Color.white.b, .5f));
             }
         }
         protected int maxSelectCount, minSelectCount;
@@ -125,6 +134,9 @@ namespace Gameplay.Menus
             SelectedCards.Clear();
             ConfirmButton.gameObject.SetActive(false);
             ConfirmButton.interactable = false;
+            SourceCard = null;
+            SelectedSlot = null;
+            Scroll.horizontalScrollbar.value = 0f;
             
             CardModeGroup.Refresh();
         }
@@ -140,7 +152,7 @@ namespace Gameplay.Menus
         public void EnchantLoad(List<GameCard> cards, string title, bool faceUp, int minSelectable, int maxSelectable, GameCard toEnchant, bool isAdding)
         {
             LoadCards(cards, title, faceUp, minSelectable, maxSelectable);
-            EnchantMode(toEnchant, isAdding);
+            EnchantMode(toEnchant, null, isAdding);
         }
         public void LoadCards(List<GameCard> cards, string title, bool faceUp, int minSelectable, int maxSelectable)
         {
@@ -171,9 +183,18 @@ namespace Gameplay.Menus
             ShowButtons();
 
         }
-        public void EnchantMode(GameCard card, bool isAdding = true)
+        public void EnchantMode(GameCard card, CardSlot to = null, bool isAdding = true)
         {
             DefenseToggle.OnToggleChanged -= CheckForFaceDownRune;
+            SourceCard = card;
+            if (to == null)
+            {
+                SelectedSlot = card.CurrentSlot;
+            }
+            else
+            {
+                SelectedSlot = to;
+            }
             if (!isAdding)
             {
                 CardModeGroup.Unload();
@@ -246,7 +267,7 @@ namespace Gameplay.Menus
             co.touch.AddClickListener(() => SelectCard(index));
             co.touch.IsMaskable = false;
             co.touch.bypassFreeze = true;
-            co.SetSortingOrder(0);
+            co.SetSortingOrder(5);
 
             if (faceUp)
             {

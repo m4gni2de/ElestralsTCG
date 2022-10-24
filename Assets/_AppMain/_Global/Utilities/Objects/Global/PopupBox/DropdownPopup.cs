@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System;
-using TMPro.EditorUtilities;
+using PopupBox;
+
 
 namespace PopupBox
 {
@@ -11,33 +12,59 @@ namespace PopupBox
     {
         public TMP_Text txtMessage;
         public TMP_Dropdown ddOptions;
-        protected int OptionSelection { get; private set; }
-        private List<string> _baseOptions = null;
-        public List<string> BaseOptions
+        protected int OptionSelection { get; set; }
+        protected List<string> _optionDisplays = null;
+        public List<string> OptionDisplays
         {
             get
             {
-                _baseOptions ??= new List<string>();
-                return _baseOptions;
+                _optionDisplays ??= new List<string>();
+                return _optionDisplays;
             }
         }
 
-
-        protected List<TMP_Dropdown.OptionData> DropDownoptions
+        public Type optionType;
+        public IList Options { get; set; }
+       
+        protected List<TMP_Dropdown.OptionData> DropDownOptions<T>(List<T> objects, string propName)
         {
-            get
+            List<TMP_Dropdown.OptionData> options = new List<TMP_Dropdown.OptionData>();
+            for (int i = 0; i < objects.Count; i++)
             {
-                List<TMP_Dropdown.OptionData> options = new List<TMP_Dropdown.OptionData>();
-                for (int i = 0; i < BaseOptions.Count; i++)
+                var props = objects[i].GetType().GetProperties();
+                foreach (var prop in props)
                 {
-                    TMP_Dropdown.OptionData optionData = new TMP_Dropdown.OptionData(BaseOptions[i]);
-                    options.Add(optionData);
+                    if (prop.Name.ToLower() == propName.ToLower())
+                    {
+                        object propVal = prop.GetValue(objects[i]);
+                        string strVal = (string)propVal;
+                        TMP_Dropdown.OptionData optionData = new TMP_Dropdown.OptionData(strVal);
+                        options.Add(optionData);
+                    }
                 }
-                
-                
-               
-                return options;
+
             }
+            return options;
+        }
+
+        protected List<string> GetBaseOptions<T>(List<T> objects, string propName)
+        {
+            List<string> options = new List<string>();
+            for (int i = 0; i < objects.Count; i++)
+            {
+                var props = objects[i].GetType().GetProperties();
+                foreach (var prop in props)
+                {
+                    if (prop.Name.ToLower() == propName.ToLower())
+                    {
+                        object propVal = prop.GetValue(objects[i]);
+                        string strVal = (string)propVal;
+                        options.Add(strVal);
+                    }
+                }
+
+            }
+            return options;
         }
 
 
@@ -48,15 +75,27 @@ namespace PopupBox
             CancelButton.onClick.RemoveAllListeners();
             ddOptions.onValueChanged.RemoveAllListeners();
             ddOptions.ClearOptions();
-            BaseOptions.Clear();
+            OptionDisplays.Clear();
+            if (Options == null)
+            {
+                Options = new List<object>();
+            }
+            Options.Clear();
+            optionType = null;
             ToggleHandled(false);
         }
 
-        public void Show(string msg, List<string> options, Action<string> callback)
+        public void ShowStrings(string msg, List<string> options, Action<string> callback)
         {
             Refresh();
             gameObject.SetActive(true);
-            BaseOptions.AddRange(options);
+            optionType = typeof(string);
+            Options = new List<string>();
+            for (int i = 0; i < options.Count; i++)
+            {
+                Options.Add(options[i]);
+            }
+            OptionDisplays.AddRange(options);
             ddOptions.onValueChanged.AddListener(DropdownChanged);
             txtMessage.text = msg;
             ConfirmButton.gameObject.SetActive(true);
@@ -69,29 +108,61 @@ namespace PopupBox
             ConfirmButton.onClick.AddListener(() => Confirm());
             CancelButton.onClick.AddListener(() => Cancel());
 
-            ddOptions.AddOptions(BaseOptions);
+            
+            ddOptions.AddOptions(OptionDisplays);
             OptionSelection = 0;
-
-
-
         }
 
+        public void Show<T>(string msg, List<T> options, Action<T> callback, string propName)
+        {
+
+            Refresh();
+            gameObject.SetActive(true);
+            optionType = typeof(T);
+            Options = new List<T>();
+            for (int i = 0; i < options.Count; i++)
+            {
+                Options.Add(options[i]);
+            }
+
+            OptionDisplays.AddRange(GetBaseOptions(options, propName));
+            
+            ddOptions.onValueChanged.AddListener(DropdownChanged);
+            txtMessage.text = msg;
+            ConfirmButton.gameObject.SetActive(true);
+            CancelButton.gameObject.SetActive(false);
+            if (callback != null)
+            {
+                OnHandled = callback;
+
+            }
+            ConfirmButton.onClick.AddListener(() => Confirm());
+            CancelButton.onClick.AddListener(() => Cancel());
+
+            ddOptions.AddOptions(OptionDisplays);
+            OptionSelection = 0;
+        }
+
+
+
         public static event Action<int> OnNewDropdownValue;
-        private void DropdownChanged(int newVal)
+        protected void DropdownChanged(int newVal)
         {
             OnNewDropdownValue?.Invoke(newVal);
         }
         public override void Confirm()
         {
             OptionSelection = ddOptions.value;
-            string selected = BaseOptions[OptionSelection];
+            object selected = Options[OptionSelection];
 
             SendResult(selected);
         }
+       
         public override void Cancel()
         {
-            SendResult("");
+            SendResult(null);
         }
+       
         public override void Close()
         {
             ConfirmButton.onClick.RemoveAllListeners();
@@ -102,3 +173,4 @@ namespace PopupBox
 
     }
 }
+

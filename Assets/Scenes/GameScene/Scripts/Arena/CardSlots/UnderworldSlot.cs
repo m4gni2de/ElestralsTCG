@@ -12,6 +12,11 @@ namespace Gameplay
         private TouchObject _touch = null;
         public TouchObject touch { get { _touch ??= GetComponent<TouchObject>(); return _touch; } }
 
+
+        protected override bool GetIsOpen()
+        {
+            return true;
+        }
         protected override void SetSlot()
         {
             
@@ -52,9 +57,12 @@ namespace Gameplay
         protected override List<PopupCommand> GetSlotCommands()
         {
             List<PopupCommand> commands = new List<PopupCommand>();
-            commands.Add(PopupCommand.Create("Browse", () => BrowseCommand()));
-            commands.Add(PopupCommand.Create("Manage", () => ManageCommand()));
-            if (Owner.userId != App.WhoAmI) { commands.Add(PopupCommand.Create("Close", () => CloseCommand())); return commands; }
+            commands.Add(PopupCommand.Create("Browse", () => BrowseCards(cards, $"{Owner.userId}'s Underworld", IsYours, 0, 0)));
+            if (IsYours)
+            {
+                commands.Add(PopupCommand.Create("Manage", () => ManageCards(cards, "Select Cards to Move", true, 1, Owner.gameField.UnderworldSlot.cards.Count)));
+            }
+          
 
             commands.Add(PopupCommand.Create("Close", () => CloseCommand()));
 
@@ -62,21 +70,18 @@ namespace Gameplay
 
             return commands;
         }
-        public void BrowseCommand()
-        {
-            GameManager.Instance.browseMenu.LoadCards(cards, "Your Underworld", true);
-            ClosePopMenu();
-        }
+        //public void BrowseCommand()
+        //{
+        //    BrowseCards(cards, $"{Owner.userId}'s Underworld", IsYours, 0, 0);
+        //}
 
-        public void ManageCommand()
+        //public void ManageCommand()
+        //{
+        //    ManageCards(cards, "Select Cards to Move", true, 1, Owner.gameField.UnderworldSlot.cards.Count);
+        //}
+        protected override void AwaitManage(BrowseArgs args)
         {
-            GameManager.Instance.browseMenu.LoadCards(cards, "Select Cards to Move", true, 1, Owner.gameField.UnderworldSlot.cards.Count);
-            GameManager.Instance.browseMenu.OnClosed += AwaitManage;
-            ClosePopMenu();
-        }
-        protected void AwaitManage(BrowseArgs args)
-        {
-            GameManager.Instance.browseMenu.OnClosed -= AwaitManage;
+            base.AwaitManage(args);
             if (!args.IsConfirm || args.Selections.Count <= 0) { return; }
             LocationMenu.Load(Owner, args.Selections);
         }

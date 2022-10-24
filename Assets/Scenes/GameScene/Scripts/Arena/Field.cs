@@ -4,6 +4,7 @@ using UnityEngine;
 using Gameplay.Decks;
 using System.Threading.Tasks;
 using System;
+using TMPro;
 
 namespace Gameplay
 {
@@ -20,9 +21,15 @@ namespace Gameplay
         #region Player
         public Player _player { get; set; }
         protected GameDeck _deck { get { return _player.deck; } }
+
+
+
         #endregion
 
+
         #region Functions
+
+        #region Explicit Slots
         public CardSlot DeckSlot
         {
             get
@@ -58,6 +65,66 @@ namespace Gameplay
                 App.LogFatal("There is no Hand Slot marked.");
                 return null;
             }
+        }
+
+        public CardSlot StadiumSlot
+        {
+            get
+            {
+                for (int i = 0; i < cardSlots.Count; i++)
+                {
+                    if (cardSlots[i].slotType == CardLocation.Stadium) { return cardSlots[i]; }
+                }
+                App.LogFatal("There is no Stadium Slot marked.");
+                return null;
+            }
+        }
+
+        private CardSlot _UnderWorldSlot = null;
+        public CardSlot UnderworldSlot
+        {
+            get
+            {
+                if (_UnderWorldSlot == null)
+                {
+                    bool hasSlot = false;
+                    for (int i = 0; i < cardSlots.Count; i++)
+                    {
+                        if (cardSlots[i].slotType == CardLocation.Underworld) { _UnderWorldSlot = cardSlots[i]; hasSlot = true; }
+                    }
+                    if (!hasSlot)
+                    {
+                        App.LogFatal("There is no Underworld Slot marked.");
+                        return null;
+                    }
+
+                }
+                return _UnderWorldSlot;
+
+            }
+        }
+        #endregion
+
+        #region Slot Searching
+        public List<CardSlot> SlotsOfTypes(params CardLocation[] locs)
+        {
+            List<CardSlot> slots = new List<CardSlot>();
+            for (int i = 0; i < locs.Length; i++)
+            {
+                foreach (var item in cardSlots)
+                {
+                    if (item.slotType == locs[i])
+                    {
+                        if (!slots.Contains(item))
+                        {
+                            slots.Add(item);
+                        }
+                       
+                    }
+                }
+            }
+
+            return slots;
         }
 
         
@@ -104,29 +171,7 @@ namespace Gameplay
         }
         
 
-        private CardSlot _UnderWorldSlot = null;
-        public CardSlot UnderworldSlot
-        {
-            get
-            {
-                if (_UnderWorldSlot == null)
-                {
-                    bool hasSlot = false;
-                    for (int i = 0; i < cardSlots.Count; i++)
-                    {
-                        if (cardSlots[i].slotType == CardLocation.Underworld) { _UnderWorldSlot =  cardSlots[i]; hasSlot = true; }
-                    }
-                    if (!hasSlot)
-                    {
-                        App.LogFatal("There is no Underworld Slot marked.");
-                        return null;
-                    }
-                   
-                }
-                return _UnderWorldSlot;
-               
-            }
-        }
+       
 
         public CardSlot SlotById(string id)
         {
@@ -153,6 +198,8 @@ namespace Gameplay
             List<CardSlot> slots = RuneSlots(true);
             return GetSlotAt(slots, index, onlyOpenSlots);
         }
+        
+        
 
         protected CardSlot GetSlotAt(List<CardSlot> slots, int index, bool onlyOpenSlots)
         {
@@ -178,11 +225,49 @@ namespace Gameplay
             }
         }
 
+        public List<CardSlot> ValidSlots(GameCard card)
+        {
+            List<CardSlot> slots = new List<CardSlot>();
+            for (int i = 0; i < cardSlots.Count; i++)
+            {
+                if (cardSlots[i].ValidateCard(card))
+                {
+                    slots.Add(cardSlots[i]);
+                }
+            }
+            return slots;
+        }
+
+        #endregion
+
+        #region Field Info
+        public int OpenRuneSlots()
+        {
+            int count = 0;
+            List<CardSlot> slots = RuneSlots(true);
+            for (int i = 0; i < slots.Count; i++)
+            {
+                if (slots[i].IsOpen) { count += 1; }
+            }
+            return count;
+        }
+        public int OpenElestralSlots()
+        {
+            int count = 0;
+            List<CardSlot> slots = ElestralSlots(true);
+            for (int i = 0; i < slots.Count; i++)
+            {
+                if (slots[i].IsOpen) { count += 1; }
+            }
+            return count;
+        }
+        #endregion
+
         #endregion
 
         private void Awake()
         {
-
+            
         }
       
         public void Register()
@@ -224,6 +309,8 @@ namespace Gameplay
             name = _player.lobbyId + "_Field";
             
             Register();
+
+            
         }
 
         
@@ -282,9 +369,10 @@ namespace Gameplay
        
         protected CardView SpawnCard(GameCard card, CardSlot slot)
         {
-            GameObject go = Instantiate(GameManager.Instance.cardTemplate, transform).gameObject;
-            CardView c = go.GetComponent<CardView>();
+            
             bool displayBack = slot.facing == CardSlot.CardFacing.FaceDown;
+
+            CardView c = CardView.GenerateCard(GameManager.Instance.cardTemplate, transform, card.card, displayBack);
             c.LoadCard(card.card);
             c.name = card.name;
             //NetworkPipeline.SpawnNewCard(card.NetworkId, slot.index);
@@ -331,14 +419,14 @@ namespace Gameplay
                     if (cardSlots[i].ValidateCard(card))
                     {
                         SetSlot(true, cardSlots[i]);
-                        card.cardObject.SetColor(Color.green);
+                        card.cardObject.MaskCard(Color.green);
                         isSelected = true;
                         break;
                     }
                     else
                     {
                         SetSlot(false, cardSlots[i]);
-                        card.cardObject.SetColor(Color.red);
+                        card.cardObject.MaskCard(Color.red);
                         isSelected = true;
                         break;
                     }
@@ -349,7 +437,7 @@ namespace Gameplay
             if (isSelected == false)
             {
                SetSlot();
-               card.cardObject.SetColor(Color.white);
+               card.cardObject.MaskCard(Color.white);
             }
             
         }

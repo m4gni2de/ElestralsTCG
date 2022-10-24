@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Gameplay.CardActions;
 using Gameplay.Menus.Popup;
+using Gameplay.Turns;
 using UnityEngine;
 
 namespace Gameplay
@@ -9,7 +11,8 @@ namespace Gameplay
 
     public class RuneSlot : SingleSlot
     {
-       
+
+        public string EmpoweringSlot;
         protected override void SetSlot()
         {
             base.SetSlot();
@@ -74,14 +77,15 @@ namespace Gameplay
         protected override List<PopupCommand> GetSlotCommands()
         {
             List<PopupCommand> commands = new List<PopupCommand>();
-            commands.Add(PopupCommand.Create("Inspect", () => InspectCommand()));
-            if (Owner.userId != App.WhoAmI) { commands.Add(PopupCommand.Create("Close", () => CloseCommand())); return commands; }
+          
 
-            commands.Add(PopupCommand.Create("Activate", () => ChangeModeCommand()));
-            //commands.Add(PopupCommand.Create("Move", () => MoveCommand()));
-            commands.Add(PopupCommand.Create("DisEnchant", () => EnchantCommand(false), 1, 0));
-            //commands.Add(PopupCommand.Create("Nexus", () => NexusCommand(), 1, 1));
-            //commands.Add(PopupCommand.Create("Attack", () => AttackCommand()));
+            commands.Add(PopupCommand.Create("Inspect", () => InspectCommand()));
+            if (IsYours)
+            {
+                commands.Add(PopupCommand.Create("Activate", () => ChangeModeCommand()));
+                commands.Add(PopupCommand.Create("DisEnchant", () => EnchantCommand(false), 1, 0));
+            }
+          
             commands.Add(PopupCommand.Create("Close", () => CloseCommand()));
 
 
@@ -115,7 +119,57 @@ namespace Gameplay
         }
         #endregion
 
+
+
+        
+        public void Empower(CardSlot toEmpower = null, bool sendToNetwork = true)
+        {
+            if (toEmpower == null) { EmpoweringSlot = ""; }
+            else
+            {
+                if (toEmpower.slotType != CardLocation.Elestral) { return; }
+                EmpoweringSlot = toEmpower.slotId;
+            }
+
+            if (sendToNetwork)
+            {
+
+            }
+           
+           
+        }
         #region Enchant Command
+
+        protected void EmpowerCommand()
+        {
+            ChooseEmpoweredElestral();
+        }
+        protected override void AwaitEmpowerSource(bool isConfirm, SlotSelector sel)
+        {
+            sel.OnSelectionHandled -= AwaitEmpowerSource;
+
+            if (isConfirm)
+            {
+
+                EmpowerAction empower = EmpowerAction.EmpowerElestral(Owner, SelectedCard, this, SelectedCard.EnchantingSpirits, sel.SelectedSlots[0].MainCard);
+                GameManager.Instance.DoEnchant(empower);
+                sel.SelectedSlots[0].MainCard.SelectCard(false);
+                TurnManager.SetCrafingAction();
+                GameManager.Instance.SetSelector();
+                Refresh();
+            }
+            else
+            {
+                GameCard source = TurnManager.Instance.CraftingAction.FindSourceCard();
+                GameManager.Instance.SetSelector();
+                TurnManager.SetCrafingAction();
+                Refresh();
+
+            }
+
+
+        }
+
         protected void EnchantCommand(bool adding)
         {
             if (adding)
@@ -133,6 +187,8 @@ namespace Gameplay
 
 
         }
+
+       
         protected void AwaitEnchantClose(List<GameCard> selectedCards, CardMode cMode)
         {
             GameManager.Instance.browseMenu.OnEnchantClose -= AwaitEnchantClose;

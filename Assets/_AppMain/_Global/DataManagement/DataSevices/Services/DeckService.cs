@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Decks;
-
+using UnityEngine.TextCore.LowLevel;
 
 namespace Databases
 {
@@ -12,9 +12,10 @@ namespace Databases
         public static readonly int SpiritLimit = 20;
         public static readonly int CopyLimit = 3;
 
-        public static readonly string DeckTable = "uDeckDTO";
+        public static readonly string DeckTable = "DeckDTO";
         public static readonly string DeckCardTable = "uDeckCardDTO";
         public static readonly string viewDecklist = "qDecklist";
+        public static readonly string DeckListTable = "DeckListDTO";
 
         public static DeckDTO LoadDeck(string deckKey)
         {
@@ -35,6 +36,23 @@ namespace Databases
             string query = $"deckKey = '{deckKey}'";
             List<qDeckList> cards = GetAllWhere<qDeckList>(viewDecklist, query);
             return cards;
+        }
+
+        public static void CopyFromLocal(List<DeckCardDTO> cards, List<DeckDTO> decks)
+        {
+
+            foreach (var item in cards)
+            {
+                Insert(item, DeckListTable);
+            }
+
+            foreach (var deck in decks)
+            {
+                Insert(deck, DeckTable, "deckKey", deck.deckKey);
+            }
+
+            //db.Commit();
+            //db.Close();
         }
        
     }

@@ -32,16 +32,21 @@ namespace Gameplay
     [System.Serializable]
     public class GameCard: iGameMover
     {
+        #region Properties
         public string name;
         public CardStats cardStats;
+
         #region Visual Properties
         public bool IsFaceUp { get { return cardObject.IsFaceUp; } }
         protected bool isSelected { get; private set; }
+        protected Color colSelected = Color.yellow;
+        #endregion
+
         #endregion
 
         #region Network Linking
         //the id of the card in as it appears in order on the uploaded deck list. 
-        private int _networkId;
+        protected int _networkId;
         public int NetworkId { get => _networkId; }
         public void SetNetId(int id)
         {
@@ -84,7 +89,7 @@ namespace Gameplay
        
 
         public CardView cardObject { get; set; }
-        private NetworkCard _networkCard = null;
+        protected NetworkCard _networkCard = null;
         public NetworkCard NetworkCard
         {
             get
@@ -96,7 +101,7 @@ namespace Gameplay
                 return _networkCard;
             }
         }
-        private RectTransform _rect = null;
+        protected RectTransform _rect = null;
         public RectTransform rect
         {
             get
@@ -138,6 +143,18 @@ namespace Gameplay
                 return list;
             }
         }
+
+        public List<GameCard> EmpoweringRunes
+        {
+            get
+            {
+                List<GameCard> list = new List<GameCard>();
+                if (CurrentSlot == null || CurrentSlot.GetType() != typeof(ElestralSlot)) { return list; }
+                ElestralSlot slot = (ElestralSlot)CurrentSlot;
+                list.AddRange(slot.EmpoweringRunes);
+                return list;
+            }
+        }
         #endregion
 
         #region Functions
@@ -157,7 +174,7 @@ namespace Gameplay
             }
         }
 
-        private CardSlot _CurrentSlot = null;
+        protected CardSlot _CurrentSlot = null;
         public CardSlot CurrentSlot
         {
             get { return _CurrentSlot; }
@@ -172,9 +189,18 @@ namespace Gameplay
         }
         #endregion
 
+        #region In Game Stats
+        #region Information/Stats Management
+        public CardType CardType { get { return cardStats.cardType; } }
+        public CardType DefaultCardType { get { return card.CardType; } }
 
        
-        GameCard(Card data, int copy)
+        #endregion
+        #endregion
+
+
+
+        public GameCard(Card data, int copy)
         {
             _card = data;
             location = CardLocation.Deck;
@@ -210,12 +236,14 @@ namespace Gameplay
                 {
                     cardObject.Rotate(true);
                     rect.sizeDelta = new Vector2(CurrentSlot.rect.sizeDelta.y, CurrentSlot.rect.sizeDelta.x);
+                    
                 }
                 else
                 {
                     cardObject.Rotate(false);
                     rect.sizeDelta = CurrentSlot.rect.sizeDelta;
                 }
+
                 
                 if (sendToNetwork)
                 {
@@ -255,8 +283,10 @@ namespace Gameplay
         }
         public void ReAddToSlot(bool reAddCommands)
         {
+            SelectCard(false, false);
             if (CurrentSlot == null) { return; }
             CurrentSlot.ReAddCard(this, reAddCommands);
+
         }
         public void RefreshAtSlot()
         {
@@ -266,47 +296,78 @@ namespace Gameplay
 
 
         public event Action<bool> OnSelectChanged;
+        public void SelectCardAsPlayer(bool toggle, ushort selectingPlayer, bool sendToServer)
+        {
+            Color color = colSelected;
+            if (selectingPlayer != Player.LocalPlayer.lobbyId)
+            {
+                color = Color.cyan;
+            }
+            SelectCard(toggle, color, sendToServer);
+        }
+       
         public void SelectCard(bool toggle, bool sendToServer = true)
+        {
+            SelectCard(toggle, colSelected, sendToServer);
+        }
+
+        protected void SelectCard(bool toggle, Color color, bool sendToServer)
         {
             bool current = isSelected;
             if (toggle)
             {
-                cardObject.Images.SetColor("Border", Color.yellow);
-                cardObject.Images.ShowSprite("Border");
+                cardObject.SelectCard(true, color);
+                //cardObject.Images.SetColor("Border", color);
+                //cardObject.Images.ShowSprite("Border");
+
             }
             else
             {
-                cardObject.Images.SetColor("Border", Color.clear);
-                cardObject.Images.HideSprite("Border");
+                cardObject.SelectCard(false, Color.clear);
+
+                //cardObject.SetColor("Border", color);
+                //cardObject.Images.SetColor("Border", Color.clear);
+                //cardObject.Images.HideSprite("Border");
             }
 
-            isSelected = toggle;
+
 
             if (sendToServer)
             {
                 if (current != toggle)
                 {
                     OnSelectChanged?.Invoke(toggle);
+                    SendSelectStatus(toggle);
                 }
             }
-            
-            //cardObject.SelectCard(toggle);
+
+            isSelected = toggle;
         }
         #endregion
 
-        #region Information/Stats Management
-        public CardType CardType { get { return cardStats.cardType; } }
-        public CardType DefaultCardType { get { return card.CardType; } }
-        #endregion
 
-       
+
+
         #region Card Events
+        public void EmpoweredBy(GameCard rune)
+        {
+
+        }
+        
         protected void OnEnchantment(GameCard source, GameCard spirit)
         {
             Game.OnEnchantmentSend(source, spirit);
             
         }
 
+        public event Action EmpoweredChanged;
+        public void EmpoweredChange()
+        {
+            EmpoweredChanged?.Invoke();
+        }
+
+        
+       
         #endregion
 
 
@@ -316,22 +377,23 @@ namespace Gameplay
         {
             
             IsNetwork = network;
+            if (network)
+            {
+                SendCardToServer();
+            }
            
         }
 
         private void SendSelectStatus(bool isSelected)
         {
-            if (IsNetwork)
-            {
-                NetworkPipeline.SendCardSelect(this, isSelected);
-            }
+            NetworkPipeline.SendCardSelect(this, isSelected);
         }
         public struct NetworkData
         {
             //public ushort OwnerId { get; set; }
             public int networkId { get; set; }
             public string sessionId { get; set; }
-            public string setKey { get; set; }
+            public string cardKey { get; set; }
             public string slotId { get; set; }
         }
 
@@ -347,7 +409,7 @@ namespace Gameplay
             //data.OwnerId = Owner.lobbyId;
             data.networkId = NetworkId;
             data.sessionId = cardId;
-            data.setKey = card.cardData.setKey;
+            data.cardKey = card.cardData.cardKey;
             data.slotId = slotId;
 
             return data;
@@ -392,6 +454,8 @@ namespace Gameplay
         }
         #endregion
 
+
+       
     }
 
 

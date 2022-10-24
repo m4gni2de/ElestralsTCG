@@ -16,7 +16,18 @@ namespace Gameplay.CardActions
 
     public class EnchantAction : CardAction, iEnchant
     {
-        
+
+        #region Operators
+        public static EmpowerAction operator +(EnchantAction ac, GameCard ca)
+        {
+
+            if (ca.cardStats.cardType != CardType.Elestral) { return null; }
+            CardActionData data = ac.ActionData;
+            data.SetData(CardActionData.CategoryKey, (int)ActionCategory.Empower);
+            data.SetData("empowered_elestral", ca.cardId);
+            return EmpowerAction.FromData(data);
+        }
+        #endregion
 
         #region Interface
         public bool IsNormalEnchantment()
@@ -26,9 +37,11 @@ namespace Gameplay.CardActions
         #endregion
 
         protected CardSlot toSlot;
+        public CardSlot enchantingSlot { get { return toSlot; } }
         public EnchantActionType enchantType;
         private List<GameCard> _spirits = null;
-        protected List<GameCard> spirits { get { _spirits ??= new List<GameCard>(); return _spirits; } }
+        public List<GameCard> spirits { get { _spirits ??= new List<GameCard>(); return _spirits; } }
+        
         
         protected string SpiritString
         {
@@ -93,7 +106,7 @@ namespace Gameplay.CardActions
         }
         protected override void ParseData(CardActionData data)
         {
-            base.ParseData(data);
+            id = data.Value<string>("actionKey");
             player = Game.FindPlayer(data.Value<string>(CardActionData.PlayerKey));
             sourceCard = Game.FindCard(data.Value<string>(CardActionData.SourceKey));
             enchantType = (EnchantActionType)data.Value<int>("enchant_type");
@@ -114,17 +127,17 @@ namespace Gameplay.CardActions
             SetDetails();
 
         }
-        protected void SetDetails()
+        protected virtual void SetDetails()
         {
             actionTime = .65f;
             if (enchantType == EnchantActionType.ReEnchant || enchantType == EnchantActionType.FromFaceDown || enchantType == EnchantActionType.DisEnchant) { doesSourceMove = false; } else { doesSourceMove = true; }
             _declaredMessage = $"Enchant {sourceCard.cardStats.title} with {SpiritString}";
             _actionMessage = $"{sourceCard.cardStats.title} is Enchanted with {SpiritString}!";
+            
         }
         protected EnchantAction(Player p, GameCard source, CardSlot to, EnchantActionType enchantType, GameCard[] spiritsUsed, CardMode cMode, ActionResult ac = ActionResult.Pending) : base(p, source, ac)
         {
             toSlot = to;
-
             for (int i = 0; i < spiritsUsed.Length; i++)
             {
                 spirits.Add(spiritsUsed[i]);
@@ -135,11 +148,11 @@ namespace Gameplay.CardActions
             SetDetails();
         }
 
-
+       
         public static EnchantAction Normal(Player p, GameCard source, List<GameCard> spirits, CardSlot to, CardMode cMode)
         {
             EnchantActionType en = EnchantActionType.Normal;
-            return new EnchantAction(p, source, to, en, spirits.ToArray(), cMode);
+            return new EnchantAction(p, source, to, en, spirits.ToArray(), cMode, ActionResult.Pending);
         }
         public static EnchantAction Set(Player p, GameCard source, CardSlot to)
         {
@@ -162,6 +175,8 @@ namespace Gameplay.CardActions
             return new EnchantAction(p, source, source.CurrentSlot, en, spirits.ToArray(), CardMode.Attack);
         }
 
+        
+        
         #endregion
 
         public override IEnumerator PerformAction()
@@ -187,6 +202,7 @@ namespace Gameplay.CardActions
             
             yield return DoMovements();
 
+           
         }
 
 
@@ -224,5 +240,7 @@ namespace Gameplay.CardActions
             }
         }
         #endregion
+
+        
     }
 }

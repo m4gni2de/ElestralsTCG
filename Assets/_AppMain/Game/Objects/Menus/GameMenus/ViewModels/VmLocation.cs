@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Databases;
 using TMPro;
 using UnityEngine.UI;
 
@@ -69,7 +70,7 @@ namespace Gameplay.Menus
             slotLocations.AddRange(ValidSlots(c, slots));
             ddLocations.AddOptions(SlotOptions);
             toggle.isOn = true;
-            sp.SetSprite(c.cardObject.sp.MainSprite);
+            sp.SetSprite(CardLibrary.GetCardArt(c.card));
             Show();
         }
 
@@ -84,10 +85,14 @@ namespace Gameplay.Menus
         }
         #endregion
 
-        public void Confirm()
+        public void Confirm(bool showOnMove)
         {
             if (_startLocation != _newLocation)
             {
+                if (showOnMove)
+                {
+                    _card.FlipCard(false, true);
+                }
                 GameManager.Instance.MoveCard(Player.LocalPlayer, _card, _newLocation);
             }
             

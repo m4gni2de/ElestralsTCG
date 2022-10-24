@@ -12,7 +12,16 @@ namespace Gameplay
 {
     public class ElestralSlot : SingleSlot, iCraftAction
     {
-        
+
+        private List<GameCard> _empoweringRunes = null;
+        public List<GameCard> EmpoweringRunes
+        {
+            get
+            {
+                _empoweringRunes ??= new List<GameCard>();
+                return _empoweringRunes;
+            }
+        }
         protected override void SetSlot()
         {
             base.SetSlot();
@@ -62,12 +71,36 @@ namespace Gameplay
             
         }
 
+        protected override void SetSelectedCard(GameCard view = null)
+        {
+            base.SetSelectedCard(view);
+
+            if (view != null)
+            {
+                for (int i = 0; i < EmpoweringRunes.Count; i++)
+                {
+                    EmpoweringRunes[i].SelectCard(true, false);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < EmpoweringRunes.Count; i++)
+                {
+                    EmpoweringRunes[i].SelectCard(true, false);
+                }
+            }
+        }
+
         public override bool ValidateCard(GameCard card)
         {
             if (card.CardType == CardType.Elestral && MainCard == null) { return true; }
             if (card.cardStats.cardType == CardType.Spirit)
             {
                 if (MainCard != null) { return true; }
+            }
+            if (card.CardType == CardType.Rune && MainCard != null)
+            {
+                if (card.cardStats.Tags.Contains(CardTag.Artifact)) { return true; }
             }
             return false;
         }
@@ -103,15 +136,20 @@ namespace Gameplay
         {
             List<PopupCommand> commands = new List<PopupCommand>();
             //commands.Add(PopupCommand.Create("Inspect", () => InspectCommand()));
-            if (Owner.userId != App.WhoAmI) { commands.Add(PopupCommand.Create("Close", () => CloseCommand())); return commands; }
+            //if (Owner.userId != App.WhoAmI) { commands.Add(PopupCommand.Create("Close", () => CloseCommand())); return commands; }
 
-            commands.Add(PopupCommand.Create("Change Mode", () => ChangeModeCommand()));
-            //commands.Add(PopupCommand.Create("Move", () => MoveCommand()));
-            commands.Add(PopupCommand.Create("Enchant", () => EnchantCommand(true)));
-            commands.Add(PopupCommand.Create("Ascend", () => AscendCommand()));
-            commands.Add(PopupCommand.Create("DisEnchant", () => EnchantCommand(false), 1, 0));
-            commands.Add(PopupCommand.Create("Nexus", () => NexusCommand(), 1, 1));
-            commands.Add(PopupCommand.Create("Attack", () => AttackCommand()));
+            if (IsYours)
+            {
+                commands.Add(PopupCommand.Create("Change Mode", () => ChangeModeCommand()));
+                //commands.Add(PopupCommand.Create("Move", () => MoveCommand()));
+                commands.Add(PopupCommand.Create("Enchant", () => EnchantCommand(true)));
+                commands.Add(PopupCommand.Create("Ascend", () => AscendCommand()));
+                commands.Add(PopupCommand.Create("DisEnchant", () => EnchantCommand(false), 1, 0));
+                commands.Add(PopupCommand.Create("Nexus", () => NexusCommand(), 1, 1));
+                commands.Add(PopupCommand.Create("Attack", () => AttackCommand()));
+            }
+
+           
             commands.Add(PopupCommand.Create("Close", () => CloseCommand()));
 
 
@@ -175,7 +213,7 @@ namespace Gameplay
 
                 string title = $"Select {minCount} Spirits to DisEnchant from {SelectedCard.name}";
                 BrowseMenu.LoadCards(toShow, title, true, minCount, maxEnchantCount);
-                BrowseMenu.EnchantMode(SelectedCard, false);
+                BrowseMenu.EnchantMode(SelectedCard, null, false);
                 ClosePopMenu(true);
                 BrowseMenu.OnMenuClose += AwaitDisEnchantClose;
             }
@@ -210,9 +248,33 @@ namespace Gameplay
 
         }
 
+
+        public override void AddCardToSlotCommand(GameCard card, CardSlot from)
+        {
+            int enchantCount = card.card.SpiritsReq.Count;
+            List<GameCard> toShow = Owner.gameField.SpiritDeckSlot.cards;
+
+            string title = $"Select {enchantCount} Spirits for Enchantment of {card.name}";
+            GameManager.Instance.browseMenu.LoadCards(toShow, title, true, enchantCount, enchantCount);
+            GameManager.Instance.browseMenu.EnchantMode(card, this);
+            ClosePopMenu(true);
+            BrowseMenu.OnClosed += EnchantToClose;
+
+            //do something if you drag an Artifact card on to an Elestral slot with an Elestral on it
+            if (card.CardType == CardType.Rune && card.cardStats.Tags.Contains(CardTag.Artifact))
+            {
+               
+               
+            }
+            else
+            {
+               
+            }
+            
+        }
         #endregion
 
-        
+
 
         #region Attack Command
         protected void AttackCommand()
@@ -311,10 +373,20 @@ namespace Gameplay
                 Refresh();
             }
         }
-       
-       
+
+
         #endregion
 
+        #endregion
+
+
+
+        #region Rune Empowering
+       
+        protected void ToggleEmpowerLink(GameCard rune, bool isAdding)
+        {
+            
+        }
         #endregion
     }
 }

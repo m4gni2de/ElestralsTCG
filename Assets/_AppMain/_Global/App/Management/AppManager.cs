@@ -15,6 +15,9 @@ using Databases;
 using Gameplay;
 using RiptideNetworking;
 using UnityEngine.Networking;
+#if UNITY_EDITOR
+using ParrelSync;
+#endif
 
 public class AppManager : MonoBehaviour
 {
@@ -55,11 +58,14 @@ public class AppManager : MonoBehaviour
             }
             
         }
-        
+
+        //AssetPipeline.DownloadDefaults();
+        CardConfig.LoadConfigs();
         if (hasDb)
         {
             SetupManager();
-            App.ChangeScene(1);
+            //AssetPipeline.DoRedownloadAllCards();
+            CheckForAccount();
             
         }
        
@@ -75,10 +81,120 @@ public class AppManager : MonoBehaviour
     public static AppManager Instance { get; private set; }
     #endregion
 
-   
 
-    #region User
-    public User Account;
+
+    #region User Account
+    //public User Account;
+
+    protected void CheckForAccount()
+    {
+#if UNITY_EDITOR
+        CheckForAccountEditor();
+#else
+CheckForAccountDevice();
+#endif
+    }
+
+
+    protected void CheckForAccountEditor()
+    {
+#if UNITY_EDITOR
+        if (ClonesManager.IsClone())
+        {
+            if (!App.AccountExists)
+            {
+                App.LoadGuest();
+                
+                return;
+            }
+        }
+        if (!App.AccountExists)
+        {
+            bool exists = User.ExistsOnFile;
+            if (exists)
+            {
+                if (ClonesManager.IsClone())
+                {
+                    App.LoadGuest();
+                   
+                    return;
+                }
+                else
+                {
+                    App.LoadUserAccount();
+                   
+                    return;
+                }
+
+            }
+            else
+            {
+                
+                CreateAccount();
+            }
+        }
+#endif
+    }
+
+    protected void CheckForAccountDevice()
+    {
+        if (!App.AccountExists)
+        {
+            bool exists = User.ExistsOnFile;
+            if (exists)
+            {
+                App.LoadUserAccount();
+                
+            }
+            else
+            {
+                CreateAccount();
+            }
+        }
+    }
+
+    //first, ask if they want to create an account, or just load up a guest account.
+    protected static void CreateAccount()
+    {
+        string message = $"There is no account on this device! Would you like to enter a username? (Selecting 'No' will create a temporary account that will last until the app closes.";
+        App.AskYesNo(message, AskCreateAccount);
+    }
+
+    //handle the question above
+    private static void AskCreateAccount(bool create)
+    {
+        if (!create)
+        {
+            App.LoadGuest();
+        }
+        else
+        {
+            TextInput.Load("Type desired Username", ConfirmCreateAccount);
+        }
+    }
+
+    //before confirming their username, just ask to make sure that's what they want.
+    private static void ConfirmCreateAccount(string username)
+    {
+        TextInput.Instance.Hide();
+        App.AskYesNo($"Desired Username is: '{username}'. Proceed with this Username?", FinalizeCreateAccount);
+    }
+
+    //if they decide they want that name, create the account and write it to the DB
+    private static void FinalizeCreateAccount(bool create)
+    {
+        TextInput.Instance.Show();
+        if (!create)
+        {
+            TextInput.Reload("Type desired Username.", ConfirmCreateAccount);
+        }
+        else
+        {
+            string username = TextInput.Instance.Value;
+            User.Create(username);
+            App.ChangeScene(MainScene.SceneName);
+        }
+    }
     #endregion
 
     #region Properties
@@ -89,21 +205,38 @@ public class AppManager : MonoBehaviour
     private DateTime _SessionEnd = DateTime.MinValue;
     public DateTime SessionEnd { get { return _SessionEnd; } }
 
+    protected DbConnector lastConnected = null;
     [SerializeField]
     private DbConnector _dbConn;
-    public DbConnector dbConnector { get { return _dbConn; } }
+    public DbConnector dbConnector
+    {
+        get
+        {
+            return _dbConn;
+        }
+    }
 
-    #region Pause/Play Management
+    [SerializeField]
+    private DbConnector _playerDb;
+    public DbConnector dbPlayer
+    {
+        get
+        {
+            return _playerDb;
+        }
+    }
+
+#region Pause/Play Management
     public static float TimeScale { get { return Time.timeScale; } set { Time.timeScale = value; } }
     public static bool IsPlaying { get { return TimeScale > 0; } }
     public static void Pause() { TimeScale = 0f; }
     public static void Resume() { TimeScale = 1f; }
-    #endregion
-    #endregion
+#endregion
+#endregion
 
-    #region UI Properties
+#region UI Properties
 
-    #region Global Objects
+#region Global Objects
     private GlobalObject _worldCanvas = null;
     public GlobalObject worldCanvas { get { return _worldCanvas; } set { _worldCanvas = value; } }
 
@@ -115,18 +248,18 @@ public class AppManager : MonoBehaviour
 
     private static bool _IsFrozen = false;
     public static bool IsFrozen { get { return _IsFrozen; } }
-    #endregion
+#endregion
     public int GetManagerLayer()
     {
         return SortingLayer.GetLayerValueFromName("AppManager");
     }
-    #endregion
+#endregion
 
-    #region Events
+#region Events
     public static event Action ChangeLoadingText;
-    #endregion
+#endregion
 
-    #region Click Management
+#region Click Management
     public static iHold ActiveHoldObject { get; set; }
     protected bool IsClicked = false;
     public static void SetHoldObject(iHold hold = null)
@@ -136,7 +269,7 @@ public class AppManager : MonoBehaviour
 
 
 
-    #region Game Time/Freeze Management
+#region Game Time/Freeze Management
     [SerializeField]
     private GameLog _freezeLog = null;
     public GameLog FreezeLog { get { _freezeLog ??= GameLog.Create("FreezeLog", false); return _freezeLog; } }
@@ -171,9 +304,9 @@ public class AppManager : MonoBehaviour
             Freeze(false);
         }
     }
-    #endregion
+#endregion
 
-    #endregion
+#endregion
 
 
     private void OnEnable()
@@ -204,7 +337,7 @@ public class AppManager : MonoBehaviour
         worldCanvas = WorldCanvas.Instance;
     }
 
-    #region Update
+#region Update
     private void Update()
     {
         //if (!IsClicked)
@@ -226,9 +359,9 @@ public class AppManager : MonoBehaviour
         //}
         
     }
-    #endregion
+#endregion
 
-    #region Quitting
+#region Quitting
 
     private void OnApplicationQuit()
     {
@@ -271,9 +404,9 @@ public class AppManager : MonoBehaviour
         lines[2] = $"Total Time: {total}";
         App.Log(lines);
     }
-    #endregion
+#endregion
 
-    #region Object Management
+#region Object Management
     public void ShowObject(GameObject obj, int sortLayer)
     {
         int highestSort = GetManagerLayer();
@@ -301,10 +434,10 @@ public class AppManager : MonoBehaviour
 
 
 
-    #endregion
+#endregion
 
 
-    #region Outbound Connections
+#region Outbound Connections
 
     public static async Task<string> DoPostRequestWithPayload(string url, WWWForm payload)
     {
@@ -384,5 +517,5 @@ public class AppManager : MonoBehaviour
 
         }
     }
-    #endregion
+#endregion
 }

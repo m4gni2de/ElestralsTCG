@@ -12,6 +12,8 @@ using Decks;
 using Gameplay;
 using nsSettings;
 using Gameplay.Decks;
+using PopupBox;
+using UnityEngine.Events;
 
 public class NetworkManager : MonoBehaviour
 {
@@ -114,19 +116,33 @@ public class NetworkManager : MonoBehaviour
             Client.ConnectionFailed += FailedToConnect;
             Client.ClientDisconnected += ClientLeft;
             Client.Disconnected += DidDisconnect;
+           
         }
     }
-    public void Connect(string ip)
+    public void Connect(string serverIp, ushort serverPort = 7777)
     {
-        this.ip = ip;
+        this.ip = serverIp;
+        this.port = serverPort;
         if (Client == null) { CreateClient(); }
         Client.Connect($"{ip}:{port}");
+        DisplayBox box = App.ShowWaitingMessage($"Connecting to server...");
+        PopupManager.Instance.AddCloseWatcher(box, OnConnectionChanged);
     }
 
+    private static UnityEvent _OnConnectionChanged = null;
+    public static UnityEvent OnConnectionChanged
+    {
+        get
+        {
+            _OnConnectionChanged ??= new UnityEvent();
+            return _OnConnectionChanged;
+        }
+    }
     public static event Action<ushort> OnClientConnected;
     private void DidConnect(object sender, EventArgs e)
     {
         OnClientConnected?.Invoke(Client.Id);
+        OnConnectionChanged.Invoke();
 
         //PlayerConnected();
     }
@@ -142,6 +158,8 @@ public class NetworkManager : MonoBehaviour
     public static event Action OnConnectionFailed;
     private void FailedToConnect(object sender, EventArgs e)
     {
+        OnConnectionChanged.Invoke();
+        App.DisplayError($"Connection failed!");
         //UIManager.Singleton.BackToMain();
     }
 
@@ -154,6 +172,7 @@ public class NetworkManager : MonoBehaviour
     public static event Action OnClientDisconnected;
     private void DidDisconnect(object sender, EventArgs e)
     {
+        OnConnectionChanged.Invoke();
         OnClientDisconnected?.Invoke();
     }
     

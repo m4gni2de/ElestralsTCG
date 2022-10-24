@@ -269,6 +269,8 @@ namespace Gameplay
                     return ModeAction.FromData(data);
                 case ActionCategory.Attack:
                     break;
+                case ActionCategory.Empower:
+                    return EmpowerAction.FromData(data);
                 case ActionCategory.Nexus:
                     return NexusAction.FromData(data);
                 case ActionCategory.Ascend:

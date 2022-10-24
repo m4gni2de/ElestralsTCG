@@ -6,6 +6,11 @@ using System;
 using Decks;
 using System.Threading.Tasks;
 using Mono.Data.Sqlite;
+using UnityEditor;
+using System.IO;
+#if UNITY_EDITOR
+using ParrelSync;
+#endif
 
 namespace Users
 {
@@ -82,9 +87,23 @@ namespace Users
                     return Load(dto.userKey);
                 }
                 return null;
+
             }
         }
 
+
+        public static User Guest()
+        {
+            UserDTO dto = new UserDTO
+            {
+                userKey = UniqueString.Create("usr", 7),
+                username = "clone",
+                whenCreated = System.DateTime.Now,
+                email = ""
+            };
+            UserData data = new UserData(dto, true);
+            return new User(data, true);
+        }
         public static User Create(string username = "admin")
         {
             UserDTO dto = UserService.CreateUser(username);
@@ -100,24 +119,39 @@ namespace Users
         #endregion
 
         #region Initialization and Loading
-        User(UserData dto)
+        User(UserData dto, bool isGuest = false)
         {
             data = dto;
-            data.id = UniqueString.Create("usr", 7);
-            LoadDecks();
+            LoadAllDecks();
+
+
         }
-        protected void LoadDecks()
+        //protected void LoadDecks()
+        //{
+        //    DeckLists.Clear();
+
+        //    List<DeckCardDTO> deckCards = UserService.LocalDecklists();
+        //    List<DeckDTO> deckKeys = UserService.LocalUserDeckDTOs();
+        //    DeckService.CopyFromLocal(deckCards, deckKeys);
+
+
+        //    for (int i = 0; i < deckKeys.Count; i++)
+        //    {
+        //        Decklist deck = Decklist.Load(deckKeys[i]);
+        //        DeckLists.Add(deck);
+        //    }
+            
+            
+        //}
+
+        protected void LoadAllDecks()
         {
             DeckLists.Clear();
-            List<string> deckKeys = UserService.UserDecks(Id);
 
-            for (int i = 0; i < deckKeys.Count; i++)
-            {
-                Decklist deck = Decklist.Load(deckKeys[i]);
-                DeckLists.Add(deck);
-            }
-            
-            
+            List<DeckCardDTO> deckCards = UserService.LocalDecklists();
+            List<DeckDTO> deckKeys = UserService.LocalUserDeckDTOs();
+            List<Decklist> decks = Decklist.LoadAllLocalDecks(deckKeys, deckCards);
+            DeckLists.AddRange(decks);
         }
         #endregion
 
@@ -142,6 +176,10 @@ namespace Users
             UserService.SaveUser(data.data);
         }
 
+        public static void Reset()
+        {
+
+        }
         #endregion
 
 

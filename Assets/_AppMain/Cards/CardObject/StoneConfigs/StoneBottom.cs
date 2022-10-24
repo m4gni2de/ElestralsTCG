@@ -93,5 +93,15 @@ public class StoneBottom : MonoBehaviour
         }
     }
 
+    public void SetSortingOrder(int order)
+    {
+        Renderer[] rends = GetComponentsInChildren<Renderer>(true);
+
+        for (int i = 0; i < rends.Length; i++)
+        {
+            rends[i].sortingOrder = order;
+        }
+    }
+
     
 }

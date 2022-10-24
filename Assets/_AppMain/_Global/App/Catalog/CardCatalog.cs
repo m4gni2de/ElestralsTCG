@@ -190,8 +190,6 @@ public class CardCatalog : MonoBehaviour, iScaleCard
             
 
         }
-
-        
         return list;
 
     }
@@ -277,31 +275,21 @@ public class CardCatalog : MonoBehaviour, iScaleCard
         closeFiltersBtn.gameObject.SetActive(false);
         openFiltersBtn.gameObject.SetActive(true);
         CardsList.Add(_templateCard);
+
         for (int i = 1; i < settings.cardsPerPage; i++)
         {
             CardView g = Instantiate(_templateCard, Content.transform);
+            g.MatchSize(Grid.cellSize);
+            g.SetSortingLayer(Card.CardLayer2);
             CardsList.Add(g);
             
         }
 
-        _queryWhere = " image is not null;";
-        CreateCatalog();
-    }
-
-    private void CreateCatalog()
-    {
-        //DownloadJob job = DownloadJob.Create("Loading Catalog", 0f, settings.cardsPerPage, 0f, InitializeCards);
-        //CardView.OnCardLoaded += job.WorkEvent;
-        //LoadingBar.Instance.AddJob(job);
-        //StartCoroutine(LoadingBar.Instance.AwaitCompletion(job, success =>
-        //{
-        //    if (success)
-        //    {
-
-        //    }
-        //}));
+        _queryWhere = " setName is not null;";
         InitializeCards();
     }
+
+  
     private void InitializeCards()
     {
         Refresh();

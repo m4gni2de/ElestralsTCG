@@ -6,8 +6,12 @@ using TMPro;
 
 namespace Gameplay.Messaging
 {
-    public class MessageViewModel : MonoBehaviour
+    public class MessageViewModel : MonoBehaviour, iRemoteAsset
     {
+        #region Static Properties
+        public static string AssetName { get { return RemoteAssetHelpers.GetAssetName<MessageViewModel>(); } }
+        #endregion
+
         public GameMessage ActiveMessage { get; set; }
         public TMP_Text messageText;
         public TouchObject touch;
@@ -15,27 +19,18 @@ namespace Gameplay.Messaging
 
         public void Show(GameMessage msg)
         {
-            //if (isShowing)
-            //{
-            //    StopTimer(false);
-            //}
-           
             ActiveMessage = msg;
             messageText.text = msg.message;
             gameObject.SetActive(true);
 
+
+           
             if (msg.GetMessageType() == GameMessage.MessageType.Action)
             {
                 ActionMessage ac = (ActionMessage)msg;
-               ac.cardAction.OnActionEnd.AddListener(() => Hide());
+                ac.cardAction.OnActionEnd.AddListener(() => Hide());
             }
-
-            //if (msg.DisplayTime > 0f)
-            //{
-            //    StartCoroutine(TimedShow(msg.DisplayTime));
-            //}
-
-            
+          
         }
         public void Hide()
         {
@@ -68,6 +63,12 @@ namespace Gameplay.Messaging
 
             Show(msg);
             
+        }
+
+        public void DisplaySimple(GameMessage msg)
+        {
+            GameMessage plainMessage = msg.message;
+            Show(msg);
         }
 
 

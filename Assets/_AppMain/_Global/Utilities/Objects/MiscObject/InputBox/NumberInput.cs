@@ -15,7 +15,7 @@ public class NumberInput : InputBox, iRemoteAsset
         {
             if (_Instance == null)
             {
-                GameObject go = AssetPipeline.WorldObjectClone(AssetName);
+                GameObject go = AssetPipeline.GameObjectClone(AssetName, WorldCanvas.Instance.transform);
                 _Instance = go.GetComponent<NumberInput>();
             }
             return _Instance;
@@ -26,10 +26,6 @@ public class NumberInput : InputBox, iRemoteAsset
     #endregion
     #region Properties
 
-    [SerializeField]
-    private TMP_InputField _input;
-    [SerializeField]
-    private TMP_Text placeHolder;
     public int Value
     {
         get
@@ -41,14 +37,8 @@ public class NumberInput : InputBox, iRemoteAsset
             _input.text = value.ToString();
         }
     }
-    [SerializeField]
-    private TMP_Text titleText;
 
-    private int _minVal;
-    public int minVal { get { return _minVal; } set { _minVal = value; } }
-    private int _maxVal;
-    public int maxVal { get { return _maxVal; } set { _maxVal = value; } }
-
+   
     protected void SetValueInput(int newVal)
     {
         Value = newVal;
@@ -59,6 +49,7 @@ public class NumberInput : InputBox, iRemoteAsset
         Instance.Open(title, startVal, min, max);
         Instance.transform.SetParent(parent);
         Instance.transform.localPosition = Vector2.zero;
+
         return Instance;
     }
 

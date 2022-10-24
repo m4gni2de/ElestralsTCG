@@ -382,6 +382,18 @@ MonoBehaviour:
     - CardArt
     - Sprite
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dad1e5efbce8c7b49b46e0a2e2167ea2
+    m_Address: borderSpWhite
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5b89e28a45d36e34daf269b97fbbdc52
+    m_Address: blankCardSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
   m_SchemaSet:

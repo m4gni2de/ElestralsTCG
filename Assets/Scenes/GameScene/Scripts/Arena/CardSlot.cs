@@ -6,6 +6,9 @@ using UnityEngine.Events;
 using Gameplay.Menus.Popup;
 using System;
 using UnityEngine.UI;
+using static Gameplay.Menus.CardBrowseMenu;
+using Gameplay.CardActions;
+using Gameplay.Turns;
 
 namespace Gameplay
 {
@@ -54,36 +57,7 @@ namespace Gameplay
         }
         #endregion
 
-        #region Event Properties
-        public static event Action<CardSlot> OnNewSelectedSlot;
-        public static event Action OnClearedSelectedSlot;
-        private static CardSlot _SelectedSlot = null;
-        public static CardSlot SelectedSlot
-        {
-            get
-            {
-                return _SelectedSlot;
-            }
-            set
-            {
-                if (_SelectedSlot != null)
-                {
-                    if (value != _SelectedSlot) { _SelectedSlot.ToggleSelect(false); }
-                }
-                if (value != null)
-                {
-                    OnNewSelectedSlot?.Invoke(value);
-                    value.ToggleSelect(true);
-                }
-                else
-                {
-                    OnClearedSelectedSlot?.Invoke();
-                }
-                _SelectedSlot = value;
-
-            }
-        }
-        #endregion
+       
         #region Slot Info
         public GameCard MainCard { get; set; }
         public string SlotTitle
@@ -127,16 +101,14 @@ namespace Gameplay
         }
         protected List<GameCard> _cards = null;
         public List<GameCard> cards { get { _cards ??= new List<GameCard>(); return _cards; } }
+        public bool isBlocked { get; private set; }
 
         private SpriteRenderer _sp { get; set; }
-        public Vector2 Position
-        {
-            get
-            {
-                return transform.position;
-            }
-        }
-       
+        public Vector2 Position { get { return transform.position; } }
+        protected Player _Owner = null;
+        public Player Owner { get { if (_Owner == null) { _Owner = GameManager.Instance.arena.GetSlotOwner(this); } return _Owner; } }
+        public bool IsYours { get { return Owner == GameManager.ActiveGame.You; } }
+
         public CardLocation slotType;
         public CardFacing facing;
         public Orientation orientation;
@@ -171,34 +143,13 @@ namespace Gameplay
         #endregion
 
         #region Functions/Commands
-        protected Player _Owner = null;
-        public Player Owner
-        {
-            get
-            {
-                if (_Owner == null) { _Owner = GameManager.Instance.arena.GetSlotOwner(this); }return _Owner;
-            }
-        }
-        public bool IsYours
-        {
-            get
-            {
-                return Owner == GameManager.ActiveGame.You;
-            }
-        }
-        
+        public bool IsOpen { get => GetIsOpen(); }
+        protected virtual bool GetIsOpen() { return!isBlocked && MainCard == null; }
+        public bool Validate { get { return GetClickValidation(); } }
         public bool ValidatePlayer()
         {
             Field f = GameManager.Instance.arena.GetPlayerField(GameManager.ActiveGame.You);
             return f.cardSlots.Contains(this);
-        }
-
-        public bool Validate
-        {
-            get
-            {
-                return GetClickValidation();
-            }
         }
         protected virtual bool GetClickValidation()
         {
@@ -208,7 +159,7 @@ namespace Gameplay
             return true;
         }
 
-        protected void SetSelectedCard(GameCard view = null)
+        protected virtual void SetSelectedCard(GameCard view = null)
         {
             
             if (view == null) 
@@ -221,10 +172,6 @@ namespace Gameplay
             }
 
             
-
-        }
-        protected virtual void ToggleSelect(bool isSelected)
-        {
 
         }
        
@@ -335,8 +282,12 @@ namespace Gameplay
         }
         #endregion
 
-       #region Card Management
-    public virtual void RemoveCard(GameCard card)
+        #region Drag Event Watchers
+       
+        #endregion
+
+        #region Card Management
+        public virtual void RemoveCard(GameCard card)
     {
         cards.Remove(card);
         TouchObject to = card.cardObject.touch;
@@ -354,8 +305,6 @@ namespace Gameplay
 
         DisplayCardObject(card);
         SetCommands(card);
-
-        
     }
     
     
@@ -367,14 +316,18 @@ namespace Gameplay
     {
         TouchObject to = card.cardObject.touch;
         to.AddClickListener(() => ClickCard(card));
-        to.AddHoldListener(() => DragCard(card));
+            if (IsYours)
+            {
+                to.AddHoldListener(() => DragCard(card));
+            }
+        
     }
 
-        protected virtual void DragCard(GameCard card)
-        {
-            GameManager.SelectedCard = card;
-            GameManager.Instance.DragCard(card, this);
-        }
+    protected virtual void DragCard(GameCard card)
+    {
+        GameManager.SelectedCard = card;
+        GameManager.Instance.DragCard(card, this);
+    }
 
     public void ReAddCard(GameCard card, bool reAddCommands)
     {
@@ -384,6 +337,8 @@ namespace Gameplay
         }
         DisplayCardObject(card);
         NetworkPipeline.SendNewCardSlot(card.cardId, slotId);
+        
+        
     }
     protected virtual void DisplayCardObject(GameCard card)
     {
@@ -417,6 +372,10 @@ namespace Gameplay
             }
         }
 
+        public void CloseMenu(bool keepSelected = false)
+        {
+            ClosePopMenu(keepSelected);
+        }
         protected virtual void ClosePopMenu(bool keepSelected = false)
         {
             GameManager.Instance.popupMenu.CloseMenu();
@@ -433,10 +392,238 @@ namespace Gameplay
         }
 
         #region Base Commands
+        protected virtual void Refresh()
+        {
+           
+        }
+
         protected void CloseCommand(bool keepSelected = false)
         {
             ClosePopMenu(keepSelected);
         }
+
+        #region Browse
+        protected void BrowseCards(List<GameCard> cards, string title, bool faceUp, int minSelectable, int maxSelectable)
+        {
+            GameManager.Instance.browseMenu.LoadCards(cards, title, faceUp, minSelectable, maxSelectable);
+            ClosePopMenu();
+        }
+        #endregion
+
+        #region Manage
+        protected void ManageCards(List<GameCard> cards, string title, bool faceUp, int minSelectable, int maxSelectable)
+        {
+            BrowseCards(cards, title, faceUp, minSelectable, maxSelectable);
+            GameManager.Instance.browseMenu.OnClosed += AwaitManage;
+            ClosePopMenu();
+        }
+        protected virtual void AwaitManage(BrowseArgs args)
+        {
+            GameManager.Instance.browseMenu.OnClosed -= AwaitManage;
+        }
+
+        #endregion
+
+        #region Enchant Commands
+
+        public void BaseEnchantCommand()
+        {
+            StartEnchantCommand();
+        }
+
+
+        protected void StartEnchantCommand()
+        {
+            int enchantCount = SelectedCard.card.SpiritsReq.Count;
+            List<GameCard> toShow = Owner.gameField.SpiritDeckSlot.cards;
+
+            string title = $"Select {enchantCount} Spirits for Enchantment of {SelectedCard.name}";
+            GameManager.Instance.browseMenu.LoadCards(toShow, title, true, enchantCount, enchantCount);
+            GameManager.Instance.browseMenu.EnchantMode(SelectedCard);
+            ClosePopMenu(true);
+            GameManager.Instance.browseMenu.OnEnchantClose += DoEnchant;
+        }
+
+        #region Enchant To Command
+        
+        public virtual void AddCardToSlotCommand(GameCard card, CardSlot from)
+        {
+            int enchantCount = card.card.SpiritsReq.Count;
+            List<GameCard> toShow = Owner.gameField.SpiritDeckSlot.cards;
+
+            string title = $"Select {enchantCount} Spirits for Enchantment of {card.name}";
+            GameManager.Instance.browseMenu.LoadCards(toShow, title, true, enchantCount, enchantCount);
+            GameManager.Instance.browseMenu.EnchantMode(card, this);
+            ClosePopMenu(true);
+            BrowseMenu.OnClosed += EnchantToClose;
+        }
+
+        protected void EnchantToClose(BrowseArgs args)
+        {
+            BrowseMenu.OnClosed -= EnchantToClose;
+            if (args.EnchantMode == CardMode.None) { Refresh();  args.SourceCard.ReAddToSlot(false);   return; }
+
+            List<GameCard> cardsList = new List<GameCard>();
+            for (int i = 0; i < args.Selections.Count; i++)
+            {
+                cardsList.Add(args.Selections[i]);
+            }
+
+            if (args.SourceCard.card.CardType == CardType.Rune)
+            {
+                RuneEnchantClose(args.SourceCard, args.SelectedSlot, cardsList, args.EnchantMode);
+            }
+            else
+            {
+                GameManager.Instance.NormalEnchant(Owner, args.SourceCard, cardsList, args.SelectedSlot, args.EnchantMode);
+                Refresh();
+            }
+        }
+        #endregion
+        //protected void BaseEnchantClose(List<GameCard> selectedCards, CardMode cMode)
+        //{
+
+        //    GameManager.Instance.browseMenu.OnEnchantClose -= BaseEnchantClose;
+        //    if (cMode == CardMode.None) { return; }
+
+        //    Field f = GameManager.Instance.arena.GetPlayerField(Owner);
+        //    List<GameCard> cardsList = new List<GameCard>();
+        //    for (int i = 0; i < selectedCards.Count; i++)
+        //    {
+        //        cardsList.Add(selectedCards[i]);
+        //    }
+        //    GameCard Selected = SelectedCard;
+        //    CardSlot slot = f.ElestralSlot(0, true);
+
+
+
+        //    if (Selected.card.CardType == CardType.Rune)
+        //    {
+        //        slot = f.RuneSlot(0, true);
+        //        Rune r = (Rune)Selected.card;
+
+        //        if (r.GetRuneType == Rune.RuneType.Stadium)
+        //        {
+        //            slot = f.StadiumSlot;
+        //        }
+        //        RuneEnchantClose(Selected, slot, cardsList, cMode);
+        //    }
+        //    else
+        //    {
+        //        GameManager.Instance.NormalEnchant(Owner, Selected, cardsList, slot, cMode);
+        //        Refresh();
+        //    }
+
+            
+
+        //}
+
+        protected virtual void DoEnchant(List<GameCard> selectedCards, CardMode cMode)
+        {
+            GameManager.Instance.browseMenu.OnEnchantClose -= DoEnchant;
+            if (cMode == CardMode.None) { return; }
+
+            Field f = GameManager.Instance.arena.GetPlayerField(Owner);
+            List<GameCard> cardsList = new List<GameCard>();
+            for (int i = 0; i < selectedCards.Count; i++)
+            {
+                cardsList.Add(selectedCards[i]);
+            }
+            GameCard Selected = SelectedCard;
+            CardSlot slot = f.ElestralSlot(0, true);
+
+            if (SelectedCard.CardType == CardType.Rune)
+            {
+                slot = f.RuneSlot(0, true);
+
+                if (SelectedCard.cardStats.Tags.Contains(CardTag.Stadium))
+                {
+                    slot = f.StadiumSlot;
+                }
+                RuneEnchantClose(SelectedCard, slot, cardsList, cMode);
+
+            }
+            else
+            {
+                GameManager.Instance.NormalEnchant(Owner, Selected, cardsList, slot, cMode);
+                Refresh();
+            }
+            
+
+           
+        }
+
+        protected void RuneEnchantClose(GameCard Selected, CardSlot slot, List<GameCard> cardsList, CardMode cMode)
+        {
+            
+            if (cMode == CardMode.Defense)
+            {
+                GameManager.Instance.SetEnchant(Owner, Selected, slot);
+                Refresh();
+                return;
+            }
+            else
+            {
+                
+                if (Selected.cardStats.Tags.Contains(CardTag.Artifact))
+                {
+                    EnchantAction ac = EnchantAction.Normal(Owner, Selected, cardsList, slot, cMode);
+                    TurnManager.SetCrafingAction(ac.ActionData);
+                    ChooseEmpoweredElestral();
+                }
+                else
+                {
+                    GameManager.Instance.NormalEnchant(Owner, Selected, cardsList, slot, cMode);
+                    Refresh();
+
+                }
+            }
+        }
+
+        protected void ChooseEmpoweredElestral()
+        {
+
+            List<CardSlot> targets = new List<CardSlot>();
+            targets.AddRange(Owner.gameField.ElestralSlots(false));
+            targets.AddRange(Owner.Opponent.gameField.ElestralSlots(false));
+
+            SlotSelector sourceSelect = SlotSelector.Create("Select Elestral to Empower", "Empowered Elestral", targets, 1);
+            GameManager.Instance.SetSelector(sourceSelect);
+            sourceSelect.OnSelectionHandled += AwaitEmpowerSource;
+            ClosePopMenu(true);
+        }
+
+       
+        protected virtual void AwaitEmpowerSource(bool isConfirm, SlotSelector sel)
+        {
+            sel.OnSelectionHandled -= AwaitEmpowerSource;
+           
+            if (isConfirm)
+            {
+                
+                EmpowerAction empower = EnchantAction.FromData(TurnManager.Instance.CraftingAction) + sel.SelectedSlots[0].MainCard;
+                GameManager.Instance.DoEnchant(empower);
+                sel.SelectedSlots[0].MainCard.SelectCard(false);
+                TurnManager.SetCrafingAction();
+                GameManager.Instance.SetSelector();
+                Refresh();
+            }
+            else
+            {
+                GameCard source = TurnManager.Instance.CraftingAction.FindSourceCard();
+                GameManager.Instance.SetSelector();
+                TurnManager.SetCrafingAction();
+                source.ReAddToSlot(false);
+                Refresh();
+                
+            }
+            
+
+        }
+
+        #endregion
+
+
         #endregion
 
 
@@ -452,6 +639,9 @@ namespace Gameplay
 
 
         #endregion
+
+
+       
     }
 }
 

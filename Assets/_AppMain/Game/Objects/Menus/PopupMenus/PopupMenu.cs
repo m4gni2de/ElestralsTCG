@@ -52,7 +52,10 @@ namespace Gameplay.Menus
 
         public GameObject menuObject;
 
-        
+        [SerializeField]
+        private CardObject selectedCard;
+
+        private CardSlot slotFrom = null;
         #endregion
 
         public PopupButton this[string name]
@@ -83,9 +86,6 @@ namespace Gameplay.Menus
                 for (int j = 0; j < buttonsPerPage; j++)
                 {
                     CreateButton(i);
-                    //PopupButton g = Instantiate(_templateButton, pages[i].transform);
-                    //buttons.Add(g);
-                    //g.Clear();
                 }
             }
             menuObject.SetActive(false);
@@ -148,6 +148,7 @@ namespace Gameplay.Menus
         protected void Refresh()
         {
             StopAllCoroutines();
+            selectedCard.LoadCard();
             for (int i = 0; i < buttons.Count; i++)
             {
                 buttons[i].Clear();
@@ -161,17 +162,34 @@ namespace Gameplay.Menus
             _isOpen = true;
             SetButtons(slotFrom);
             StartCoroutine(MoveLine(slotFrom));
+            this.slotFrom = slotFrom;
+
+
+            if (slotFrom.SelectedCard != null)
+            {
+                selectedCard.gameObject.SetActive(true);
+                selectedCard.SetSortingLayer("InputMenus");
+                selectedCard.LoadCard(slotFrom.SelectedCard.card);
+
+            }
+            else
+            {
+                selectedCard.gameObject.SetActive(false);
+            }
+           
 
         }
         public void CloseMenu()
         {
             Refresh();
             menuObject.SetActive(false);
+            selectedCard.gameObject.SetActive(false);
             _isOpen = false;
         }
         public void HideMenu()
         {
             menuObject.SetActive(false);
+            _isOpen = false;
         }
         public void ShowMenu()
         {
@@ -215,12 +233,14 @@ namespace Gameplay.Menus
 
             } while (true && isOpen);
         }
+
+       
         #endregion
 
         #region User Inputs
         public void InputNumber(string title, Action<int> returnedVal, int min = -1, int max = -1)
         {
-            this.Orient(transform);
+            
             StartCoroutine(AwaitNumericInput(title, min, max, callback =>
             {
                 if (callback)
@@ -235,7 +255,7 @@ namespace Gameplay.Menus
 
         protected IEnumerator AwaitNumericInput(string title, int min, int max, Action<bool> callback)
         {
-            NumberInput.Load(transform.parent, title, min, max);
+           NumberInput.Load(transform.parent, title, min, max);
             HideMenu();
             
             do
@@ -266,7 +286,21 @@ namespace Gameplay.Menus
         {
 
         }
-        
+
+        private void LateUpdate()
+        {
+            if (isOpen && slotFrom != null)
+            {
+                RectTransform rect = GetComponent<RectTransform>();
+
+                bool close = false;
+                if (Input.GetMouseButtonDown(0) && !UIHelpers.IsPointerOverMe(rect))
+                {
+                    slotFrom.CloseMenu(false);
+                    slotFrom = null;
+                }
+            }
+        }
     }
 }
 
