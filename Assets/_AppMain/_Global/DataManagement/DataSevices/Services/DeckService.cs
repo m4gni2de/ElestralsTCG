@@ -8,6 +8,8 @@ namespace Databases
 {
     public class DeckService : DataService
     {
+        public static readonly string LocalOwner = "local";
+
         public static readonly int CardLimit = 60;
         public static readonly int SpiritLimit = 20;
         public static readonly int CopyLimit = 3;
@@ -24,8 +26,12 @@ namespace Databases
             return deck;
         }
 
-        public static List<DeckDTO> GetUserDecklist(string userKey)
+        public static List<DeckDTO> GetDecksByOwner(string userKey = "")
         {
+            if (string.IsNullOrWhiteSpace(userKey))
+            {
+                userKey = LocalOwner;
+            }
             string query = $"owner = '{userKey}'";
             List<DeckDTO> list = GetAllWhere<DeckDTO>(DeckTable, query);
             return list;
@@ -38,22 +44,6 @@ namespace Databases
             return cards;
         }
 
-        public static void CopyFromLocal(List<DeckCardDTO> cards, List<DeckDTO> decks)
-        {
-
-            foreach (var item in cards)
-            {
-                Insert(item, DeckListTable);
-            }
-
-            foreach (var deck in decks)
-            {
-                Insert(deck, DeckTable, "deckKey", deck.deckKey);
-            }
-
-            //db.Commit();
-            //db.Close();
-        }
        
     }
 }

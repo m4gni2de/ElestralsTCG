@@ -13,14 +13,14 @@ namespace Gameplay.Messaging
         #endregion
 
         public GameMessage ActiveMessage { get; set; }
-        public TMP_Text messageText;
+        public FormattedText messageText;
         public TouchObject touch;
         public bool isShowing = false;
 
         public void Show(GameMessage msg)
         {
             ActiveMessage = msg;
-            messageText.text = msg.message;
+            messageText.SetText(msg.message);
             gameObject.SetActive(true);
 
 
@@ -35,7 +35,7 @@ namespace Gameplay.Messaging
         public void Hide()
         {
             gameObject.SetActive(false);
-            messageText.text = "";
+            messageText.Blank();
             ActiveMessage = null;
         }
 

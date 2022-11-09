@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: SD03
+  m_EditorClassIdentifier: 
+  m_GroupName: SD03
+  m_Data:
+    m_SerializedData: []
+  m_GUID: a605271db6412aa4e806e57bbade265a
+  m_SerializeEntries:
+  - m_GUID: c799655181c2b7c4bbf6ab1510b91569
+    m_Address: oystress
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: bc5d7fb50a7967049888514d945a85ab, type: 2}
+    - {fileID: 11400000, guid: 7671ab8e06e884a4a90d61d993859941, type: 2}

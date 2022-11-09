@@ -40,6 +40,13 @@ namespace Logging
             DoLines(msg);
         }
 
+        LogEntry(string msg)
+        {
+            When = DateTime.Now;
+            Lines = new string[1];
+            Lines[0] = msg;
+        }
+
         protected void DoLines(string msg)
         {
             Lines = new string[3];
@@ -63,6 +70,11 @@ namespace Logging
         public static LogEntry Log(string msg, LogSeverity logType)
         {
             return new LogEntry(logType, msg);
+        }
+
+        public static LogEntry LogSimple(string msg)
+        {
+            return new LogEntry(msg);
         }
 
         public static LogEntry Message(string msg)
@@ -154,9 +166,17 @@ private static readonly string LogPath = $"{Application.persistentDataPath}/Logg
         {
             return LogEntry.Log(msg, logType);
         }
+        protected static LogEntry WriteLogSimple(string msg)
+        {
+            return LogEntry.LogSimple(msg);
+        }
         public static void Log(string msg)
         {
             WriteLog(CreateLog(msg, LogSeverity.Message));
+        }
+        public static void LogSimple(string msg)
+        {
+            WriteLog(WriteLogSimple(msg));
         }
         public static void Log(string[] msg)
         {

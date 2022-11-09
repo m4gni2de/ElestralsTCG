@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: RuneSprites
+  m_EditorClassIdentifier: 
+  m_GroupName: RuneSprites
+  m_Data:
+    m_SerializedData: []
+  m_GUID: b70421db074f25b438c7139dd98a0b28
+  m_SerializeEntries:
+  - m_GUID: 9a21fe22c31500e4d9420dbe2b000992
+    m_Address: invokeSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 63932fc030f6c714aa6348eea6ffaa5d
+    m_Address: stadiumSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3e772ec9c18e13244951e30406737162
+    m_Address: counterSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4e8406e1a3ba9aa43849b738963869db
+    m_Address: divineSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1e65745dcc8c98548b7690179fc8339f
+    m_Address: artifactSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: d8ca6256b7b790141850266b82ee87cb, type: 2}
+    - {fileID: 11400000, guid: 7f0243b5f4dd92f4cb03d70204330849, type: 2}

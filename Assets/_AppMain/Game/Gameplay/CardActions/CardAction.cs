@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.Threading.Tasks;
+using RiptideNetworking;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Rendering;
@@ -21,7 +23,7 @@ namespace Gameplay
         None = -1,
         Draw = 0,
         Shuffle = 1,
-        Enchant = 2,
+        Cast = 2,
         Mode = 3,
         Attack = 4,
         Nexus = 5,
@@ -30,7 +32,9 @@ namespace Gameplay
     }
     public class CardAction : iFreeze
     {
-
+        #region Static Properties
+        
+        #endregion
 
         public string id;
         public GameCard sourceCard;
@@ -39,6 +43,10 @@ namespace Gameplay
         public bool isRunning { get { return _isRunning; } }
         private bool _isResolved = false;
         public bool isResolved { get { return _isResolved; } }
+
+        private bool _isConfirmed = false;
+        public bool isConfirmed { get { return _isConfirmed; } }
+
         public ActionCategory category
         {
             get
@@ -46,6 +54,8 @@ namespace Gameplay
                 return GetCategory();
             }
         }
+
+
         protected virtual ActionCategory GetCategory()
         {
             return ActionCategory.None;
@@ -62,16 +72,13 @@ namespace Gameplay
 
         private List<CardAction> _responses = null;
         public List<CardAction> Resposnes { get { _responses ??= new List<CardAction>(); return _responses; } }
+
+        private List<GameCard> _responseOptions = null;
+        public List<GameCard> OptionalResponses { get { _responseOptions ??= new List<GameCard>(); return _responseOptions; } }
         public ActionResult actionResult;
 
         private List<IEnumerator> _Movements = null;
         public List<IEnumerator> Movements { get { _Movements ??= new List<IEnumerator>(); return _Movements; } }
-
-        protected string _actionMessage = "";
-        public string ActionMessage { get { return _actionMessage; } }
-
-        protected string _declaredMessage = "";
-        public string DeclaredMessage { get { return _declaredMessage; } }
 
         protected virtual CardActionData GetActionData()
         {
@@ -86,6 +93,26 @@ namespace Gameplay
                 return _ActionData;
             }
         }
+
+        protected string GetActionMessage(bool isRemote)
+        {
+            if (!isRemote) { return LocalActionMessage; }
+            return RemoteActionMessage;
+        }
+
+        protected virtual string LocalActionMessage { get { return ""; } }
+        protected virtual string RemoteActionMessage { get { return LocalActionMessage; } }
+
+        protected string GetDeclaredMessage(bool isRemote)
+        {
+            if (!isRemote) { return LocalDeclareMessage; }
+            return RemoteDeclareMessage;
+        }
+
+        protected virtual string LocalDeclareMessage { get { return ""; } }
+        protected virtual string RemoteDeclareMessage { get { return LocalDeclareMessage; } }
+
+
 
         #region Initialization
         protected CardAction(CardActionData data)
@@ -137,17 +164,18 @@ namespace Gameplay
             else
             {
                 yield return TryAction();
+
             }
         }
         protected virtual IEnumerator TryAction(float waitTime = .1f)
         {
             float acumTime = 0f;
             _isRunning = true;
-            GameMessage message = GameMessage.FromAction(DeclaredMessage, this, true, -1f);
+            GameMessage message = GameMessage.FromAction(GetDeclaredMessage(false), this, true, -1f);
             GameManager.Instance.messageControl.ShowMessage(message);
-            GameManager.DeclareCardAction(this);
             do
             {
+
                 acumTime += Time.deltaTime;
                 yield return new WaitForEndOfFrame();
             } while (acumTime <= waitTime && actionResult == ActionResult.Pending);
@@ -156,8 +184,7 @@ namespace Gameplay
             actionResult = ActionResult.Succeed;
         }
 
-
-
+       
 
         #region Doing Action
 
@@ -165,7 +192,7 @@ namespace Gameplay
         {
             if (actionResult == ActionResult.Succeed)
             {
-                GameMessage message = GameMessage.FromAction(_actionMessage, this, true, actionTime);
+                GameMessage message = GameMessage.FromAction(GetActionMessage(false), this, true, actionTime);
                 GameManager.Instance.messageControl.ShowMessage(message);
                 yield return PerformAction();
             }
@@ -198,6 +225,8 @@ namespace Gameplay
 
         #endregion
 
+        #region Action Ending
+
         private UnityEvent _OnActionEnd = null;
         public UnityEvent OnActionEnd
         {
@@ -223,7 +252,7 @@ namespace Gameplay
             actionResult = result;
 
         }
-
+        #endregion
 
         #region Base Action Commands
 
@@ -348,31 +377,32 @@ namespace Gameplay
         #endregion
 
         #region Action Watchers
-        public virtual void SourceCardWatcher(GameCard card, bool isSelected)
+        public virtual void SetOptionalResponse(GameCard card)
         {
 
-            if (isSelected)
+            if (!OptionalResponses.Contains(card))
             {
-
-                ActionData.SetData(CardActionData.SourceKey, card.cardId);
-            }
-            else
-            {
-                ActionData.SetData(CardActionData.SourceKey, "");
+                OptionalResponses.Add(card);
             }
         }
         #endregion
 
 
-        #region Network Actions
 
-
-
+       
+        [MessageHandler((ushort)FromServer.ActionConfirmed)]
+        private static void ActionConfirmed(Message message)
+        {
+            string dataString = message.GetString();
+            string id = message.GetString();
+        }
         public virtual IEnumerator DisplayRemoteAction()
         {
             this.Freeze();
+
+
             float waitTime = .45f;
-            GameMessage message = GameMessage.FromAction(_actionMessage, this, true, waitTime);
+            GameMessage message = GameMessage.FromAction(RemoteActionMessage, this, true, waitTime);
             GameManager.Instance.messageControl.ShowMessage(message);
 
             float acumTime = 0;
@@ -382,6 +412,7 @@ namespace Gameplay
                 yield return new WaitForEndOfFrame();
             } while (acumTime <= waitTime && !isResolved);
             this.Thaw();
+
         }
         
        
@@ -389,7 +420,7 @@ namespace Gameplay
         {
             actionResult = result;
         }
-        #endregion
+       
 
 
 

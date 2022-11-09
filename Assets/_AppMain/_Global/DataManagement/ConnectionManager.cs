@@ -1,7 +1,12 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Databases;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class ConnectionManager
 {
@@ -12,114 +17,91 @@ public class ConnectionManager
     public static ConnectionManager Instance { get { return _Instance; } }
 
     private DbConnector _conn = null;
-    protected DbConnector conn
+    public DbConnector conn
     {
         get
         {
             if (_conn == null)
             {
-                //if (AppManager.Instance == null)
-                //{
-                //    AppManager.Create();
-                //}
-                //TextAsset db = AssetPipeline.ByKey<TextAsset>(dbName);
-                //_conn = new DbConnector(db);
+                dbAsset = AssetPipeline.ByKey<TextAsset>(dbName);
+                if (dbAsset != null)
+                {
+                    _conn = DbConnector.EditorDb(dbAsset);
+                }
+                else
+                {
+                    App.LogError($"Database Asset name '{dbName}' does not exist as an Addressable. Please check your spelling and try again.");
+                }
             }
             return _conn;
         }
     }
-    public static DbConnector db
-    {
-        get
-        {
-            if (!IsConnected())
-            {
-                Connect("dbInternal");
-            }
-            return Instance.conn;
-        }
-    }
+
     #endregion
 
 
-    //#region Services
-    //private ServiceManager _services = null;
-    //public ServiceManager Services
-    //{
-    //    get
-    //    {
-    //        if (_services == null)
-    //        {
-    //            _services = new ServiceManager();
+#if UNITY_EDITOR
 
-    //        }
-    //        return _services;
 
-    //    }
-    //}
-    //#endregion
-
-    #region Connection Config
     public static bool Connect(string databaseName = "")
     {
-        if (string.IsNullOrEmpty(databaseName))
+        if (_Instance == null)
         {
-            databaseName = dbName;
+            if (EditorApplication.isPlaying)
+            {
+                return App.LogFatal($"This is an Editor Only database manager. Cannot be started in play mode.");
+            }
+
+
+            if (string.IsNullOrEmpty(databaseName))
+            {
+                databaseName = dbName;
+            }
+            if (databaseName.ToLower() != dbName.ToLower())
+            {
+                return App.LogFatal($"Database {databaseName} does not match Database on file.");
+            }
+
+           _Instance = new ConnectionManager();
+            Instance.Do(databaseName);
+           
         }
-        if (databaseName.ToLower() != dbName.ToLower())
-        {
-            //return Log.Warn($"Database {databaseName} does not match Database on file.");
-            return false;
-        }
+        return true;
 
-        DoConnect(databaseName);
-        return IsConnected();
-
-    }
-    protected static void DoConnect(string databaseName)
-    {
-        if (!IsConnected())
-        {
-            _Instance = new ConnectionManager(databaseName);
-        }
 
     }
 
-    public static void Disconnect()
-    {
-        if (IsConnected())
-        {
-            Instance.conn.Flush();
-        }
-    }
-
-    public static bool IsConnected()
-    {
-        return _Instance != null;
-    }
-    #endregion
-
-    ConnectionManager(string databaseName)
-    {
-        Do(databaseName);
-
-
-        
-    }
-
+#endif 
     private void Do(string databaseName)
     {
         dbName = databaseName;
-        dbAsset = AssetPipeline.ByKey<TextAsset>(dbName);
+        dbAsset = AssetPipeline.ByKey<TextAsset>(databaseName);
         if (dbAsset != null)
         {
-            //_conn = new DbConnector(dbAsset);
+            _conn = DbConnector.EditorDb(dbAsset);
         }
         else
         {
-            //Log.Stop($"Database Asset name {databaseName} does not exist as an Addressable. Please check your spelling and try again.");
+            App.LogError($"Database Asset name {databaseName} does not exist as an Addressable. Please check your spelling and try again.");
         }
     }
+
+
+   
+    public static void Disconnect()
+    {
+
+        if (_Instance != null && _Instance._conn != null)
+        {
+            _Instance.conn.Flush();
+            _Instance = null;
+        }
+
+    }
+
+  
+
+    
 
     
 

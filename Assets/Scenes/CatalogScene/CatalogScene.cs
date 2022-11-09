@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class CatalogScene : MonoBehaviour 
+public class CatalogScene : MonoBehaviour , iSceneScript
 { 
     public CardCatalog Catalog;
-    
-   
-    
     
     public static string SceneName
     {
@@ -21,6 +18,16 @@ public class CatalogScene : MonoBehaviour
     {
         App.ChangeScene(SceneName);
     }
+
+    #region Interface
+    public void StartScene()
+    {
+        WorldCanvas.FindCamera();
+        DisplayManager.ClearButton();
+        DisplayManager.ToggleVisible(true);
+        DisplayManager.SetDefault(() => App.TryChangeScene("MainScene"));
+    }
+    #endregion
 
     private void Awake()
     {
@@ -36,6 +43,8 @@ public class CatalogScene : MonoBehaviour
         {
             Catalog.Open();
         }
+
+        StartScene();
     }
 
     // Update is called once per frame

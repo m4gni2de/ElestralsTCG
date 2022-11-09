@@ -16,13 +16,13 @@ public class Launcher
 
     private static void ModeChanged(PlayModeStateChange newState)
     {
-        if (newState == PlayModeStateChange.ExitingPlayMode)
-        {
-            App.Close();
-        }
         if (newState == PlayModeStateChange.EnteredPlayMode || newState == PlayModeStateChange.ExitingPlayMode)
         {
-            
+            if (newState == PlayModeStateChange.ExitingPlayMode)
+            {
+                App.Close();
+            }
+            ConnectionManager.Disconnect();
         }
 
     }
@@ -43,7 +43,7 @@ public class Launcher
     [UnityEditor.Callbacks.DidReloadScripts]
     static void ScriptsReloaded()
     {
-        //
+        ConnectionManager.Disconnect();
     }
 }
 #endif

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: db9919fbb6a6e544da2157ca2b3be490
+guid: b19fc4a90d4f44a498bc80aa568b4171
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,9 +9,9 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Alegreya
+  - Elestrals
   fallbackFontReferences:
-  - {fileID: 12800000, guid: fc09370affef62f4fad983883bc7a620, type: 3}
+  - {fileID: 12800000, guid: 55fee52b2df0021449343b763b5e9eda, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1

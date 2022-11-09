@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Gameplay.CardActions
 {
-    public class AscendAction : CardAction, iEnchant
+    public class AscendAction : CardAction, iCast
     {
         #region Properties
         protected CardSlot toSlot;
@@ -28,7 +28,7 @@ namespace Gameplay.CardActions
         #endregion
 
         #region Interface
-        public bool IsNormalEnchantment()
+        public bool IsNormalCast()
         {
             return true;
         }
@@ -86,6 +86,10 @@ namespace Gameplay.CardActions
         }
         #endregion
 
+        protected override string LocalActionMessage { get { return $"{sourceCard.cardStats.title} Ascends from {tributedCard.cardStats.title}!"; } }
+        protected override string LocalDeclareMessage { get { return $"{sourceCard.cardStats.title} wants to Ascend from {tributedCard.cardStats.title}!"; } }
+
+
         AscendAction(Player p, GameCard newCard, GameCard tributedTarget, List<GameCard> spiritsTaking, GameCard spiritAdded, CardMode cMode) : base(p, newCard)
         {
             toSlot = tributedTarget.CurrentSlot;
@@ -99,8 +103,7 @@ namespace Gameplay.CardActions
         protected void SetDetails()
         {
             actionTime = .65f;
-            _declaredMessage = $"{sourceCard.cardStats.title} wants to Ascend from {tributedCard.cardStats.title}!";
-            _actionMessage = $"{sourceCard.cardStats.title} Ascends from {tributedCard.cardStats.title}!";
+            
 
         }
 

@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using UnityEngine;
 
 namespace Gameplay.Menus
@@ -13,6 +15,9 @@ namespace Gameplay.Menus
 
         protected bool _isDirty = false;
         public bool isDirty { get { return _isDirty; } }
+
+        public event Action<bool> OnMenuToggled;
+        
         #endregion
 
         private void Awake()
@@ -42,10 +47,12 @@ namespace Gameplay.Menus
         public virtual void Open()
         {
             menuObject.SetActive(true);
+            OnMenuToggled?.Invoke(true);
         }
         public virtual void Close()
         {
             menuObject.SetActive(false);
+            OnMenuToggled?.Invoke(false);
         }
 
         public virtual void DisplayError(string error)

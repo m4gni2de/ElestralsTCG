@@ -8,13 +8,20 @@ using System;
 
 namespace Gameplay.Menus
 {
-    public class PopupMenu : MonoBehaviour, iGameMover
+    public class PopupMenu : MonoBehaviour, iGameMover, iFreeze
     {
         #region Properties
+        
         public static PopupMenu Instance { get { return GameManager.Instance.popupMenu; } }
         private static int buttonsPerPage = 5;
         private bool _isOpen = false;
         public bool isOpen { get { return _isOpen; } }
+        public Vector2 menuPosition { get { return menuObject.transform.position; } set { menuObject.transform.position = value; } }
+
+        protected Vector2 DefaultPosition { get; set; }
+
+
+        protected Vector2 maxPos, minPos;
 
         #region UI
         [SerializeField]
@@ -53,7 +60,7 @@ namespace Gameplay.Menus
         public GameObject menuObject;
 
         [SerializeField]
-        private CardObject selectedCard;
+        private CardView selectedCard { get { return GameManager.Instance.DisplayedCard; } set { GameManager.Instance.DisplayedCard = value; } }
 
         private CardSlot slotFrom = null;
         #endregion
@@ -78,6 +85,7 @@ namespace Gameplay.Menus
         private void Awake()
         {
             gameObject.SetActive(true);
+           
             buttons.Add(_templateButton);
             Pages[0].LoadButtons(buttons);
             PageIndex = 0;
@@ -91,6 +99,27 @@ namespace Gameplay.Menus
             menuObject.SetActive(false);
             
         }
+
+        private void Start()
+        {
+            SetDefaults();
+        }
+        private void SetDefaults()
+        {
+            DefaultPosition = menuPosition;
+            //Vector2 max = GameManager.Instance.arena.Width(true);
+            //Vector2 min = GameManager.Instance.arena.GetComponent<RectTransform>().rect.min;
+
+            float width = GameManager.Instance.arena.GetComponent<RectTransform>().right.x;
+            float minX = (width + menuObject.GetComponent<RectTransform>().rect.width) - width;
+            float maxX = width - menuObject.GetComponent<RectTransform>().rect.width;
+
+            maxPos = new Vector2(DefaultPosition.x + menuObject.GetComponent<RectTransform>().rect.width * 1.5f, DefaultPosition.y + menuObject.GetComponent<RectTransform>().rect.height);
+            minPos = new Vector2(DefaultPosition.x - menuObject.GetComponent<RectTransform>().rect.width * 1.5f, DefaultPosition.y - menuObject.GetComponent<RectTransform>().rect.height);
+           
+        }
+
+        
 
         #region Page Management
         protected int GetTotalPages(int buttonCount)
@@ -145,45 +174,49 @@ namespace Gameplay.Menus
         #endregion
 
 
+        #region Opening/Closing
         protected void Refresh()
         {
             StopAllCoroutines();
-            selectedCard.LoadCard();
+            GameManager.Instance.DisplayCard();
             for (int i = 0; i < buttons.Count; i++)
             {
                 buttons[i].Clear();
             }
             PageIndex = 0;
         }
-        public void LoadMenu(CardSlot slotFrom)
+
+
+        public void LoadMenu(CardSlot slotFrom, bool displayCard = true)
         {
             Refresh();
+            if (slotFrom.ButtonCommands.Count == 0) { GameManager.Instance.HideDisplayCard();  return; }
             menuObject.SetActive(true);
             _isOpen = true;
             SetButtons(slotFrom);
+            StopAllCoroutines();
             StartCoroutine(MoveLine(slotFrom));
+            StartCoroutine(MoveMenu(slotFrom.gameObject));
+
             this.slotFrom = slotFrom;
 
-
-            if (slotFrom.SelectedCard != null)
+            if (displayCard && slotFrom.SelectedCard != null)
             {
-                selectedCard.gameObject.SetActive(true);
-                selectedCard.SetSortingLayer("InputMenus");
-                selectedCard.LoadCard(slotFrom.SelectedCard.card);
-
+                GameManager.Instance.DisplayCard(slotFrom.SelectedCard, "InputMenus");
             }
             else
             {
-                selectedCard.gameObject.SetActive(false);
+                GameManager.Instance.HideDisplayCard();
             }
-           
+          
 
         }
         public void CloseMenu()
         {
             Refresh();
             menuObject.SetActive(false);
-            selectedCard.gameObject.SetActive(false);
+            //selectedCard.gameObject.SetActive(false);
+            GameManager.Instance.HideDisplayCard();
             _isOpen = false;
         }
         public void HideMenu()
@@ -212,11 +245,14 @@ namespace Gameplay.Menus
                 b.Show();
                 count += 1;
             }
+
+            
+
         }
+        #endregion
 
 
-      
-        #region Line Display
+        #region Visual Displays
         protected IEnumerator MoveLine(CardSlot slot)
         {
             WaitForEndOfFrame frame = new WaitForEndOfFrame();
@@ -228,13 +264,86 @@ namespace Gameplay.Menus
                     position = slot.SelectedCard.cardObject.transform.position;
                 }
                 line.SetPosition(0, position);
-                line.SetPosition(1, transform.position);
+                line.SetPosition(1, menuPosition);
                 yield return frame;
 
             } while (true && isOpen);
         }
 
-       
+        public IEnumerator MoveMenu(GameObject btn)
+        {
+
+            float targetMin = menuObject.GetComponent<RectTransform>().rect.width;
+            float targetMax = menuObject.GetComponent<RectTransform>().rect.width * 2f;
+            Vector2 targetPos = new Vector2(btn.transform.position.x, menuPosition.y);
+            Vector2 slotPos = btn.transform.position;
+            float distance = (targetPos- menuPosition).magnitude;
+
+
+            Vector2 direction = slotPos - menuPosition;
+            Vector2 perFrame = Time.deltaTime * direction * 2;
+
+
+            float acumTime = 0f;
+            float moveTime = .3f;
+
+            if (distance >= targetMin && distance <= targetMax)
+            {
+                yield return null;
+            }
+            else
+            {
+                do
+                {
+                    direction = slotPos - menuPosition;
+                    perFrame = Time.deltaTime * direction * 2;
+
+                    distance = (targetPos - menuPosition).magnitude;
+                    menuPosition += perFrame;
+                    CheckBounds(menuObject);
+                    yield return new WaitForEndOfFrame();
+                    acumTime += Time.deltaTime;
+                } while (true && isOpen && acumTime <= moveTime && (distance <= targetMin || distance >= targetMax));
+
+
+
+            }
+
+
+            yield return null;
+        }
+
+        public void CheckBounds(GameObject obj)
+    {
+        
+        float maxX = maxPos.x;
+        float minX = minPos.x;
+
+        float maxY = maxPos.y;
+        float minY = minPos.y;
+
+        if (obj.transform.position.x > maxX)
+        {
+            obj.transform.position = new Vector3(maxX, obj.transform.position.y, -5f);
+        }
+
+        if (obj.transform.position.x < minX)
+        {
+            obj.transform.position = new Vector3(minX, obj.transform.position.y, -5f);
+        }
+
+        if (obj.transform.position.y > maxY)
+        {
+            obj.transform.position = new Vector3(obj.transform.position.x, maxY, -5f);
+        }
+
+        if (obj.transform.position.y < minY)
+        {
+            obj.transform.position = new Vector3(obj.transform.position.x, minY, -5f);
+        }
+    }
+
+
         #endregion
 
         #region User Inputs
@@ -260,8 +369,10 @@ namespace Gameplay.Menus
             
             do
             {
+                
                 yield return new WaitForEndOfFrame();
             } while (true && !NumberInput.Instance.IsHandled);
+           
 
             if (NumberInput.Instance.Result == InputBox.InputResult.Confirm)
             {
@@ -291,9 +402,8 @@ namespace Gameplay.Menus
         {
             if (isOpen && slotFrom != null)
             {
-                RectTransform rect = GetComponent<RectTransform>();
+                RectTransform rect = menuObject.GetComponent<RectTransform>();
 
-                bool close = false;
                 if (Input.GetMouseButtonDown(0) && !UIHelpers.IsPointerOverMe(rect))
                 {
                     slotFrom.CloseMenu(false);
@@ -301,6 +411,8 @@ namespace Gameplay.Menus
                 }
             }
         }
+
+        
     }
 }
 

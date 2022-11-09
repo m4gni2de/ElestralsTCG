@@ -13,6 +13,7 @@ namespace Databases
         public string typeName { get; set; }
         public string keystrokeCode { get; set; }
         public string unicode { get; set; }
+        public string colorCode { get; set; }
 
     }
 }

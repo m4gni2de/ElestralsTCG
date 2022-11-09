@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: MiscCardSprites
+  m_EditorClassIdentifier: 
+  m_GroupName: MiscCardSprites
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 49a8e650bfad5be428118b8302e57a9a
+  m_SerializeEntries:
+  - m_GUID: e70d181a5f079e94ba50f12eb9c78169
+    m_Address: cardbackSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 66dd52e4fe6dbe14f9cb4ad0e82323dd
+    m_Address: defaultcard
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dad1e5efbce8c7b49b46e0a2e2167ea2
+    m_Address: cardBorder
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 813709de2c6504d4b871b19d7be59604
+    m_Address: shieldSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cb2812ffe41d7e14db81a0f1f6eb6187
+    m_Address: swordSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5b89e28a45d36e34daf269b97fbbdc52
+    m_Address: blankCardSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 226804d95a1edc94a8fa7765a25a34a1, type: 2}
+    - {fileID: 11400000, guid: 3763df0b2020e10449e764f333971422, type: 2}

@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Materials
+  m_EditorClassIdentifier: 
+  m_GroupName: Materials
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 735a9bb00f7a9e646a2f13ce29552054
+  m_SerializeEntries:
+  - m_GUID: dcc44dd8b390ac34f8b54459de189898
+    m_Address: windFontEffect
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 34283bca1d950d349a580753a8e3febc
+    m_Address: earthFontEffect
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 40a60d5a18f0af244a17f8bd34804ce6
+    m_Address: fireFontEffect
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5670260866f3c594dae0758a5b1ba267
+    m_Address: thunderFontEffect
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 16f1be9055bbcf049a83066ccb08055e
+    m_Address: waterFontEffect
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 997ec95eaeacead4389031d9c4042c5c
+    m_Address: windFontName
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 11ab771419b38c441902e028c8527ade
+    m_Address: thunderFontName
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cb7959d6739f2924c9d863079a914437
+    m_Address: fireFontName
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e21883e6d58f02943a5ffc96154730e9
+    m_Address: earthFontName
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 46b809df52509c7449b26b6fb5a3de82
+    m_Address: waterFontName
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 036b6b614b5604a4b8865738f973ac3b, type: 2}
+    - {fileID: 11400000, guid: 5f5fdc3ab14227149ab7aeeca57136ca, type: 2}

@@ -22,9 +22,9 @@ namespace Gameplay
                 return _empoweringRunes;
             }
         }
-        protected override void SetSlot()
+        protected override void WakeSlot()
         {
-            base.SetSlot();
+            base.WakeSlot();
             facing = CardFacing.FaceUp;
             orientation = Orientation.Both;
             slotType = CardLocation.Elestral;
@@ -45,19 +45,13 @@ namespace Gameplay
                 }
                 if (GameManager.Instance.popupMenu.isOpen)
                 {
-                    if (sameCard)
-                    {
-                        GameManager.Instance.popupMenu.CloseMenu();
-                    }
-                    else
-                    {
-                        GameManager.Instance.popupMenu.LoadMenu(this);
-                    }
+                    if (sameCard) { ClosePopMenu(); } else { OpenPopMenu(); }
                     
                 }
                 else
                 {
-                    GameManager.Instance.popupMenu.LoadMenu(this);
+                    //GameManager.Instance.popupMenu.LoadMenu(this);
+                    OpenPopMenu();
                 }
 
             }
@@ -105,20 +99,7 @@ namespace Gameplay
             return false;
         }
 
-        public override void OpenPopMenu()
-        {
-            if (MainCard != null)
-            {
-                if (MainCard == SelectedCard)
-                {
-                    base.OpenPopMenu();
-
-                }
-                //SetSelectedCard(MainCard);
-               
-            }
-            
-        }
+       
         #region Slot Menu
 
         protected override bool GetClickValidation()
@@ -126,9 +107,6 @@ namespace Gameplay
             
             bool isYours = Owner.userId == App.WhoAmI;
             bool validate = isYours;
-
-
-
             return validate;
         }
 
@@ -140,13 +118,27 @@ namespace Gameplay
 
             if (IsYours)
             {
-                commands.Add(PopupCommand.Create("Change Mode", () => ChangeModeCommand()));
+              
+                if (SelectedCard.CardType == CardType.Elestral)
+                {
+                    commands.Add(PopupCommand.Create("Change Mode", () => ChangeModeCommand()));
+                    //this Command is for when 'Real Rules' are not in place and players are allowed to free drag.
+                    commands.Add(PopupCommand.Create("Cast", () => CastToSlotCommand(SelectedCard, this)));
+                    commands.Add(PopupCommand.Create("Enchant", () => EnchantCommand(1)));
+                    commands.Add(PopupCommand.Create("Ascend", () => AscendCommand()));
+                    commands.Add(PopupCommand.Create("DisEnchant", () => DisEnchantCommand(), 1, 0));
+                    commands.Add(PopupCommand.Create("Nexus", () => NexusCommand(), 1, 1));
+                    commands.Add(PopupCommand.Create("Attack", () => AttackCommand()));
+                }
+                else
+                {
+                   
+                    commands.Add(PopupCommand.Create("Move", () => ManageCards(cards, "Select Cards to Move", true, 1, cards.Count)));
+                }
+                
+               
                 //commands.Add(PopupCommand.Create("Move", () => MoveCommand()));
-                commands.Add(PopupCommand.Create("Enchant", () => EnchantCommand(true)));
-                commands.Add(PopupCommand.Create("Ascend", () => AscendCommand()));
-                commands.Add(PopupCommand.Create("DisEnchant", () => EnchantCommand(false), 1, 0));
-                commands.Add(PopupCommand.Create("Nexus", () => NexusCommand(), 1, 1));
-                commands.Add(PopupCommand.Create("Attack", () => AttackCommand()));
+               
             }
 
            
@@ -163,7 +155,7 @@ namespace Gameplay
         }
 
         #region Change Card Mode
-        protected void ChangeModeCommand()
+        protected override void ChangeModeCommand()
         {
             CardMode current = SelectedCard.mode;
             CardMode newMode = CardMode.Defense;
@@ -177,88 +169,22 @@ namespace Gameplay
         }
         
         #endregion
-        protected void MoveCommand()
-        {
-
-        }
-
-
+       
         #region Enchant Command
-        protected void EnchantCommand(bool adding)
-        {
-            if (adding)
-            {
-                int enchantCount = SelectedCard.card.SpiritsReq.Count;
-                List<GameCard> toShow = Owner.gameField.SpiritDeckSlot.cards;
 
-                string title = $"Select {enchantCount} Spirits for Enchantment of {SelectedCard.name}";
-                BrowseMenu.LoadCards(toShow, title, true, enchantCount, enchantCount);
-                BrowseMenu.EnchantMode(SelectedCard);
-                ClosePopMenu(true);
-                BrowseMenu.OnEnchantClose += AwaitEnchantClose;
-            }
-            else
-            {
-                List<GameCard> toShow = new List<GameCard>();
-                for (int i = 0; i < cards.Count; i++)
-                {
-                    if (cards[i].CardType == CardType.Spirit)
-                    {
-                        toShow.Add(cards[i]);
-                    }
-                }
-                int maxEnchantCount = toShow.Count;
-                int minCount = 1;
-                
-
-                string title = $"Select {minCount} Spirits to DisEnchant from {SelectedCard.name}";
-                BrowseMenu.LoadCards(toShow, title, true, minCount, maxEnchantCount);
-                BrowseMenu.EnchantMode(SelectedCard, null, false);
-                ClosePopMenu(true);
-                BrowseMenu.OnMenuClose += AwaitDisEnchantClose;
-            }
-           
-            
-
-        }
-        protected void AwaitEnchantClose(List<GameCard> selectedCards, CardMode cMode)
-        {
-            BrowseMenu.OnEnchantClose -= AwaitEnchantClose;
-            if (cMode == CardMode.None) { return; }
-
-            List<GameCard> cardsList = new List<GameCard>();
-            for (int i = 0; i < selectedCards.Count; i++)
-            {
-                cardsList.Add(selectedCards[i]);
-            }
-            GameManager.Instance.ReEnchant(Owner, MainCard, cardsList);
-            Refresh();
-
-        }
-        protected void AwaitDisEnchantClose(List<GameCard> selectedCards)
-        {
-            BrowseMenu.OnMenuClose -= AwaitDisEnchantClose;
-            List<GameCard> cardsList = new List<GameCard>();
-            for (int i = 0; i < selectedCards.Count; i++)
-            {
-                cardsList.Add(selectedCards[i]);
-            }
-            GameManager.Instance.DisEnchant(Owner, MainCard, cardsList, Owner.gameField.UnderworldSlot);
-            Refresh();
-
-        }
-
-
-        public override void AddCardToSlotCommand(GameCard card, CardSlot from)
+        // right now, this command works for dragging an elestral on to the slot and then doing the Cast from there, or doing an Enchant from an Elestral that already exists in the slot
+        //currently app just assumes there will be clicking and dragging, so you might be technically Casting a card that you drag to the field first
+       
+        public override void CastToSlotCommand(GameCard card, CardSlot from)
         {
             int enchantCount = card.card.SpiritsReq.Count;
             List<GameCard> toShow = Owner.gameField.SpiritDeckSlot.cards;
 
-            string title = $"Select {enchantCount} Spirits for Enchantment of {card.name}";
+            string title = $"Select {CardUI.AnySpiritUnicode(enchantCount)} for Cast of {card.name}";
             GameManager.Instance.browseMenu.LoadCards(toShow, title, true, enchantCount, enchantCount);
-            GameManager.Instance.browseMenu.EnchantMode(card, this);
+            GameManager.Instance.browseMenu.CastMode(card, this);
             ClosePopMenu(true);
-            BrowseMenu.OnClosed += EnchantToClose;
+            BrowseMenu.OnClosed += CastToClose;
 
             //do something if you drag an Artifact card on to an Elestral slot with an Elestral on it
             if (card.CardType == CardType.Rune && card.cardStats.Tags.Contains(CardTag.Artifact))
@@ -307,13 +233,16 @@ namespace Gameplay
         }
         protected void AwaitAttackSelection(bool isSuccess, SlotSelector selector)
         {
+            GameManager.Instance.currentSelector.OnSelectionHandled -= AwaitAttackSelection;
             if (!isSuccess) { return; }
             List<CardSlot> attackTargets = selector.SelectedSlots;
             for (int i = 0; i < attackTargets.Count; i++)
             {
                 GameManager.Instance.ElestralAttack(MainCard, attackTargets[i]);
-                GameManager.Instance.SetSelector();
+                
             }
+            GameManager.Instance.SetSelector();
+            Refresh();
         }
     
         #endregion
@@ -349,7 +278,7 @@ namespace Gameplay
 
 
             string title = $"Select Catalyst Spirit to Ascend from {SelectedCard.name} to {sourceCard.name}.";
-            BrowseMenu.EnchantLoad(Owner.gameField.SpiritDeckSlot.cards, title, true, 1, 1, sourceCard, true);
+            BrowseMenu.CastLoad(Owner.gameField.SpiritDeckSlot.cards, title, true, 1, 1, sourceCard, true);
             ClosePopMenu(true);
             BrowseMenu.OnClosed += DoAscend;
         }
@@ -364,7 +293,7 @@ namespace Gameplay
             else
             {
                 this.AddActionData("catalyst_spirit", args.Selections[0].cardId);
-                this.AddActionData("card_mode", (int)args.EnchantMode);
+                this.AddActionData("card_mode", (int)args.CastMode);
                 this.GetCraftingAction().SetSpiritList(SelectedCard.EnchantingSpirits);
                 this.GetCraftingAction().SetResult(ActionResult.Succeed);
                 AscendAction toSend = AscendAction.FromData(this.GetCraftingAction());

@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: StoneSprites
+  m_EditorClassIdentifier: 
+  m_GroupName: StoneSprites
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 8f75aa84019e9cc45aeff6a2d4bc9de4
+  m_SerializeEntries:
+  - m_GUID: 4ce70f95e489f284f9baf8faccc42583
+    m_Address: stoneRune
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0fe7df52c7c53bf4795ea4f06efb1407
+    m_Address: stoneElestral
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a034a78a5fc2bba44a777bcdf9d5e03f
+    m_Address: fa_RuneStone
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a30f63304c579ac43ba0f0297d33b877
+    m_Address: fa_ElestralStone
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 834d0367e5044ea4d82b780042f5c3d7
+    m_Address: stoneSpirit
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 6be820566c8e520489e10c63fa517de6, type: 2}
+    - {fileID: 11400000, guid: dac0ffcd4171dee4e8169fbf0954a7da, type: 2}

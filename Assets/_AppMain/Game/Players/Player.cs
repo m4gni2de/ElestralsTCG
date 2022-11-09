@@ -18,6 +18,7 @@ namespace Gameplay
     {
 
 
+        public static int DeckSize = 60;
         public static Player LocalPlayer
         {
             get
@@ -37,10 +38,12 @@ namespace Gameplay
         public bool IsHost { get; private set; }
         public string deckUploadKey { get; private set; }
         public bool IsLoaded { get; private set; } = false;
+        private List<ServerCard> _serverCards = null;
+        public List<ServerCard> ServerCards { get { _serverCards ??= new List<ServerCard>(); return _serverCards; } }
         #endregion
 
         #region Networking
-
+        
 
 
         #region Message Responses

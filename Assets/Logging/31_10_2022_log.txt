@@ -1,0 +1,7 @@
+10/31/2022 10:03:45 AM - Log Created.
+There is no account in use.
+Fatal
+Monday, October 31, 2022
+AppManager is not yet loaded so the Database connection cannot be created!
+Error
+Monday, October 31, 2022

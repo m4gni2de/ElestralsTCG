@@ -27,6 +27,7 @@ namespace PopupBox
         {
             ToggleHandled(false);
             gameObject.SetActive(true);
+            txtMessage.text = "";
             ConfirmButton.onClick.RemoveAllListeners();
             CancelButton.onClick.RemoveAllListeners();
         }

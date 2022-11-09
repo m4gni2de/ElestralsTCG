@@ -15,13 +15,17 @@ using Databases;
 using Gameplay;
 using RiptideNetworking;
 using UnityEngine.Networking;
+using System.Security.Permissions;
+using System.Net.Sockets;
+using AppManagement;
+using UnityEngine.Events;
 #if UNITY_EDITOR
 using ParrelSync;
 #endif
 
 public class AppManager : MonoBehaviour
 {
-   
+
     #region Initialization & Startup
     private void Awake()
     {
@@ -33,6 +37,7 @@ public class AppManager : MonoBehaviour
         }
     }
 
+    #region Assets
     private void CheckAssets()
     {
         Addressables.InitializeAsync().Completed += LoadApp;
@@ -48,29 +53,36 @@ public class AppManager : MonoBehaviour
         bool hasUpdate = data != null;
         if (data != null)
         {
-            
+
             List<string> items = data.Item1;
             double size = data.Item2;
             if (size > 0)
             {
                 Instance.ShowLoadingBar("Items Downloaded", 0f, items.Count);
-               
+                //AssetPipeline.DoRedownloadAllCards();
+
             }
-            
+
         }
 
-        //AssetPipeline.DownloadDefaults();
-        CardConfig.LoadConfigs();
+        
+        //AssetPipeline.DoRedownloadAllCards();
         if (hasDb)
         {
             SetupManager();
             //AssetPipeline.DoRedownloadAllCards();
             CheckForAccount();
-            
-        }
-       
-    }
 
+        }
+
+    }
+    #endregion
+
+
+    private void Start()
+    {
+
+    }
 
 
 
@@ -104,7 +116,7 @@ CheckForAccountDevice();
             if (!App.AccountExists)
             {
                 App.LoadGuest();
-                
+
                 return;
             }
         }
@@ -116,20 +128,20 @@ CheckForAccountDevice();
                 if (ClonesManager.IsClone())
                 {
                     App.LoadGuest();
-                   
+
                     return;
                 }
                 else
                 {
                     App.LoadUserAccount();
-                   
+
                     return;
                 }
 
             }
             else
             {
-                
+
                 CreateAccount();
             }
         }
@@ -144,7 +156,7 @@ CheckForAccountDevice();
             if (exists)
             {
                 App.LoadUserAccount();
-                
+
             }
             else
             {
@@ -191,8 +203,8 @@ CheckForAccountDevice();
         else
         {
             string username = TextInput.Instance.Value;
-            User.Create(username);
-            App.ChangeScene(MainScene.SceneName);
+            User u = User.Create(username);
+            App.LoadAccount(u);
         }
     }
     #endregion
@@ -226,17 +238,17 @@ CheckForAccountDevice();
         }
     }
 
-#region Pause/Play Management
+    #region Pause/Play Management
     public static float TimeScale { get { return Time.timeScale; } set { Time.timeScale = value; } }
     public static bool IsPlaying { get { return TimeScale > 0; } }
     public static void Pause() { TimeScale = 0f; }
     public static void Resume() { TimeScale = 1f; }
-#endregion
-#endregion
+    #endregion
+    #endregion
 
-#region UI Properties
+    #region UI Properties
 
-#region Global Objects
+    #region Global Objects
     private GlobalObject _worldCanvas = null;
     public GlobalObject worldCanvas { get { return _worldCanvas; } set { _worldCanvas = value; } }
 
@@ -244,32 +256,24 @@ CheckForAccountDevice();
     private Canvas appCanvas;
     public Blocker appBlocker;
     public LoadingBar loadingBar;
-    
+    public DisplayManager displayManager;
 
     private static bool _IsFrozen = false;
     public static bool IsFrozen { get { return _IsFrozen; } }
-#endregion
+    #endregion
     public int GetManagerLayer()
     {
         return SortingLayer.GetLayerValueFromName("AppManager");
     }
-#endregion
+    #endregion
 
-#region Events
+    #region Events
     public static event Action ChangeLoadingText;
-#endregion
+    #endregion
 
-#region Click Management
-    public static iHold ActiveHoldObject { get; set; }
-    protected bool IsClicked = false;
-    public static void SetHoldObject(iHold hold = null)
-    {
-        ActiveHoldObject = hold;
-    }
-
-
-
-#region Game Time/Freeze Management
+    #region Click Management
+   
+    #region Game Time/Freeze Management
     [SerializeField]
     private GameLog _freezeLog = null;
     public GameLog FreezeLog { get { _freezeLog ??= GameLog.Create("FreezeLog", false); return _freezeLog; } }
@@ -278,7 +282,11 @@ CheckForAccountDevice();
     public static void Freeze(bool isFreeze = true)
     {
         _IsFrozen = isFreeze;
-        CameraMotion.main.Freeze(_IsFrozen);
+        if (CameraMotion.main != null)
+        {
+            CameraMotion.main.Freeze(_IsFrozen);
+        }
+        
     }
     public static void Freeze(iFreeze obj)
     {
@@ -288,7 +296,7 @@ CheckForAccountDevice();
             string logMsg = $"{obj} was added as a Freeze Object. There are now {FreezeObjects.Count} Freeze Objects.";
             Instance.FreezeLog.AddLog(logMsg);
         }
-        
+
         Freeze(true);
     }
     public static void Thaw(iFreeze obj)
@@ -304,9 +312,9 @@ CheckForAccountDevice();
             Freeze(false);
         }
     }
-#endregion
+    #endregion
 
-#endregion
+    #endregion
 
 
     private void OnEnable()
@@ -315,7 +323,7 @@ CheckForAccountDevice();
         appCanvas.renderMode = RenderMode.ScreenSpaceCamera;
         appCanvas.worldCamera = Camera.main;
         appCanvas.sortingLayerName = "AppManager";
-        appCanvas.sortingOrder = 0;
+        appCanvas.sortingOrder = 1;
     }
 
     protected void SetupManager()
@@ -327,17 +335,23 @@ CheckForAccountDevice();
         appBlocker.HideBlocker();
     }
 
+    
     private void OnSceneChange(Scene arg0, Scene arg1)
     {
+        
         SetUI();
+        
     }
 
     protected void SetUI()
     {
         worldCanvas = WorldCanvas.Instance;
+        
+        PopupManager.SetActivePopup();
+        
     }
 
-#region Update
+    #region Update
     private void Update()
     {
         //if (!IsClicked)
@@ -357,12 +371,25 @@ CheckForAccountDevice();
         //{
         //    if (!Input.GetMouseButton(0)) { IsClicked = false; }
         //}
-        
+
     }
-#endregion
+    #endregion
 
-#region Quitting
+    #region Quitting
 
+
+    public void TryQuit()
+    {
+        App.AskYesNo($"Do you want to quit the app?", ConfirmQuit);
+    }
+
+    private void ConfirmQuit(bool quit)
+    {
+        if (quit)
+        {
+            Application.Quit();
+        }
+    }
     private void OnApplicationQuit()
     {
         if (Instance != null)
@@ -378,7 +405,7 @@ CheckForAccountDevice();
         }
         //_SessionEnd = DateTime.Now;
         //LogSession();
-        
+
     }
     public void End()
     {
@@ -388,12 +415,12 @@ CheckForAccountDevice();
             dbConnector.Flush();
             Instance = null;
         }
-        
-       
-        
+
+
+
     }
 
-   
+
     private void LogSession()
     {
         string[] lines = new string[3];
@@ -404,9 +431,9 @@ CheckForAccountDevice();
         lines[2] = $"Total Time: {total}";
         App.Log(lines);
     }
-#endregion
+    #endregion
 
-#region Object Management
+    #region Object Management
     public void ShowObject(GameObject obj, int sortLayer)
     {
         int highestSort = GetManagerLayer();
@@ -433,11 +460,72 @@ CheckForAccountDevice();
     }
 
 
+    public void DoAssetLoad<T>(string key)
+    {
+        StartCoroutine(AwaitAssetLoad<T>(key));
+    }
 
-#endregion
+    private IEnumerator AwaitAssetLoad<T>(string key)
+    {
+        loadingBar.Display($"Initializing {key}", 0f, 1f, 0f);
+        AsyncOperationHandle<T> handle = Addressables.LoadAssetAsync<T>(key);
+
+        do
+        {
+            yield return new WaitForEndOfFrame();
+            if (loadingBar != null)
+            {
+                loadingBar.SetSlider(handle.PercentComplete);
+            }
+
+        } while (true && !handle.IsDone);
+        yield return handle;
+
+    }
 
 
-#region Outbound Connections
+    public static event Action AssetsLoadComplete;
+    public void DoMultipleAssetLoad<T>(List<string> keys)
+    {
+        StartCoroutine(AwaitMulitpleAssets<T>(keys));
+    }
+
+    private IEnumerator AwaitMulitpleAssets<T>(List<string> keys)
+    {
+        int count = keys.Count;
+        loadingBar.Display($"Initializing assets", 0f, count, 0f);
+
+
+        int doneCount = 0;
+        do
+        {
+            AsyncOperationHandle<T> handle = Addressables.LoadAssetAsync<T>(keys[doneCount]);
+            do
+            {
+                loadingBar.SetText($"{keys[doneCount]} - {handle.PercentComplete * 100f}%");
+                //yield return new WaitForEndOfFrame();
+                yield return null;
+                loadingBar.SetText($"{keys[doneCount]} - {handle.PercentComplete * 100f}%");
+            } while (!handle.IsDone);
+
+            yield return handle;
+            loadingBar.MoveSlider(1f);
+            doneCount += 1;
+
+
+        } while (true && doneCount < count);
+
+
+        loadingBar.Hide();
+        AssetsLoadComplete?.Invoke();
+
+    }
+    #endregion
+
+   
+
+
+    #region Outbound Connections
 
     public static async Task<string> DoPostRequestWithPayload(string url, WWWForm payload)
     {
@@ -454,9 +542,8 @@ CheckForAccountDevice();
                 await Task.Delay(100);
             if (www.result == UnityWebRequest.Result.ConnectionError)
             {
-                string title = "Error";
                 string msg = www.error.ToString();
-                //GameManager.Instance.ShowMessage(title, msg);
+                App.DisplayError($"Error: {msg}", null, true);
                 return "error";
             }
             else
@@ -468,10 +555,8 @@ CheckForAccountDevice();
                 }
                 else
                 {
-                    string title = "Error";
                     string msg = www.responseCode.ToString();
-                    Debug.Log(msg);
-                    //GameManager.Instance.ShowMessage(title, msg);
+                    App.DisplayError($"Error: {msg}", null, true);
                     return "error";
                 }
             }
@@ -517,5 +602,9 @@ CheckForAccountDevice();
 
         }
     }
-#endregion
+    #endregion
+
+
+
+   
 }

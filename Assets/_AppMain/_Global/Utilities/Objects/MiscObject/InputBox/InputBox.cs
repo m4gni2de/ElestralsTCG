@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class InputBox : MonoBehaviour
+public class InputBox : MonoBehaviour, iFreeze
 {
     [SerializeField]
     protected TMP_InputField _input;

@@ -9,6 +9,7 @@ using UnityEngine.UI;
 using static Gameplay.Menus.CardBrowseMenu;
 using Gameplay.CardActions;
 using Gameplay.Turns;
+using UnityEngine.UIElements;
 
 namespace Gameplay
 {
@@ -144,7 +145,7 @@ namespace Gameplay
 
         #region Functions/Commands
         public bool IsOpen { get => GetIsOpen(); }
-        protected virtual bool GetIsOpen() { return!isBlocked && MainCard == null; }
+        protected virtual bool GetIsOpen() { return !isBlocked && MainCard == null; }
         public bool Validate { get { return GetClickValidation(); } }
         public bool ValidatePlayer()
         {
@@ -197,11 +198,14 @@ namespace Gameplay
             name = $"{slotType}{index}";
             rect = GetComponent<RectTransform>();
             GetSpriteRenderer();
-            SetSlot();
+            WakeSlot();
 
         }
+        protected void Start()
+        {
+            StartSlot();
+        }
 
-        
 
         protected virtual void GetSpriteRenderer()
         {
@@ -215,10 +219,16 @@ namespace Gameplay
             }
 
         }
-        protected virtual void SetSlot()
+        protected virtual void WakeSlot()
         {
            
         }
+        protected virtual void StartSlot()
+        {
+
+        }
+
+
 
         public virtual void SetPlayer(Player owner, int count)
         {
@@ -249,10 +259,7 @@ namespace Gameplay
             
         }
 
-        protected void Start()
-        {
-            
-        }
+       
         #endregion
 
         #region Drag Validation
@@ -320,8 +327,8 @@ namespace Gameplay
             {
                 to.AddHoldListener(() => DragCard(card));
             }
-        
-    }
+
+        }
 
     protected virtual void DragCard(GameCard card)
     {
@@ -336,7 +343,7 @@ namespace Gameplay
             SetCommands(card);
         }
         DisplayCardObject(card);
-        NetworkPipeline.SendNewCardSlot(card.cardId, slotId);
+        NetworkPipeline.SendNewCardSlot(card.cardId, slotId, card.mode);
         
         
     }
@@ -424,103 +431,31 @@ namespace Gameplay
 
         #endregion
 
-        #region Enchant Commands
+        #region Cast Commands
 
-        public void BaseEnchantCommand()
+        public void BaseCastCommand()
         {
-            StartEnchantCommand();
+            StartCastCommand();
         }
 
-
-        protected void StartEnchantCommand()
+        /// <summary>
+        /// Start the action of Casting a card. Game calculates first available slot for casting this way, since only the card is selected to initiate the cast.
+        /// </summary>
+        #region Cast to Field
+        protected void StartCastCommand()
         {
-            int enchantCount = SelectedCard.card.SpiritsReq.Count;
+            int castCount = SelectedCard.card.SpiritsReq.Count;
             List<GameCard> toShow = Owner.gameField.SpiritDeckSlot.cards;
 
-            string title = $"Select {enchantCount} Spirits for Enchantment of {SelectedCard.name}";
-            GameManager.Instance.browseMenu.LoadCards(toShow, title, true, enchantCount, enchantCount);
-            GameManager.Instance.browseMenu.EnchantMode(SelectedCard);
+            string title = $"Select {CardUI.AnySpiritUnicode(castCount)} to Cast {SelectedCard.card.cardData.cardName}";
+            GameManager.Instance.browseMenu.LoadCards(toShow, title, true, castCount, castCount);
+            GameManager.Instance.browseMenu.CastMode(SelectedCard);
             ClosePopMenu(true);
-            GameManager.Instance.browseMenu.OnEnchantClose += DoEnchant;
+            GameManager.Instance.browseMenu.OnCastClose += CastToField;
         }
-
-        #region Enchant To Command
-        
-        public virtual void AddCardToSlotCommand(GameCard card, CardSlot from)
+        protected virtual void CastToField(List<GameCard> selectedCards, CardMode cMode)
         {
-            int enchantCount = card.card.SpiritsReq.Count;
-            List<GameCard> toShow = Owner.gameField.SpiritDeckSlot.cards;
-
-            string title = $"Select {enchantCount} Spirits for Enchantment of {card.name}";
-            GameManager.Instance.browseMenu.LoadCards(toShow, title, true, enchantCount, enchantCount);
-            GameManager.Instance.browseMenu.EnchantMode(card, this);
-            ClosePopMenu(true);
-            BrowseMenu.OnClosed += EnchantToClose;
-        }
-
-        protected void EnchantToClose(BrowseArgs args)
-        {
-            BrowseMenu.OnClosed -= EnchantToClose;
-            if (args.EnchantMode == CardMode.None) { Refresh();  args.SourceCard.ReAddToSlot(false);   return; }
-
-            List<GameCard> cardsList = new List<GameCard>();
-            for (int i = 0; i < args.Selections.Count; i++)
-            {
-                cardsList.Add(args.Selections[i]);
-            }
-
-            if (args.SourceCard.card.CardType == CardType.Rune)
-            {
-                RuneEnchantClose(args.SourceCard, args.SelectedSlot, cardsList, args.EnchantMode);
-            }
-            else
-            {
-                GameManager.Instance.NormalEnchant(Owner, args.SourceCard, cardsList, args.SelectedSlot, args.EnchantMode);
-                Refresh();
-            }
-        }
-        #endregion
-        //protected void BaseEnchantClose(List<GameCard> selectedCards, CardMode cMode)
-        //{
-
-        //    GameManager.Instance.browseMenu.OnEnchantClose -= BaseEnchantClose;
-        //    if (cMode == CardMode.None) { return; }
-
-        //    Field f = GameManager.Instance.arena.GetPlayerField(Owner);
-        //    List<GameCard> cardsList = new List<GameCard>();
-        //    for (int i = 0; i < selectedCards.Count; i++)
-        //    {
-        //        cardsList.Add(selectedCards[i]);
-        //    }
-        //    GameCard Selected = SelectedCard;
-        //    CardSlot slot = f.ElestralSlot(0, true);
-
-
-
-        //    if (Selected.card.CardType == CardType.Rune)
-        //    {
-        //        slot = f.RuneSlot(0, true);
-        //        Rune r = (Rune)Selected.card;
-
-        //        if (r.GetRuneType == Rune.RuneType.Stadium)
-        //        {
-        //            slot = f.StadiumSlot;
-        //        }
-        //        RuneEnchantClose(Selected, slot, cardsList, cMode);
-        //    }
-        //    else
-        //    {
-        //        GameManager.Instance.NormalEnchant(Owner, Selected, cardsList, slot, cMode);
-        //        Refresh();
-        //    }
-
-            
-
-        //}
-
-        protected virtual void DoEnchant(List<GameCard> selectedCards, CardMode cMode)
-        {
-            GameManager.Instance.browseMenu.OnEnchantClose -= DoEnchant;
+            GameManager.Instance.browseMenu.OnCastClose -= CastToField;
             if (cMode == CardMode.None) { return; }
 
             Field f = GameManager.Instance.arena.GetPlayerField(Owner);
@@ -540,46 +475,50 @@ namespace Gameplay
                 {
                     slot = f.StadiumSlot;
                 }
-                RuneEnchantClose(SelectedCard, slot, cardsList, cMode);
+                RuneCastClose(SelectedCard, slot, cardsList, cMode);
 
             }
             else
             {
-                GameManager.Instance.NormalEnchant(Owner, Selected, cardsList, slot, cMode);
+                GameManager.Instance.Cast(Owner, Selected, cardsList, slot, cMode);
                 Refresh();
             }
-            
 
-           
+
+
         }
 
-        protected void RuneEnchantClose(GameCard Selected, CardSlot slot, List<GameCard> cardsList, CardMode cMode)
+        protected void RuneCastClose(GameCard Selected, CardSlot slot, List<GameCard> cardsList, CardMode cMode)
         {
-            
+
             if (cMode == CardMode.Defense)
             {
-                GameManager.Instance.SetEnchant(Owner, Selected, slot);
+                GameManager.Instance.SetCast(Owner, Selected, slot);
                 Refresh();
                 return;
             }
             else
             {
-                
+
                 if (Selected.cardStats.Tags.Contains(CardTag.Artifact))
                 {
-                    EnchantAction ac = EnchantAction.Normal(Owner, Selected, cardsList, slot, cMode);
+                    CastAction ac = CastAction.Cast(Owner, Selected, cardsList, slot, cMode);
                     TurnManager.SetCrafingAction(ac.ActionData);
                     ChooseEmpoweredElestral();
                 }
                 else
                 {
-                    GameManager.Instance.NormalEnchant(Owner, Selected, cardsList, slot, cMode);
+                    GameManager.Instance.Cast(Owner, Selected, cardsList, slot, cMode);
                     Refresh();
 
                 }
             }
         }
 
+        #endregion
+
+
+        #region Empowering
         protected void ChooseEmpoweredElestral()
         {
 
@@ -601,8 +540,8 @@ namespace Gameplay
             if (isConfirm)
             {
                 
-                EmpowerAction empower = EnchantAction.FromData(TurnManager.Instance.CraftingAction) + sel.SelectedSlots[0].MainCard;
-                GameManager.Instance.DoEnchant(empower);
+                EmpowerAction empower = CastAction.FromData(TurnManager.Instance.CraftingAction) + sel.SelectedSlots[0].MainCard;
+                GameManager.Instance.DoCast(empower);
                 sel.SelectedSlots[0].MainCard.SelectCard(false);
                 TurnManager.SetCrafingAction();
                 GameManager.Instance.SetSelector();
@@ -624,6 +563,10 @@ namespace Gameplay
         #endregion
 
 
+
+
+        #endregion
+
         #endregion
 
 
@@ -644,4 +587,100 @@ namespace Gameplay
        
     }
 }
+
+[System.Serializable]
+#region Slot Data
+public class CardSlotData
+{
+    public enum ZoneIndex
+    {
+        Stadium = 0,
+        Elestral1 = 1,
+        Elestral2 = 2,
+        Elestral3 = 3,
+        Elestral4 = 4,
+        Underworld = 5,
+        SpiritDeck = 6,
+        Rune1 = 7,
+        Rune2 = 8,
+        Rune3 = 9,
+        Rune4 = 10,
+        Deck = 11,
+        Hand = 12
+
+    }
+
+    public int index;
+    public List<string> cards;
+    public string slotId;
+    public CardLocation slotType;
+    public ZoneIndex zoneIndex;
+    public enum CardLocation
+    {
+        removed = -1,
+        Elestral = 0,
+        Rune = 1,
+        Stadium = 2,
+        Underworld = 3,
+        Deck = 4,
+        SpiritDeck = 5,
+        Hand = 6
+    }
+
+
+
+    public CardSlotData(int id)
+    {
+        cards = new List<string>();
+        zoneIndex = (ZoneIndex)id;
+
+        if (zoneIndex == ZoneIndex.Stadium)
+        {
+            slotType = CardLocation.Stadium;
+        }
+        this.index = id;
+    }
+    public void SetId(string id)
+    {
+        string indexString = index.ToString();
+        if (index < 10)
+        {
+            indexString = $"0{index}";
+        }
+        this.slotId = $"{id}{indexString}";
+
+
+    }
+
+    public void SetOrder(string[] cardOrder)
+    {
+        cards.Clear();
+        for (int i = 0; i < cardOrder.Length; i++)
+        {
+            cards.Add(cardOrder[i]);
+
+        }
+    }
+
+    public void AddCard(string id)
+    {
+        if (!cards.Contains(id))
+        {
+            cards.Add(id);
+        }
+    }
+    public void RemoveCard(string id)
+    {
+        if (cards.Contains(id))
+        {
+            cards.Remove(id);
+        }
+    }
+
+    public void SetSlotType(int location)
+    {
+        slotType = (CardLocation)location;
+    }
+}
+#endregion
 

@@ -95,7 +95,7 @@ namespace FX
 
         public void SetColors(float alpha, Color[] cols)
         {
-            if (cols.Length > 4) { throw new System.Exception("Can only input up to 4 colors."); }
+            //if (cols.Length > 4) { throw new System.Exception("Can only input up to 4 colors."); }
 
             _Alpha = alpha;
             for (int i = 0; i < cols.Length; i++)

@@ -12,7 +12,9 @@ public interface iCardData
     public string effect { get; set; }
     public string artist { get; set; }  
     public int setNumber { get; set; }
+    public string setCode { get; set; }
     public string image { get; set; }
     public Rarity rarity { get; set; }
     public ArtType artType { get; set; }
+    public string setStamp1 { get; set; }
 }

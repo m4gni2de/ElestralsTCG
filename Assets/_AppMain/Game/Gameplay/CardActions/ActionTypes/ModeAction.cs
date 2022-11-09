@@ -17,6 +17,15 @@ namespace Gameplay.CardActions
         }
 
 
+        protected override string LocalActionMessage
+        {
+            get
+            {
+                return $"{sourceCard.cardStats.title} is changed to {newCardMode} Mode!";
+            }
+        }
+         protected override string LocalDeclareMessage { get { return $"Change {sourceCard.cardStats.title} to {newCardMode} Mode!"; } }
+
         protected override CardActionData GetActionData()
         {
 
@@ -46,7 +55,7 @@ namespace Gameplay.CardActions
             oldCardMode = (CardMode)data.Value<int>("old_mode");
             newCardMode = (CardMode)data.Value<int>("new_mode");
             actionResult = data.GetResult();
-            SetDetails();
+            
 
         }
 
@@ -54,14 +63,8 @@ namespace Gameplay.CardActions
         {
             newCardMode = newMode;
             oldCardMode = source.mode;
-            SetDetails();
-            
         }
-        protected void SetDetails()
-        {
-            _declaredMessage = $"Change {sourceCard.cardStats.title} to {newCardMode} Mode!";
-            _actionMessage = $"{sourceCard.cardStats.title} is changed to {newCardMode} Mode!";
-        }
+       
 
         public static ModeAction DefenseMode(Player p, GameCard source)
         {

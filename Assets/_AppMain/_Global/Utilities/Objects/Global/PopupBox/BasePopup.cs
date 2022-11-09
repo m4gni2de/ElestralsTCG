@@ -20,6 +20,13 @@ namespace PopupBox
             OnHandled = null;
             Close();
         }
+        protected void SendCancel()
+        {
+            StopAllCoroutines();
+            ToggleHandled(true);
+            OnHandled = null;
+            Close();
+        }
 
         protected void ToggleHandled(bool isHandled)
         {
@@ -33,11 +40,12 @@ namespace PopupBox
         public void ForceClose()
         {
             ToggleHandled(false);
+            
         }
 
         public virtual void Refresh()
         {
-
+            
         }
         public virtual void Confirm()
         {

@@ -105,6 +105,11 @@ public static class MessageExtensions
         }
         return message;
     }
+
+    //public static Message ChangeId(Message message, ushort newId)
+    //{
+    //    message.
+    //}
     #endregion
 
     

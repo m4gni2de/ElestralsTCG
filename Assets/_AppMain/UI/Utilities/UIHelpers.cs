@@ -13,6 +13,9 @@ public static class UIHelpers
         return totalWidth;
     }
 
+
+
+
     public static bool IsPointerOverUIObject()
     {
         PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);

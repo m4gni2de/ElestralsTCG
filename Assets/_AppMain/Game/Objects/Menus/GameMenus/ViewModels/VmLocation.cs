@@ -72,6 +72,7 @@ namespace Gameplay.Menus
             toggle.isOn = true;
             sp.SetSprite(CardLibrary.GetCardArt(c.card));
             Show();
+            _newLocation = Location;
         }
 
         #region Value Change Watchers

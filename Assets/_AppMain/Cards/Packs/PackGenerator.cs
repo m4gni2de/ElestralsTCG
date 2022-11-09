@@ -2,40 +2,80 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Packs
 {
     public class PackGenerator : MonoBehaviour
     {
-        public static PackGenerator Instance { get; private set; }
+        private static PackGenerator _instance;
+        public static PackGenerator Instance
+        {
+            get => _instance;
+            private set
+            {
+                if (_instance == null)
+                    _instance = value;
+                else if (_instance != value)
+                {
+                    Debug.Log($"{nameof(GameLogic)} instance already exists, destroying duplicate!");
+                    Destroy(value);
+                }
+            }
+        }
 
         public BoosterSet boosterSet;
         public BlisterPack pack;
 
         public List<CardView> cardList = new List<CardView>();
         public CardView templateCard;
-        public CardDisplay cardDisplay;
+        public CardView cardDisplay;
        
         public Transform ScrollContent;
         public GameObject CardScroll;
+
+        
+        [SerializeField]
+        private GridLayoutGroup Grid;
+        private GridSettings gridSettings;
 
      
 
         public static PackGenerator LoadGenerator()
         {
-            GameObject go = AssetPipeline.GameObjectClone("PackGenerator", WorldCanvas.Instance.transform);
-            PackGenerator g = go.GetComponent<PackGenerator>();
-            g.Open();
-            return g;
-           
+            if (Instance == null)
+            {
+                GameObject go = AssetPipeline.GameObjectClone("PackGenerator", WorldCanvas.Instance.transform);
+                //GameObject go = AssetPipeline.WorldObjectClone("PackGenerator");
+                PackGenerator g = go.GetComponent<PackGenerator>();
+                Instance = g;
+                Instance.Create();
+
+            }
+            else
+            {
+                Instance.Display();
+            }
+            
+            return Instance;
+
+
+
         }
-        
-        private void Start()
+
+        private void Awake()
         {
            
         }
+        private void Start()
+        {
+            
+            
 
-       
+            
+        }
+
+
         //private void Open()
         //{
         //    _cards.Add(template);
@@ -52,8 +92,13 @@ namespace Packs
         //}
 
 
-        private void Open()
+        
+        private void Create()
         {
+            Display();
+            
+            templateCard.MatchSize(Grid.cellSize);
+
             cardList.Add(templateCard);
             for (int i = 0; i < 9; i++)
             {
@@ -61,11 +106,23 @@ namespace Packs
                 cardList.Add(c);
             }
             Refresh();
-
-            
-            cardDisplay.LoadBack();
-            cardDisplay.gameObject.SetActive(false);
             boosterSet = new BoosterSet("bs");
+
+            GeneratePack();
+        }
+        private void Display()
+        {
+            gameObject.SetActive(true);
+        }
+        public static void CloseGenerator()
+        {
+            if (Instance != null)
+            {
+                Instance.Refresh();
+                Instance.gameObject.SetActive(false);
+                
+            }
+
         }
         public void Refresh()
         {
@@ -73,6 +130,9 @@ namespace Packs
             {
                 cardList[i].LoadCard();
             }
+            cardDisplay.LoadCard();
+            cardDisplay.gameObject.SetActive(false);
+            CardScroll.SetActive(true);
         }
 
         public void GeneratePack()
@@ -86,6 +146,7 @@ namespace Packs
         {
             for (int i = 0; i < p.cards.Count; i++)
             {
+                
                 cardList[i].LoadCard(p.cards[i]);
             }
         }
@@ -93,22 +154,29 @@ namespace Packs
         public void DisplayCard(CardView obj)
         {
             
-            cardDisplay.LoadCard(obj);
+            cardDisplay.LoadCard(obj.ActiveCard);
             
            
             CardScroll.SetActive(false);
 
             string sortLayerName = "InputMenus";
             cardDisplay.SetSortingLayer(sortLayerName);
-            
+            //DisplayManager.SetAction(() => HideDisplay());
+            DisplayManager.AddAction(HideDisplay);
+
 
         }
         public void HideDisplay()
         {
             cardDisplay.gameObject.SetActive(false);
             CardScroll.SetActive(true);
+            //DisplayManager.RemoveAction(() => HideDisplay());
+            DisplayManager.RemoveAction(HideDisplay);
 
         }
+
+
+        
     }
 }
 

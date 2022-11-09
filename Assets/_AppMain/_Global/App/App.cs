@@ -61,15 +61,19 @@ public class App
             return _account != null;
         }
     }
-    public static void LoadGuest()
+    public static void LoadAccount(User user)
     {
-        _account = User.Guest();
+        _account = user;
         ChangeScene(MainScene.SceneName);
     }
+    public static void LoadGuest()
+    {
+        LoadAccount(User.Guest());
+    }
+   
     public static void LoadUserAccount()
     {
-        _account = User.AccountOnFile;
-        ChangeScene(MainScene.SceneName);
+        LoadAccount(User.AccountOnFile);
     }
     #endregion
 
@@ -93,8 +97,9 @@ public class App
     {
         get
         {
-            if (_Instance == null) { return false; }
-            return ConnectionManager.IsConnected();
+            return AppManager.Instance != null;
+            //if (_Instance == null) { return false; }
+            //return ConnectionManager.IsConnected();
         }
     }
 
@@ -103,142 +108,7 @@ public class App
 
     #endregion
 
-    #region Initialization
 
-
-    //[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    public static void StartApp()
-    {
-        //CheckForAccount();
-        //if (_Instance == null)
-        //{
-        //    await AssetPipeline.WorldObjectClone(ManagerAsset);
-        //    //Manager.LoadManager();
-        //    if (CheckDatabase())
-        //    {
-        //        CheckForAccount();
-        //        //ChangeScene("SampleScene");
-        //    }
-        //}
-    }
-
-    
-   
-    public static bool CheckDatabase()
-    {
-        if (!isConnected)
-        {
-            _Instance = new App();
-
-            //ConnectionManager.Connect();
-        }
-        return isConnected;
-    }
-
-
-//    protected static void CheckForAccount()
-//    {
-//        //eventually create account stuff here, for now just use it locally
-
-//        //GUEST ACCOUNT IS FOR CLONE ONLY. 
-
-//#if UNITY_EDITOR
-
-//        if (ClonesManager.IsClone())
-//        {
-//            if (_account == null)
-//            {
-//                _account = User.Guest();
-//            }
-//        }
-//#endif
-//        if (_account == null)
-//        {
-//            bool exists = User.ExistsOnFile;
-//            if (exists)
-//            {
-//#if UNITY_EDITOR
-//                if (ClonesManager.IsClone())
-//                {
-//                    _account = User.Guest();
-//                }
-//                else
-//                {
-//                    _account = User.AccountOnFile;
-//                }
-                    
-//#else
-//_account = User.AccountOnFile;
-//#endif
-
-//            }
-//            else
-//            {
-//                _account = User.Create();
-//            }
-            
-
-
-//            //AppManager.Instance.Account = _account;
-//        }
-
-
-//    }
-
-
-//    public static void CheckForAccountDevice()
-//    {
-//        if (_account == null)
-//        {
-//            bool exists = User.ExistsOnFile;
-//            if (exists)
-//            {
-//                _account = User.AccountOnFile;
-//            }
-//            else
-//            {
-//                _account = User.Create();
-//            }
-//        }
-//    }
-//    public static void CheckForAccountEditor()
-//    {
-//#if UNITY_EDITOR
-
-//        if (ClonesManager.IsClone())
-//        {
-//            if (_account == null)
-//            {
-//                _account = User.Guest();
-//            }
-//        }
-//        if (_account == null)
-//        {
-//            bool exists = User.ExistsOnFile;
-//            if (exists)
-//            {
-//                if (ClonesManager.IsClone())
-//                {
-//                    _account = User.Guest();
-//                }
-//                else
-//                {
-//                    _account = User.AccountOnFile;
-//                }
-//            }
-//            else
-//            {
-//                _account = User.Create();
-//            }
-
-
-
-//            //AppManager.Instance.Account = _account;
-//        }
-//#endif
-//    }
-
-    #endregion
 
 
     #region Closing
@@ -262,10 +132,31 @@ public class App
     public static void Log(string[] msg) { LogController.Log(msg); }
     public static void LogWarning(string msg) { LogController.Warning(msg); }
     public static void LogError(string msg) { LogController.Error(msg); }
-    public static void LogFatal(string msg) { LogController.Fatal(msg); }
+    public static bool LogFatal(string msg) { return LogController.Fatal(msg); }
     #endregion
 
     #region Scene Management
+    private static string pendingScene;
+    public static void TryChangeScene(string scene)
+    {
+        pendingScene = scene;
+        AskYesNo($"Do you want leave this Scene and go Back?", ConfirmChangeScene);
+    }
+    private static void ConfirmChangeScene(bool change)
+    {
+        string scene = pendingScene;
+        pendingScene = "";
+        
+        if (change)
+        {
+            ChangeScene(scene);
+        }
+        else
+        {
+            //DisplayManager.SetAction(() => TryChangeScene(scene));
+            DisplayManager.AddAction(TryChangeScene, scene);
+        }
+    }
     public static void ChangeScene(string scene)
     {
         SceneManager.LoadScene(scene, LoadSceneMode.Single);
@@ -314,7 +205,7 @@ public class App
         }
     }
 
-    public static bool DisplayError(string msg, Action callback = null)
+    public static bool DisplayError(string msg, Action callback = null, bool log = false)
     {
         if (PopupManager.ActivePopup == null)
         {
@@ -324,6 +215,11 @@ public class App
         else
         {
             popUp.DisplayNewMessage(msg, callback, true, false);
+        }
+
+        if (log)
+        {
+            App.LogError(msg);
         }
         return false;
 
@@ -338,22 +234,28 @@ public class App
         {
             popUp.AskYesNo(msg, callback);
         }
+        else
+        {
+            popUp.AskYesNo(msg, callback, true);
+        }
         
     }
-    public static void ShowDropdown(string msg, List<string> options, Action<string> callback)
+    public static void ShowDropdown(string msg, List<string> options, Action<string> callback, bool closeOnBack = true)
     {
         if (PopupManager.ActivePopup == null)
         {
-            popUp.ShowDropdown(msg, options, callback);
+            popUp.ShowDropdown(msg, options, callback, closeOnBack);
         }
     }
-    public static void ShowDropdown<T>(string msg, List<T> options, Action<T> callback, string propName)
+    public static void ShowDropdown<T>(string msg, List<T> options, Action<T> callback, string propName, bool closeOnBack = true)
     {
         if (PopupManager.ActivePopup == null)
         {
-            popUp.ShowDropdown(msg, options, callback, propName);
+            popUp.ShowDropdown(msg, options, callback, propName, closeOnBack);
         }
     }
+
+    
     #endregion
 
     #endregion

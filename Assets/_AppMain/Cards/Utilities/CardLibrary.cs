@@ -7,6 +7,7 @@ using Databases;
 using System.Threading.Tasks;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
+using Packs;
 
 public class CardLibrary 
 {
@@ -32,22 +33,43 @@ public class CardLibrary
         }
     }
 
+    public static readonly string StampDefault = "prototype";
+    private static Dictionary<string, GameSetDTO> _GameSets = null;
+    public static Dictionary<string, GameSetDTO> GameSets
+    {
+        get
+        {
+            if (_GameSets == null)
+            {
+                _GameSets ??= new Dictionary<string, GameSetDTO>();
+                List<GameSetDTO> list = DataService.GetAll<GameSetDTO>("GameSetDTO");
+                foreach (var item in list)
+                {
+                    _GameSets.Add(item.setAbbr, item);
+                }
+            }
+            
+            return _GameSets;
+        }
+    }
+
     #endregion
 
     #region Events
 
     #endregion
 
-    
 
-   
+
+
     public static Sprite GetCardArt(Card card)
     {
         //string cardKey = ArtImageText(card).ToLower();
         string cardKey = card.cardData.image.ToLower();
-        if (CardArt.ContainsKey(cardKey)) { return CardArt[cardKey]; }
         Sprite sp = AssetPipeline.ByKey<Sprite>(cardKey, DefaultCardKey);
-        if (!CardArt.ContainsKey(cardKey)) { CardArt.Add(cardKey, sp); }
+        //if (CardArt.ContainsKey(cardKey)) { return CardArt[cardKey]; }
+        //Sprite sp = AssetPipeline.ByKey<Sprite>(cardKey, DefaultCardKey);
+        //if (!CardArt.ContainsKey(cardKey)) { CardArt.Add(cardKey, sp); }
         return sp;
     }
 
@@ -71,13 +93,29 @@ public class CardLibrary
     }
 
 
-   
+    public static string GetCardSetStamp(string setName)
+    {
+        if (GameSets.ContainsKey(setName))
+        {
+            return GameSets[setName].stamp + "Stamp";
+        }
+        return StampDefault + "Stamp";
+    }
+    public static int SetCount(string setName)
+    {
+        if (GameSets.ContainsKey(setName))
+        {
+            return GameSets[setName].cardCount;
+        }
+        return 0;
+    }
+
     #endregion
 
 
-   
 
-   
+
+
     public static Sprite GetBackground(Card card)
     {
         string fallback = "bg_rainbow";
@@ -117,7 +155,7 @@ public class CardLibrary
         {
             return "(cost1 > -1) And (cost2 > -1) and (cost3 is null or cost3 = -1) and (cardClass <> 0)";
         }
-        if (cost == 2)
+        if (cost == 3)
         {
             return "(cost1 > -1) And (cost2 > -1) and (cost3 > -1) and (cardClass <> 0)";
         }

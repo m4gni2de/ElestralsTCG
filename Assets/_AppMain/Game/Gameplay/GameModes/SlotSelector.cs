@@ -215,8 +215,23 @@ public class SlotSelector
         return CreateMulti(msgs, "Attack", targets, attacks, true);
     }
 
-    
 
+    public static SlotSelector FromCards(string msg, string confirm, List<GameCard> targets, int totalSelections)
+    {
+        List<string> msgs = new List<string>();
+        msgs.Add(msg);
+
+        List<CardSlot> slots = new List<CardSlot>();
+        for (int i = 0; i < targets.Count; i++)
+        {
+            if (!slots.Contains(targets[i].CurrentSlot))
+            {
+                slots.Add(targets[i].CurrentSlot);
+            }
+        }
+        SlotSelector sel = new SlotSelector(msgs, confirm, totalSelections, slots.ToArray(), false);
+        return sel;
+    }
 
 }
 

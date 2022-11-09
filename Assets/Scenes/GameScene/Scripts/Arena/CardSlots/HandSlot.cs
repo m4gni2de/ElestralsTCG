@@ -16,6 +16,13 @@ namespace Gameplay
         public ScrollRect m_Scroll;
         protected RectTransform Content { get { return m_Scroll.content; } }
 
+        [SerializeField]
+        private CanvasGroup m_Canvas;
+        protected void ToggleCanvasGroup(bool turnOn)
+        {
+            m_Canvas.alpha = turnOn ? 1 : 0;
+            m_Canvas.interactable = turnOn;
+        }
 
         protected override Vector2 GetSlotSize()
         {
@@ -31,13 +38,15 @@ namespace Gameplay
         {
             return true;
         }
-        protected override void SetSlot()
+        protected override void StartSlot()
         {
             orientation = Orientation.Vertical;
             slotType = CardLocation.Hand;
-
+            //GameManager.Instance.browseMenu.OnMenuToggled += ToggleCanvasGroup;
             
         }
+
+        
 
         public override void SetPlayer(Player owner, int count)
         {
@@ -56,11 +65,19 @@ namespace Gameplay
         {
             
             card.cardObject.SetAsChild(Content, CardScale, SortLayer, Content.childCount);
-            card.cardObject.SetSortingOrder(Content.childCount);
+            card.cardObject.SetSortingOrder(Content.childCount * 20);
 
             card.cardObject.GetComponent<RectTransform>().ForceUpdateRectTransforms();
             Content.ForceUpdateRectTransforms();
             card.cardObject.Flip(facing == CardFacing.FaceDown);
+        }
+        protected override bool GetClickValidation()
+        {
+            if (App.WhoAmI == Owner.userId)
+            {
+                return true;
+            }
+            return false;
         }
         //protected override void SetCommands(GameCard card)
         //{
@@ -71,17 +88,34 @@ namespace Gameplay
 
         protected override void ClickCard(GameCard card)
         {
+            bool sameCard = GameManager.SelectedCard == card;
+            base.ClickCard(card);
+            SetSelectedCard(card);
 
-            GameManager.SelectedCard = card;
-            if (App.WhoAmI == Owner.userId)
+            if (GameManager.Instance.currentSelector == null)
             {
-                SetSelectedCard(card);
-                OpenPopMenu();
-                card.cardObject.SetSortingLayer(Card.CardLayer3);
+                if (GameManager.Instance.popupMenu.isOpen)
+                {
+                    if (sameCard) { ClosePopMenu(); } else { OpenPopMenu(); }
+
+                }
+                else
+                {
+                    OpenPopMenu();
+                }
 
             }
-            
+            else
+            {
+                if (GameManager.Instance.currentSelector.TargetSlots.Contains(this))
+                {
+                    GameManager.Instance.currentSelector.SelectSlot(this);
+                }
+            }
+           
 
+
+            
         }
 
         protected override void SetSelectedCard(GameCard view = null)
@@ -90,14 +124,18 @@ namespace Gameplay
             if (current != null && view != null && current != view)
             {
                 current.cardObject.SetSortingLayer(Card.CardLayer1);
+                if (view != null)
+                {
+                    view.cardObject.SetSortingLayer(Card.CardLayer3);
+                }
             }
-
             base.SetSelectedCard(view);
             
         }
+
         public override void OpenPopMenu()
         {
-            base.OpenPopMenu();
+            GameManager.Instance.popupMenu.LoadMenu(this, Validate);
             
         }
 
@@ -135,112 +173,18 @@ namespace Gameplay
             List<PopupCommand> commands = new List<PopupCommand>();
             if (IsYours)
             {
-                commands.Add(PopupCommand.Create("Enchant", () => BaseEnchantCommand(), 0, 0));
+                commands.Add(PopupCommand.Create("Cast", () => BaseCastCommand(), 0, 0));
                 commands.Add(PopupCommand.Create("Discard", () => DiscardCommand(), 0, 1));
+                commands.Add(PopupCommand.Create("Close", () => CloseCommand()));
             }
-            
-            commands.Add(PopupCommand.Create("Close", () => CloseCommand()));
+
             return commands;
         }
 
         #endregion
 
         #region Menu Commands
-        //protected void EnchantCommand()
-        //{
-        //    if (SelectedCard.CardType == CardType.Rune)
-        //    {
-        //        Rune r = (Rune)SelectedCard.card;
-        //        if (r.GetRuneType == Rune.RuneType.Artifact)
-        //        {
-        //            List<CardSlot> targets = new List<CardSlot>();
-        //            targets.AddRange(Owner.gameField.ElestralSlots(false));
-        //            targets.AddRange(Owner.Opponent.gameField.ElestralSlots(false));
-
-        //            SlotSelector sourceSelect = SlotSelector.Create("Select Elestral to Empower", "Empowered Elestral", targets, 1);
-        //            GameManager.Instance.SetSelector(sourceSelect);
-        //            sourceSelect.OnSelectionHandled += AwaitEmpowerSource;
-        //            ClosePopMenu(true);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        StartEnchantCommand();
-        //    }
-
-        //}
-
-        //protected void StartEnchantCommand()
-        //{
-        //    int enchantCount = SelectedCard.card.SpiritsReq.Count;
-        //    List<GameCard> toShow = Owner.gameField.SpiritDeckSlot.cards;
-
-        //    string title = $"Select {enchantCount} Spirits for Enchantment of {SelectedCard.name}";
-        //    GameManager.Instance.browseMenu.LoadCards(toShow, title, true, enchantCount, enchantCount);
-        //    GameManager.Instance.browseMenu.EnchantMode(SelectedCard);
-        //    ClosePopMenu(true);
-        //    GameManager.Instance.browseMenu.OnEnchantClose += AwaitEnchantClose;
-        //}
-        //protected void AwaitEmpowerSource(bool isConfirm, SlotSelector sel)
-        //{
-        //    sel.OnSelectionHandled -= AwaitEmpowerSource;
-        //    if (isConfirm)
-        //    {
-        //        int enchantCount = SelectedCard.card.SpiritsReq.Count;
-        //        List<GameCard> toShow = Owner.gameField.SpiritDeckSlot.cards;
-
-        //        string title = $"Select {enchantCount} Spirits for Enchantment of {SelectedCard.name}";
-        //        GameManager.Instance.browseMenu.LoadCards(toShow, title, true, enchantCount, enchantCount);
-        //        GameManager.Instance.browseMenu.EnchantMode(SelectedCard);
-        //        ClosePopMenu(true);
-        //        GameManager.Instance.browseMenu.OnClosed += AwaitEmpowerClose;
-        //    }
-        //    else
-        //    {
-        //        GameManager.Instance.SetSelector();
-        //        StartEnchantCommand();
-        //    }
-        //}
-        //protected void AwaitEnchantClose(List<GameCard> selectedCards, CardMode cMode)
-        //{
-            
-        //    GameManager.Instance.browseMenu.OnEnchantClose -= AwaitEnchantClose;
-        //    if (cMode == CardMode.None) { return; }
-
-        //    Field f = GameManager.Instance.arena.GetPlayerField(Owner);
-        //    List<GameCard> cardsList = new List<GameCard>();
-        //    for (int i = 0; i < selectedCards.Count; i++)
-        //    {
-        //        cardsList.Add(selectedCards[i]);
-        //    }
-        //    GameCard Selected = SelectedCard;
-        //    CardSlot slot = f.ElestralSlot(0, true);
-
-            
-
-        //    if (Selected.card.CardType == CardType.Rune)
-        //    {
-        //        slot = f.RuneSlot(0, true);
-        //        if (cMode == CardMode.Defense)
-        //        {
-        //            GameManager.Instance.SetEnchant(Owner, Selected, slot);
-        //            Refresh();
-        //            return;
-        //        }
-        //    }
-
-        //    GameManager.Instance.NormalEnchant(Owner, Selected, cardsList, slot, cMode);
-        //    Refresh();
-
-        //}
-
-        //protected void AwaitEmpowerClose(BrowseArgs args)
-        //{
-        //    GameManager.Instance.browseMenu.OnClosed -= AwaitEmpowerClose;
-        //    SlotSelector selector = GameManager.Instance.currentSelector;
-        //    GameCard targetElestral = selector.SelectedSlots[0].MainCard;
-
-        //}
+        
         protected void DiscardCommand()
         {
             GameManager.Instance.browseMenu.LoadCards(cards, "Select Cards to Discard", true, 1, cards.Count);
@@ -289,6 +233,18 @@ namespace Gameplay
             
         }
         #endregion
+
+
+        private void OnDestroy()
+        {
+            //GameManager.Instance.browseMenu.OnMenuToggled -= ToggleCanvasGroup;
+            
+        }
+        private void OnApplicationQuit()
+        {
+            //GameManager.Instance.browseMenu.OnMenuToggled -= ToggleCanvasGroup;
+            
+        }
 
     }
 }

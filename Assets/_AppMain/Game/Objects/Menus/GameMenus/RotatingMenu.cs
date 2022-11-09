@@ -104,11 +104,11 @@ public class RotatingMenu : GameMenu
 
     }
    
-    private void RotateMenu(float startClickAngle, float startAngle)
+    private void RotateMenu(float startClickAngle, float startAngle, float speedMod = 1f)
     {
         Vector2 dir = (Vector2)InputPos - (Vector2)menuObject.transform.position;
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        float angleDiff = angle - startClickAngle;
+        float angleDiff = (angle - startClickAngle) * speedMod;
         menuObject.transform.eulerAngles = new Vector3(0, 0, startAngle + angleDiff);
 
         for (int i = 0; i < SubItems.Count; i++)
@@ -127,10 +127,12 @@ public class RotatingMenu : GameMenu
         Vector2 dir = (Vector2)InputPos - (Vector2)menuObject.transform.position; 
         float startClickAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         float startAngle = menuObject.transform.eulerAngles.z;
+
+        float speedMod = 1.5f;
         do
         {
             yield return new WaitForEndOfFrame();
-            RotateMenu(startClickAngle, startAngle);
+            RotateMenu(startClickAngle, startAngle, speedMod);
             
 
 
@@ -155,7 +157,7 @@ public class RotatingMenu : GameMenu
 
     void Update()
     {
-        TouchControls();
+        //TouchControls();
     }
 
     void TouchControls()

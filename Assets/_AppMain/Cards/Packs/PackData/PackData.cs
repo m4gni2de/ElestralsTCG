@@ -195,7 +195,9 @@ namespace Packs
         {
             SetName = setName;
 
-            List<CardDTO> cards = CardService.BySet(CardService.CardTable, setName);
+            //List<CardDTO> cards = CardService.BySet(CardService.CardTable, setName);
+
+            List<qUniqueCard> cards = CardService.BySet(CardService.qUniqueCardView, setName);
 
 
             for (int i = 0; i < cards.Count; i++)

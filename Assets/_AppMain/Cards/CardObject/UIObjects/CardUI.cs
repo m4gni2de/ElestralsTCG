@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using CardsUI;
 using System.Threading.Tasks;
+using Gameplay;
+using Elements;
 
 public static class CardUI 
 {
@@ -70,7 +72,7 @@ public static class CardUI
         string st = RuneSpriteCode(subClass);
         return AssetPipeline.ByKey<Sprite>(st);
     }
-    public static string RuneSpriteCode(Rune.RuneType rType)
+    public static string RuneSpriteCode(this Rune.RuneType rType)
     {
         switch (rType)
         {
@@ -85,7 +87,7 @@ public static class CardUI
             case Rune.RuneType.Divine:
                 return DivineSprite;
             default:
-                return null;
+                return "";
         }
     }
     #endregion
@@ -102,30 +104,25 @@ public static class CardUI
         return AssetPipeline.ByKey<Sprite>(key);
     }
 
+    public static string SpiritUnicodeString(List<GameCard> spirits)
+    {
+        string s = "";
+
+        for (int i = 0; i < spirits.Count; i++)
+        {
+            if (spirits[i].CardType != CardType.Spirit) { App.LogError($"Cannot parse string for cards that are not Spirits."); }
+
+            string code = spirits[i].card.OfElement(0).BaseData.UnicodeString;
+            s += code; 
+        }
+        return s;
+    }
+
     public static Color TextColor(this ElementCode code)
     {
-        switch (code)
-        {
-
-            case ElementCode.Wind:
-                return FromHex("#E1F2F9");
-            case ElementCode.Dark:
-                return new Color(.83f, .20f, .96f, 1f);
-            case ElementCode.Earth:
-                return FromHex("#E2FF69");
-            case ElementCode.Fire:
-                return FromHex("#F15B38");
-            case ElementCode.Frost:
-                return new Color(.46f, .39f, .81f, 1f);
-            case ElementCode.Light:
-                return new Color(1f, .95f, .36f, 1f);
-            case ElementCode.Thunder:
-                return FromHex("#E6A958");
-            case ElementCode.Water:
-                return FromHex("#1EC6FF");
-            default:
-                return Color.white;
-        }
+        ElementData fromCode = code;
+        return FromHex(fromCode.ColorCode);
+       
     }
 
     public static Color FromHex(string hex)
@@ -143,4 +140,38 @@ public static class CardUI
         }
         return new Color32(r, g, b, a);
     }
+
+
+
+    #region Extensions
+    public static string SpiritUnicode(this List<GameCard> spirits)
+    {
+        string s = "";
+
+        for (int i = 0; i < spirits.Count; i++)
+        {
+            if (spirits[i].CardType != CardType.Spirit) { App.LogError($"Cannot parse string for cards that are not Spirits."); }
+
+            string code = spirits[i].card.OfElement(0).BaseData.UnicodeString; ;
+            s += code;
+        }
+        return $" {s} ";
+    }
+
+    public static string AnySpiritUnicode(int count)
+    {
+        string s = "";
+
+        iCustomFont anyType = ElementData.ElementGlyph(ElementCode.Any);
+        string keystroke = anyType.UnicodeString;
+
+        for (int i = 0; i < count; i++)
+        {
+            s += $" {keystroke} ";
+        }
+        return s;
+
+    }
+    #endregion
+
 }

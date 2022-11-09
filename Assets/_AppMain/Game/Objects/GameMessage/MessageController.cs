@@ -204,7 +204,11 @@ namespace Gameplay
         {
             undoButton.onClick.RemoveAllListeners();
             cancelButton.onClick.RemoveAllListeners();
-            ActiveMessage.Hide();
+            if (_activeMessage)
+            {
+                ActiveMessage.Hide();
+            }
+            
             slotSelectObject.SetActive(false);
             
         }

@@ -29,50 +29,74 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f363fad03ab251742ab8cb98bd79c448
-    m_Address: AppManager
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ff52536d183481442890bf90f80ee728
     m_Address: TextInput
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7265ef2bd29e19149836f9f375ced98f
-    m_Address: ElestralCard
+  - m_GUID: f002e22388304324483438ec4c772af1
+    m_Address: WindSymbol
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1733bf7a41f5fcb4db91433c6b21103c
+    m_Address: DarkSymbol
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a8ffb730f3d0f914cadb71ac72f0f2db
+    m_Address: FrostSymbol
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fa225d4fbea910c459e127c177e84821
+    m_Address: EarthSymbol
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f4445adb57b6d0642b7e7b0444742bdc
+    m_Address: FireSymbol
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5a8263ce09de6da4d851cc9ee0becef0
+    m_Address: LightSymbol
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 42d7539944266ac42ba60dea8296497e
+    m_Address: WaterSymbol
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bb807c8259ca5a4419b9c6e04fa4b0db
+    m_Address: ThunderSymbol
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e1c23f5e3a9f42d4690e550ae25fb9c0
+    m_Address: AnySymbol
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 69ae6524e1c22f245a411d07ca434dab
+    m_Address: ArenaField
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 73c0742a70123bd40bded03effa896a6
-    m_Address: RuneCard
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9ce33905d77fa2e49a6433d7eaf68843
-    m_Address: SpiritCard
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 44754e10353bcf44d95ee375989793e0
-    m_Address: ElestralCardFA
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 4dea22a0f7c37be439d68acfaa93ab6a
-    m_Address: RuneCardFA
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 8eda37844aa55f64e8b79b2dfafc9bb1
-    m_Address: SpiritCardFA
+  - m_GUID: 5d5c5468e7eca284bbbcc8627c3d751d
+    m_Address: PackGenerator
     m_ReadOnly: 0
     m_SerializedLabels:
     - default

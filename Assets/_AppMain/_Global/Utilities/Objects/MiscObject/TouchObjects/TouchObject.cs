@@ -6,12 +6,13 @@ using System;
 using UnityEngine.Events;
 using TouchControls;
 
+
 public class TouchObject : MonoBehaviour, iFreeze
 {
-
+   
 
     #region Static Properties
-    private static List<int> _LayerFilters = null;
+    protected static List<int> _LayerFilters = null;
     public static List<int> LayerFilters
     {
         get
@@ -28,18 +29,53 @@ public class TouchObject : MonoBehaviour, iFreeze
             LayerFilters.Add(layer);
         }
     }
+
+    
+    private static List<TouchObject> _currentObjects = null;
+    public static List<TouchObject> CurrentObjects
+    {
+        get
+        {
+            if (_currentObjects == null)
+            {
+                _currentObjects = new List<TouchObject>();
+            }
+            return _currentObjects;
+        }
+    }
+
+    protected List<TouchObject> GetTappedObjects()
+    {
+        List<TouchObject> buttons = new List<TouchObject>();
+
+        for (int i = 0; i < CurrentObjects.Count; i++)
+        {
+            TouchObject obj = CurrentObjects[i];
+            if (obj.IsPointerOverMe())
+            {
+                buttons.Add(obj);
+            }
+
+        }
+        return buttons;
+    }
     #endregion
+
+
     #region Properties
-    private RectTransform Source;
+
+    protected Transform Source;
+
+    #region Events
     [SerializeField]
-    private UnityEvent _OnClickEvent;
+    protected UnityEvent _OnClickEvent;
     public UnityEvent OnClickEvent { get { _OnClickEvent ??= new UnityEvent(); return _OnClickEvent; } }
 
-    private UnityEvent _OverrideClickEvent;
+    protected UnityEvent _OverrideClickEvent;
     public UnityEvent OverrideClickEvent { get { _OverrideClickEvent ??= new UnityEvent(); return _OverrideClickEvent; } }
 
     [SerializeField]
-    private UnityEvent _OnHoldEvent;
+    protected UnityEvent _OnHoldEvent;
     public UnityEvent OnHoldEvent { get { _OnHoldEvent ??= new UnityEvent(); return _OnHoldEvent; } }
 
 
@@ -53,6 +89,10 @@ public class TouchObject : MonoBehaviour, iFreeze
     {
         OnThisHeld?.Invoke(this);
     }
+    #endregion
+
+
+
     #region Customization
 
     [Tooltip("Use this to allow the object to recieve click/touch events at all.")]
@@ -66,11 +106,13 @@ public class TouchObject : MonoBehaviour, iFreeze
     public bool ForceClickOverride = false;
     [Tooltip("If true, button will only register clicks if it's within a UI Object, like a Button")]
     public bool UIMode = false;
+    [Tooltip("If true, any TouchObjects behind this object will not have touches registered.")]
+    public bool BlocksTouches = false;
     #endregion
 
     #region Group Management
-    private string GroupId;
-    private bool HasGroup
+    protected string GroupId;
+    protected bool HasGroup
     {
         get
         {
@@ -85,12 +127,13 @@ public class TouchObject : MonoBehaviour, iFreeze
         group.Remove(this);
     }
     #endregion
+
     #region Interaction Checks
-    private bool _isClicked = false;
+    protected bool _isClicked = false;
     public bool IsClicked { get { return _isClicked; } }
 
-    private bool IsDoubleTap { get; set; }
-    private bool _isHeld = false;
+    protected bool IsDoubleTap { get; set; }
+    protected bool _isHeld = false;
     public bool IsHeld
     {
         get
@@ -115,7 +158,7 @@ public class TouchObject : MonoBehaviour, iFreeze
     #endregion
 
     #region Event Management
-    private List<UnityAction> _ClickListeners = null;
+    protected List<UnityAction> _ClickListeners = null;
     protected List<UnityAction> ClickListeners
     {
         get
@@ -145,7 +188,7 @@ public class TouchObject : MonoBehaviour, iFreeze
 
     }
 
-    private List<UnityAction> _HoldListeners = null;
+    protected List<UnityAction> _HoldListeners = null;
     protected List<UnityAction> HoldListeners
     {
         get
@@ -154,12 +197,21 @@ public class TouchObject : MonoBehaviour, iFreeze
             return _HoldListeners;
         }
     }
-    public void AddHoldListener(UnityAction ac)
+    public void AddHoldListener(UnityAction ac, float holdTimeThreshold = 0f)
     {
         if (!HoldListeners.Contains(ac))
         {
             HoldListeners.Add(ac);
             OnHoldEvent.AddListener(ac);
+        }
+
+        if (holdTimeThreshold > 0f)
+        {
+            holdThreshold = holdTimeThreshold;
+        }
+        else
+        {
+            holdThreshold = m_holdThresholdDefault;
         }
         Interactable = ClickListeners.Count + HoldListeners.Count > 0;
 
@@ -196,30 +248,61 @@ public class TouchObject : MonoBehaviour, iFreeze
     }
     #endregion
 
+   
+
     #region Tap Properties
-    private float _holdTime = 0f;
+    protected float m_holdThresholdDefault = 1f;
+    protected float _holdTime = 0f;
     public float HoldTime { get { return _holdTime; } }
 
-    //private int _LastInput = -1;
+    //protected int _LastInput = -1;
 
     [Tooltip("Defines the minimum time a tap needs to be held down before it's considered Held.")]
-    public float HoldThreshold = 1f;
+    public float holdThreshold = 1f;
 
     [Tooltip("Defines the maximum time between two taps to make it double tap.")]
-    [SerializeField] private float tapThreshold = 0.10f;
-    private float tapTimer = 0.0f;
+    [SerializeField] protected float tapThreshold = 0.10f;
+    protected float tapTimer = 0.0f;
 
 
-    private List<float> _TapTimes = null;
+    protected List<float> _TapTimes = null;
     public List<float> TapTimes { get { _TapTimes ??= new List<float>(); return _TapTimes; } }
 
-    private List<string> _ErrorList = null;
+    protected List<string> _ErrorList = null;
     protected List<string> ErrorList { get { _ErrorList ??= new List<string>(); return _ErrorList; } }
-    protected bool Validate()
+    #endregion
+
+    #region Validation/Functions
+    public virtual bool IsPointerOverMe()
+    {
+        RectTransform rect = (RectTransform)Source;
+        return rect.IsPointerOverMe();
+    }
+    public virtual bool IsBlocked()
+    {
+        for (int i = 0; i < CurrentObjects.Count; i++)
+        {
+            TouchObject obj = CurrentObjects[i];
+            if (obj != this) { continue;}
+            if (obj.BlocksTouches && obj.GetSortValue() > GetSortValue())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+    public virtual bool Validate()
     {
         
 
-        if (!Source.IsPointerOverMe()) { return false; }
+        if (!IsPointerOverMe()) { return false; }
+        if (IsBlocked())
+        {
+            AddError("This is blocked by another TouchObject overlapping it");
+        }
         if (ForceClickOverride) { return true; }
         if (!Interactable) { return false; }
 
@@ -259,11 +342,35 @@ public class TouchObject : MonoBehaviour, iFreeze
     }
     #endregion
 
-    
-    private void Awake()
+
+    protected void Awake()
+    {
+        SetBounds();
+        if (!CurrentObjects.Contains(this))
+        {
+            CurrentObjects.Add(this);
+        }
+        
+    }
+
+    private void OnDestroy()
+    {
+        if (CurrentObjects.Contains(this))
+        {
+            CurrentObjects.Remove(this);
+        }
+    }
+
+    protected void Start()
+    {
+       
+    }
+
+
+    protected virtual void SetBounds()
     {
         Source = GetComponent<RectTransform>();
-        
+
     }
     public void AddToGroup(TouchGroup group)
     {
@@ -292,76 +399,72 @@ public class TouchObject : MonoBehaviour, iFreeze
     #endregion
 
     
-    private void Update()
+    protected void Update()
     {
-
-        CheckTouch();
+        CheckTouch();  
 
     }
     protected virtual void CheckTouch()
     {
-        
+
         if (!IsClicked)
         {
             if (Input.GetMouseButtonDown(0) && Validate())
             {
                 StartClick();
-               
+
             }
-           
+
         }
         else
         {
             if (!Interactable)
             {
                 Cancel();
-                
+
             }
             else
             {
                 _holdTime += Time.deltaTime;
-                IsHeld = HoldTime >= HoldThreshold;
+                IsHeld = HoldTime >= holdThreshold;
                 if (!Input.GetMouseButton(0))
                 {
                     EndClick();
                 }
             }
-            
+
         }
 
-        //if (Input.GetMouseButton(0)) { _LastInput = 0; } else if (!Input.GetMouseButton(0)) { _LastInput = -1; }
+       
     }
 
-    
+   
 
-    protected void StartClick()
+    public virtual void StartClick()
     {
         _isClicked = true;
         _holdTime = 0f;
         tapTimer = Time.time;
         DoFreeze();
 
-
-
     }
-    protected void EndClick()
+    public virtual void EndClick()
     {
         DoThaw();
         _isClicked = false;
         if (!_isHeld) { TryClick(); }
         IsHeld = false;
-        
-
+        _holdTime = 0f;
 
     }
 
-    protected void Cancel()
+    public virtual void Cancel()
     {
         DoThaw();
         _isClicked = false;
         _isHeld = false;
         _holdTime = 0f;
-        
+
     }
 
 
@@ -406,7 +509,7 @@ public class TouchObject : MonoBehaviour, iFreeze
     }
     protected void DoDoubleClick()
     {
-        Debug.Log("here");
+        //Debug.Log("here");
     }
 
 
@@ -419,6 +522,16 @@ public class TouchObject : MonoBehaviour, iFreeze
     protected void DoThaw()
     {
         this.Thaw();
+    }
+    #endregion
+
+
+
+    #region Comparing
+    public virtual float GetSortValue()
+    {
+        return Source.localPosition.z;
+       
     }
     #endregion
 }

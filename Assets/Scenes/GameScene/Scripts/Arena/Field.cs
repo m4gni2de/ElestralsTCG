@@ -347,6 +347,7 @@ namespace Gameplay
                 DeckSlot.AllocateTo(g);
 
             }
+
             GameManager.Instance.ReadyPlayer(_player);
         }
 
@@ -367,15 +368,26 @@ namespace Gameplay
         }
 
        
+        //protected CardView SpawnCard(GameCard card, CardSlot slot)
+        //{
+            
+        //    bool displayBack = slot.facing == CardSlot.CardFacing.FaceDown;
+
+        //    CardView c = CardView.GenerateCard(GameManager.Instance.cardTemplate, transform, card.card, displayBack);
+        //    c.LoadCard(card.card);
+        //    c.name = card.name;
+        //    //NetworkPipeline.SpawnNewCard(card.NetworkId, slot.index);
+        //    return c;
+        //}
+
+
+
         protected CardView SpawnCard(GameCard card, CardSlot slot)
         {
-            
             bool displayBack = slot.facing == CardSlot.CardFacing.FaceDown;
-
-            CardView c = CardView.GenerateCard(GameManager.Instance.cardTemplate, transform, card.card, displayBack);
-            c.LoadCard(card.card);
+            CardView c = CardFactory.CreateCard(transform, card.card, displayBack);
             c.name = card.name;
-            //NetworkPipeline.SpawnNewCard(card.NetworkId, slot.index);
+            c.gameObject.AddComponent<NetworkCard>();
             return c;
         }
 
@@ -437,7 +449,7 @@ namespace Gameplay
             if (isSelected == false)
             {
                SetSlot();
-               card.cardObject.MaskCard(Color.white);
+               card.cardObject.ResetColors();
             }
             
         }

@@ -47,6 +47,22 @@ public class Element
     }
     #endregion
 
+    #region Static Functions
+    public static Color FireColor { get => CardUI.FromHex(HexCodeFire); }
+    public static Color WaterColor { get => CardUI.FromHex(HexCodeWater);}
+    public static Color WindColor { get => CardUI.FromHex(HexCodeWind); }
+    public static Color EarthColor { get => CardUI.FromHex(HexCodeEarth); }
+    public static Color ThunderColor { get => CardUI.FromHex(HexCodeThunder); }
+
+    public static string HexCodeFire { get => "#F15B38"; }
+    public static string HexCodeWater { get => "#00AEFF"; }
+    public static string HexCodeWind { get => "#E1F2F9"; }
+    public static string HexCodeEarth { get => "#CDFF00"; }
+    public static string HexCodeThunder { get => "#FFC16D"; }
+
+    
+    #endregion
+
     #region Properties & Functions
     private ElementData _baseData;
     public ElementData BaseData
@@ -59,6 +75,8 @@ public class Element
 
     public ElementCode Code { get { return BaseData.Code; } }
     public string Name { get { return BaseData.Name; } }
+    
+   
 
     public string SpriteName
     {
@@ -91,6 +109,21 @@ public class Element
         }
         return -1;
     }
-
    
+
+
+    public Color ElementColor()
+    {
+        return CardUI.FromHex(BaseData.ColorCode);
+    }
+    public static Color TextColor(ElementCode el)
+    {
+        ElementData data = el;
+        return CardUI.FromHex(data.ColorCode);
+    }
+    public Material FontMaterial(string suffix)
+    {
+        return CardFactory.CardFontMaterial(BaseData.Code, suffix);
+    }
+
 }

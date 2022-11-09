@@ -30,9 +30,12 @@ public class SpriteDisplayEditor : Editor
     private SerializedProperty m_Image;
 
     private SpriteDisplay.RenderType renderType;
+
+    private Contents k_Contents;
     
     private void OnEnable()
     {
+        k_Contents = new Contents();
         activeDisplay = (SpriteDisplay)target;
         m_RendType = serializedObject.FindProperty("_rendType");
         m_Sp = serializedObject.FindProperty("_sp");

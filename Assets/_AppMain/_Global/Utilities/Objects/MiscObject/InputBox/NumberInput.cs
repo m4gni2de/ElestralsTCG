@@ -47,8 +47,9 @@ public class NumberInput : InputBox, iRemoteAsset
     public static NumberInput Load(Transform parent, string title, int startVal, int min = -1, int max = -1)
     {
         Instance.Open(title, startVal, min, max);
-        Instance.transform.SetParent(parent);
+        Instance.transform.SetParent(parent, true);
         Instance.transform.localPosition = Vector2.zero;
+        Instance.transform.localEulerAngles = Vector3.zero;
 
         return Instance;
     }
@@ -59,7 +60,15 @@ public class NumberInput : InputBox, iRemoteAsset
     {
 
     }
-    
+
+    private void OnEnable()
+    {
+        this.Freeze();
+    }
+    private void OnDisable()
+    {
+        this.Thaw();
+    }
     public void Open(string title, int startVal, int min, int max)
     {
         IsHandled = false;

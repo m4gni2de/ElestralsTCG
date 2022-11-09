@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface iSceneScript 
 {
-    void LoadScene();
+    void StartScene();
 }

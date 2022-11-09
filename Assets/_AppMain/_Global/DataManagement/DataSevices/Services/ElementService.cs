@@ -44,7 +44,7 @@ namespace Databases
         {
             if (code < 0) { code = -1; }
 
-            string where = $"where typeKey = {code}";
+            string where = $" where typeKey = {code}";
 
             List<ElementDTO> list = DataService.GetAllWhere<ElementDTO>(tableName, where);
             return list[0];

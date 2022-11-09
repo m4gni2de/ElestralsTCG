@@ -175,6 +175,7 @@ GameObject:
   - component: {fileID: 4594013145759660978}
   - component: {fileID: 4057977218235377379}
   - component: {fileID: 4057977218235377377}
+  - component: {fileID: 5108025894842768755}
   m_Layer: 5
   m_Name: HandSlot
   m_TagString: Untagged
@@ -223,6 +224,7 @@ MonoBehaviour:
   facing: 0
   orientation: 0
   m_Scroll: {fileID: 4594013145967829803}
+  m_Canvas: {fileID: 5108025894842768755}
   sp: {fileID: 4057977218235377377}
 --- !u!222 &4057977218235377379
 CanvasRenderer:
@@ -247,6 +249,18 @@ MonoBehaviour:
   _rendType: 0
   _sp: {fileID: 3604215130077635003}
   _image: {fileID: 0}
+--- !u!225 &5108025894842768755
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1969681749502065372}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1969681749635648000
 GameObject:
   m_ObjectHideFlags: 0
@@ -593,7 +607,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1969681750671375893}
   - component: {fileID: 1969681750671375892}
-  - component: {fileID: 5339075374809835498}
   - component: {fileID: 5339075374809835499}
   m_Layer: 0
   m_Name: StadiumSlot
@@ -641,31 +654,6 @@ MonoBehaviour:
   slotType: 2
   facing: 0
   orientation: 0
-  EmpoweringSlot: 
---- !u!114 &5339075374809835498
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1969681750671375978}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36bd8ad74f7d18f4b90f9d6735b20705, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _OnClickEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  _OnHoldEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  Interactable: 1
-  IsMaskable: 0
-  bypassFreeze: 0
-  ForceClickOverride: 0
-  HoldThreshold: 1
-  tapThreshold: 0.1
 --- !u!114 &5339075374809835499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -874,6 +862,7 @@ MonoBehaviour:
   IsMaskable: 0
   bypassFreeze: 0
   ForceClickOverride: 0
+  UIMode: 0
   HoldThreshold: 1
   tapThreshold: 0.1
 --- !u!1 &2158204009439158291
@@ -2155,6 +2144,7 @@ MonoBehaviour:
   IsMaskable: 1
   bypassFreeze: 0
   ForceClickOverride: 0
+  UIMode: 0
   HoldThreshold: 1
   tapThreshold: 0.1
 --- !u!1 &4594013145264176348
@@ -2327,6 +2317,7 @@ MonoBehaviour:
   IsMaskable: 0
   bypassFreeze: 0
   ForceClickOverride: 0
+  UIMode: 0
   HoldThreshold: 1
   tapThreshold: 0.1
 --- !u!1 &4594013145451707541
@@ -2851,7 +2842,6 @@ MonoBehaviour:
   slotType: 1
   facing: 2
   orientation: 0
-  EmpoweringSlot: 
 --- !u!114 &4303925014285460165
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2924,7 +2914,6 @@ MonoBehaviour:
   slotType: 1
   facing: 2
   orientation: 0
-  EmpoweringSlot: 
 --- !u!114 &4303925014719218145
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2997,7 +2986,6 @@ MonoBehaviour:
   slotType: 1
   facing: 2
   orientation: 0
-  EmpoweringSlot: 
 --- !u!114 &4303925013569293295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3070,7 +3058,6 @@ MonoBehaviour:
   slotType: 1
   facing: 2
   orientation: 0
-  EmpoweringSlot: 
 --- !u!114 &4303925013775899268
 MonoBehaviour:
   m_ObjectHideFlags: 0

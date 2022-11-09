@@ -1,0 +1,158 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: TypeSprites
+  m_EditorClassIdentifier: 
+  m_GroupName: TypeSprites
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 89171198519bb5e4bbf7fbdd7e4fd226
+  m_SerializeEntries:
+  - m_GUID: bf7dd2d06cb0f3a4dac3010dc8f0f918
+    m_Address: frostStone
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8ba3df49007455a47876990f3adcf6b6
+    m_Address: thunderStone
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6a4b0397d8ae9bb44adfc013582e265c
+    m_Address: fireStone
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 18fa764af4c894e42b4220cc072844a3
+    m_Address: darkStone
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f3be9db758e5f0440a22592322c4584c
+    m_Address: windStone
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 13de6d0cacec4b843a3b00dfb839f6fb
+    m_Address: earthStone
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f2c245188187d6d47888a2ab6e6a1fdf
+    m_Address: lightStone
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 059cf370348a5a24d878735d0d60bc99
+    m_Address: noneStone
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aebdd4dd4156d9d4f885f4aa40de9ef0
+    m_Address: anyStone
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 724fd551f39949246a2936cd08f73b60
+    m_Address: waterStone
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c1a1997ee7c15cc45a749450b2ecc8e3
+    m_Address: WaterSymbol_Large
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e29b4d9d8039a4a4190eaf9a297a1c5d
+    m_Address: ThunderSymbol_Large
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 576f7c318e974be4893fb570241fbfc5
+    m_Address: FireSymbol_Large
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b9ff56d9d5bb90d4aa7a459c678c95c5
+    m_Address: LightSymbol_Large
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c9ea453a7d1e82f4da9497585712b19c
+    m_Address: WindSymbol_Large
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aab1673b88b190c41b1bef785d7344ce
+    m_Address: EarthSymbol_Large
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: be17117a114b20d4bbb738c9e0fb64f6
+    m_Address: DarkSymbol_Large
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fe7cac762adb0574798aa4f679dce9b2
+    m_Address: FrostSymbol_Large
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f7f3203e00f3bc544afdb02ac06d201b
+    m_Address: AnySymbol_Large
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 5e94d5bfc1602564eb0545d4c5cbecfb, type: 2}
+    - {fileID: 11400000, guid: 5e9fe1d8ecc5243438fbb83d3434aac6, type: 2}

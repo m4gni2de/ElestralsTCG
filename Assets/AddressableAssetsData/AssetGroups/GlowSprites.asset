@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: GlowSprites
+  m_EditorClassIdentifier: 
+  m_GroupName: GlowSprites
+  m_Data:
+    m_SerializedData: []
+  m_GUID: eff19119e21f76f48bf07da14fa41efb
+  m_SerializeEntries:
+  - m_GUID: bbfcfd5894ed19f4bbd38bb73e1a6d3a
+    m_Address: earthL
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6eb823ca57cee9e4983128d4c46dd91f
+    m_Address: waterL
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8a8d693ec7a456f4e9a216ff169be030
+    m_Address: thunderL
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bd8e4d4ee006736418fc0a4e8f8eebf1
+    m_Address: lightL
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d0fef50db46e6a54a814b777b5cad433
+    m_Address: fireL
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: af43d532670aa3141a6446297cbb7d19
+    m_Address: frostL
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eeada3cbb070b34418dbefbcd5e2cdc3
+    m_Address: windL
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4500bc624b07b8d40ab1fb891655d2d9
+    m_Address: darkL
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 89a9a41105bd0b64ea4c043041068346
+    m_Address: anyL
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 3c071ba368896f145a8e04905c964284, type: 2}
+    - {fileID: 11400000, guid: e3b0db8a784fde7408ca07d3b6c9f672, type: 2}

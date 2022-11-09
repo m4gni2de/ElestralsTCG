@@ -14,6 +14,9 @@ using RiptideNetworking;
 using Gameplay.Networking;
 using UnityEditor;
 using UnityEngine.SocialPlatforms;
+#if UNITY_EDITOR
+using static UnityEditor.Experimental.GraphView.GraphView;
+#endif
 
 namespace Gameplay
 {
@@ -23,15 +26,25 @@ namespace Gameplay
         TargetMode = 1
     }
 
+    public enum ConnectionType
+    {
+        Offline = 0,
+        Remote = 1,
+        P2P = 2,
+    }
+
     [System.Serializable]
     public class Game
     {
         #region Network Properties
         
         public virtual bool IsOnline() { return false; }
-
+        public ConnectionType connType { get; private set; }
 
         #endregion
+
+
+
         #region Global Properties
         protected Player _You = null;
         public Player You
@@ -42,7 +55,7 @@ namespace Gameplay
                 {
                     for (int i = 0; i < players.Count; i++)
                     {
-                        if (players[i].userId == App.Account.Id)
+                        if (players[i].userId == App.Account.Id || players[i].IsLocal)
                         {
                             _You = players[i];
                         }
@@ -102,11 +115,12 @@ namespace Gameplay
             g.isOnline = true;
             return g;
         }
-        public static Game ConnectToNetwork(string gameId)
+        public static Game ConnectToNetwork(string gameId, ConnectionType connType)
         {
             Game g = new Game();
             g.gameId = gameId;
             g.isOnline = true;
+            g.connType = connType;
             return g;
         }
        
@@ -322,6 +336,21 @@ namespace Gameplay
         }
         #endregion
 
+
+
+
+        #region As Server
+        public void SyncPlayerCard(ushort id, int index, string cardId, string realId, string slotId)
+        {
+            Player p = GameManager.ByNetworkId(id);
+        }
+        public void PlayerJoined(ushort player, string username, string gameId)
+        {
+            //if (this.gameId != gameId) { return; }
+
+        }
+
+        #endregion
     }
 }
 

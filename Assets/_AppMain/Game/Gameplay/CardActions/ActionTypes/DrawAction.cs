@@ -31,6 +31,50 @@ namespace Gameplay.CardActions
             FromEffect = 3,
         }
 
+        protected override string LocalActionMessage
+        {
+            get
+            {
+                string msg = "";
+                switch (drawType)
+                {
+                    case DrawActionType.GameStart:
+                    case DrawActionType.TurnStart:
+                        msg = $"{player.username} draws a card!";
+                        break;
+                    case DrawActionType.Mill:
+                        msg = $"{sourceCard.card.cardData.cardName} is sent to {toSlot.SlotTitle} from {fromSlot.SlotTitle}";
+                        break;
+                    case DrawActionType.FromEffect:
+                        msg = $"{sourceCard.card.cardData.cardName} is taken from {fromSlot.SlotTitle} to {toSlot.SlotTitle}.";
+                        break;
+                }
+                return msg;
+            }
+        }
+        protected override string RemoteActionMessage
+        {
+            get
+            {
+                string msg = "";
+                switch (drawType)
+                {
+                    case DrawActionType.GameStart: case DrawActionType.TurnStart:
+                        msg = $"{player.username} draws a card!";
+                        break;
+                    case DrawActionType.Mill:
+                        msg = $"A card from {fromSlot.SlotTitle} is sent to {toSlot.SlotTitle}.";
+                        break;
+                    case DrawActionType.FromEffect:
+                        msg = $"{player.username} mills a card from {fromSlot.SlotTitle}.";
+                        break;
+                }
+                return msg;
+            }
+        }
+        protected override string LocalDeclareMessage { get { return LocalActionMessage; } }
+        protected override string RemoteDeclareMessage { get { return RemoteActionMessage; } }
+
         protected override CardActionData GetActionData()
         {
             CardActionData data = new CardActionData(this);
@@ -67,10 +111,6 @@ namespace Gameplay.CardActions
         {
             actionTime = .65f;
             if (this.drawType == DrawActionType.GameStart || this.drawType == DrawActionType.TurnStart) { actionResult = ActionResult.Succeed; }
-            string drawString = "draws";
-            if (this.drawType == DrawActionType.Mill) { drawString = "mills"; }
-            _declaredMessage = $"{player.username} {drawString} a card!";
-            _actionMessage = $"{player.username} {drawString} a card from their deck!";
         }
 
         public DrawAction(Player player, GameCard source, CardSlot from, CardSlot to, DrawActionType drawType, ActionResult ac = ActionResult.Pending) : base(player, source, ac)

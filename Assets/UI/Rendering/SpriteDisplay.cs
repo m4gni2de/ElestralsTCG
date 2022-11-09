@@ -174,4 +174,35 @@ public class SpriteDisplay : MonoBehaviour
         }
     }
     #endregion
+
+    #region Bounds and Screen Positions
+    private List<Vector2> _imageOutline = null;
+    public List<Vector2> ImageOutline
+    {
+        get
+        {
+            if (_imageOutline == null)
+            {
+                _imageOutline = MainSprite.SetLocalOutline(m_Transform);
+            }
+            return _imageOutline;
+        }
+    }
+
+    public bool IsPointerOverMe()
+    {
+        if (RendType == RenderType.Image)
+        {
+            RectTransform rect = (RectTransform)m_Transform;
+            return rect.IsPointerOverMe();
+        }
+        else if (RendType == RenderType.Sprite)
+        {
+            Vector2 mousePos = Camera.main.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
+            return mousePos.IsPointInside(ImageOutline);
+        }
+        return false;
+        
+    }
+    #endregion
 }

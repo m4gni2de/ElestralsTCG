@@ -44,6 +44,7 @@ public enum ToServer : ushort
     PlayerLeft = 82,
     JoinFailed = 81,
     EmpowerChanged = 80,
+    ActionConfirmed = 79,
 }
 public enum FromServer :ushort
 {
@@ -68,6 +69,7 @@ public enum FromServer :ushort
     PlayerLeft = 82,
     JoinFailed = 81,
     EmpowerChanged = 80,
+    ActionConfirmed = 79,
 
 
 }
@@ -121,6 +123,9 @@ public class NetworkPipeline
     private static void PlayerIdRegistered(Message message)
     {
         ushort networkId = message.GetUShort();
+        string json = message.GetString();
+        ServerDTO dto = JsonUtility.FromJson<ServerDTO>(json);
+        NetworkManager.Instance.connectedServer = dto;
         OnPlayerRegistered?.Invoke();
     }
 
@@ -129,8 +134,12 @@ public class NetworkPipeline
     private static void GameCreated(Message message)
     {
         string gameId = message.GetString();
+        
         OnGameCreated?.Invoke(gameId);
     }
+
+
+
 
     public static event Action<string, List<NetworkPlayer>> OnGameJoined;
     [MessageHandler((ushort)FromServer.JoinGame)]
@@ -146,19 +155,23 @@ public class NetworkPipeline
             string user = message.GetString();
             string deckKey = message.GetString();
             string deckName = message.GetString();
-            NetworkPlayer p = new NetworkPlayer(netId, user, deckKey, deckName, false);
+            NetworkPlayer p = new NetworkPlayer(netId, user, deckKey, deckName);
             otherPlayers.Add(p);
         }
         OnGameJoined?.Invoke(lobbyId, otherPlayers);
     }
 
     public static event Action<ushort, string> OnPlayerJoined;
+    public static void DoPlayerJoined(ushort netId, string userId)
+    {
+        OnPlayerJoined?.Invoke(netId, userId);
+    }
     [MessageHandler((ushort)FromServer.PlayerJoined)]
     private static void PlayerJoined(Message message)
     {
         ushort netId = message.GetUShort();
         string userId = message.GetString();
-        OnPlayerJoined?.Invoke(netId, userId);
+        DoPlayerJoined(netId, userId);
     }
 
 
@@ -176,23 +189,23 @@ public class NetworkPipeline
     }
 
 
-    [MessageHandler((ushort)FromServer.GameReady)]
-    private static void GameReady(Message message)
-    {
-        ushort sender = message.GetUShort();
-        if (sender != Player.LocalPlayer.lobbyId)
-        {
-            UploadedDeckDTO dto = new UploadedDeckDTO();
-            dto.deckKey = message.GetString();
-            dto.title = message.GetString();
-            string[] realIds = message.GetStrings(true);
-            dto.deck = realIds.ToList();
-            GameManager.Instance.SyncPlayer(sender, dto);
+    //[MessageHandler((ushort)FromServer.GameReady)]
+    //private static void GameReady(Message message)
+    //{
+    //    ushort sender = message.GetUShort();
+    //    if (sender != Player.LocalPlayer.lobbyId)
+    //    {
+    //        UploadedDeckDTO dto = new UploadedDeckDTO();
+    //        dto.deckKey = message.GetString();
+    //        dto.title = message.GetString();
+    //        string[] realIds = message.GetStrings(true);
+    //        dto.deck = realIds.ToList();
+    //        GameManager.Instance.SyncPlayer(sender, dto);
 
-        }
+    //    }
 
 
-    }
+    //}
 
     [MessageHandler((ushort)FromServer.NewCardData)]
     private static void GetCardData(Message message)
@@ -226,8 +239,9 @@ public class NetworkPipeline
         ushort owner = message.GetUShort();
         string cardId = message.GetString();
         string newIndex = message.GetString();
+        int cardMode = message.GetInt();
 
-        GameManager.RemoteCardSlotChange(owner, cardId, newIndex);
+        GameManager.RemoteCardSlotChange(owner, cardId, newIndex, cardMode);
 
     }
 
@@ -286,6 +300,18 @@ public class NetworkPipeline
         {
             NetworkManager.Instance.Client.Send(message);
         }
+        //if (NetworkManager.Instance != null)
+        //{
+        //    if (NetworkManager.Instance.networkMode == NetworkManager.NetworkMode.Client)
+        //    {
+        //        if (NetworkManager.Instance.Client != null) { NetworkManager.Instance.Client.Send(message); }
+        //    }
+        //    else if (NetworkManager.Instance.networkMode == NetworkManager.NetworkMode.Both)
+        //    {
+        //            ServerManager.SendToClientsAll(message);
+        //    }
+            
+        //}
 
     }
 
@@ -293,7 +319,7 @@ public class NetworkPipeline
     public static void CreateGame()
     {
         Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.CreateGame);
-        NetworkPipeline.SendMessageToServer(message);
+        SendMessageToServer(message);
     }
     public static void JoinNetworkLobby(string lobby)
     {
@@ -308,7 +334,11 @@ public class NetworkPipeline
         message.Add<string>(deckKey);
         message.Add<string>(deckName);
         SendMessageToServer(message);
+
     }
+
+
+
     public static void SendNewCard(GameCard.NetworkData data)
     {
         Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.NewCardData);
@@ -317,6 +347,7 @@ public class NetworkPipeline
         message.AddString(data.cardKey);
         message.AddString(data.slotId);
         SendMessageToServer(message);
+
     }
 
     public static void SendCardSelect(GameCard card, bool isSelected)
@@ -328,6 +359,7 @@ public class NetworkPipeline
         if (isSelected) { boolVal = 1; }
         message.AddInt(boolVal);
         SendMessageToServer(message);
+
     }
 
     public static void SendDeckOrder(List<string> deckInOrder)
@@ -336,6 +368,7 @@ public class NetworkPipeline
         message.AddStrings(deckInOrder.ToArray(), true, true);
         SendMessageToServer(message);
 
+
     }
     public static void SendClientReady()
     {
@@ -343,11 +376,12 @@ public class NetworkPipeline
         SendMessageToServer(message);
     }
 
-    public static void SendNewCardSlot(string cardId, string newSlot)
+    public static void SendNewCardSlot(string cardId, string newSlot, CardMode mode)
     {
         Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.CardMoved);
         message.AddString(cardId);
         message.AddString(newSlot);
+        message.AddInt((int)mode);
         SendMessageToServer(message);
 
 
@@ -362,26 +396,46 @@ public class NetworkPipeline
 
     public static void SendActionDeclare(CardAction action)
     {
-        Message outbound = Message.Create(MessageSendMode.reliable, (ushort)ToServer.ActionDeclared);
+        if (NetworkManager.IsServer)
+        {
+            Message outbound = Message.Create(MessageSendMode.reliable, (ushort)FromServer.ActionDeclared);
+            outbound.Add(action.ActionData.GetJson);
+            ServerManager.SendToClientsAll(outbound);
+        }
+        else
+        {
+            Message outbound = Message.Create(MessageSendMode.reliable, (ushort)ToServer.ActionDeclared);
+            outbound.Add(action.ActionData.GetJson);
+            SendMessageToServer(outbound);
+        }
+       
+
+    }
+
+    public static void SendActionComplete(CardAction action)
+    {
+        Message outbound = Message.Create(MessageSendMode.reliable, (ushort)ToServer.ActionEnd);
         outbound.Add(action.ActionData.GetJson);
         SendMessageToServer(outbound);
 
     }
 
 
-    public static void ConfirmActionRecieved(string actionId)
+    public static void SendActionResponse(string actionId, string responseCardId)
     {
         Message outbound = Message.Create(MessageSendMode.reliable, (ushort)ToServer.ActionRecieved);
         outbound.Add(actionId);
+        outbound.Add(responseCardId);
         SendMessageToServer(outbound);
     }
-    public static void EndActionOutbound(string actionId, ActionResult result)
-    {
-        Message outbound = Message.Create(MessageSendMode.reliable, (ushort)ToServer.ActionEnd);
-        outbound.Add(actionId);
-        outbound.AddInt((int)result);
-        SendMessageToServer(outbound);
-    }
+   
+    //public static void EndActionOutbound(string actionId, ActionResult result)
+    //{
+    //    Message outbound = Message.Create(MessageSendMode.reliable, (ushort)ToServer.ActionEnd);
+    //    outbound.Add(actionId);
+    //    outbound.AddInt((int)result);
+    //    SendMessageToServer(outbound);
+    //}
 
     public static void OpeningDrawsOutbound()
     {

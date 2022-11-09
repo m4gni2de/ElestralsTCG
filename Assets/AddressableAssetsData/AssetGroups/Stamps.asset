@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Stamps
+  m_EditorClassIdentifier: 
+  m_GroupName: Stamps
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 46b8af4c8aed429478cd6cdd7458f00d
+  m_SerializeEntries:
+  - m_GUID: 4fcb08bca94ccd843809c8d9a29a0cc2
+    m_Address: prototype2Stamp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - Sprite
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 18be3311a7862364d95e26fec21bf30c
+    m_Address: prototypeStamp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - Sprite
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 23c0189727c6bf34e98f41923d6cc7ee
+    m_Address: foundersStamp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - Sprite
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a3a9c82d72a42f94e94fc1b8200ecf34
+    m_Address: bsStamp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - Sprite
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0d877ea63c3107f4b95a081df8c6f8cb
+    m_Address: sd04Stamp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - Sprite
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 197be6c6b75e13340a668d864fa62283
+    m_Address: sd02Stamp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - Sprite
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 180a76dbcb299a04ea960e5500cd6235
+    m_Address: sd05Stamp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - Sprite
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e3d2594fe4650ae4a97909efa97e0f99
+    m_Address: sd03Stamp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - Sprite
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 178fe5feaf1f633418c0242eff2e60b8
+    m_Address: sd01Stamp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - Sprite
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 89b63f47498e51e49b43281fead96e13, type: 2}
+    - {fileID: 11400000, guid: 9e795c89c71176d4e8f13cfcd23c2de9, type: 2}

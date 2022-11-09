@@ -7,6 +7,9 @@ using Newtonsoft.Json.Schema;
 using static Gameplay.GameState;
 using TouchControls;
 using UnityEngine.UIElements;
+using Gameplay.CardActions;
+using Gameplay.Turns;
+using static Gameplay.Menus.CardBrowseMenu;
 
 public class SingleSlot : CardSlot, iMainCard
 {
@@ -70,7 +73,7 @@ public class SingleSlot : CardSlot, iMainCard
             gameObject.AddComponent<TouchGroup>();
         }
     }
-    protected override void SetSlot()
+    protected override void WakeSlot()
     {
         
     }
@@ -121,13 +124,16 @@ public class SingleSlot : CardSlot, iMainCard
         if (card.cardStats.cardType != CardType.Spirit)
         {
             sortLayer = "CardL2";
+            int sortOrder = (-20 * cards.Count) + 1;
             offsetHeight *= -1;
-            
+            c.SetSortingOrder(sortOrder);
+
         }
         else
         {
             offsetHeight *= (1 + cards.Count);
-            int sortOrder = (cards.Count + 1) * -2;
+            int sortOrder = ((20 * cards.Count) + 1) * -2;
+            //int sortOrder = (cards.Count + 1) * -2;
             c.SetSortingOrder(sortOrder);
             zOrder = -cards.Count - 1;
             c.touch.IsMaskable = true;
@@ -206,7 +212,7 @@ public class SingleSlot : CardSlot, iMainCard
             string title = $"Select up to {maxCount} Spirits to Nexus from {source.cardStats.title} to {target.cardStats.title}!";
             BrowseCards(toShow, title, true, maxCount, minCount);
             GameManager.Instance.browseMenu.OnMenuClose += DoNexusCommand;
-            GameManager.Instance.browseMenu.EnchantMode(source, null, false);
+            GameManager.Instance.browseMenu.CastMode(source, null, false);
         }
         else
         {
@@ -235,12 +241,121 @@ public class SingleSlot : CardSlot, iMainCard
         Refresh();
     }
 
+
+   
+
+    /// <summary>
+    /// Start the action of Casting a card to the selected slot directly. 
+    /// </summary>
+    #region Cast to Slot Directly
+    public virtual void CastToSlotCommand(GameCard card, CardSlot from)
+    {
+        int castCount = card.card.SpiritsReq.Count;
+        List<GameCard> toShow = Owner.gameField.SpiritDeckSlot.cards;
+
+        string title = $"Select {CardUI.AnySpiritUnicode(castCount)} Spirits for Cast of {card.card.cardData.cardName}";
+        GameManager.Instance.browseMenu.LoadCards(toShow, title, true, castCount, castCount);
+        GameManager.Instance.browseMenu.CastMode(card, this);
+        ClosePopMenu(true);
+        BrowseMenu.OnClosed += CastToClose;
+    }
+
+    protected void CastToClose(BrowseArgs args)
+    {
+        BrowseMenu.OnClosed -= CastToClose;
+        if (args.CastMode == CardMode.None) { Refresh(); args.SourceCard.ReAddToSlot(false); return; }
+
+        List<GameCard> cardsList = new List<GameCard>();
+        for (int i = 0; i < args.Selections.Count; i++)
+        {
+            cardsList.Add(args.Selections[i]);
+        }
+
+        if (args.SourceCard.card.CardType == CardType.Rune)
+        {
+            RuneCastClose(args.SourceCard, args.SelectedSlot, cardsList, args.CastMode);
+        }
+        else
+        {
+            GameManager.Instance.Cast(Owner, args.SourceCard, cardsList, args.SelectedSlot, args.CastMode);
+            Refresh();
+        }
+    }
+    #endregion
+
+    #endregion
+
+
+
+    #region Enchant/DisEnchant Commands
+    public void EnchantCommand(int spiritCount = 1)
+    {
+
+        List<GameCard> toShow = Owner.gameField.SpiritDeckSlot.cards;
+
+        string title = $"Select {CardUI.AnySpiritUnicode(spiritCount)} to Enchant {SelectedCard.name} with.";
+        BrowseMenu.LoadCards(toShow, title, true, spiritCount, spiritCount);
+        BrowseMenu.CastMode(SelectedCard);
+        ClosePopMenu(true);
+        BrowseMenu.OnCastClose += AwaitEnchantClose;
+    }
+
+    public void DisEnchantCommand(int spiritCount = 1)
+    {
+        List<GameCard> toShow = new List<GameCard>();
+        for (int i = 0; i < cards.Count; i++)
+        {
+            if (cards[i].CardType == CardType.Spirit)
+            {
+                toShow.Add(cards[i]);
+            }
+        }
+        int maxEnchantCount = toShow.Count;
+
+
+        string title = $"Select {CardUI.AnySpiritUnicode(spiritCount)} to DisEnchant from {SelectedCard.name}";
+        BrowseMenu.LoadCards(toShow, title, true, spiritCount, maxEnchantCount);
+        BrowseMenu.CastMode(SelectedCard, null, false);
+        ClosePopMenu(true);
+        BrowseMenu.OnMenuClose += AwaitDisEnchantClose;
+    }
+    protected void AwaitDisEnchantClose(List<GameCard> selectedCards)
+    {
+        BrowseMenu.OnMenuClose -= AwaitDisEnchantClose;
+        List<GameCard> cardsList = new List<GameCard>();
+        for (int i = 0; i < selectedCards.Count; i++)
+        {
+            cardsList.Add(selectedCards[i]);
+        }
+        GameManager.Instance.DisEnchant(Owner, MainCard, cardsList, Owner.gameField.UnderworldSlot);
+        Refresh();
+
+    }
+
+    protected virtual void AwaitEnchantClose(List<GameCard> selectedCards, CardMode cMode)
+    {
+        BrowseMenu.OnCastClose -= AwaitEnchantClose;
+        if (cMode == CardMode.None) { return; }
+
+        List<GameCard> cardsList = new List<GameCard>();
+        for (int i = 0; i < selectedCards.Count; i++)
+        {
+            cardsList.Add(selectedCards[i]);
+        }
+        GameManager.Instance.Enchant(Owner, MainCard, cardsList);
+        Refresh();
+
+    }
+    #endregion
+
+
+    #endregion
+
+    protected virtual void ChangeModeCommand()
+    {
+       
+    }
+
     
-
-   
-   
-    #endregion
-
-    #endregion
 
 }

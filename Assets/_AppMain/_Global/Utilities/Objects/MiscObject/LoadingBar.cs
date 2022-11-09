@@ -8,7 +8,17 @@ using System.Threading.Tasks;
 
 public class LoadingBar : MonoBehaviour
 {
-    public static LoadingBar Instance { get { return AppManager.Instance.loadingBar; } }
+    public static LoadingBar Instance
+    {
+        get
+        {
+            if (AppManager.Instance != null && AppManager.Instance.loadingBar != null)
+            {
+                return AppManager.Instance.loadingBar;
+            }
+            return null;
+        }
+    }
     
     #region Properties
     public event Action OnLoadComplete;

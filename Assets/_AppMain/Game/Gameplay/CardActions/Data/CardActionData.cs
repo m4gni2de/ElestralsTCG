@@ -263,12 +263,12 @@ namespace Gameplay
                     return DrawAction.FromData(data);
                 case ActionCategory.Shuffle:
                     return ShuffleAction.FromData(data);
-                case ActionCategory.Enchant:
-                    return EnchantAction.FromData(data);
+                case ActionCategory.Cast:
+                    return CastAction.FromData(data);
                 case ActionCategory.Mode:
                     return ModeAction.FromData(data);
                 case ActionCategory.Attack:
-                    break;
+                    return AttackAction.FromData(data);
                 case ActionCategory.Empower:
                     return EmpowerAction.FromData(data);
                 case ActionCategory.Nexus:
@@ -288,8 +288,7 @@ namespace Gameplay
 
 
        
-        
-        
+
     }
 }
 

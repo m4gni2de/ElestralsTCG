@@ -38,9 +38,9 @@ public class CardViewDisplay : CardView
     protected override void DoArtChange(bool isFullArt)
     {
 
-        Default.gameObject.SetActive(!isFullArt);
-        FullArt.gameObject.SetActive(isFullArt);
-        
+        DefaultConfig.Toggle(!isFullArt);
+        FullArtConfig.Toggle(isFullArt);
+
     }
     public override void LoadCard(Card card = null, bool flip = false)
     {
@@ -67,12 +67,11 @@ public class CardViewDisplay : CardView
             name = "empty";
             _isFullArt = false;
             Container.SetActive(false);
-            FlatImage.Clear();
 
-            Texts.SetBlank();
-            Bottom.SetBlank();
-            glowControls.SetBlank();
-            ClearSprites();
+            //Texts.SetBlank();
+            //Bottom.SetBlank();
+            //glowControls.SetBlank();
+            
             gameObject.SetActive(false);
         }
 
@@ -85,21 +84,18 @@ public class CardViewDisplay : CardView
         if (toBack)
         {
             //sp.MainSprite = AssetPipeline.ByKey<Sprite>("cardbackSp");
-            CurrentConfig.ToggleDisplay(false);
-            Bottom.gameObject.SetActive(false);
-            FlatImage.gameObject.SetActive(true);
-            FlatImage.SetSprite(AssetPipeline.ByKey<Sprite>("cardbackSp"));
+            //CurrentConfig.ToggleDisplay(false);
+            //Bottom.gameObject.SetActive(false);
         }
         else
         {
             //sp.MainSprite = CardLibrary.GetFullCard(ActiveCard);
-            CurrentConfig.ToggleDisplay(true);
-            FlatImage.Clear();
-            Texts.SetTexts(ActiveCard);
-            Bottom.SetStone(ActiveCard);
-            Bottom.gameObject.SetActive(true);
-            glowControls.Set(ActiveCard);
-            LoadSprites();
+            //CurrentConfig.ToggleDisplay(true);
+            //Texts.SetTexts(ActiveCard);
+            //Bottom.SetStone(ActiveCard);
+            //Bottom.gameObject.SetActive(true);
+            //glowControls.Set(ActiveCard);
+            //LoadSprites();
         }
 
         IsFaceUp = !toBack;

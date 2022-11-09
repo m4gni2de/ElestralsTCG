@@ -10,6 +10,7 @@ namespace nsSettings
 
 
         public int LogLevel;
+        public int PreloadCards;
 
         public AdvancedSettings Default
         {
@@ -17,7 +18,8 @@ namespace nsSettings
             {
                 return new AdvancedSettings
                 {
-                    LogLevel = 1
+                    LogLevel = 1,
+                    PreloadCards = 1
                 };
             }
         }

@@ -9,6 +9,8 @@ using Gameplay.Decks;
 using JetBrains.Annotations;
 using System.Security.Cryptography;
 using System.Security.Policy;
+using Gameplay;
+using System.Net;
 
 public class RemoteData
 {
@@ -150,6 +152,8 @@ public class RemoteData
         return decks;
     }
 
+   
+
     public static async void DownloadDeck(string key)
     {
         WWWForm form = new WWWForm();
@@ -185,6 +189,7 @@ public class RemoteData
                     dto.name = prop[3].stringValue;
                     dto.playersCurrent = prop[4].intValue;
                     dto.playersMax = prop[5].intValue;
+                    dto.connType = prop[6].intValue;
                     list.Add(dto);
                 }
             }
@@ -291,6 +296,144 @@ public class RemoteData
         return list;
     }
     #endregion
+
+    #region Lobby Management
+    public static async Task<string> CreateLobby(string player1)
+    {
+        string lobbyId = UniqueString.CreateId(5);
+
+        WWWForm form = new WWWForm();
+        form.AddField("action", "create");
+        form.AddField("lobbyKey", lobbyId);
+        form.AddField("joinIp", NetworkManager.Instance.myAddressGlobal);
+        form.AddField("player1", player1);
+
+        await DoRemoteQuery(pvpLobby, form);
+        return lobbyId;
+
+    }
+
+  
+   
+    public static async Task<bool> RemoveLobby(string lobbyId)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("action", "remove");
+        form.AddField("lobbyKey", lobbyId);
+
+        string results = await DoRemoteQuery(pvpLobby, form);
+        return results != "error";
+    }
+
+    public static async Task<bool> AddDeckToLobby(string lobbyId, Player player)
+    {
+        int playerIndex = 1;
+        string actionColumn = "update1";
+        if (!player.IsLocal) { playerIndex = 2; }
+        if (playerIndex == 2) { actionColumn = "update2"; }
+
+        //List<string> cards = cardlist.ToList();
+
+        WWWForm form = new WWWForm();
+        form.AddField("action", actionColumn);
+        form.AddField("deckList", "");
+        form.AddField("lobbyKey", lobbyId);
+
+        string results = await DoRemoteQuery(serverInfo, form);
+        return results != "error";
+    }
+    #endregion
+
+    #region Server Management
+    public static async Task<ServerDTO> AddServer()
+    {
+
+        string serverName = UniqueString.Create("srv", 14);
+        int servKey = await ServerCount();
+        WWWForm form = new WWWForm();
+        form.AddField("action", "set");
+        form.AddField("serverKey", servKey);
+        string ipAddress = NetworkManager.Instance.myAddressLocal;
+#if UNITY_EDITOR
+        form.AddField("ip", NetworkManager.Instance.myAddressLocal);
+#else
+         ipAddress = NetworkManager.Instance.myAddressGlobal;
+        form.AddField("ip", NetworkManager.Instance.myAddressGlobal);
+#endif
+
+        form.AddField("port", (int)NetworkManager.Instance.Server.Port);
+        form.AddField("name", serverName);
+        form.AddField("playersCurrent", 0);
+        form.AddField("playersMax", (int)NetworkManager.Instance.Server.MaxClientCount);
+        form.AddField("connType", (int)ConnectionType.P2P);
+
+        ServerDTO dto = new ServerDTO
+        {
+            serverKey = servKey,
+            ip = ipAddress,
+            port = (int)NetworkManager.Instance.Server.Port,
+            name = serverName,
+            playersCurrent = 0,
+            playersMax = (int)NetworkManager.Instance.Server.MaxClientCount,
+            connType = (int)ConnectionType.P2P,
+
+        };
+        string results = await DoRemoteQuery(serverInfo, form);
+        if (results != "error")
+        {
+            return dto;
+        }
+        return null;
+    }
+
+    protected static async Task<int> ServerCount()
+    {
+
+        WWWForm form = new WWWForm();
+        form.AddField("action", "getall");
+
+        string results = await DoRemoteQuery(serverInfo, form);
+        if (results != "error")
+        {
+            if (results == "" || results == null || results == "[]") { return 0; }
+            var array = new JSONObject(results);
+            return array.count;
+        }
+        return 0;
+    }
+
+   
+
+    public static async Task<bool> UpdatePlayerCount(int servKey, bool isAdding)
+    {
+
+        int addInt = 0;
+        if (isAdding) { addInt = 1; }
+
+        WWWForm form = new WWWForm();
+        form.AddField("action", "update");
+        form.AddField("serverId", servKey);
+        form.AddField("isAdding", addInt);
+
+
+        string results = await DoRemoteQuery(serverInfo, form);
+        return results != "error";
+
+    }
+
+    public static async Task<bool> DeleteServer(int servKey)
+    {
+
+
+        WWWForm form = new WWWForm();
+        form.AddField("action", "delete");
+        form.AddField("serverKey", servKey);
+
+        string results = await DoRemoteQuery(serverInfo, form);
+        return results != "error";
+
+    }
+    #endregion
 }
 
 
@@ -320,6 +463,8 @@ public class ServerDTO
     public string name { get; set; }
     public int playersCurrent { get; set; }
     public int playersMax { get; set; }
+    public int connType { get; set; }
 }
+
 
 #endregion

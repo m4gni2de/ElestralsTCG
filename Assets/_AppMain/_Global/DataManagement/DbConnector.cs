@@ -204,14 +204,30 @@ namespace Databases
 
         //public DbConnector(TextAsset dbFile, bool overWrite = false, bool debugLog = true)
         //{
+
         //    databaseFile = dbFile;
         //    overwriteIfExists = overWrite;
+        //    overwriteMaster = true;
         //    DebugTrace = debugLog;
         //    LoadRuntimeLibrary();
         //    Initialize(false);
-        //    //Initialize();
-        //}
 
+
+        //}
+        private DbConnector(TextAsset dbFile, bool overWrite, bool debugLog, bool overrideMaster)
+        {
+            databaseFile = dbFile;
+            overwriteIfExists = overWrite;
+            overwriteMaster = overrideMaster;
+            DebugTrace = debugLog;
+            LoadRuntimeLibrary();
+            Initialize(false);
+        }
+
+        public static DbConnector EditorDb(TextAsset dbFile)
+        {
+            return new DbConnector(dbFile, true, false, true);
+        }
 
         private void LoadRuntimeLibrary()
         {

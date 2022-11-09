@@ -16,39 +16,7 @@ public class CardCatalog : MonoBehaviour, iScaleCard
     private string m_sortLayer = "Card";
     public string SortLayer => m_sortLayer;
     #endregion
-    public struct CatalogSettings
-    {
-        public int cardsPerRow { get; set; }
-        public float cardSpace { get; set; }
-        public int sidePadding { get; set; }       
-        public float cardRatio { get; set; }
-        public int cardsPerPage { get; set; }
-
-
-        public static CatalogSettings Default()
-        {
-            CatalogSettings settings = new CatalogSettings();
-            settings.cardsPerRow = 5;
-            settings.cardSpace = 1f;
-            settings.sidePadding = 8;
-            settings.cardRatio = .75f;
-            settings.cardsPerPage = 100;
-            return settings;
-        }
-
-        public float TotalPadding()
-        {
-            return (cardSpace * (float)cardsPerRow) + ((float)sidePadding * 2f);
-        }
-
-        public Vector2 GridSpacing()
-        {
-            return new Vector2(20f, 5f);
-        }
-
-
-
-    }
+    
     #region Instance
     private static CardCatalog _Instance = null;
     private static CardCatalog Instance
@@ -68,6 +36,7 @@ public class CardCatalog : MonoBehaviour, iScaleCard
     #region Properties
 
     #region UI
+    public CardView cardDisplay;
     public ScrollRect CardScroll;
 
     private Transform Content { get { return CardScroll.content; } }
@@ -75,16 +44,28 @@ public class CardCatalog : MonoBehaviour, iScaleCard
     private Canvas _canvas = null;
     private Canvas canvas { get { _canvas ??= GetComponent<Canvas>(); return _canvas; } }
 
-    public CanvasGroup mainCanvasGroup, filtersCanvasGroup;
+    public CanvasGroup filtersCanvasGroup;
 
-    protected CatalogSettings settings { get; set; }
+    protected GridSettings settings { get; set; }
 
    
     #endregion
 
     #region Cards and Pages
+    private static readonly string DefaultQueryWhere = " setName is not null;";
     private string _queryWhere = "";
-    protected string QueryWhere { get { return _queryWhere; } }
+    protected string QueryWhere
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(_queryWhere)) { _queryWhere = DefaultQueryWhere; }
+            return _queryWhere;
+        }
+        set
+        {
+            _queryWhere = value;
+        }
+    }
 
     private List<CardView> _CardsList = null;
     public List<CardView> CardsList { get { _CardsList ??= new List<CardView>(); return _CardsList; } }
@@ -163,8 +144,6 @@ public class CardCatalog : MonoBehaviour, iScaleCard
     public Button openFiltersBtn, closeFiltersBtn;
     #endregion
 
-    public CardDisplay cardDisplay;
-
     public TMP_Text cPageText;
     public TMP_Text totalText;
     #endregion
@@ -175,14 +154,11 @@ public class CardCatalog : MonoBehaviour, iScaleCard
         List<Card> list = new List<Card>();
         results.Clear();
 
-        
-        Debug.Log(queryWhere);
-        //List<CardDTO> dtos = CardService.ListByQuery<CardDTO>(CardService.CardTable, queryWhere);
-        List<qCards> dtos = CardService.ListByQuery<qCards>(CardService.CardsByImageTable, queryWhere);
+        List<qUniqueCard> dtos = CardService.ListByQuery<qUniqueCard>(CardService.qUniqueCardView, queryWhere);
 
         for (int i = 0; i < dtos.Count; i++)
         {
-            qCards dto = dtos[i];
+            qUniqueCard dto = dtos[i];
             CardData data;
             if (dto.cardClass == (int)CardType.Elestral) { data = new ElestralData(dto); Elestral e = new Elestral((ElestralData)data); list.Add(e); }
             if (dto.cardClass == (int)CardType.Rune) { data = new RuneData(dto); Rune r = new Rune((RuneData)data); list.Add(r); }
@@ -224,23 +200,17 @@ public class CardCatalog : MonoBehaviour, iScaleCard
         {
             _Instance = this;
         }
-        settings = CatalogSettings.Default();
-        //canvas.overrideSorting = true;
-        //canvas.renderMode = RenderMode.ScreenSpaceCamera;
-        //canvas.worldCamera = Camera.main;
-        //canvas.sortingLayerName = "Table";
-
-
-
-        
+        settings = GridSettings.CatalogDefault();
         cardDisplay.gameObject.SetActive(false);
         name = "CardCatalog";
 
+
+       
         //ScrollSize = new Vector2(GetComponent<RectTransform>().rect.width * .9f, GetComponent<RectTransform>().rect.height * .75f);
         //Vector2 newScale = (Grid.cellSize.x / defaultWidth) * _templateCard.sp.GetComponent<Transform>().localScale;
         //_templateCard.sp.GetComponent<Transform>().localScale = newScale;
 
-        FilterMenu.SetFilter<CardDTO>();
+        FilterMenu.SetFilter<qBaseCard>();
     }
 
     private void SetLayout(float freeWidth)
@@ -251,7 +221,7 @@ public class CardCatalog : MonoBehaviour, iScaleCard
         Grid.constraintCount = settings.cardsPerRow;
 
         Grid.cellSize = new Vector2(cellWidth, cellHeight);
-        Grid.spacing = settings.GridSpacing();
+        Grid.spacing = settings.GridSpacing;
         Grid.padding.left = settings.sidePadding;
         Grid.padding.right = settings.sidePadding;
 
@@ -271,21 +241,25 @@ public class CardCatalog : MonoBehaviour, iScaleCard
    
     private void SetupCatalog()
     {
+        float freeWidth = CardScroll.GetComponent<RectTransform>().FreeWidth(CardScroll.verticalScrollbar.handleRect, settings.TotalPadding());
+
+        settings.UpdateGrid(Grid, freeWidth);
        
+        //SetLayout(freeWidth);
+
         closeFiltersBtn.gameObject.SetActive(false);
         openFiltersBtn.gameObject.SetActive(true);
         CardsList.Add(_templateCard);
+        _templateCard.MatchSize(Grid.cellSize);
 
         for (int i = 1; i < settings.cardsPerPage; i++)
         {
             CardView g = Instantiate(_templateCard, Content.transform);
-            g.MatchSize(Grid.cellSize);
-            g.SetSortingLayer(Card.CardLayer2);
+            
             CardsList.Add(g);
             
         }
 
-        _queryWhere = " setName is not null;";
         InitializeCards();
     }
 
@@ -307,6 +281,7 @@ public class CardCatalog : MonoBehaviour, iScaleCard
             int index = i;
             Card c = results[index];
             CardsList[i].LoadCard(c);
+            //CardsList[i].SetSortingLayer(Card.CardLayer1);
             totalText.text = $"1 - {i + 1} of {_results.Count}";
         }
     }
@@ -323,6 +298,8 @@ public class CardCatalog : MonoBehaviour, iScaleCard
             CardsList[i].Hide();
 
         }
+
+        CardScroll.verticalScrollbar.value = 1f;
     }
 
     private void LoadCatalog()
@@ -370,6 +347,7 @@ public class CardCatalog : MonoBehaviour, iScaleCard
         int loadCount = settings.cardsPerPage;
         int startIndex = (PageNumber - 1) * settings.cardsPerPage;
         if (results.Count - startIndex < settings.cardsPerPage) { loadCount = results.Count - startIndex; }
+        
         LoadCards(startIndex, loadCount);
 
     }
@@ -417,8 +395,10 @@ public class CardCatalog : MonoBehaviour, iScaleCard
     {
         if (card.ActiveCard != null)
         {
-            cardDisplay.LoadCard(card);
+            cardDisplay.LoadCard(card.ActiveCard);
             CardScroll.gameObject.SetActive(false);
+            //DisplayManager.SetAction(() => HideDisplay());
+            DisplayManager.AddAction(HideDisplay);
         }
 
     }
@@ -426,6 +406,8 @@ public class CardCatalog : MonoBehaviour, iScaleCard
     {
         if (cardDisplay.gameObject.activeSelf == true)
         {
+            //DisplayManager.RemoveAction(() => HideDisplay());
+            DisplayManager.RemoveAction(HideDisplay);
             cardDisplay.gameObject.SetActive(false);
             CardScroll.gameObject.SetActive(true);
         }
@@ -437,11 +419,16 @@ public class CardCatalog : MonoBehaviour, iScaleCard
     public void OpenFilters()
     {
         ToggleFilterMenu(true);
+        DisplayManager.AddAction(CloseFilters);
     }
     public void CloseFilters()
     {
         if (FilterMenu.Validate())
         {
+            DisplayManager.RemoveAction(CloseFilters);
+
+            string qWhere = FilterMenu.GenerateQuery();
+            string qSort = 
             _queryWhere = FilterMenu.GenerateQuery();
             ToggleFilterMenu(false);
             LoadCatalog();

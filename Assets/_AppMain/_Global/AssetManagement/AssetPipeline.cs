@@ -8,6 +8,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using System.Threading.Tasks;
 using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.ResourceManagement.ResourceLocations;
+using System.Drawing;
 
 public class AssetPipeline
 {
@@ -40,7 +41,7 @@ public class AssetPipeline
                 AsyncOperationHandle<Sprite> handle = Addressables.LoadAssetAsync<Sprite>(item);
                 await handle.Task;
                 count += 1;
-                Debug.Log($"Downloaded {count} Sprites!");
+               
             }
            
         }
@@ -98,14 +99,58 @@ public class AssetPipeline
         return new Tuple<List<string>, double>(assets, dataSize);
     }
 
+    public static async Task<List<string>> GetPreloadList<T>(string locationName)
+    {
+        AsyncOperationHandle<IList<IResourceLocation>> locations = Addressables.LoadResourceLocationsAsync(locationName);
+        await locations.Task;
+        int expectedCount = locations.Result.Count;
+
+        List<string> list = new List<string>();
+        foreach (IResourceLocation location in locations.Result)
+        {
+            if (location.ResourceType == typeof(T))
+            {
+                list.Add(location.PrimaryKey);
+            }
+
+
+        }
+        return list;
+    }
+
+    public static async Task<List<string>> GetAssetList<T>(params string[] assetTags)
+    {
+        List<string> keys = new List<string>();
+        for (int i = 0; i < assetTags.Length; i++)
+        {
+            string locationName = assetTags[i];
+
+            AsyncOperationHandle<IList<IResourceLocation>> locations = Addressables.LoadResourceLocationsAsync(locationName);
+            await locations.Task;
+            int expectedCount = locations.Result.Count;
+
+            
+            foreach (IResourceLocation location in locations.Result)
+            {
+                if (location.ResourceType == typeof(T))
+                {
+                    keys.Add(location.PrimaryKey);
+                }
+
+
+            }
+        }
+        return keys;
+    }
+
     public static async void DownloadAllCards()
     {
         
         if (!isDownloading)
         {
             List<string> keys = new List<string>();
-            keys.Add("Card");
-            keys.Add("FullCard");
+            keys.Add("CardArt");
+            //keys.Add("FullCard");
             AsyncOperationHandle<IList<IResourceLocation>> locations = Addressables.LoadResourceLocationsAsync(keys);
             await locations.Task;
             int downloadExpected = locations.Result.Count;
@@ -171,9 +216,8 @@ public class AssetPipeline
 
     }
 
-    public static async Task<T> AwaitDownload<T>(AsyncOperationHandle<T> handle, float size)
+    public static async Task<T> AwaitDownload<T>(AsyncOperationHandle<T> handle)
     {
-        LoadingBar.Instance.Display($"Downloading Card Assets", 0f, 1f, 0f);
         do
         {
             await Task.Delay(1);
@@ -181,54 +225,79 @@ public class AssetPipeline
             {
                 LoadingBar.Instance.SetSlider(handle.PercentComplete);
             }
-            
+
         } while (true && !handle.IsDone);
 
         await handle.Task;
         return handle.Result;
     }
 
-    public static async void DoRedownloadAllCards()
+   
+
+    public static void DoRedownloadAllCards()
     {
 
-        List<qCards> allCards = DataService.GetAllWhere<qCards>(Cards.CardService.CardsByImageTable, "setName is not null");
+        List<qUniqueCard> allCards = DataService.GetAllWhere<qUniqueCard>(Cards.CardService.qUniqueCardView, "setName is not null");
         isDownloading = true;
         LoadingBar.Instance.Display("Initializing Card Assets", 0f, allCards.Count, 0f);
 
-        int count = 0;
-        foreach (qCards card in allCards)
+
+        List<string> cardKeys = new List<string>();
+        foreach (qUniqueCard card in allCards)
         {
-            //string imageKey = card.image.ToLower() + "_c";
             string imageKey = card.image.ToLower();
-            AsyncOperationHandle<long> size = Addressables.GetDownloadSizeAsync(imageKey);
-            await size.Task;
-            if (size.Result > 0f && size.Status == AsyncOperationStatus.Succeeded)
-            {
-                Sprite s = await AwaitDownload<Sprite>(Addressables.LoadAssetAsync<Sprite>(imageKey), size.Result);
-                if (LoadingBar.Instance == null) { return; }
-                if (!CardLibrary.CardArt.ContainsKey(imageKey)) { CardLibrary.CardArt.Add(imageKey, s); }
-                LoadingBar.Instance.Display("Initializing Card Assets", count, allCards.Count, 0f);
-                count += 1;
-                LoadingBar.Instance.MoveSlider(1f);
 
-            }
-            else
-            {
-                //Sprite sp = await ByKeyAsync<Sprite>(imageKey, CardLibrary.DefaultCardKey);
-                LoadingBar.Instance.MoveSlider(1f);
-                count += 1;
+            cardKeys.Add(imageKey);
+            //AsyncOperationHandle<long> size = Addressables.GetDownloadSizeAsync(imageKey);
+            //await size.Task;
+            //if (size.Result > 0f && size.Status == AsyncOperationStatus.Succeeded)
+            //{
+            //    LoadingBar.Instance.Display($"Initializing Card Assets", count, 1f, 0f);
 
-            }
+            //    cardKeys.Add(imageKey);
 
-            if (count >= allCards.Count - 1)
-            {
-                DownloadComplete();
-                isDownloading = false;
-            }
+            //    AsyncOperationHandle<Sprite> handle = Addressables.LoadAssetAsync<Sprite>(imageKey);
+            //    handle.Completed += SpriteHandle_Completed;
+            //    Sprite s = await AwaitDownload<Sprite>(Addressables.LoadAssetAsync<Sprite>(imageKey));
+            //    if (LoadingBar.Instance == null) { return; }
+            //    if (!CardLibrary.CardArt.ContainsKey(imageKey)) { CardLibrary.CardArt.Add(imageKey, s); }
+            //    LoadingBar.Instance.Display($"Completing {imageKey}", count, allCards.Count, 0f);
+            //    count += 1;
+            //    LoadingBar.Instance.MoveSlider(1f);
+
+            //}
+            //else
+            //{
+            //    //Sprite sp = await ByKeyAsync<Sprite>(imageKey, CardLibrary.DefaultCardKey);
+            //    LoadingBar.Instance.MoveSlider(1f);
+            //    count += 1;
+
+            //}
+
+            //if (count >= allCards.Count - 1)
+            //{
+            //    DownloadComplete();
+            //    isDownloading = false;
+            //}
 
         }
+
+        AppManager.Instance.DoMultipleAssetLoad<Sprite>(cardKeys);
        
     }
+
+    private static void SpriteHandle_Completed(AsyncOperationHandle<Sprite> handle)
+    {
+        if (handle.Status == AsyncOperationStatus.Succeeded)
+        {
+            Sprite result = handle.Result;
+            LoadingBar.Instance.SetText($"Completing {result.name}");
+            LoadingBar.Instance.MoveSlider(1f);
+            // The texture is ready for use.
+        }
+    }
+
+   
 
     public static async void PreloadFullCards()
     {
@@ -264,46 +333,22 @@ public class AssetPipeline
        
     }
 
-    #region Download Managing
-    public static AsyncOperationHandle _activeHandle { get; set; }
-    public static event Action<float> OnAssetDownloading;
-    public static void Downloading(float val)
-    {
-        OnAssetDownloading.Invoke(val);
-    }
-
-  
-    public static async void DownloadDefaults()
-    {
-        AsyncOperationHandle<IList<IResourceLocation>> locations = Addressables.LoadResourceLocationsAsync("default");
-
-        await locations.Task;
-
-        int expectedCount = locations.Result.Count;
-        LoadingBar.Instance.Display("Downloading Assets", 0f, (float)expectedCount, 0f);
-
-        int count = 0;
-        foreach (IResourceLocation location in locations.Result)
-        {
-           AsyncOperationHandle handle = Addressables.DownloadDependenciesAsync(location.Data);
-           await handle.Task;
-            count += 1;
-            LoadingBar.Instance.MoveSlider(1f);
-        }
-        LoadingBar.Instance.Hide();
-        DownloadComplete();
-    }
-#endregion
+   
     public static T ByKey<T>(string key, string fallback = "")
     {
         UnityEngine.ResourceManagement.ResourceManager.ExceptionHandler = (op, ex) => SetDefaultImage(op, ex);
-        LoadingBar.Instance.Display("Downloading Assets", 0f, 1f, 0f);
+        LoadingBar.Instance.Display($"Downloading {key}", 0f, 1f, 0f);
+
+
+        
         var op = Addressables.LoadAssetAsync<T>(key);
+        //op.Completed += OnCompleted;
         T go = op.WaitForCompletion();
+        //op.Completed -= OnCompleted;
 
         if (op.Status == AsyncOperationStatus.Failed && !string.IsNullOrEmpty(fallback))
         {
-            //Debug.Log($"Asset {key} not found");
+           
             op = Addressables.LoadAssetAsync<T>(fallback);
             go = op.WaitForCompletion();
         }
@@ -314,6 +359,11 @@ public class AssetPipeline
         return go;
     }
 
+    private static void OnCompleted<T>(T obj)
+    {
+        LoadingBar.Instance.Display($"Downloading Complete", 0f, 0f, 0f);
+    }
+
     public static async Task<T> ByKeyAsync<T>(string key, string fallback = "")
     {
         UnityEngine.ResourceManagement.ResourceManager.ExceptionHandler = (op, ex) => SetDefaultImage(op, ex);
@@ -322,7 +372,7 @@ public class AssetPipeline
 
         if (op.Status == AsyncOperationStatus.Failed && !string.IsNullOrEmpty(fallback))
         {
-            //Debug.Log($"Asset {key} not found");
+           
             op = Addressables.LoadAssetAsync<T>(fallback);
             go = op.WaitForCompletion();
         }
@@ -340,9 +390,17 @@ public class AssetPipeline
    
     public static T OfGameObject<T>(string key)
     {
+        LoadingBar.Instance.Display($"Downloading {key}", 0f, 1f, 0f);
         GameObject go = ByKey<GameObject>(key);
         return go.GetComponent<T>();
     }
+    public static async Task<T> OfGameObjectAsync<T>(string key)
+    {
+        LoadingBar.Instance.Display($"Downloading {key}", 0f, 1f, 0f);
+        GameObject go = await ByKeyAsync<GameObject>(key);
+        return go.GetComponent<T>();
+    }
+
     public static GameObject GameObjectClone(string key, Transform parent)
     {
         GameObject go = ByKey<GameObject>(key);

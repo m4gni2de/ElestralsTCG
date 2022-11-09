@@ -36,9 +36,21 @@ namespace PopupBox
 
         }
 
+        public override void Refresh()
+        {
+            txtMessage.text = "";
+            ConfirmButton.onClick.RemoveAllListeners();
+            CancelButton.onClick.RemoveAllListeners();
+        }
+
         public override void Confirm()
         {
             SendResult();
+        }
+        public override void Cancel()
+        {
+            
+            SendCancel();
         }
 
 
@@ -86,8 +98,8 @@ namespace PopupBox
 
         private IEnumerator ShowConditionalMessage(Func<bool> func, bool conditionValue)
         {
-            float acumTime = 0f;
-            float maxWaitTime = 60f;
+            //float acumTime = 0f;
+            //float maxWaitTime = 60f;
             do
             {
                 yield return new WaitForEndOfFrame();

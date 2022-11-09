@@ -116,6 +116,40 @@ namespace Gameplay
         }
 
         
+       
+        #endregion
+
+        #region Functions
+        public Player Owner
+        {
+            get
+            {
+                for (int i = 0; i < GameManager.ActiveGame.players.Count; i++)
+                {
+                    Player p = GameManager.ActiveGame.players[i];
+                    if (p.deck.Cards.Contains(this))
+                    {
+                        return p;
+                    }
+                }
+                return null;
+            }
+        }
+
+        protected CardSlot _CurrentSlot = null;
+        public CardSlot CurrentSlot
+        {
+            get { return _CurrentSlot; }
+        }
+
+        public bool IsYours
+        {
+            get
+            {
+                return Owner == GameManager.ActiveGame.You;
+            }
+        }
+
         public List<ElementCode> EnchantingSpiritTypes
         {
             get
@@ -153,38 +187,6 @@ namespace Gameplay
                 ElestralSlot slot = (ElestralSlot)CurrentSlot;
                 list.AddRange(slot.EmpoweringRunes);
                 return list;
-            }
-        }
-        #endregion
-
-        #region Functions
-        public Player Owner
-        {
-            get
-            {
-                for (int i = 0; i < GameManager.ActiveGame.players.Count; i++)
-                {
-                    Player p = GameManager.ActiveGame.players[i];
-                    if (p.deck.Cards.Contains(this))
-                    {
-                        return p;
-                    }
-                }
-                return null;
-            }
-        }
-
-        protected CardSlot _CurrentSlot = null;
-        public CardSlot CurrentSlot
-        {
-            get { return _CurrentSlot; }
-        }
-
-        public bool IsYours
-        {
-            get
-            {
-                return Owner == GameManager.ActiveGame.You;
             }
         }
         #endregion
@@ -251,6 +253,10 @@ namespace Gameplay
                 }
                 
             }
+            else if (CardType == CardType.Rune)
+            {
+                cardObject.Flip(mode == CardMode.Defense);
+            }
            
         }
         
@@ -270,7 +276,7 @@ namespace Gameplay
 
             if (sendToServer)
             {
-                NetworkPipeline.SendNewCardSlot(cardId, _slotId);
+                NetworkPipeline.SendNewCardSlot(cardId, _slotId, mode);
             }
             
         }
@@ -317,17 +323,11 @@ namespace Gameplay
             if (toggle)
             {
                 cardObject.SelectCard(true, color);
-                //cardObject.Images.SetColor("Border", color);
-                //cardObject.Images.ShowSprite("Border");
 
             }
             else
             {
-                cardObject.SelectCard(false, Color.clear);
-
-                //cardObject.SetColor("Border", color);
-                //cardObject.Images.SetColor("Border", Color.clear);
-                //cardObject.Images.HideSprite("Border");
+                cardObject.SelectCard(false, Color.black);
             }
 
 
@@ -349,17 +349,7 @@ namespace Gameplay
 
 
         #region Card Events
-        public void EmpoweredBy(GameCard rune)
-        {
-
-        }
-        
-        protected void OnEnchantment(GameCard source, GameCard spirit)
-        {
-            Game.OnEnchantmentSend(source, spirit);
-            
-        }
-
+       
         public event Action EmpoweredChanged;
         public void EmpoweredChange()
         {
@@ -406,7 +396,6 @@ namespace Gameplay
         public NetworkData CardNetworkData()
         {
             NetworkData data = new NetworkData();
-            //data.OwnerId = Owner.lobbyId;
             data.networkId = NetworkId;
             data.sessionId = cardId;
             data.cardKey = card.cardData.cardKey;

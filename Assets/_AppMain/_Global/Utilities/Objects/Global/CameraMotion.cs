@@ -224,7 +224,6 @@ public class CameraMotion : MonoBehaviour
             }
             if (isClicked)
             {
-                //Debug.Log(worldMousePosition);
 
                 if (worldMousePosition != clickPosition)
                 {

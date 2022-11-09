@@ -14,7 +14,7 @@ namespace Gameplay.Menus
         public class BrowseArgs
         {
             public List<GameCard> Selections { get; set; }
-            public CardMode EnchantMode { get; set; }
+            public CardMode CastMode { get; set; }
             public int Minimum { get; set; }
             public int Maximum { get; set; }
             public bool IsConfirm { get; set; }
@@ -26,7 +26,7 @@ namespace Gameplay.Menus
             {
                 Selections = new List<GameCard>();
                 Selections.AddRange(menu.SelectedCards);
-                EnchantMode = mode;
+                CastMode = mode;
                 Minimum = menu.minSelectCount;
                 Maximum = menu.maxSelectCount;
                 IsConfirm = menu.IsConfirmed;
@@ -56,11 +56,11 @@ namespace Gameplay.Menus
         [SerializeField]
         private Button CancelButton;
         [SerializeField]
-        private TMP_Text TitleText;
+        private FormattedText TitleText;
 
         public GameToggleGroup CardModeGroup;
         public GameToggle AttackToggle, DefenseToggle;
-        protected bool isEnchantMode = false;
+        protected bool isCastMode = false;
         #endregion
 
         #region Menu Origin Properties
@@ -68,12 +68,27 @@ namespace Gameplay.Menus
         protected GameCard SourceCard { get; private set; }
         #endregion
 
+        #region Events
+
         private UnityEvent _OnSelection = null;
         public UnityEvent OnSelection { get { _OnSelection ??= new UnityEvent(); return _OnSelection; } }
 
         public event Action<CardBrowseMenu> OnSelectionConfirm;
 
         public event Action<GameCard, bool> OnCardSelected;
+        #endregion
+
+        #region Overrides
+
+        #endregion
+
+        #region Click and Holding Cards
+        protected void TrySelectCard(int index)
+        {
+            if (Scroll.velocity.magnitude > 0) { return; }
+            SelectCard(index);
+        }
+        
         protected void SelectCard(int index)
         {
             GameCard v = cards[index];
@@ -105,18 +120,44 @@ namespace Gameplay.Menus
         {
             if (isSelected)
             {
-                clone.MaskCard(Color.white);
+                clone.SetAlpha(1f);
 
             }
             else
             {
-                clone.MaskCard(new Color(Color.white.r, Color.white.g, Color.white.b, .5f));
+                clone.SetAlpha(.5f);
             }
         }
+
+        protected void TryHoldCard(int index)
+        {
+            StartCoroutine(AwaitCardHold(index));
+        }
+
+        protected IEnumerator AwaitCardHold(int index)
+        {
+            GameCard v = cards[index];
+            CardView clone = clones[index];
+            ToggleScrolling(false);
+            ToggleSelect(clone, true);
+            GameManager.Instance.DisplayCard(v);
+
+            do
+            {
+                yield return null;
+            } while (true && Input.GetMouseButton(0) && IsOpen && clone.touch.IsPointerOverMe());
+
+            GameManager.Instance.HideDisplayCard();
+            ToggleSelect(clone, false);
+            ToggleScrolling(false);
+        }
+        #endregion
+
+
         protected int maxSelectCount, minSelectCount;
         private int _prevMaxCount, _prevMinCount;
 
-        public event Action<List<GameCard>, CardMode> OnEnchantClose;
+        public event Action<List<GameCard>, CardMode> OnCastClose;
         public event Action<List<GameCard>> OnMenuClose;
 
         public List<CardView> clones = new List<CardView>();
@@ -136,8 +177,8 @@ namespace Gameplay.Menus
             ConfirmButton.interactable = false;
             SourceCard = null;
             SelectedSlot = null;
-            Scroll.horizontalScrollbar.value = 0f;
-            
+            if (Scroll.verticalScrollbar != null) { Scroll.verticalScrollbar.value = 0f; }
+            if (Scroll.horizontalScrollbar != null) { Scroll.horizontalScrollbar.value = 0f; }
             CardModeGroup.Refresh();
         }
 
@@ -149,14 +190,15 @@ namespace Gameplay.Menus
 
         }
 
-        public void EnchantLoad(List<GameCard> cards, string title, bool faceUp, int minSelectable, int maxSelectable, GameCard toEnchant, bool isAdding)
+        public void CastLoad(List<GameCard> cards, string title, bool faceUp, int minSelectable, int maxSelectable, GameCard toEnchant, bool isAdding)
         {
             LoadCards(cards, title, faceUp, minSelectable, maxSelectable);
-            EnchantMode(toEnchant, null, isAdding);
+            CastMode(toEnchant, null, isAdding);
         }
         public void LoadCards(List<GameCard> cards, string title, bool faceUp, int minSelectable, int maxSelectable)
         {
             if (IsOpen) { return; }
+            DisplayManager.AddAction(Cancel);
 
             Refresh();
             maxSelectCount = maxSelectable;
@@ -168,22 +210,18 @@ namespace Gameplay.Menus
             for (int i = 0; i < cards.Count; i++)
             {
                 this.cards.Add(cards[i]);
-                //CardView co = cards[i].cardObject;
-                CardView co = Instantiate(cards[i].cardObject, Content);
-                co.LoadCard(cards[i].card);
-                co.Images.SetColor("Border", Color.clear);
-                co.Images.HideSprite("Border");
+                CardView co = CardFactory.Copy(cards[i].cardObject, Content, cards[i].card);
                 DisplayCard(cards[i], co, faceUp);
                 clones.Add(co);
                 co.transform.localPosition = new Vector3(co.transform.localPosition.x, co.transform.localPosition.y, -2f);
             }
 
             Open();
-            TitleText.text = title;
+            TitleText.SetText(title);
             ShowButtons();
 
         }
-        public void EnchantMode(GameCard card, CardSlot to = null, bool isAdding = true)
+        public void CastMode(GameCard card, CardSlot to = null, bool isAdding = true)
         {
             DefenseToggle.OnToggleChanged -= CheckForFaceDownRune;
             SourceCard = card;
@@ -203,7 +241,7 @@ namespace Gameplay.Menus
             else
             {
 
-                isEnchantMode = true;
+                isCastMode = true;
                 if (card.CardType == CardType.Elestral)
                 {
                     CardModeGroup.SetToggleText(AttackToggle, "Attack Mode");
@@ -255,7 +293,6 @@ namespace Gameplay.Menus
             
             
             co.touch.ClearAll();
-            //m_VisualInfo.Add(card, card.m_VisualInfo);
             co.SetAsChild(Content, CardScale, SortLayer, 0);
             
             if (minSelectCount > 0)
@@ -263,8 +300,8 @@ namespace Gameplay.Menus
                 ToggleSelect(co, false);
             }
             int index = cards.Count -1;
-            //co.touch.OnClickEvent.AddListener(() => SelectCard(index));
-            co.touch.AddClickListener(() => SelectCard(index));
+            co.touch.AddClickListener(() => TrySelectCard(index));
+            co.touch.AddHoldListener(() => TryHoldCard(index), .4f);
             co.touch.IsMaskable = false;
             co.touch.bypassFreeze = true;
             co.SetSortingOrder(5);
@@ -310,6 +347,13 @@ namespace Gameplay.Menus
             Close();
         }
 
+
+        public void Cancel()
+        {
+            IsConfirmed = false;
+            Close();
+        }
+
         protected override void Close()
         {
             List<GameCard> selected = new List<GameCard>();
@@ -319,7 +363,7 @@ namespace Gameplay.Menus
                 selected = SelectedCards;
 
                 cMode = CardMode.None;
-                if (isEnchantMode)
+                if (isCastMode)
                 {
                     string toggleVal = CardModeGroup.GetToggledValue();
                     if (!string.IsNullOrEmpty(toggleVal))
@@ -341,15 +385,16 @@ namespace Gameplay.Menus
             menuArgs = new BrowseArgs(this, cMode);
 
 
-            OnEnchantClose?.Invoke(selected, cMode);
+            OnCastClose?.Invoke(selected, cMode);
             OnMenuClose?.Invoke(selected);
             Refresh();
             base.Close();
             DefenseToggle.OnToggleChanged -= CheckForFaceDownRune;
             CardModeGroup.Unload();
-            isEnchantMode = false;
+            isCastMode = false;
             DoThaw();
 
+            DisplayManager.RemoveAction(Cancel);
             OnClosed?.Invoke(menuArgs);
 
         }
@@ -357,8 +402,8 @@ namespace Gameplay.Menus
         #endregion
 
 
-       
         
+
     }
 }
 

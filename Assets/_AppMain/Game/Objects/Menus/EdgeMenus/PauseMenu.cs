@@ -5,9 +5,8 @@ using UnityEngine;
 
 public class PauseMenu : GameMenu
 {
+
     
-
-
     public void LeaveGame()
     {
         App.AskYesNo("Do you want to forfeit this game and leave?", TryLeave);

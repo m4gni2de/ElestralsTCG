@@ -32,6 +32,30 @@ namespace Gameplay.Menus
         public List<GameCard> _cards = null;
         public List<GameCard> cards { get { _cards ??= new List<GameCard>(); return _cards; } }
 
+        protected Vector2 _lastValue;
+        public float HorizontalValue
+        {
+            get
+            {
+                if (Scroll.horizontal)
+                {
+                    return Scroll.horizontalScrollbar.value;
+                }
+                return 0f;
+            }
+        }
+        public float VerticalValue
+        {
+            get
+            {
+                if (Scroll.vertical)
+                {
+                    return Scroll.verticalScrollbar.value;
+                }
+                return 0f;
+            }
+        }
+
         #endregion
         private void Awake()
         {
@@ -55,6 +79,13 @@ namespace Gameplay.Menus
             gameObject.SetActive(false);
         }
 
+        private void LateUpdate()
+        {
+           
+
+             
+        }
+
 
         #region Game Freezing
         protected void DoFreeze()
@@ -67,6 +98,20 @@ namespace Gameplay.Menus
             this.Thaw();
         }
         #endregion
+
+        #region ScrollRect Functions
+        public void FreezeIfMotion(Vector2 val)
+        {
+            //Scroll.onValueChanged;
+        }
+
+        public void ToggleScrolling(bool turnOn)
+        {
+            if (Scroll.horizontalScrollbar) { Scroll.horizontal = turnOn; }
+            if (Scroll.verticalScrollbar) { Scroll.vertical = turnOn; }
+        }
+        #endregion
+
 
     }
 }

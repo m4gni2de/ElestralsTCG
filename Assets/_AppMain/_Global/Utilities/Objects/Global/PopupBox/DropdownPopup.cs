@@ -70,7 +70,7 @@ namespace PopupBox
 
         public override void Refresh()
         {
-           
+            txtMessage.text = "";
             ConfirmButton.onClick.RemoveAllListeners();
             CancelButton.onClick.RemoveAllListeners();
             ddOptions.onValueChanged.RemoveAllListeners();
@@ -160,7 +160,7 @@ namespace PopupBox
        
         public override void Cancel()
         {
-            SendResult(null);
+            SendCancel();
         }
        
         public override void Close()

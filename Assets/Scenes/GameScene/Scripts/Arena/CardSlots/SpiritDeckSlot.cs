@@ -14,9 +14,9 @@ namespace Gameplay
         [SerializeField]
         private TMP_Text spiritCountText;
         #region Overrides
-        protected override void SetSlot()
+        protected override void WakeSlot()
         {
-            base.SetSlot();
+            base.WakeSlot();
             facing = CardFacing.FaceDown;
             orientation = Orientation.Vertical;
             slotType = CardLocation.SpiritDeck;

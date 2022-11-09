@@ -17,6 +17,17 @@ namespace Gameplay.CardActions
             return ActionCategory.Nexus;
         }
 
+        protected override string LocalActionMessage
+        {
+            get
+            {
+                
+               
+                return $"{sourceCard.cardStats.title} sends {spirits.SpiritUnicode()} to {targetCard.cardStats.title}!";
+            }
+        }
+        protected override string LocalDeclareMessage { get { return $"{sourceCard.cardStats.title} Nexus {spirits.SpiritUnicode()} to {targetCard.cardStats.title}!"; } }
+
         protected override CardActionData GetActionData()
         {
             int spiritCount = spirits.Count;
@@ -79,8 +90,7 @@ namespace Gameplay.CardActions
         protected void SetDetails(Player player)
         {
             actionTime = .65f;
-            _declaredMessage = $"{sourceCard.cardStats.title} Nexus {spirits.Count} Spirits to {targetCard.cardStats.title}!";
-            _actionMessage = $"{sourceCard.cardStats.title} sends {spirits.Count} Spirits to {targetCard.cardStats.title} via Nexus!!";
+            
         }
         NexusAction(Player p, GameCard source, GameCard target, List<GameCard> spiritsMoving) : base(p, source)
         {

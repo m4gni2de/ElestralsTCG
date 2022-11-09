@@ -17,6 +17,15 @@ public class ShuffleAction : CardAction
     [SerializeField]
     protected List<string> newOrder = null;
 
+    protected override string LocalActionMessage
+    {
+        get
+        {
+            return $"{player.username} shuffles their deck!";
+        }
+    }
+    protected override string LocalDeclareMessage { get { return $"{player.username} shuffle their deck!"; } }
+
     protected override ActionCategory GetCategory()
     {
         return ActionCategory.Shuffle;
@@ -61,7 +70,6 @@ public class ShuffleAction : CardAction
         DataList d = JsonConvert.DeserializeObject<DataList>(orderString);
         newOrder = d.items;
         actionResult = data.GetResult();
-        SetDetails();
 
     }
     #region Initialization
@@ -70,15 +78,11 @@ public class ShuffleAction : CardAction
     {
         sourceDeck = deck;
         newOrder = new List<string>();
-        SetDetails();
+        actionTime = 1.5f;
+
     }
 
-    public void SetDetails()
-    {
-        actionTime = 1.5f;
-        _declaredMessage = $"Shuffle their deck.";
-        _actionMessage = $"{player.userId} shuffles their deck!";
-    }
+    
 
     public static ShuffleAction Shuffle(Player p, Deck deck)
     {

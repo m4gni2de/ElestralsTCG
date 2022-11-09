@@ -20,26 +20,26 @@ public static class GameValidation
     }
     #endregion
 
-    public static bool CanEnchant(Player player, GameCard toEnchant, EnchantActionType enchantType)
+    public static bool CanEnchant(Player player, GameCard toEnchant, CastActionType enchantType)
     {
         ErrorList.Clear();
         
         switch (enchantType)
         {
-            case EnchantActionType.Set:
+            case CastActionType.Set:
                 if (!player.CanEnchantCard(toEnchant)) { AddError("You do not have enough Spirits to pay for cost of card."); }
                 SetRune(player, toEnchant);
                 break;
-            case EnchantActionType.Normal:
+            case CastActionType.Cast:
                 if (!player.CanEnchantCard(toEnchant)) { AddError("You do not have enough Spirits to pay for cost of card."); }
                 NormalEnchant(player, toEnchant);
                 break;
-            case EnchantActionType.ReEnchant:
+            case CastActionType.Enchant:
                 if (!player.CanEnchantCard(toEnchant, 1)) { AddError("You do not have enough Spirits to pay for this Re-Enchantment."); }
                 break;
-            case EnchantActionType.DisEnchant:
+            case CastActionType.DisEnchant:
                 break;
-            case EnchantActionType.FromFaceDown:
+            case CastActionType.FromFaceDown:
                 if (!player.CanEnchantCard(toEnchant)) { AddError("You do not have enough Spirits to pay for cost of card."); }
                 break;
             default:

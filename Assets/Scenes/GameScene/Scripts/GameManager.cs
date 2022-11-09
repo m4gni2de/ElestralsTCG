@@ -16,28 +16,24 @@ using Decks;
 using System.Linq;
 using System.Drawing.Text;
 using TMPro;
+#if UNITY_EDITOR
+using static UnityEditor.Experimental.GraphView.GraphView;
+#endif
 
-public class GameManager : MonoBehaviour, iFreeze
+public class GameManager : MonoBehaviour, iFreeze, iSceneScript
 {
-    public static readonly string SceneName = "OnlineGame";
 
-
-    public static Player ByNetworkId(ushort id)
+    #region Interface
+    public void StartScene()
     {
-        for (int i = 0; i < ActiveGame.players.Count; i++)
-        {
-            Player p = ActiveGame.players[i];
-            if (p.lobbyId == id)
-            {
-
-                return p;
-            }
-        }
-        return null;
+        DisplayManager.ClearButton();
+        DisplayManager.ToggleVisible(false);
+        DisplayManager.ToggleActive(true);
+        DisplayManager.SetDefault(() => ZeroField());
     }
+    #endregion
 
-
-
+    public static readonly string SceneName = "OnlineGame";
 
     #region Instance 
     public static Game ActiveGame { get; protected set; }
@@ -96,7 +92,8 @@ public class GameManager : MonoBehaviour, iFreeze
     public Arena arena { get { return _arena; } }
     public List<Player> _players = new List<Player>();
 
-    public CardView cardTemplate;
+    #region Menus
+    public CardView cardTemplate { get { return CardFactory.Instance.templateCard; } }
     public Canvas UICanvas;
     public Blocker m_Blocker;
     public HandMenu handMenu;
@@ -107,6 +104,11 @@ public class GameManager : MonoBehaviour, iFreeze
     public MessageController messageControl;
     public LocationMenu locationMenu;
     public TMP_Text txtGameId;
+    public PauseMenu pauseMenu;
+    public RotatingMenu optionsMenu;
+    #endregion
+
+
     #endregion
 
     #region Turn Management
@@ -151,10 +153,31 @@ public class GameManager : MonoBehaviour, iFreeze
             return _SelectedSlot;
         }
     }
+
+    public CardView DisplayedCard;
+    public void DisplayCard(GameCard card = null, string sortingLayer = "")
+    {
+        if (card != null)
+        {
+            DisplayedCard.gameObject.SetActive(true);
+            DisplayedCard.LoadCard(card.card);
+            if (!string.IsNullOrEmpty(sortingLayer)) { DisplayedCard.SetSortingLayer(sortingLayer); }
+            
+        }
+        else
+        {
+            DisplayedCard.LoadCard();
+        }
+        
+    }
+    public void HideDisplayCard()
+    {
+        DisplayedCard.gameObject.SetActive(false);
+    }
     #endregion
 
-
    
+
     #region Setup
     private void Awake()
     {
@@ -179,6 +202,8 @@ public class GameManager : MonoBehaviour, iFreeze
     private void Start()
     {
         OnGameLoaded?.Invoke();
+        StartScene();
+        
 
     }
 
@@ -198,6 +223,11 @@ public class GameManager : MonoBehaviour, iFreeze
         {
             Go();
         }
+    }
+    public void SetPlayer(Player p)
+    {
+        _players.Add(p);
+
     }
     public void Go()
     {
@@ -235,16 +265,9 @@ public class GameManager : MonoBehaviour, iFreeze
         {
             StartCoroutine(DoActions());
         }
-
-
     }
 
-    public void AddRemoteAction(CardAction ac)
-    {
-        gameLog.LogAction(ac);
-        StartCoroutine(ac.DisplayRemoteAction());
-    }
-
+    
     protected IEnumerator DoActions()
     {
 
@@ -277,6 +300,7 @@ public class GameManager : MonoBehaviour, iFreeze
     //}
 
 
+
     public static void DeclareCardAction(CardAction ac)
     {
         CardAction declaredAction = ac;
@@ -293,32 +317,32 @@ public class GameManager : MonoBehaviour, iFreeze
     }
 
     #region Enchant Actions
-    public void NormalEnchant(Player p, GameCard source, List<GameCard> spirits, CardSlot to, CardMode cMode)
+    public void Cast(Player p, GameCard source, List<GameCard> spirits, CardSlot to, CardMode cMode)
     {
-        EnchantAction enchant = EnchantAction.Normal(p, source, spirits, to, cMode);
+        CastAction enchant = CastAction.Cast(p, source, spirits, to, cMode);
         AddAction(enchant);
     }
-    public void ReEnchant(Player p, GameCard source, List<GameCard> spirits)
+    public void Enchant(Player p, GameCard source, List<GameCard> spirits)
     {
-        EnchantAction enchant = EnchantAction.ReEnchant(p, source, spirits);
+        CastAction enchant = CastAction.Enchant(p, source, spirits);
         AddAction(enchant);
     }
-    public void SetEnchant(Player p, GameCard source, CardSlot to)
+    public void SetCast(Player p, GameCard source, CardSlot to)
     {
-        EnchantAction enchant = EnchantAction.Set(p, source, to);
+        CastAction enchant = CastAction.Set(p, source, to);
         AddAction(enchant);
     }
     public void DisEnchant(Player p, GameCard source, List<GameCard> spirits, CardSlot to)
     {
-        EnchantAction enchant = EnchantAction.DisEnchant(p, source, spirits, to);
+        CastAction enchant = CastAction.DisEnchant(p, source, spirits, to);
         AddAction(enchant);
     }
-    public void FaceDownRuneEnchant(Player p, GameCard source, List<GameCard> spirits)
+    public void FlipUpCast(Player p, GameCard source, List<GameCard> spirits)
     {
-        EnchantAction enchant = EnchantAction.FromFaceDown(p, source, spirits);
+        CastAction enchant = CastAction.FromFaceDown(p, source, spirits);
         AddAction(enchant);
     }
-    public void DoEnchant(EnchantAction ac)
+    public void DoCast(CastAction ac)
     {
         AddAction(ac);
     }
@@ -404,11 +428,6 @@ public class GameManager : MonoBehaviour, iFreeze
 
     }
 
-    public static iHold HeldObject
-    {
-        get { return AppManager.ActiveHoldObject; }
-    }
-    public static bool HasHoldObject { get { return HeldObject != null; } }
 
     private static GameCard _SelectedCard = null;
     public static GameCard SelectedCard
@@ -445,6 +464,7 @@ public class GameManager : MonoBehaviour, iFreeze
     }
 
     public event Action<CardAction> OnActionDeclared;
+
     #endregion
 
     #region Card Dragging
@@ -460,7 +480,7 @@ public class GameManager : MonoBehaviour, iFreeze
             }
             else
             {
-                //this is for forcing an Enchantment if moved to a slot in play
+                //this is for forcing a Cast if moved to a slot in play
 
                 //newSlot.EnchantToCommand(card, from);
 
@@ -469,7 +489,15 @@ public class GameManager : MonoBehaviour, iFreeze
 
                 if (UseGameRules)
                 {
-                    newSlot.AddCardToSlotCommand(card, from);
+                    if (newSlot is SingleSlot)
+                    {
+                        SingleSlot s = (SingleSlot)newSlot;
+                        s.CastToSlotCommand(card, from);
+                    }
+                    else
+                    {
+                        newSlot.AllocateTo(card, true);
+                    }
                 }
                 else
                 {
@@ -488,13 +516,13 @@ public class GameManager : MonoBehaviour, iFreeze
         
         Field f = arena.GetPlayerField(ActiveGame.You);
 
-        // card.cardObject.transform.SetParent(f.transform);
         Vector2 newScale = new Vector3(8f, 8f, 1f);
         card.cardObject.SetScale(newScale);
         card.cardObject.SetAsChild(f.transform, newScale);
 
-        float yOffset = card.cardObject.GetComponent<RectTransform>().sizeDelta.x / 4f;
+        float yOffset = card.cardObject.GetComponent<RectTransform>().sizeDelta.y / 4f;
 
+       
         if (IsOnline)
         {
             card.NetworkCard.SendParent(from.slotId);
@@ -505,18 +533,12 @@ public class GameManager : MonoBehaviour, iFreeze
             DoFreeze();
             yield return new WaitForEndOfFrame();
             var newPos = Camera.main.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y + yOffset));
-            card.cardObject.transform.position = new Vector3(newPos.x, newPos.y, -2f);
-
-            string localPos = $"Position = {card.cardObject.transform.position}";
-            string scaledPos = $"Scaled Pos = {card.cardObject.transform.position * WorldCanvas.Instance.ScreenScale}";
-            string scale = $"Scale = {WorldCanvas.Instance.Scale}";
-            Debug.Log($"{localPos} {scaledPos} {scale}");
-            if (IsOnline) { card.NetworkCard.SendPosition(); }
+            card.SetPosition(new Vector3(newPos.x, newPos.y, -2f), IsOnline);
             f.ValidateSlots(card);
 
         } while (true && Input.GetMouseButton(0));
 
-        card.cardObject.MaskCard(Color.clear);
+        card.cardObject.ResetColors();
         CardSlot slot = f.SelectedSlot;
 
         if (slot == null)
@@ -543,7 +565,7 @@ public class GameManager : MonoBehaviour, iFreeze
     }
     #endregion
 
-    #region Game Freezing
+    #region Game Touch/Display Control
     protected virtual void DoFreeze()
     {
         this.Freeze();
@@ -552,6 +574,11 @@ public class GameManager : MonoBehaviour, iFreeze
     protected virtual void DoThaw()
     {
         this.Thaw();
+    }
+
+    protected void ZeroField()
+    {
+        //do something here that resets the player's field from all selected cards and menus and stuff
     }
     #endregion
 
@@ -588,18 +615,21 @@ public class GameManager : MonoBehaviour, iFreeze
         }
     }
 
-
-    #region Network Messages
-    [MessageHandler((ushort)FromServer.ActionDeclared)]
-    private static void ActionDeclared(Message message)
+    public static Player ByNetworkId(ushort id)
     {
-        string dataString = message.GetString();
-        CardActionData data = CardActionData.FromData(dataString);
-        CardAction ac = CardActionData.ParseData(data);
-        Instance.AddRemoteAction(ac);
-        //OnlineInstance.AddAction(ac);
+        for (int i = 0; i < ActiveGame.players.Count; i++)
+        {
+            Player p = ActiveGame.players[i];
+            if (p.lobbyId == id)
+            {
 
+                return p;
+            }
+        }
+        return null;
     }
+
+   
     [MessageHandler((ushort)FromServer.ActionRecieved)]
     private static void ActionRecieved(Message message)
     {
@@ -651,24 +681,24 @@ public class GameManager : MonoBehaviour, iFreeze
     }
 
     #region Message Pairs
-    public void SyncPlayer(ushort playerId, UploadedDeckDTO dto)
-    {
-        for (int i = 0; i < ActiveGame.players.Count; i++)
-        {
-            Player p = ActiveGame.players[i];
-            if (p.lobbyId == playerId)
-            {
-                //p.VerifyDeck(dto);
-                arena.SetPlayer(p);
-                Go();
-            }
-        }
-    }
+    //public void SyncPlayer(ushort playerId, UploadedDeckDTO dto)
+    //{
+    //    for (int i = 0; i < ActiveGame.players.Count; i++)
+    //    {
+    //        Player p = ActiveGame.players[i];
+    //        if (p.lobbyId == playerId)
+    //        {
+    //            //p.VerifyDeck(dto);
+    //            arena.SetPlayer(p);
+    //            Go();
+    //        }
+    //    }
+    //}
 
-    public static void CreateOnlineGame(string gameId)
+    public static void CreateOnlineGame(string gameId, ConnectionType connType)
     {
         IsOnline = true;
-        ActiveGame = Game.ConnectToNetwork(gameId);
+        ActiveGame = Game.ConnectToNetwork(gameId, connType);
         OnGameLoaded += AsHost;
         NetworkPipeline.OnPlayerJoined += NewPlayerJoined;
         App.ChangeScene(SceneName);
@@ -676,7 +706,8 @@ public class GameManager : MonoBehaviour, iFreeze
     public static void JoinGame(string gameId, NetworkPlayer opponent)
     {
         IsOnline = true;
-        ActiveGame = Game.ConnectToNetwork(gameId);
+        ConnectionType ty = ClientManager.ConnectionType;
+        ActiveGame = Game.ConnectToNetwork(gameId, ty);
         Player opp = new Player(opponent.networkId, opponent.userId, false);
         opp.SetBlankDeck(opponent.deckKey, opponent.deckName);
         ActiveGame.AddPlayer(opp);
@@ -695,17 +726,16 @@ public class GameManager : MonoBehaviour, iFreeze
     private static void AsHost()
     {
         OnGameLoaded -= AsHost;
-        //Instance.arena.transform.localEulerAngles = new Vector3(0f, 0f, 0f);
         Instance.txtGameId.text = ActiveGame.gameId;
         Camera.main.transform.localEulerAngles = new Vector3(0f, 0f, 0f);
         Instance.UICanvas.transform.localEulerAngles = new Vector3(0f, 0f, 0f);
         Instance.LoadLocalPlayer();
         
+
     }
     private static void AsJoinedPlayer()
     {
         OnGameLoaded -= AsJoinedPlayer;
-        //Instance.arena.transform.localEulerAngles = new Vector3(0f, 0f, 180f);
         Camera.main.transform.localEulerAngles = new Vector3(0f, 0f, 180f);
         Instance.UICanvas.transform.localEulerAngles = new Vector3(0f, 0f, 180f);
         Instance.txtGameId.text = ActiveGame.gameId;
@@ -713,7 +743,6 @@ public class GameManager : MonoBehaviour, iFreeze
         Instance.LoadLocalPlayer();
 
     }
-
 
     protected void LoadLocalPlayer()
     {
@@ -782,6 +811,7 @@ public class GameManager : MonoBehaviour, iFreeze
     private void SendDeckSelection(UploadedDeckDTO deck)
     {
 
+        //do this is the server is REMOTE
         NetworkPipeline.SendDeckSelection(deck.deckKey, deck.title);
         //send deck to server here
         Decklist decklist = deck;
@@ -792,20 +822,26 @@ public class GameManager : MonoBehaviour, iFreeze
         ShuffleDeck(p);
         SendDeck(p);
         p.gameField.AllocateCards();
+        //
+
     }
     private void ShuffleDeck(Player p)
     {
         p.deck.Shuffle();
     }
+
+   
     private void SendDeck(Player p)
     {
         List<string> deckInOrder = new List<string>();
+       
         for (int i = 0; i < p.deck.MainDeck.InOrder.Count; i++)
         {
             GameCard c = p.AtPosition(true, i);
             deckInOrder.Add(c.cardId);
         }
         NetworkPipeline.SendDeckOrder(deckInOrder);
+
     }
 
 
@@ -833,17 +869,27 @@ public class GameManager : MonoBehaviour, iFreeze
             }
         }
     }
-
+    #endregion
 
     #region Card Action Management
-    public static void RemoteCardSlotChange(ushort player, string cardId, string newIndex)
+    #region Network Actions
+
+    [MessageHandler((ushort)FromServer.ActionDeclared)]
+    private static void ActionDeclared(Message message)
     {
-        
+        string dataString = message.GetString();
+        CardActionData data = CardActionData.FromData(dataString);
+
+        Instance.PerformRemoteAction(data);
+    }
+
+    public static void RemoteCardSlotChange(ushort player, string cardId, string newIndex, int cardMode)
+    {
+
         GameCard card = Game.FindCard(cardId);
+        card.SetCardMode((CardMode)cardMode, false);
         CardSlot slot = Game.FindSlot(newIndex);
         slot.GetRemoteAllocateTo(card);
-
-
     }
     public static void RemoteEmpowerChange(ushort player, string runeId, string elestralId, bool isAdding)
     {
@@ -860,13 +906,40 @@ public class GameManager : MonoBehaviour, iFreeze
         {
             Game.UnEmpower(rune);
         }
-        
+
     }
-    #endregion
+
+  
+    public void PerformRemoteAction(CardActionData data)
+    {
+
+        //CardAction ac = ParseRemoteAction(data);
+        CardAction ac = CardActionData.ParseData(data);
+
+        gameLog.LogAction(ac);
+        StartCoroutine(ac.DisplayRemoteAction());
+    }
+
+    public void DisplayRemoteAction(CardActionData data)
+    {
+        CardAction ac = CardActionData.ParseData(data);
+    }
+
+    //protected CardAction ParseRemoteAction(CardActionData data)
+    //{
+    //    CardAction ac = CardActionData.ParseData(data);
+    //    if (ac.category == ActionCategory.Cast)
+    //}
 
     #endregion
+   
+   
 
-    #region Game Ending/Leaving
+   
+
+
+
+    #region Game Client Ending/Leaving
     public void LeaveGame()
     {
         if (IsOnline)
@@ -876,6 +949,7 @@ public class GameManager : MonoBehaviour, iFreeze
         }
 
         ActiveGame = null;
+        DisplayManager.ToggleActive(false);
         App.ChangeScene(MainScene.SceneName);
     }
 
@@ -883,6 +957,7 @@ public class GameManager : MonoBehaviour, iFreeze
     {
         if (playerId != Player.LocalPlayer.lobbyId)
         {
+            Player p = ByNetworkId(playerId);
             float endTime = 5f;
             Instance.messageControl.ShowMessage($"{username} has disconnected from the game. Game will end in {endTime} seconds.", false);
             Instance.StartCoroutine(Instance.AwaitGameEnd(endTime));
@@ -896,15 +971,44 @@ public class GameManager : MonoBehaviour, iFreeze
         {
 
             yield return new WaitForEndOfFrame();
+            acumTime += Time.deltaTime;
         } while (true && acumTime <= waitTime);
 
         LeaveGame();
 
     }
+
+    public static void AwaitReconnection(ushort playerId)
+    {
+        Player p = ByNetworkId(playerId);
+        float endTime = 5f;
+        Instance.messageControl.ShowMessage($"{p.username} has disconnected from the game. Game will end in {endTime} seconds if they do not reconnect.", false);
+        Instance.StartCoroutine(Instance.AwaitReconnect(p, endTime));
+        //do some coroutine where the server host waits for the player
+    }
+    protected IEnumerator AwaitReconnect(Player player, float waitTime)
+    {
+
+        float acumTime = 0f;
+        do
+        {
+
+            yield return new WaitForEndOfFrame();
+        } while (true && acumTime <= waitTime);
+
+        if (acumTime >= waitTime)
+        {
+            LeaveGame();
+
+        }
+    }
     #endregion
 
 
     #endregion
+
+
+
 
 }
 

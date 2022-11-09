@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Gameplay.CardActions
 {
-    public class EmpowerAction : EnchantAction
+    public class EmpowerAction : CastAction
     {
 
         protected GameCard empoweredElestral = null;
@@ -18,6 +18,8 @@ namespace Gameplay.CardActions
         {
             return ActionCategory.Empower;
         }
+        protected override string LocalActionMessage { get { return $"{empoweredElestral.cardStats.title} is Empowered by {sourceCard.cardStats.title}!"; } }
+        protected override string LocalDeclareMessage { get { return $"Empower {empoweredElestral.cardStats.title} with {sourceCard.cardStats.title}"; } }
         protected override CardActionData GetActionData()
         {
             int spiritCount = spirits.Count;
@@ -25,7 +27,7 @@ namespace Gameplay.CardActions
             CardActionData data = new CardActionData(this);
             data.SetPlayer(player);
             data.SetSourceCard(sourceCard);
-            data.AddData("enchant_type", (int)enchantType);
+            data.AddData("cast_type", (int)castType);
             data.AddData("card_mode", (int)CardMode.Attack);
             data.AddData("empowered_elestral", empoweredElestral.cardId);
             data.AddData("slot_to", toSlot.slotId);
@@ -42,7 +44,7 @@ namespace Gameplay.CardActions
             base.ParseData(data);
             player = Game.FindPlayer(data.Value<string>(CardActionData.PlayerKey));
             sourceCard = Game.FindCard(data.Value<string>(CardActionData.SourceKey));
-            enchantType = (EnchantActionType)data.Value<int>("enchant_type");
+            castType = (CastActionType)data.Value<int>("cast_type");
             cardMode = (CardMode)data.Value<int>("card_mode");
             toSlot = Game.FindSlot(data.Value<string>("slot_to"));
             actionResult = data.GetResult();
@@ -83,7 +85,7 @@ namespace Gameplay.CardActions
                 Movements.Add(DoMove(spirits[i], toSlot));
             }
 
-            if (enchantType == EnchantActionType.FromFaceDown)
+            if (castType == CastActionType.FromFaceDown)
             {
                 Movements.Add(DoFlip(sourceCard, CardMode.Attack));
             }
@@ -117,18 +119,16 @@ namespace Gameplay.CardActions
         protected override void SetDetails()
         {
             actionTime = .65f;
-            if (enchantType == EnchantActionType.FromFaceDown || enchantType == EnchantActionType.DisEnchant) { doesSourceMove = false; } else { doesSourceMove = true; }
-            _declaredMessage = $"Enchant {sourceCard.cardStats.title} with {SpiritString}";
-            _actionMessage = $"{empoweredElestral.cardStats.title} is Empowered by {sourceCard.cardStats.title}!";
+            if (castType == CastActionType.FromFaceDown || castType == CastActionType.DisEnchant) { doesSourceMove = false; } else { doesSourceMove = true; }
             
         }
 
-        public static EmpowerAction FromEnchant(EnchantAction ac, GameCard elestral)
+        public static EmpowerAction FromEnchant(CastAction ac, GameCard elestral)
         {
             CardActionData data = new CardActionData(ActionCategory.Empower);
             data.SetPlayer(ac.player);
             data.SetSourceCard(ac.sourceCard);
-            data.AddData("enchant_type", (int)ac.enchantType);
+            data.AddData("cast_type", (int)ac.castType);
             data.AddData("card_mode", (int)CardMode.Attack);
             data.AddData("empowered_elestral", elestral.cardId);
             data.AddData("slot_to", ac.enchantingSlot.slotId);
@@ -141,11 +141,11 @@ namespace Gameplay.CardActions
         }
         public static EmpowerAction EmpowerElestral(Player p, GameCard source, CardSlot to,  List<GameCard> spirits, GameCard elestral)
         {
-            EnchantActionType en = EnchantActionType.Normal;
+            CastActionType en = CastActionType.Cast;
             CardActionData data = new CardActionData(ActionCategory.Empower);
             data.SetPlayer(p);
             data.SetSourceCard(source);
-            data.AddData("enchant_type", (int)en);
+            data.AddData("cast_type", (int)en);
             data.AddData("card_mode", (int)CardMode.Attack);
             data.AddData("empowered_elestral", elestral.cardId);
             data.AddData("slot_to", to.slotId);

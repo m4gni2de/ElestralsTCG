@@ -23,6 +23,11 @@ public class LauncherScene : MonoBehaviour
     {
         App.ChangeScene(SceneName);
     }
+
+    private void Awake()
+    {
+        
+    }
     #endregion
 
 

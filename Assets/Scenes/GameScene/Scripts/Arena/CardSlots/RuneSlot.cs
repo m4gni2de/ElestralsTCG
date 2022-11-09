@@ -1,9 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using Gameplay.CardActions;
 using Gameplay.Menus.Popup;
 using Gameplay.Turns;
-using UnityEngine;
 
 namespace Gameplay
 {
@@ -12,13 +10,28 @@ namespace Gameplay
     public class RuneSlot : SingleSlot
     {
 
-        public string EmpoweringSlot;
-        protected override void SetSlot()
+        //public string EmpoweringSlot;
+
+        public bool IsEmpowering
         {
-            base.SetSlot();
+            get
+            {
+                if (MainCard == null) { return false; }
+
+                return GameManager.ActiveGame.EmpoweredRunes.ContainsKey(MainCard);
+            }
+        }
+        protected override void WakeSlot()
+        {
+            base.WakeSlot();
             facing = CardFacing.Both;
             orientation = Orientation.Vertical;
             slotType = CardLocation.Rune;
+        }
+
+        protected override bool GetClickValidation()
+        {
+            return IsYours;
         }
 
         protected override void SetOrientation(GameCard card)
@@ -43,15 +56,32 @@ namespace Gameplay
             }
             return false;
         }
+        
 
         protected override void ClickCard(GameCard card)
         {
+            bool sameCard = GameManager.SelectedCard == card;
             base.ClickCard(card);
             SetSelectedCard(card);
-            
+
             if (GameManager.Instance.currentSelector == null)
             {
-                OpenPopMenu();
+                if (card.CardType == CardType.Rune)
+                {
+                    if (card.IsFaceUp)
+                    {
+                        GameManager.Instance.cardSlotMenu.LoadMenu(this);
+                    }
+                }
+                if (GameManager.Instance.popupMenu.isOpen)
+                {
+                    if (sameCard) { ClosePopMenu(); } else { OpenPopMenu(); }
+                }
+                else
+                {
+                    OpenPopMenu();
+                }
+
             }
             else
             {
@@ -68,7 +98,10 @@ namespace Gameplay
             if (MainCard != null)
             {
                 SetSelectedCard(MainCard);
-                base.OpenPopMenu();
+                bool canClick = Validate;
+
+                if (!IsYours) { canClick = MainCard.IsFaceUp; }
+                GameManager.Instance.popupMenu.LoadMenu(this, canClick);
             }
 
         }
@@ -79,14 +112,26 @@ namespace Gameplay
             List<PopupCommand> commands = new List<PopupCommand>();
           
 
-            commands.Add(PopupCommand.Create("Inspect", () => InspectCommand()));
+            
             if (IsYours)
             {
-                commands.Add(PopupCommand.Create("Activate", () => ChangeModeCommand()));
-                commands.Add(PopupCommand.Create("DisEnchant", () => EnchantCommand(false), 1, 0));
+                commands.Add(PopupCommand.Create("Inspect", () => InspectCommand()));
+                if (!SelectedCard.IsFaceUp)
+                {
+                    commands.Add(PopupCommand.Create("Cast", () => ChangeModeCommand()));
+                }
+                else
+                {
+                    commands.Add(PopupCommand.Create("Cast", () => CastToSlotCommand(SelectedCard, this)));
+                    commands.Add(PopupCommand.Create("Enchant", () => EnchantCommand(1)));
+                    commands.Add(PopupCommand.Create("DisEnchant", () => DisEnchantCommand(), 1, 0));
+                    commands.Add(PopupCommand.Create("Empower", () => EmpowerCommand(), 1, 0));
+                }
+
+                commands.Add(PopupCommand.Create("Close", () => CloseCommand()));
             }
           
-            commands.Add(PopupCommand.Create("Close", () => CloseCommand()));
+            
 
 
 
@@ -99,7 +144,7 @@ namespace Gameplay
         }
 
         #region Change Card Mode
-        protected void ChangeModeCommand()
+        protected override void ChangeModeCommand()
         {
             CardMode current = SelectedCard.mode;
             CardMode newMode = CardMode.Defense;
@@ -107,7 +152,14 @@ namespace Gameplay
 
             if (newMode == CardMode.Attack || current != CardMode.Attack)
             {
-                EnchantCommand(true);
+                int castCount = SelectedCard.card.SpiritsReq.Count;
+                List<GameCard> toShow = Owner.gameField.SpiritDeckSlot.cards;
+
+                string title = $"Select {CardUI.AnySpiritUnicode(castCount)} for Cast of {SelectedCard.name}";
+                GameManager.Instance.browseMenu.LoadCards(toShow, title, true, castCount, castCount);
+                GameManager.Instance.browseMenu.CastMode(SelectedCard);
+                ClosePopMenu();
+                GameManager.Instance.browseMenu.OnCastClose += AwaitFlipCast;
             }
             else
             {
@@ -119,26 +171,18 @@ namespace Gameplay
         }
         #endregion
 
-
-
-        
-        public void Empower(CardSlot toEmpower = null, bool sendToNetwork = true)
-        {
-            if (toEmpower == null) { EmpoweringSlot = ""; }
-            else
-            {
-                if (toEmpower.slotType != CardLocation.Elestral) { return; }
-                EmpoweringSlot = toEmpower.slotId;
-            }
-
-            if (sendToNetwork)
-            {
-
-            }
-           
-           
-        }
         #region Enchant Command
+        public override void CastToSlotCommand(GameCard card, CardSlot from)
+        {
+            int castCount = card.card.SpiritsReq.Count;
+            List<GameCard> toShow = Owner.gameField.SpiritDeckSlot.cards;
+
+            string title = $"Select {CardUI.AnySpiritUnicode(castCount)} Spirits for Cast of {card.card.cardData.cardName}";
+            GameManager.Instance.browseMenu.LoadCards(toShow, title, true, castCount, castCount);
+            GameManager.Instance.browseMenu.CastMode(card, this);
+            ClosePopMenu(true);
+            BrowseMenu.OnClosed += CastToClose;
+        }
 
         protected void EmpowerCommand()
         {
@@ -152,7 +196,7 @@ namespace Gameplay
             {
 
                 EmpowerAction empower = EmpowerAction.EmpowerElestral(Owner, SelectedCard, this, SelectedCard.EnchantingSpirits, sel.SelectedSlots[0].MainCard);
-                GameManager.Instance.DoEnchant(empower);
+                GameManager.Instance.DoCast(empower);
                 sel.SelectedSlots[0].MainCard.SelectCard(false);
                 TurnManager.SetCrafingAction();
                 GameManager.Instance.SetSelector();
@@ -170,31 +214,12 @@ namespace Gameplay
 
         }
 
-        protected void EnchantCommand(bool adding)
+        protected void AwaitFlipCast(List<GameCard> selectedCards, CardMode cMode)
         {
-            if (adding)
-            {
-                int enchantCount = SelectedCard.card.SpiritsReq.Count;
-                List<GameCard> toShow = Owner.gameField.SpiritDeckSlot.cards;
-
-                string title = $"Select {enchantCount} Spirits for Enchantment of {SelectedCard.name}";
-                GameManager.Instance.browseMenu.LoadCards(toShow, title, true, enchantCount, enchantCount);
-                GameManager.Instance.browseMenu.EnchantMode(SelectedCard);
-                ClosePopMenu();
-                GameManager.Instance.browseMenu.OnEnchantClose += AwaitEnchantClose;
-            }
-
-
-
-        }
-
-       
-        protected void AwaitEnchantClose(List<GameCard> selectedCards, CardMode cMode)
-        {
-            GameManager.Instance.browseMenu.OnEnchantClose -= AwaitEnchantClose;
+            GameManager.Instance.browseMenu.OnCastClose -= AwaitFlipCast;
             if (cMode == CardMode.None || cMode == CardMode.Defense) { return; }
 
-            Field f = GameManager.Instance.arena.GetPlayerField(Owner);
+            //Field f = GameManager.Instance.arena.GetPlayerField(Owner);
             List<GameCard> cardsList = new List<GameCard>();
             for (int i = 0; i < selectedCards.Count; i++)
             {
@@ -203,13 +228,14 @@ namespace Gameplay
             GameCard Selected = SelectedCard;
             CardSlot slot = SelectedCard.CurrentSlot;
 
-            GameManager.Instance.FaceDownRuneEnchant(Owner, Selected, cardsList);
+            GameManager.Instance.FlipUpCast(Owner, Selected, cardsList);
             Refresh();
 
         }
-
+       
         #endregion
 
+       
         protected void CloseCommand()
         {
             ClosePopMenu();

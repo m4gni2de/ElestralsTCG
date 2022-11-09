@@ -87,6 +87,8 @@ namespace CardsUI.Glowing
 
         public GlowObject LeftGlow, RightGlow;
 
+        //public SpriteDisplay leftSp, rightSp;
+
         
         #region Indexing
         public GlowObject this[int index]
@@ -103,6 +105,8 @@ namespace CardsUI.Glowing
 
         public void DoArtChange(bool isFullArt)
         {
+            //leftSp.gameObject.SetActive(!isFullArt);
+            //rightSp.gameObject.SetActive(!isFullArt);
             LeftGlow.gameObject.SetActive(!isFullArt);
             RightGlow.gameObject.SetActive(!isFullArt);
         }
@@ -110,6 +114,8 @@ namespace CardsUI.Glowing
         public void SetBlank()
         {
             spRarity.sprite = null;
+            //leftSp.Clear();
+            //rightSp.Clear();
             LeftGlow.SetBlank();
             RightGlow.SetBlank();
 
@@ -149,6 +155,14 @@ namespace CardsUI.Glowing
 
             Color c1 = LeftGlow.GlowSp.color;
             RarityColors.SetSingleColor(c1);
+
+            string l = $"{code.ToString().ToLower()}L";
+            string r = $"{code.ToString().ToLower()}R";
+            Sprite lSp = AssetPipeline.ByKey<Sprite>(l);
+            Sprite rSp = AssetPipeline.ByKey<Sprite>(r);
+
+            //leftSp.SetSprite(lSp);
+            //rightSp.SetSprite(rSp);
 
            
         }

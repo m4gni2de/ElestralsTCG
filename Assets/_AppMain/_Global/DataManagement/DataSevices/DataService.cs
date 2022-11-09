@@ -20,7 +20,23 @@ public class DataService
         }
     }
 
-    protected static DbConnector db { get { return AppManager.Instance.dbConnector; } }
+    protected static DbConnector db
+    {
+        get
+        {
+            if (AppManager.Instance)
+            {
+                return AppManager.Instance.dbConnector;
+            }
+            else
+            {
+                App.LogError($"AppManager is not yet loaded so the Database connection cannot be created!");
+                return null;
+            }
+            
+        }
+    }
+    
    
 
 
@@ -98,7 +114,6 @@ public class DataService
     public static List<T> GetAllWhere<T>(string tableName, string whereClause) where T : new()
     {
         string query = $"SELECT * FROM {tableName} WHERE {whereClause}";
-        Debug.Log(query);
         return db.Query<T>(query);
     }
 
@@ -195,6 +210,19 @@ public class DataService
         }
 
         db.Commit();
+    }
+
+    public static void UpdateOnly<T>(T obj, string tableName, string colName, string colValue)
+    {
+        TableMapping mapping = db.GetMapping(typeof(T));
+        bool exists = KeyExists(mapping, tableName, colName, colValue);
+        if (exists)
+        {
+            db.UpdateTable(obj, tableName);
+            db.Commit();
+        }
+       
+        
     }
 
     public static void OverrideAndSave<T>(T obj, string tableName, string colName, string colValue)

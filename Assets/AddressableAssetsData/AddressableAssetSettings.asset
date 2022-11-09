@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: cee7d87e0ca1dfd4fa51f33e3cafc7ee
   m_CachedHash:
     serializedVersion: 2
-    Hash: 83e29b6da259a06aeb5460ee72c454a0
+    Hash: 00000000000000000000000000000000
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 1
   m_BundleLocalCatalog: 0
@@ -46,18 +46,23 @@ MonoBehaviour:
   m_GroupAssets:
   - {fileID: 11400000, guid: a2e7cf2ffdefa76438b0996144064353, type: 2}
   - {fileID: 11400000, guid: b74e719a1ec6e9c41917773e78177056, type: 2}
-  - {fileID: 11400000, guid: 23e6b9262519b714ba1ddba6c70cb943, type: 2}
   - {fileID: 11400000, guid: ee6f771998498914baf81ce90cabad31, type: 2}
-  - {fileID: 11400000, guid: d27542b432318a84ea63e91fc62e0c21, type: 2}
-  - {fileID: 11400000, guid: 32c9e678ee5d95a4cbb9f01e66009cdc, type: 2}
-  - {fileID: 11400000, guid: 84d9355023254a5419e62e2d7a486d1a, type: 2}
-  - {fileID: 11400000, guid: 44dcba8896d86ac4d82dec5560bd3ad3, type: 2}
-  - {fileID: 11400000, guid: 9337a886511435449bfa097f92b1be30, type: 2}
-  - {fileID: 11400000, guid: 9d30bbc9484163840a101c3c19368178, type: 2}
-  - {fileID: 11400000, guid: f3ec67b66d3746b40a3a6826524abf36, type: 2}
+  - {fileID: 11400000, guid: bb5e7ac1077571a44bc04dfa7134d588, type: 2}
   - {fileID: 11400000, guid: 7dc723bba0b9ca843a3c236e49653d09, type: 2}
   - {fileID: 11400000, guid: aa4f199dc1ee1904785464c395f15c4a, type: 2}
   - {fileID: 11400000, guid: 478cf604cd856094c813f9a66dc98f0d, type: 2}
+  - {fileID: 11400000, guid: 8a29d9d93c3cac04193cc3f8f008a767, type: 2}
+  - {fileID: 11400000, guid: 8d8e8ae9795fda6419b6660967b7222a, type: 2}
+  - {fileID: 11400000, guid: 833b6a1a9fd4f2a42a43d0e147b93215, type: 2}
+  - {fileID: 11400000, guid: 7e66ce34edaed3348a5b8ddef0c866ba, type: 2}
+  - {fileID: 11400000, guid: 8ae7e165ee059504d81e32c7cdadfcf5, type: 2}
+  - {fileID: 11400000, guid: 129fac5a66965624ea0632e131a5a7ed, type: 2}
+  - {fileID: 11400000, guid: 0378a118444ef4c4095234cec9ecf1ab, type: 2}
+  - {fileID: 11400000, guid: 8bff7543ab51ea64d9296fa093827032, type: 2}
+  - {fileID: 11400000, guid: 9e0df7f44ed73d248afd8c1b09191a04, type: 2}
+  - {fileID: 11400000, guid: b33b5fe955ee7454da08090d1ebe1d06, type: 2}
+  - {fileID: 11400000, guid: 00da0af36a85ad944a07ff404e2658c7, type: 2}
+  - {fileID: 11400000, guid: c79623686016e9f42a60294f1b0602bc, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -121,6 +126,7 @@ MonoBehaviour:
     - Card
     - FullCard
     - Networking
+    - Preload
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 3d5c90bdd758ba543be9ec6fd2b4dc16, type: 2}

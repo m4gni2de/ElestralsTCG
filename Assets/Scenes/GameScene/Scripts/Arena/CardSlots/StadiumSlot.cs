@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Gameplay.Menus.Popup;
 using UnityEngine;
 
 namespace Gameplay
@@ -25,7 +26,7 @@ namespace Gameplay
         {
             return true;
         }
-        protected override void SetSlot()
+        protected override void WakeSlot()
         {
             facing = CardFacing.Both;
             orientation = Orientation.Vertical;
@@ -56,6 +57,41 @@ namespace Gameplay
         {
             base.ClickCard(card);
         }
+
+
+        #region Slot Commands
+        protected override List<PopupCommand> GetSlotCommands()
+        {
+            List<PopupCommand> commands = new List<PopupCommand>();
+
+
+            commands.Add(PopupCommand.Create("Inspect", () => InspectCommand()));
+            if (IsYours)
+            {
+                if (!SelectedCard.IsFaceUp)
+                {
+                    commands.Add(PopupCommand.Create("Enchant", () => ChangeModeCommand(), 1, 0));
+                }
+                else
+                {
+                    commands.Add(PopupCommand.Create("Cast", () => CastToSlotCommand(SelectedCard, this)));
+                    commands.Add(PopupCommand.Create("Enchant", () => EnchantCommand(1)));
+                    commands.Add(PopupCommand.Create("DisEnchant", () => DisEnchantCommand(), 1, 0));
+                    
+                }
+                
+            }
+
+            commands.Add(PopupCommand.Create("Close", () => CloseCommand()));
+
+
+
+            return commands;
+        }
+
+   
+
+        #endregion
     }
 }
 

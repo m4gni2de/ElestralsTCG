@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: RaritySprites
+  m_EditorClassIdentifier: 
+  m_GroupName: RaritySprites
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 39d95ed5cc5a0d34686c513eeb167535
+  m_SerializeEntries:
+  - m_GUID: a63c26fa6bcbf364b8d8ad6f0eb36925
+    m_Address: commonSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 696a591757662c440947d3132b524eeb
+    m_Address: uncommonSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6ebe034bae17f5642a31a8b20d7aeb0c
+    m_Address: rareSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 935789348b8e67941ba36a4557ebe390
+    m_Address: legendaryRareSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3154900f8bfb477468daebe077082ed5
+    m_Address: stellarRareSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 1be14347eed7a2045bb008a93315871e, type: 2}
+    - {fileID: 11400000, guid: fc615ba2d40360141bee74cefcb8119f, type: 2}

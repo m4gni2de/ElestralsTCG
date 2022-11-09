@@ -12,8 +12,10 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System;
 using PopupBox;
 using System.Configuration;
+using AppManagement;
+using GameActions;
 
-public class NetworkScene : MonoBehaviour
+public class NetworkScene : MonoBehaviour, iSceneScript
 {
     #region Scene Loading
     public static string SceneName
@@ -29,9 +31,27 @@ public class NetworkScene : MonoBehaviour
     }
     #endregion
 
+    #region Interface
+    public void StartScene()
+    {
+        WorldCanvas.SetOverlay();
+        DisplayManager.ClearButton();
+        DisplayManager.ToggleVisible(true);
+        //DisplayManager.SetDefault(() => App.TryChangeScene("MainScene"));
+        //DisplayManager.SetDefaultAction(()=> App.TryChangeScene("MainScene"), "MainScene");
+        
+
+        GameAction dc = GameAction.Create(Disconnect);
+        GameAction leave = GameAction.Create(App.TryChangeScene, "MainScene");
+        DisplayManager.SetDefault(dc + leave);
+    }
+    #endregion
+
+
     public TMP_InputField lobbyInput;
     public GameObject mainObject;
     public Button hostButton, connectButton;
+    
 
 
     public bool isConnecting = false;
@@ -67,51 +87,29 @@ public class NetworkScene : MonoBehaviour
 
     private void Awake()
     {
-        //connectionPanel.SetActive(false);
-        //gameLobby.SetActive(false);
-
-        //btnServerJoin.gameObject.SetActive(false);
-        //btnServerJoin.gameObject.SetActive(false);
-        //lobbyInput.interactable = false;
-        //hostButton.interactable = false;
-        //connectButton.interactable = false;
-        //mainObject.SetActive(true);
-
         _templateGameSelect.Hide();
         ToggleMainMenu(false);
         ToggleGamesList(false);
-//#if UNITY_EDITOR
-//        btnServerJoin.gameObject.SetActive(false);
-//        lobbyInput.interactable = false;
-//        hostButton.interactable = false;
-//        connectButton.interactable = false;
-       
-//#else
-//        btnServerJoin.gameObject.SetActive(true);
-//        lobbyInput.interactable = true;
-//        hostButton.interactable = true;
-//        connectButton.interactable = true;
-//#endif
-
+        
+        
 
     }
     private void Start()
     {
-#if UNITY_EDITOR
-        //TryConnection(NetworkManager.localIp, 7777);
-#endif
+        StartScene();
         GetServerList();
+        
 
     }
 
     private void OnDestroy()
     {
-        NetworkManager.OnClientConnected -= OnClientConnected;
+        NetworkManager.OnConnectAsClient -= OnClientConnected;
         NetworkManager.OnConnectionFailed -= OnClientConnectionFailed;
     }
     private void OnApplicationQuit()
     {
-        NetworkManager.OnClientConnected -= OnClientConnected;
+        NetworkManager.OnConnectAsClient -= OnClientConnected;
         NetworkManager.OnConnectionFailed -= OnClientConnectionFailed;
     }
 
@@ -128,25 +126,49 @@ public class NetworkScene : MonoBehaviour
         showGamesButton.interactable = show;
         hostButton.interactable = show;
 
+        //if (show)
+        //{
+        //    DisplayManager.OpenWindow(mainObject);
+        //}
+
+
     }
     public void ToggleGamesList(bool show)
     {
         gamesListPanel.SetActive(show);
         closeGamesButton.interactable = show;
 
-      
+        //if (show)
+        //{
+        //    DisplayManager.OpenWindow(mainObject);
+        //}
+        //else
+        //{
+        //    DisplayManager.CloseWindow(mainObject);
+        //}
+
+
     }
     
     #region Server/Game Choosing
+    
     private async void GetServerList()
     {
-        List<ServerDTO> servers = await RemoteData.ServerList();
+
+        List<ServerDTO> servers = new List<ServerDTO>();
+        ServerDTO local = ServerManager.LocalServer();
+        servers.Add(local);
+        List<ServerDTO> remoteServers = await RemoteData.ServerList();
+        servers.AddRange(remoteServers);
+
+        
         List<string> options = new List<string>();
 
         if (servers.Count > 0)
         {
             string msg = $"Select Server to Connect to.";
-            App.ShowDropdown(msg, servers, ConnectToServer, "name");
+            App.ShowDropdown(msg, servers, ConnectToServer, "name", true);
+            
 
         }
         else
@@ -154,14 +176,16 @@ public class NetworkScene : MonoBehaviour
             App.DisplayError("There are no servers available to join.", GoHome);
             
         }
+
         
+
     }
     private void GoHome()
     {
         App.ChangeScene(SceneHelpers.SceneName(typeof(MainScene)));
     }
 
-    protected void ConnectToServer(ServerDTO dto)
+    protected void ConnectToServer(ServerDTO dto = null)
     {
         if (dto == null)
         {
@@ -169,9 +193,17 @@ public class NetworkScene : MonoBehaviour
         }
         else
         {
-            string ip = dto.ip;
-            ushort port = (ushort)dto.port;
-            TryConnection(ip, port);
+            if (dto.name == "LocalServer")
+            {
+                CreateServerAsHost();
+            }
+            else
+            {
+                string ip = dto.ip;
+                ushort port = (ushort)dto.port;
+                TryConnection(ip, port);
+            }
+            
         }
         
  
@@ -183,12 +215,12 @@ public class NetworkScene : MonoBehaviour
     {
         //btnServerJoin.interactable = false;
 
-        NetworkManager.OnClientConnected -= OnClientConnected;
-        NetworkManager.OnClientConnected += OnClientConnected;
+        NetworkManager.OnConnectAsClient -= OnClientConnected;
+        NetworkManager.OnConnectAsClient += OnClientConnected;
         NetworkManager.OnConnectionFailed -= OnClientConnectionFailed;
         NetworkManager.OnConnectionFailed += OnClientConnectionFailed;
         NetworkManager.Instance.Create(NetworkManager.NetworkMode.Client);
-        NetworkManager.Instance.Connect(ip, port);
+        NetworkManager.Instance.ConnectClient(ip, port);
         isConnecting = true;
 
     }
@@ -199,8 +231,10 @@ public class NetworkScene : MonoBehaviour
     private void OnClientConnected(ushort networkId)
     {
         isConnecting = false;
-        NetworkManager.OnClientConnected -= OnClientConnected;
+        NetworkManager.OnConnectAsClient -= OnClientConnected;
         ToggleMainMenu(true);
+        //DisplayManager.SetAction(() => Disconnect());
+        
 
         Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.Connected);
         message.AddUShort(NetworkManager.Instance.Client.Id);
@@ -213,7 +247,7 @@ public class NetworkScene : MonoBehaviour
     protected void OnClientConnectionFailed()
     {
         NetworkManager.OnConnectionFailed -= OnClientConnectionFailed;
-        NetworkManager.OnClientConnected -= OnClientConnected;
+        NetworkManager.OnConnectAsClient -= OnClientConnected;
         //OpenConnectionPanel();
        // btnServerJoin.interactable = true;
 
@@ -225,6 +259,23 @@ public class NetworkScene : MonoBehaviour
 
 
     #region Buttons
+    public void CreateServerAsHost()
+    {
+        
+
+        if (NetworkManager.Instance.Server == null)
+        {
+            NetworkManager.OnConnectAsClient += OnClientConnected;
+            NetworkManager.OnConnectionFailed += OnClientConnectionFailed;
+            NetworkManager.Instance.Create(NetworkManager.NetworkMode.Both);
+        }
+    }
+    
+    public void RemoteConnectButton()
+    {
+        GetServerList();
+    }
+    
     public void HostMode()
     {
         //lobbyInput.interactable = false;
@@ -238,10 +289,15 @@ public class NetworkScene : MonoBehaviour
         NetworkPipeline.CreateGame();
 
     }
+
+    /// <summary>
+    /// this is REMOTE because it's awaiting the Event OnGameCreated, which can only come from the remote server
+    /// </summary>
+    /// <param name="gameId"></param>
     private void OnGameCreated(string gameId)
     {
         NetworkPipeline.OnGameCreated -= OnGameCreated;
-        GameManager.CreateOnlineGame(gameId);
+        GameManager.CreateOnlineGame(gameId, ClientManager.ConnectionType);
     }
 
     public void RandomGame()
@@ -269,7 +325,10 @@ public class NetworkScene : MonoBehaviour
     public void ShowGamesList()
     {
         RefreshLobbies();
-        GetActiveLobbies();  
+        GetActiveLobbies();
+
+        //DisplayManager.SetAction(() => HideGamesDisplayLobby());
+        DisplayManager.AddAction(HideGamesDisplayLobby);
     }
 
     protected async void GetActiveLobbies()
@@ -325,7 +384,7 @@ public class NetworkScene : MonoBehaviour
         App.DisplayError($"Failed to join Game!");
 
         ShowGamesList();
-        ToggleGamesList(true);
+        
         //lobbyInput.interactable = true;
         //hostButton.interactable = true;
         //connectButton.interactable = true;
@@ -372,9 +431,9 @@ public class NetworkScene : MonoBehaviour
     //                App.ShowMessage($"You are already connected to the server!");
     //            }
     //        }
-            
+
     //    }
-       
+
     //}
 
     //public void ToggleConnectionPanel()
@@ -390,7 +449,7 @@ public class NetworkScene : MonoBehaviour
     //            OpenConnectionPanel();
     //        }
     //    }
-        
+
     //}
     //private bool ConnectionValid()
     //{
@@ -403,7 +462,7 @@ public class NetworkScene : MonoBehaviour
     //    mainObject.SetActive(false);
     //    connectionPanel.SetActive(true);
     //    btnServerJoin.gameObject.SetActive(true);
-       
+
 
     //    if (ClientManager.IsConnected() || ClientManager.IsConnecting())
     //    {
@@ -418,7 +477,7 @@ public class NetworkScene : MonoBehaviour
     //        btnServerJoin.interactable = true;
     //    }
 
-        
+
     //}
     //public void CloseConnectionPanel()
     //{
@@ -434,6 +493,20 @@ public class NetworkScene : MonoBehaviour
 
     //#endregion
 
+    #region Back Commands
+    private void Disconnect()
+    {
+        ClientManager.Disconnect();
+        ToggleMainMenu(false);
+        ToggleGamesList(false);
+        GetServerList();
+    }
+    private void HideGamesDisplayLobby()
+    {
+        ToggleMainMenu(true);
+        ToggleGamesList(false);
+    }
+    #endregion
 
     #region Game Lobbies
     private bool ContainsLobby(string lobbyKey)

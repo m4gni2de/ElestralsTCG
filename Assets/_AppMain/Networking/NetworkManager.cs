@@ -14,6 +14,11 @@ using nsSettings;
 using Gameplay.Decks;
 using PopupBox;
 using UnityEngine.Events;
+using RiptideNetworking.Transports;
+#if UNITY_EDITOR
+using UnityEditor.Networking.PlayerConnection;
+#endif
+using System.Threading.Tasks;
 
 public class NetworkManager : MonoBehaviour
 {
@@ -30,6 +35,14 @@ public class NetworkManager : MonoBehaviour
     {
         get => _instance;
         private set => _instance = value;
+    }
+    public static bool IsServer
+    {
+        get
+        {
+            if (!Instance) { return false; }
+            return Instance.Server.IsRunning;
+        }
     }
     #endregion
 
@@ -61,14 +74,19 @@ public class NetworkManager : MonoBehaviour
     public Client Client { get; private set; }
     public static readonly string localIp = "127.0.0.1";
     [SerializeField] private string ip;
-    
+    public ServerDTO connectedServer { get; set; }
+
     #endregion
 
     #region Server Properties
     public Server Server { get; private set; }
+    [SerializeField] private ushort maxClientCount;
     public string myAddressLocal;
     public string myAddressGlobal;
-    [SerializeField] private ushort maxClientCount = 2;
+    public static List<IConnectionInfo> ConnectedClients = new List<IConnectionInfo>();
+    private ServerDTO _serverInfo = null;
+    public ServerDTO serverInfo { get { return _serverInfo; } }
+    public int serverKey = -1;
     #endregion
 
     #endregion
@@ -88,20 +106,18 @@ public class NetworkManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (Client != null) { Client.Tick(); } else if (Server != null) { Server.Tick(); }
+        ServerManager.Tick();
+        if (Client != null) { Client.Tick(); }
+        
 
     }
 
-    private void OnApplicationQuit()
-    {
-        if (Client != null) { Client.Disconnect(); } else if (Server != null) { Server.Stop(); }
-
-    }
+   
 
     public void Create(NetworkMode mode)
     {
         networkMode = mode;
-        if (mode == NetworkMode.Client) { CreateClient(); } else if (mode == NetworkMode.Host) { CreateServer(); }
+        if (mode == NetworkMode.Client) { CreateClient(); } else if (mode == NetworkMode.Host) { CreateServer(); } else { CreateServerAsHost();  }
     }
 
     #region Client Mode
@@ -119,7 +135,8 @@ public class NetworkManager : MonoBehaviour
            
         }
     }
-    public void Connect(string serverIp, ushort serverPort = 7777)
+
+    public void ConnectClient(string serverIp, ushort serverPort = 7777)
     {
         this.ip = serverIp;
         this.port = serverPort;
@@ -138,10 +155,10 @@ public class NetworkManager : MonoBehaviour
             return _OnConnectionChanged;
         }
     }
-    public static event Action<ushort> OnClientConnected;
+    public static event Action<ushort> OnConnectAsClient;
     private void DidConnect(object sender, EventArgs e)
     {
-        OnClientConnected?.Invoke(Client.Id);
+        OnConnectAsClient?.Invoke(Client.Id);
         OnConnectionChanged.Invoke();
 
         //PlayerConnected();
@@ -174,11 +191,31 @@ public class NetworkManager : MonoBehaviour
     {
         OnConnectionChanged.Invoke();
         OnClientDisconnected?.Invoke();
+        connectedServer = null;
     }
     
     #endregion
 
 
+    public void SendMessageToServer(Message message)
+    {
+        if (networkMode == NetworkMode.Client)
+        {
+            if (Client != null)
+            {
+                Client.Send(message);
+            }
+            
+        }
+        //else if (networkMode == NetworkMode.Both)
+        //{
+        //    if (Server != null)
+        //    {
+        //        Server.
+        //        ServerManager.SendToClientsAll(message);
+        //    }
+        //}
+    }
 
 
 
@@ -188,15 +225,49 @@ public class NetworkManager : MonoBehaviour
     {
         if (Server == null)
         {
+            GetServerAddresses();
             Application.targetFrameRate = 60;
 
             RiptideLogger.Initialize(Debug.Log, Debug.Log, Debug.LogWarning, Debug.LogError, false);
-
             Server = new Server();
             Server.Start(port, maxClientCount);
-            Server.ClientDisconnected += PlayerLeft;
+            Server.ClientConnected += ServerManager.OnClientConnected;
+            Server.ClientDisconnected += ServerManager.PlayerDisconnect;
+            GetServerKey();
         }
         
+    }
+
+    private async void CreateServerAsHost()
+    {
+        if (Server == null)
+        {
+            GetServerAddresses();
+            Application.targetFrameRate = 60;
+
+            
+            RiptideLogger.Initialize(Debug.Log, Debug.Log, Debug.LogWarning, Debug.LogError, false);
+            Server = new Server();
+            Server.Start(port, maxClientCount);
+            Server.ClientConnected += ServerManager.OnClientConnected;
+            Server.ClientDisconnected += ServerManager.PlayerDisconnect;
+
+            _serverInfo = await RemoteData.AddServer();
+            if (_serverInfo == null) { return; }
+            serverKey = _serverInfo.serverKey;
+
+            ConnectClient(_serverInfo.ip, (ushort)_serverInfo.port);
+
+
+        }
+    }
+    protected async void GetServerKey()
+    {
+        _serverInfo = await RemoteData.AddServer();
+        if (_serverInfo != null)
+        {
+            serverKey = _serverInfo.serverKey;
+        }
     }
     void GetServerAddresses()
     {
@@ -236,14 +307,66 @@ public class NetworkManager : MonoBehaviour
         } //catch
           //myAddressGlobal=new System.Net.WebClient().DownloadString("https://api.ipify.org"); //single-line solution for the global IP, but long time-out when there is no internet connection, so I prefer to do the method above where I can set a short time-out time
     } //Start
-    private void PlayerLeft(object sender, ClientDisconnectedEventArgs e)
+
+
+   
+    private void Shutdown()
     {
-        //Destroy(OnlinePlayer.list[e.Id].gameObject);
+        if (Client != null)
+        {
+            Client.Connected -= DidConnect;
+            Client.ConnectionFailed -= FailedToConnect;
+            Client.ClientDisconnected -= ClientLeft;
+            Client.Disconnected -= DidDisconnect;
+            Client.Disconnect();
+            ClientManager.Disconnect();
+            Client = null;
+
+        }
+        if (Server != null)
+        {
+            ServerManager.Shutdown();
+        }
+
+        
     }
     #endregion
     private void OnDestroy()
     {
+        Shutdown();
         if (Instance != null) { Instance = null; }
+
+    }
+    private void OnApplicationQuit()
+    {
+        Shutdown();
+
+    }
+
+
+
+    public void AwaitReconnection(NetworkPlayer player)
+    {
+        player.isConnected = false;
+        float waitTime = 5f;
+        StartCoroutine(AwaitReconnect(player, waitTime)); 
+    }
+
+    protected IEnumerator AwaitReconnect(NetworkPlayer player, float waitTime)
+    {
+
+        float acumTime = 0f;
+        do
+        {
+
+            yield return new WaitForEndOfFrame();
+        } while (true && acumTime <= waitTime);
+
+        if (acumTime >= waitTime)
+        {
+            ServerGame.EndGame();
+
+        }
     }
 }
 

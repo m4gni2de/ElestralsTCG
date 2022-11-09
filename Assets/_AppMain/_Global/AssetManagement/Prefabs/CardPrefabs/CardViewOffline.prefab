@@ -3202,6 +3202,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1eae253299f11646b1c543ba2e6c83d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _txtInfo:
+    textComponent: {fileID: 0}
+    characterCount: 0
+    spriteCount: 0
+    spaceCount: 0
+    wordCount: 0
+    linkCount: 0
+    lineCount: 0
+    pageCount: 0
+    materialCount: 0
 --- !u!1 &442851840750672815
 GameObject:
   m_ObjectHideFlags: 0
@@ -5907,6 +5917,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1eae253299f11646b1c543ba2e6c83d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _txtInfo:
+    textComponent: {fileID: 0}
+    characterCount: 0
+    spriteCount: 0
+    spaceCount: 0
+    wordCount: 0
+    linkCount: 0
+    lineCount: 0
+    pageCount: 0
+    materialCount: 0
 --- !u!1 &442851841406270044
 GameObject:
   m_ObjectHideFlags: 0
@@ -6177,7 +6197,7 @@ SpriteRenderer:
   m_Size: {x: 6.75, y: 9.71}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &442851841508446447
@@ -7646,6 +7666,7 @@ MonoBehaviour:
   ActiveChange: 1
   AutoSetMaterial: 1
   ShaderChange: 0
+  _defaultMaterial: {fileID: 0}
   ActiveUpdate: 1
   _Color1: {r: 1, g: 1, b: 1, a: 1}
   _Color2: {r: 1, g: 1, b: 1, a: 1}
@@ -9545,13 +9566,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: {fileID: 442851841377051584}
-  artist: {fileID: 442851841370778480}
-  cardNumber: {fileID: 442851841735614291}
-  trademark: {fileID: 442851840398690985}
-  edition: {fileID: 442851842318395656}
+  artist: {fileID: 0}
+  cardNumber: {fileID: 0}
+  edition: {fileID: 0}
   Effect: {fileID: 442851840709262143}
-  Attack: {fileID: 442851840430469014}
-  Defense: {fileID: 442851841884705553}
+  Attack: {fileID: 0}
+  Defense: {fileID: 0}
+  trademark: {fileID: 0}
 --- !u!1 &442851842230438470
 GameObject:
   m_ObjectHideFlags: 0
@@ -10271,7 +10292,7 @@ MeshRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 9037450947400198184, guid: 0ab4af3e1579ecb439bc8fa35c881d49, type: 2}
+  - {fileID: 1619107837952957772, guid: 8cbe8ebf8c7ae3f4393850b96caed39c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -10315,8 +10336,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 18
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 0ab4af3e1579ecb439bc8fa35c881d49, type: 2}
-  m_sharedMaterial: {fileID: 9037450947400198184, guid: 0ab4af3e1579ecb439bc8fa35c881d49, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8cbe8ebf8c7ae3f4393850b96caed39c, type: 2}
+  m_sharedMaterial: {fileID: 1619107837952957772, guid: 8cbe8ebf8c7ae3f4393850b96caed39c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -10703,6 +10724,7 @@ MonoBehaviour:
   ActiveChange: 1
   AutoSetMaterial: 1
   ShaderChange: 0
+  _defaultMaterial: {fileID: 0}
   ActiveUpdate: 1
   _Color1: {r: 1, g: 1, b: 1, a: 1}
   _Color2: {r: 1, g: 1, b: 1, a: 1}
@@ -10758,7 +10780,7 @@ MeshRenderer:
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
+  m_DynamicOccludee: 0
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
@@ -10768,7 +10790,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 9037450947400198184, guid: 0ab4af3e1579ecb439bc8fa35c881d49, type: 2}
+  - {fileID: 2100000, guid: 22b1c4b742a78714da12e5ecc9402dfb, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -10812,15 +10834,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: Card Name
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 0ab4af3e1579ecb439bc8fa35c881d49, type: 2}
-  m_sharedMaterial: {fileID: 9037450947400198184, guid: 0ab4af3e1579ecb439bc8fa35c881d49, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8cbe8ebf8c7ae3f4393850b96caed39c, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 22b1c4b742a78714da12e5ecc9402dfb, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -10894,6 +10916,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1eae253299f11646b1c543ba2e6c83d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _txtInfo:
+    textComponent: {fileID: 0}
+    characterCount: 0
+    spriteCount: 0
+    spaceCount: 0
+    wordCount: 0
+    linkCount: 0
+    lineCount: 0
+    pageCount: 0
+    materialCount: 0
 --- !u!1 &2943533663854325299
 GameObject:
   m_ObjectHideFlags: 0
@@ -12650,7 +12682,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -478011457
   m_SortingLayer: 4
-  m_SortingOrder: -1
+  m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 4c9230cde84933d43819019cfcaa86e5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -12804,7 +12836,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 9037450947400198184, guid: 0ab4af3e1579ecb439bc8fa35c881d49, type: 2}
+  - {fileID: 1619107837952957772, guid: 8cbe8ebf8c7ae3f4393850b96caed39c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -12848,8 +12880,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Card Effect Here
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 0ab4af3e1579ecb439bc8fa35c881d49, type: 2}
-  m_sharedMaterial: {fileID: 9037450947400198184, guid: 0ab4af3e1579ecb439bc8fa35c881d49, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8cbe8ebf8c7ae3f4393850b96caed39c, type: 2}
+  m_sharedMaterial: {fileID: 1619107837952957772, guid: 8cbe8ebf8c7ae3f4393850b96caed39c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -12930,6 +12962,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1eae253299f11646b1c543ba2e6c83d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _txtInfo:
+    textComponent: {fileID: 0}
+    characterCount: 0
+    spriteCount: 0
+    spaceCount: 0
+    wordCount: 0
+    linkCount: 0
+    lineCount: 0
+    pageCount: 0
+    materialCount: 0
 --- !u!1 &2943533664590437722
 GameObject:
   m_ObjectHideFlags: 0
@@ -13416,13 +13458,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: {fileID: 2943533663835747473}
-  artist: {fileID: 2943533663993962296}
-  cardNumber: {fileID: 2943533663606731626}
-  trademark: {fileID: 2943533663891398567}
-  edition: {fileID: 2943533665370879277}
+  artist: {fileID: 0}
+  cardNumber: {fileID: 0}
+  edition: {fileID: 0}
   Effect: {fileID: 2943533664588983408}
-  Attack: {fileID: 2943533665019996169}
-  Defense: {fileID: 2943533663578402313}
+  Attack: {fileID: 0}
+  Defense: {fileID: 0}
+  trademark: {fileID: 0}
 --- !u!1 &2943533664787710565
 GameObject:
   m_ObjectHideFlags: 0
@@ -13751,7 +13793,7 @@ MeshRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 9037450947400198184, guid: 0ab4af3e1579ecb439bc8fa35c881d49, type: 2}
+  - {fileID: 1619107837952957772, guid: 8cbe8ebf8c7ae3f4393850b96caed39c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -13795,8 +13837,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 18
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 0ab4af3e1579ecb439bc8fa35c881d49, type: 2}
-  m_sharedMaterial: {fileID: 9037450947400198184, guid: 0ab4af3e1579ecb439bc8fa35c881d49, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8cbe8ebf8c7ae3f4393850b96caed39c, type: 2}
+  m_sharedMaterial: {fileID: 1619107837952957772, guid: 8cbe8ebf8c7ae3f4393850b96caed39c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -15211,13 +15253,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6493ab97576624f4d8922f80dcd73d83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CardImageSp: {fileID: 442851841562635315}
-  BackgroundSp: {fileID: 442851841508446445}
-  cardFrame: {fileID: 442851841752223478}
-  Texts: {fileID: 442851842212911828}
-  glowControls: {fileID: 442851841157702292}
-  _stoneBottom: {fileID: 0}
-  sortMap: {fileID: 2943533665494204449}
+  cardImageSp: {fileID: 0}
+  cardBorder: {fileID: 0}
+  cardBg: {fileID: 0}
+  cardCover: {fileID: 0}
+  frameSp: {fileID: 0}
+  glowL: {fileID: 0}
+  glowR: {fileID: 0}
+  stoneSp: {fileID: 0}
+  runeSpL: {fileID: 0}
+  runeSpR: {fileID: 0}
+  swordSp: {fileID: 0}
+  shieldSp: {fileID: 0}
+  raritySp: {fileID: 0}
+  stamp1: {fileID: 0}
+  stamp2: {fileID: 0}
+  subSp1: {fileID: 0}
+  subSp2: {fileID: 0}
+  centerStone: {fileID: 0}
+  leftStone: {fileID: 0}
+  rightStone: {fileID: 0}
+  leftCenterStone: {fileID: 0}
+  rightCenterStone: {fileID: 0}
+  spiritStone: {fileID: 0}
+  spiritGlowL: {fileID: 0}
+  spiritGlowR: {fileID: 0}
+  artMask: {fileID: 0}
+  cardTexts: {fileID: 0}
 --- !u!114 &2943533665494204449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15231,66 +15293,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BaseImage: {fileID: 442851841562635312}
-  sprites:
-  - {fileID: 442851841498199779}
-  - {fileID: 442851841508446445}
-  - {fileID: 442851842305666401}
-  - {fileID: 442851841017202933}
-  - {fileID: 442851841562635315}
-  - {fileID: 442851841347529835}
-  - {fileID: 442851840658617647}
-  - {fileID: 442851841175649039}
-  - {fileID: 442851840321865948}
-  - {fileID: 442851841959085523}
-  - {fileID: 442851840250106399}
-  - {fileID: 442851840620915265}
-  - {fileID: 442851842211504162}
-  - {fileID: 442851841406270035}
-  - {fileID: 442851840327455995}
-  - {fileID: 442851840266972806}
-  - {fileID: 442851840408633377}
-  - {fileID: 442851840805874608}
-  - {fileID: 442851840428662173}
-  - {fileID: 442851841183708395}
-  - {fileID: 442851842019623297}
-  - {fileID: 442851841268766389}
-  - {fileID: 442851840561549931}
-  - {fileID: 442851840295682290}
-  - {fileID: 442851841179196262}
-  - {fileID: 442851840372295666}
-  - {fileID: 442851842117715504}
-  - {fileID: 442851840845767400}
-  - {fileID: 442851840386312653}
-  - {fileID: 442851841925201786}
-  - {fileID: 442851842278920904}
-  - {fileID: 442851841079159915}
-  - {fileID: 442851841155900501}
-  - {fileID: 442851840282418601}
-  - {fileID: 442851841885905280}
-  - {fileID: 442851840419085581}
-  - {fileID: 442851840416726046}
-  - {fileID: 442851841091232299}
-  - {fileID: 442851840982129749}
-  - {fileID: 442851840432339861}
-  - {fileID: 442851841040723673}
-  - {fileID: 442851840383643655}
-  - {fileID: 442851840352869634}
-  - {fileID: 442851841750273296}
-  - {fileID: 442851842259961599}
-  - {fileID: 442851840633796928}
-  - {fileID: 442851841034536109}
-  - {fileID: 442851842309915821}
-  - {fileID: 442851840750672802}
-  - {fileID: 442851840586998704}
-  - {fileID: 442851840582915732}
-  - {fileID: 442851842115811601}
-  - {fileID: 442851840576202927}
-  - {fileID: 442851842230438468}
-  - {fileID: 442851841368508716}
-  - {fileID: 2943533663854325297}
-  - {fileID: 442851841861990013}
-  - {fileID: 442851841562635315}
-  - {fileID: 2947591688967543831}
 --- !u!1 &2943533665495363152
 GameObject:
   m_ObjectHideFlags: 0
@@ -15509,7 +15511,7 @@ SpriteRenderer:
   m_SortingLayerID: -478011457
   m_SortingLayer: 4
   m_SortingOrder: 1
-  m_Sprite: {fileID: 4880701022476230964, guid: c0f232dc3e9ac8b43918be94f6f78d4b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7be714b39c563b44d92f847785c2d840, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -15654,13 +15656,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6493ab97576624f4d8922f80dcd73d83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CardImageSp: {fileID: 2943533665134043899}
-  BackgroundSp: {fileID: 2943533665612046701}
-  cardFrame: {fileID: 2943533664705375441}
-  Texts: {fileID: 2943533664757199244}
-  glowControls: {fileID: 2943533664978693339}
-  _stoneBottom: {fileID: 0}
-  sortMap: {fileID: 2943533665649129328}
+  cardImageSp: {fileID: 0}
+  cardBorder: {fileID: 0}
+  cardBg: {fileID: 0}
+  cardCover: {fileID: 0}
+  frameSp: {fileID: 0}
+  glowL: {fileID: 0}
+  glowR: {fileID: 0}
+  stoneSp: {fileID: 0}
+  runeSpL: {fileID: 0}
+  runeSpR: {fileID: 0}
+  swordSp: {fileID: 0}
+  shieldSp: {fileID: 0}
+  raritySp: {fileID: 0}
+  stamp1: {fileID: 0}
+  stamp2: {fileID: 0}
+  subSp1: {fileID: 0}
+  subSp2: {fileID: 0}
+  centerStone: {fileID: 0}
+  leftStone: {fileID: 0}
+  rightStone: {fileID: 0}
+  leftCenterStone: {fileID: 0}
+  rightCenterStone: {fileID: 0}
+  spiritStone: {fileID: 0}
+  spiritGlowL: {fileID: 0}
+  spiritGlowR: {fileID: 0}
+  artMask: {fileID: 0}
+  cardTexts: {fileID: 0}
 --- !u!114 &2943533665649129328
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15674,64 +15696,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BaseImage: {fileID: 2943533665134043866}
-  sprites:
-  - {fileID: 2943533665626198049}
-  - {fileID: 2943533665612046701}
-  - {fileID: 2943533664658068811}
-  - {fileID: 2943533664461473424}
-  - {fileID: 2943533664787710587}
-  - {fileID: 2943533665134043899}
-  - {fileID: 2943533663963667279}
-  - {fileID: 2943533664590437720}
-  - {fileID: 2943533665099894364}
-  - {fileID: 2943533665644010417}
-  - {fileID: 2943533664813362455}
-  - {fileID: 2943533665481735153}
-  - {fileID: 2943533664606221282}
-  - {fileID: 2943533664047307083}
-  - {fileID: 2943533665051992285}
-  - {fileID: 2943533664037147421}
-  - {fileID: 2943533664234070447}
-  - {fileID: 442851840253496742}
-  - {fileID: 2943533664219875253}
-  - {fileID: 2943533665134573122}
-  - {fileID: 442851841772081730}
-  - {fileID: 2943533665307200708}
-  - {fileID: 442851841600099758}
-  - {fileID: 442851841901585706}
-  - {fileID: 2943533665096368585}
-  - {fileID: 442851841338304190}
-  - {fileID: 442851841996181911}
-  - {fileID: 2943533664597415085}
-  - {fileID: 442851841643883419}
-  - {fileID: 442851840870495623}
-  - {fileID: 2943533665136719902}
-  - {fileID: 442851841781525172}
-  - {fileID: 442851842196839571}
-  - {fileID: 442851841436465980}
-  - {fileID: 442851841580493227}
-  - {fileID: 442851842036210237}
-  - {fileID: 442851840705835532}
-  - {fileID: 442851841755084260}
-  - {fileID: 442851842070579944}
-  - {fileID: 442851840936863633}
-  - {fileID: 442851840214567916}
-  - {fileID: 442851842149568605}
-  - {fileID: 442851841948927193}
-  - {fileID: 442851840531261993}
-  - {fileID: 442851842163107337}
-  - {fileID: 442851842211807767}
-  - {fileID: 442851840515078736}
-  - {fileID: 442851841353798566}
-  - {fileID: 442851841876623888}
-  - {fileID: 2943533664031774674}
-  - {fileID: 2943533665150597833}
-  - {fileID: 2943533663943086355}
-  - {fileID: 2943533664007827800}
-  - {fileID: 2943533665321970027}
-  - {fileID: 2943533664166063714}
-  - {fileID: 2943533663819508641}
-  - {fileID: 2947591688967543831}
 --- !u!1 &2947591688967543828
 GameObject:
   m_ObjectHideFlags: 0
@@ -15890,9 +15854,10 @@ MonoBehaviour:
   CardSessionId: 
   touch: {fileID: 2947591689829026576}
   cardIndex: 0
-  Container: {fileID: 2943533664042280279}
-  FlatImage: {fileID: 6242146659250364625}
   isDragging: 0
+  Container: {fileID: 2943533664042280279}
+  DefaultConfig: {fileID: 0}
+  FullArtConfig: {fileID: 0}
   Default: {fileID: 2943533665649129331}
   defaultBottom: {fileID: 2943533663855598653}
   FullArt: {fileID: 2943533665494204448}
@@ -15920,7 +15885,8 @@ MonoBehaviour:
   bypassFreeze: 0
   ForceClickOverride: 0
   UIMode: 0
-  HoldThreshold: 1
+  BlocksTouches: 0
+  holdThreshold: 1
   tapThreshold: 0.1
 --- !u!222 &2947591689829026591
 CanvasRenderer:

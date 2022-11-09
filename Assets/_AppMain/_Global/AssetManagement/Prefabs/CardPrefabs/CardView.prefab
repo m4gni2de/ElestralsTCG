@@ -310,8 +310,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   images:
-  - key: Card
-    image: {fileID: 0}
   - key: Border
     image: {fileID: 2990263738091650688}
 --- !u!114 &2990263737212332421

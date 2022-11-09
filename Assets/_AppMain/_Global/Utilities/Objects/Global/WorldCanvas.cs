@@ -62,5 +62,16 @@ public class WorldCanvas : GlobalObject
         //StartCoroutine(RegisterObject());
     }
 
+
+    public static void FindCamera()
+    {
+        Instance.canvas.renderMode = RenderMode.ScreenSpaceCamera;
+        Instance.canvas.worldCamera = Camera.main;
+    }
+    public static void SetOverlay()
+    {
+        Instance.canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+    }
+
     
 }

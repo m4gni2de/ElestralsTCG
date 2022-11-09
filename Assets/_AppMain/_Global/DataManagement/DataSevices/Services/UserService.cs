@@ -25,7 +25,7 @@ namespace Databases
                 email = ""
             };
 
-            UpdateLocalDecksOwner(dto.username, "");
+            
 
             SaveUser(dto);
             return dto;

@@ -6,7 +6,11 @@ using System;
 using Cards;
 using UnityEditor;
 using SimpleSQL;
-
+using Newtonsoft.Json;
+using Decks;
+using Defective.JSON;
+using UnityEditor.ShaderGraph.Serialization;
+using Logging;
 
 [System.Serializable]
 public class AllElestrals
@@ -19,145 +23,141 @@ namespace Conversion
 {
     public static class DocsToDb
     {
-        private readonly static string TableName = "elestralsDoc";
+        private readonly static string TableName = "xElestralsDoc";
+        private readonly static string RuneTableName = "xRunesDoc";
         private readonly static string CardTableName = "CardDTO";
         private readonly static string ElestralTableName = "ElestralDTO";
 
-        //[MenuItem("Data Converting/Elestrals")]
-        //public static void ConvertElestrals()
-        //{
-        //    List<SheetsElestralsDTO> dtos = ElestralList;
-
-        //    List<CardDTO> cards = new List<CardDTO>();
-        //    List<ElestralDTO> elestrals = new List<ElestralDTO>();
-
-        //    for (int i = 0; i < dtos.Count; i++)
-        //    {
-        //        CardDTO cDto = FromSheets(dtos[i], i);
-        //        cards.Add(cDto);
-
-        //        if (cDto.cardClass == (int)CardType.Elestral)
-        //        {
-        //            ElestralDTO eDto = FromSheets(dtos[i]);
-        //            elestrals.Add(eDto);
-        //        }
-                
-        //    }
-
-        //    SaveConvertedElestrals(cards, elestrals);
-        //}
-
-        //[MenuItem("Data Converting/Effects")]
-        //public static void EffectChange()
-        //{
-        //    List<SheetsElestralsDTO> dtos = ElestralList;
-        //    List<CardDTO> cards = CardService.GetAll<CardDTO>("CardDTO");
-
-        //    for (int i = 0; i < dtos.Count; i++)
-        //    {
-        //        for (int j = 0; j < cards.Count; j++)
-        //        {
-        //            if (dtos[i].ElestralName.ToLower().Contains(cards[j].title.ToLower()))
-        //            {
-        //                if (!string.IsNullOrEmpty(dtos[i].Effect))
-        //                {
-        //                    cards[j].effect = dtos[i].Effect;
-        //                    DataService.Save<CardDTO>(cards[j], CardTableName, "cardKey", cards[j].cardKey);
-        //                }
-                        
-
-        //            }
-        //        }
-        //    }
-        //}
-
-        //[MenuItem("Data Converting/Update Card Key")]
-        //public static void UpdateCardKey()
-        //{
-        //    string setName = "BaseSet";
-        //    string prefix = "bs_";
-
-        //    List<CardDTO> cards = DataService.GetAll<CardDTO>(CardTableName);
-
-        //    List<string> UniqueElestrals = new List<string>();
-
-
-        //    List<ElestralDTO> elestrals = new List<ElestralDTO>();
-
-        //    for (int i = 0; i < cards.Count; i++)
-        //    {
-        //        //List<string> countOf = UniqueElestrals.FindAll(delegate (string s) { return s.ToLower() == $"{cards[i].title.ToLower()}"; });
-        //        //int uniqueCount = countOf.Count;
-
-        //        //string uString = uniqueCount.ToString();
-        //        //if (uniqueCount < 9)
-        //        //{
-        //        //    uString = "00" + uniqueCount.ToString();
-        //        //}
-        //        //else if (uniqueCount < 99)
-        //        //{
-        //        //    uString = "0" + uniqueCount.ToString();
-        //        //}
-
-        //        //string newKey = $"{prefix}{uString}";
-
-        //        string uString = i.ToString();
-        //        if (i < 10)
-        //        {
-        //            uString = "00" + i.ToString();
-        //        }
-        //        else if (i < 100)
-        //        {
-        //            uString = "0" + i.ToString();
-        //        }
-        //        string newKey = "bs_" + uString;
-        //        string oldKey = cards[i].cardKey;
-        //        //cards[i].cardKey = newKey;
-
-        //        //DataService.Save<CardDTO>(cards[i], CardTableName, "cardKey", oldKey);
-
-        //        string query = $"UPDATE CardDTO set cardKey = '{newKey}' WHERE cardKey = '{oldKey}'";
-        //        DataService.DoQuery(query);
-
-        //    }
-
-
-
-
-        //}
-
-
-        //[MenuItem("Data Converting/Image")]
-        //public static void DoCardImage()
-        //{
-        //    List<CardDTO> cards = CardService.GetAll<CardDTO>(CardTableName);
-        //    List<CardDTO> newCards = new List<CardDTO>();
-
-        //    for (int i = 0; i < cards.Count; i++)
-        //    {
-        //        string title = cards[i].title.ToLower();
-        //        title = title.Replace(" ", "");
-        //        title = title.Replace("'", "");
-        //        string image = $"{cards[i].setName}_{title}";
-        //        cards[i].imageFile = image;
-        //    }
-
-        //    SaveCards(cards);
-        //}
-
-        private static void SaveCards(List<CardDTO> cards)
+        private static List<DocsElestralDTO> CardsFromDocs
         {
-            for (int i = 0; i < cards.Count; i++)
+            get
             {
-                DataService.Save<CardDTO>(cards[i], CardTableName, "cardKey", cards[i].cardKey);
+                return DataService.GetAll<DocsElestralDTO>(TableName);
+            }
+        }
+        private static List<DocsRuneDTO> RunesFromDocs
+        {
+            get
+            {
+                return DataService.GetAll<DocsRuneDTO>(RuneTableName);
             }
         }
 
-        private static void SaveConvertedElestrals(List<CardDTO> cards, List<ElestralDTO> elestrals)
+        
+       
+
+        //[MenuItem("Data Converting/Elestrals")]
+        public static void UpdateElestralsFromSheets()
+        {
+            List<DocsElestralDTO> dtos = CardsFromDocs;
+            List<CardDTO> cards = new List<CardDTO>();
+
+            for (int i = 0; i < dtos.Count; i++)
+            {
+                CardDTO master = UpdatedElestralFromDoc(dtos[i]);
+                if (master != null)
+                {
+                    cards.Add(master);
+
+                }
+            }
+
+            foreach (var item in cards)
+            {
+                //Debug.Log(JsonUtility.ToJson(item, true));
+                CardService.UpdateOnly<CardDTO>(item, CardService.CardDTOTable, "cardKey", item.cardKey);
+            }
+        }
+        public static CardDTO UpdatedElestralFromDoc(DocsElestralDTO dto)
+        {
+            string setKey = $"{dto.SetName}-{dto.SetNumber}";
+            qBaseCard card = CardService.CardBySetKey(setKey);
+            if (card != null)
+            {
+                CardDTO master = CardService.ByKey<CardDTO>(CardService.CardDTOTable, "cardKey", card.cardKey);
+                if (master != null)
+                {
+                    master.effect = dto.Effect;
+                    if (dto.A.HasValue) { master.attack = dto.A.Value; } else { master.attack = null; }
+                    if (dto.D.HasValue) { master.defense = dto.D.Value; } else { master.defense = null; }
+
+                    master.subType1 = (int)SubClassToEnum(dto.Subclass);
+                    master.subType2 = (int)SubClassToEnum(dto.Subclass2);
+                   
+
+                    if (!string.IsNullOrEmpty(dto.Type1)) { int e = (int)ElementToCode(dto.Type1); master.cost1 = e; } else { master.cost1 = (int)ElementCode.None; }
+                    if (!string.IsNullOrEmpty(dto.Type2)) { int e = (int)ElementToCode(dto.Type2); master.cost2 = e; } else { master.cost2 = (int)ElementCode.None; }
+                    if (!string.IsNullOrEmpty(dto.Type3)) { int e = (int)ElementToCode(dto.Type3); master.cost3 = e; } else { master.cost3 = (int)ElementCode.None; }
+
+                    return master;
+                }
+            }
+            return null;
+        }
+
+
+        //[MenuItem("Data Converting/Runes")]
+        public static void UpdateRunesFromSheets()
+        {
+            List<DocsRuneDTO> dtos = RunesFromDocs;
+            List<CardDTO> cards = new List<CardDTO>();
+
+            for (int i = 0; i < dtos.Count; i++)
+            {
+                CardDTO master = UpdatedRunesFromDoc(dtos[i]);
+                if (master != null)
+                {
+                    cards.Add(master);
+
+                }
+            }
+
+            foreach (var item in cards)
+            {
+                //Debug.Log(JsonUtility.ToJson(item, true));
+                CardService.UpdateOnly<CardDTO>(item, CardService.CardDTOTable, "cardKey", item.cardKey);
+            }
+        }
+        public static CardDTO UpdatedRunesFromDoc(DocsRuneDTO dto)
+        {
+            string setKey = $"{dto.SetName}-{dto.SetNumber}";
+            qBaseCard card = CardService.CardBySetKey(setKey);
+            if (card != null)
+            {
+                CardDTO master = CardService.ByKey<CardDTO>(CardService.CardDTOTable, "cardKey", card.cardKey);
+                if (master != null)
+                {
+                    master.effect = dto.Effect;
+                    master.subType1 = (int)RuneTypeToEnum(dto.RuneType);
+                    master.subType2 = 0;
+                    master.attack = null;
+                    master.defense = null;
+
+                    if (!string.IsNullOrEmpty(dto.Type1)) { int e = (int)ElementToCode(dto.Type1); master.cost1 = e; } else { master.cost1 = (int)ElementCode.None; }
+                    if (!string.IsNullOrEmpty(dto.Type2)) { int e = (int)ElementToCode(dto.Type2); master.cost2 = e; } else { master.cost2 = (int)ElementCode.None; }
+                    if (!string.IsNullOrEmpty(dto.Type3)) { int e = (int)ElementToCode(dto.Type3); master.cost3 = e; } else { master.cost3 = (int)ElementCode.None; }
+
+                    return master;
+                }
+            }
+            return null;
+        }
+
+        
+
+        private static void SaveCards(List<qBaseCard> cards)
         {
             for (int i = 0; i < cards.Count; i++)
             {
-                DataService.Save<CardDTO>(cards[i], CardTableName, "cardKey", cards[i].cardKey);
+                DataService.Save<qBaseCard>(cards[i], CardTableName, "cardKey", cards[i].cardKey);
+            }
+        }
+
+        private static void SaveConvertedElestrals(List<qBaseCard> cards, List<ElestralDTO> elestrals)
+        {
+            for (int i = 0; i < cards.Count; i++)
+            {
+                DataService.Save<qBaseCard>(cards[i], CardTableName, "cardKey", cards[i].cardKey);
             }
 
             for (int i = 0; i < elestrals.Count; i++)
@@ -194,7 +194,7 @@ namespace Conversion
         {
             if (string.IsNullOrEmpty(subclass)) { return Elestral.SubClass.None; }
 
-            for (int i = 0; i < Enum.GetNames(typeof(ElementCode)).Length; i++)
+            for (int i = 0; i < Enum.GetNames(typeof(Elestral.SubClass)).Length; i++)
             {
                 Elestral.SubClass code = (Elestral.SubClass)i;
                 if (subclass.ToLower() == code.ToString().ToLower())
@@ -206,13 +206,30 @@ namespace Conversion
             return Elestral.SubClass.None;
 
         }
+
+        private static Rune.RuneType RuneTypeToEnum(string subclass)
+        {
+            if (string.IsNullOrEmpty(subclass)) { return Rune.RuneType.none; }
+
+            for (int i = 0; i < Enum.GetNames(typeof(Rune.RuneType)).Length; i++)
+            {
+                Rune.RuneType code = (Rune.RuneType)i;
+                if (subclass.ToLower() == code.ToString().ToLower())
+                {
+                    return code;
+                }
+            }
+
+            return Rune.RuneType.none;
+
+        }
         #endregion
 
 
         #region Converted DTOs
-        private static CardDTO FromSheets(SheetsElestralsDTO dto, int count)
+        private static qBaseCard FromSheets(SheetsElestralsDTO dto, int count)
         {
-            CardDTO card = new CardDTO
+            qBaseCard card = new qBaseCard
             {
                 cardKey = dto.Codename,
                 title = dto.ElestralName,
@@ -249,6 +266,51 @@ namespace Conversion
             return card;
         }
         #endregion
+
+
+        //[MenuItem("Generate/Find Mentions")]
+        public static void FindPairs()
+        {
+            List<qUniqueCard> all = CardService.GetAll<qUniqueCard>(CardService.qUniqueCardView);
+
+            for (int i = 0; i < all.Count; i++)
+            {
+                qUniqueCard card = all[i];
+                string pairs = $"{card.title} Mentions: ";
+                int pairCount = 0;
+                List<string> mentions = new List<string>();
+                if (string.IsNullOrEmpty(card.effect))
+                {
+                    continue;
+                }
+                else
+                {
+                    foreach (var item in all)
+                    {
+                       
+                        if (item.title != card.title)
+                        {
+                            
+                            if (card.effect.ToLower().Contains(item.title.ToLower())) 
+                            {
+                                if (!mentions.Contains(item.title))
+                                {
+                                    mentions.Add(item.title);
+                                    pairCount += 1;
+                                    pairs += $"{item.title}, ";
+                                }
+                                
+                            }
+                        }
+                        
+
+                    }
+
+                }
+
+                if (pairCount > 0) { LogController.LogSimple(pairs); }
+            }
+        }
 
     }
 }

@@ -10,12 +10,21 @@ public class PopupManager : MonoBehaviour
     public static PopupManager Instance { get; set; }
     public static BasePopup ActivePopup;
 
-    public GameObject objectPool;
-    public GameObject confirmBase, cancelBase, messageBase;
 
     public YesNoBox YesNo;
     public DisplayBox Message;
     public DropdownPopup Dropdown;
+
+
+    private static List<BasePopup> _popList = null;
+    public static List<BasePopup> PopList
+    {
+        get
+        {
+            _popList ??= new List<BasePopup>();
+            return _popList;
+        }
+    }
 
     #region Event Watchers
     private static UnityEvent _OnCloseWatcher = null;
@@ -52,80 +61,130 @@ public class PopupManager : MonoBehaviour
     public void Close()
     {
         gameObject.SetActive(false);
-        objectPool.SetActive(false);
+        AppManager.Instance.appBlocker.HideBlocker();
     }
-    public void Show(bool useObjectPool = true)
+    public void Show()
     {
         gameObject.SetActive(true);
-        objectPool.SetActive(useObjectPool);
-        confirmBase.SetActive(useObjectPool);
-        cancelBase.SetActive(useObjectPool);
-        messageBase.SetActive(useObjectPool);
+        AppManager.Instance.appBlocker.ShowBlocker();
+        
     }
 
     
-    public static void SetActivePopup(BasePopup pop = null, bool useObjectPool = true)
+    public static void SetActivePopup(BasePopup pop = null, bool closeOnBack = true)
     {
         if (pop == null)
         {
             if (ActivePopup != null)
             {
                 ActivePopup.ForceClose();
+                ActivePopup.Refresh();
+                ActivePopup.gameObject.SetActive(false);
+                
+                if (PopList.Contains(ActivePopup)) { PopList.Remove(ActivePopup); }
+
+
             }
+            
             ActivePopup = null;
             Instance.Close();
+            //DisplayManager.RemoveAction(() => ActivePopup.Cancel());
+            
         }
         else
         {
-            Instance.Show(useObjectPool);
+            Instance.Show();
+            if (!PopList.Contains(pop))
+            {
+                PopList.Add(pop);
+            }
+            AddPopup(pop, closeOnBack);
             ActivePopup = pop;
+            
         }
         
     }
 
-    #region Popup Types
-    public void AskYesNo(string msg, Action<bool> callback)
+    public static void AddPopup(BasePopup pop, bool closeOnBack)
     {
-        SetActivePopup(YesNo);
-        YesNo.Show(msg, callback);
-        StartCoroutine(AwaitPopup());
+        if (!PopList.Contains(pop))
+        {
+            PopList.Add(pop);
+            if (closeOnBack)
+            {
+                DisplayManager.AddAction(pop.Cancel);
+            }
+            
+        }
     }
-    
-    public void DisplayNewMessage(string msg,Action callback, bool showConfirm, bool showCancel)
+    public static void RemovePopup(BasePopup pop)
+    {
+        if (PopList.Contains(pop)) { PopList.Remove(pop); DisplayManager.RemoveAction(pop.Cancel); }
+    }
+
+    #region Popup Types
+    public void AskYesNo(string msg, Action<bool> callback, bool createClone = false)
+    {
+        if (createClone)
+        {
+            YesNoBox clone = Instantiate(YesNo, YesNo.transform.parent);
+            YesNo.gameObject.SetActive(false);
+            clone.Show(msg, callback);
+            AddPopup(clone, true);
+            StartCoroutine(AwaitPopup(clone));
+        }
+        else
+        {
+            SetActivePopup(YesNo);
+            YesNo.Show(msg, callback);
+            StartCoroutine(AwaitPopup());
+        }
+        
+    }
+    public void CloneYesNo(string msg, Action<bool> callback)
+    {
+        YesNoBox clone = Instantiate(YesNo, YesNo.transform.parent);
+        YesNo.gameObject.SetActive(false);
+        clone.Show(msg, callback);
+        StartCoroutine(AwaitPopup(clone));
+        
+    }
+
+    public void DisplayNewMessage(string msg,Action callback, bool showConfirm, bool showCancel, bool closeOnBack = true)
     {
         StopCoroutine(AwaitPopup());
-        SetActivePopup(Message);
+        SetActivePopup(Message, closeOnBack);
         Message.Show(msg, callback,showConfirm, showCancel);
         StartCoroutine(AwaitPopup());
 
     }
-    public void DisplayMessage(string msg, Action callback, bool showConfirm, bool showCancel)
+    public void DisplayMessage(string msg, Action callback, bool showConfirm, bool showCancel, bool closeOnBack = true)
     {
-        SetActivePopup(Message);
+        SetActivePopup(Message, closeOnBack);
         Message.Show(msg, callback, showConfirm, showCancel);
         StartCoroutine(AwaitPopup());
     }
-    public void DisplayTimedMessage(string msg, Action callback, float time)
+    public void DisplayTimedMessage(string msg, Action callback, float time, bool closeOnBack = true)
     {
-        SetActivePopup(Message);
+        SetActivePopup(Message, closeOnBack);
         Message.ShowPersistent(msg, callback, time);
         StartCoroutine(AwaitPopup());
     }
-    public void DisplayConditionalMessage(string msg, Action callback, Func<bool> func, bool reqValue)
+    public void DisplayConditionalMessage(string msg, Action callback, Func<bool> func, bool reqValue, bool closeOnBack = true)
     {
-        SetActivePopup(Message);
+        SetActivePopup(Message, closeOnBack);
         Message.ShowUntilCondition(msg, func, reqValue);
     }
 
-    public void ShowDropdown(string title, List<string> options, Action<string> callback)
+    public void ShowDropdown(string title, List<string> options, Action<string> callback, bool closeOnBack = true)
     {
-        SetActivePopup(Dropdown, false);
+        SetActivePopup(Dropdown, closeOnBack);
         Dropdown.ShowStrings(title, options, callback);
         StartCoroutine(AwaitPopup());
     }
-    public void ShowDropdown<T>(string title, List<T> options, Action<T> callback, string propName)
+    public void ShowDropdown<T>(string title, List<T> options, Action<T> callback, string propName, bool closeOnBack = true)
     {
-        SetActivePopup(Dropdown, false);
+        SetActivePopup(Dropdown, closeOnBack);
         Dropdown.Show(title, options, callback, propName);
         StartCoroutine(AwaitPopup());
     }
@@ -143,6 +202,23 @@ public class PopupManager : MonoBehaviour
 
         SetActivePopup();
     }
+    protected IEnumerator AwaitPopup(BasePopup clone)
+    {
 
-   
+        do
+        {
+            yield return new WaitForEndOfFrame();
+
+        } while (true && !clone.Handled);
+
+        RemovePopup(clone);
+        Destroy(clone);
+
+        if (ActivePopup)
+        {
+            ActivePopup.gameObject.SetActive(true);
+        }
+    }
+
+
 }

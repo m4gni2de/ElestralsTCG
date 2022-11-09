@@ -8,6 +8,7 @@ namespace TouchControls
     {
         ByZ = 0,
         ByAge = 1,
+        BySortLayer = 2,
     }
     public class TouchGroup : MonoBehaviour
     {
@@ -122,20 +123,25 @@ namespace TouchControls
         {
             float a = 0f;
             float b = 0f;
-            if (OrderBy == StackOrder.ByZ)
+
+            switch (OrderBy)
             {
-                a = x.gameObject.transform.localPosition.z;
-                b = y.gameObject.transform.localPosition.z;
-                if (a > b) { return -1; } else if (a < b) { return 1; }
+                case StackOrder.ByZ:
+                    a = x.gameObject.transform.localPosition.z;
+                    b = y.gameObject.transform.localPosition.z;
+                    if (a > b) { return -1; } else if (a < b) { return 1; } return 0;
+                case StackOrder.ByAge:
+                    a = Buttons.IndexOf(x);
+                    b = Buttons.IndexOf(y);
+                    if (a < b) { return -1; } else if (a > b) { return 1; } return 0;
+                case StackOrder.BySortLayer:
+                    a = x.GetSortValue();
+                    b = y.GetSortValue();
+                    if (a > b) { return -1; } else if (a < b) { return 1; } return 0;
+                default:
+                    return 0;
             }
-            if (OrderBy == StackOrder.ByAge)
-            {
-                a = Buttons.IndexOf(x);
-                b = Buttons.IndexOf(y);
-                if (a < b) { return -1; } else if (a > b) { return 1; }
-            }
-            
-            return 0;
+
 
         }
         #endregion
@@ -179,10 +185,14 @@ namespace TouchControls
             for (int i = 0; i < Buttons.Count; i++)
             {
                 TouchObject obj = Buttons[i];
-                if (UIHelpers.IsPointerOverMe(obj.GetComponent<RectTransform>()))
+                if (obj.IsPointerOverMe())
                 {
                     buttons.Add(obj);
                 }
+                //if (UIHelpers.IsPointerOverMe(obj.GetComponent<RectTransform>()))
+                //{
+                //    buttons.Add(obj);
+                //}
 
             }
             return buttons;

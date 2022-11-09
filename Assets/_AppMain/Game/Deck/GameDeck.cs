@@ -122,7 +122,7 @@ namespace Gameplay
 
         public void SeparateCards(Decklist list)
         {
-            int count = 0;
+            
             for (int i = 0; i < list.Cards.Count; i++)
             {
                 

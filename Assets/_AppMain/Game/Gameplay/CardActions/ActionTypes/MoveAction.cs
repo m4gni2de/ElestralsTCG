@@ -12,6 +12,8 @@ namespace Gameplay
         public CardSlot toSlot;
 
         #region Overrides
+        protected override string LocalActionMessage { get { return $"{sourceCard.cardStats.name} sent to {toSlot.SlotTitle}!"; } }
+        protected override string LocalDeclareMessage { get { return $"Send {sourceCard.cardStats.name} to {toSlot.SlotTitle}!"; } }
 
         public override IEnumerator PerformAction()
         {
@@ -35,8 +37,6 @@ namespace Gameplay
                 this.Freeze();
                 yield return new WaitForEndOfFrame();
                 float frames = Time.deltaTime / time;
-                //card.cardObject.transform.position += (direction * frames);
-
                 card.MovePosition((direction * frames));
                 count += 1;
                 acumTime += Time.deltaTime;
@@ -97,8 +97,7 @@ namespace Gameplay
         public void SetDetails(GameCard source, CardSlot to)
         {
             toSlot = to;
-            _declaredMessage = $"Send {source.cardStats.name} to {to.SlotTitle}!";
-            _actionMessage = $"{source.cardStats.name} sent to {to.SlotTitle}!";
+            sourceCard = source;
             IsCounterable = false;
         }
         

@@ -129,7 +129,7 @@ public class StoneVariant : MonoBehaviour
     {
         Show();
         _isFullArt = card.isFullArt;
-        SetSprite(card);
+        //SetSprite(card);
         SetStones(card);
     }
 

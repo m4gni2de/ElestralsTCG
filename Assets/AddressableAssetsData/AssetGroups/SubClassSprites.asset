@@ -1,0 +1,109 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: SubClassSprites
+  m_EditorClassIdentifier: 
+  m_GroupName: SubClassSprites
+  m_Data:
+    m_SerializedData: []
+  m_GUID: af8a6d9483c518441ba77f92acd01455
+  m_SerializeEntries:
+  - m_GUID: 008cf254a7ecdcb489d2a419998f1a7f
+    m_Address: etherealSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 42b61829dd8c27344abe7ac68561ac0e
+    m_Address: golemSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 82ae2154fffdfca46bc2b7f573d91acc
+    m_Address: dryadSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f38e096d8443d7d47a11893c1545b842
+    m_Address: dragonSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 853e357fec0e9774ea1554b2b4c93635
+    m_Address: avianSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c530b57e6f11f8745ac7249ed795e06c
+    m_Address: eldritchSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e61b555158903284090ffb2cf4aae0c3
+    m_Address: bruteSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 57ff49c59cef0d342b03208cf9cb0fcb
+    m_Address: behemothSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9b3e388ba367ed04da992bd5676c5a08
+    m_Address: oceanicSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4c5f447c28e459743ba80190f0631316
+    m_Address: aquaticSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6d446b658fba4974ab2cc49feee86b47
+    m_Address: archaicSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ae51d12d84ffadb4fa4058dcaecec8e0
+    m_Address: insectoidSp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: c1f82d2515fccd0479ad93920bad131f, type: 2}
+    - {fileID: 11400000, guid: 573539c4df2376849a57ae4818198ffb, type: 2}
