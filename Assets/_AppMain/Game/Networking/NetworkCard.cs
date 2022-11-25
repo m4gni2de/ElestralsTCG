@@ -2,10 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using Gameplay;
 using UnityEngine;
-using RiptideNetworking;
-using RiptideNetworking.Utils;
-using UnityEngine.UIElements;
 
+using UnityEngine.UIElements;
+using RiptideNetworking;
 
 public enum Senders : ushort
 {

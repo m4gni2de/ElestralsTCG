@@ -11,12 +11,16 @@ using Gameplay.Turns;
 using Gameplay.Networking;
 using System.CodeDom;
 using nsSettings;
-using RiptideNetworking;
+
 using Decks;
 using System.Linq;
 using System.Drawing.Text;
 using TMPro;
+using RiptideNetworking;
+using System.Security.Cryptography;
+
 #if UNITY_EDITOR
+using UnityEditorInternal;
 using static UnityEditor.Experimental.GraphView.GraphView;
 #endif
 
@@ -33,7 +37,13 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
     }
     #endregion
 
-    public static readonly string SceneName = "OnlineGame";
+    public static string SceneName
+    {
+        get
+        {
+            return SceneHelpers.SceneName(typeof(GameManager));
+        }
+    }
 
     #region Instance 
     public static Game ActiveGame { get; protected set; }
@@ -54,17 +64,11 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
     protected static void LoadLocalGame()
     {
         OnGameLoaded -= LoadLocalGame;
-        ActiveGame = Game.RandomGame();
-        Instance.turnManager.LoadGame(ActiveGame);
-        Instance.gameLog = GameLog.Create(ActiveGame.gameId, false);
-        Instance.gameLog.AddLog($"Game '{ActiveGame.gameId}' has been started.");
-        //ActiveGame.AddPlayer(App.Account.Id, "1", true);
-        ActiveGame.AddLocalPlayer(App.Account.Id, "1");
-        Instance.SetGameWatchers();
-        Instance.SetPlayerFields();
+        Instance.CreateLocalGame();
 
     }
    
+
     #endregion
 
     #region Properties
@@ -154,14 +158,16 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
         }
     }
 
+
     public CardView DisplayedCard;
-    public void DisplayCard(GameCard card = null, string sortingLayer = "")
+    public static readonly string _displayedCardLayer = "InputMenus";
+    public void DisplayCard(GameCard card = null)
     {
         if (card != null)
         {
             DisplayedCard.gameObject.SetActive(true);
             DisplayedCard.LoadCard(card.card);
-            if (!string.IsNullOrEmpty(sortingLayer)) { DisplayedCard.SetSortingLayer(sortingLayer); }
+            DisplayedCard.SetSortingLayer(_displayedCardLayer);
             
         }
         else
@@ -207,42 +213,44 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
 
     }
 
+    #region Local Game
+    private void CreateLocalGame()
+    {
+        Invert(true);
+        ActiveGame = Game.RandomGame();
+        turnManager.LoadGame(ActiveGame);
+        gameLog = GameLog.Create(ActiveGame.gameId, false);
+        gameLog.AddLog($"Game '{ActiveGame.gameId}' has been started.");
+        ActiveGame.AddLocalPlayer(App.Account.Id, "1");
+        SetGameWatchers();
+        SetPlayerFields();
+    }
     void SetPlayerFields()
     {
         for (int i = 0; i < ActiveGame.players.Count; i++)
         {
             Player p = ActiveGame.players[i];
-            _arena.SetPlayerOffline(p);
+            _arena.SetPlayerOffline(p, true);
         }
     }
+    #endregion
 
     public void ReadyPlayer(Player p)
     {
         _players.Add(p);
         if (_players.Count == ExpectedPlayers)
         {
-            Go();
+            if (!IsOnline)
+            {
+                turnManager.StartGame();
+            }
+            else
+            {
+                NetworkPipeline.SendClientReady();
+            }
         }
     }
-    public void SetPlayer(Player p)
-    {
-        _players.Add(p);
-
-    }
-    public void Go()
-    {
-        if (!IsOnline)
-        {
-            turnManager.StartGame();
-        }
-        else
-        {
-            NetworkPipeline.SendClientReady();
-        }
-
-    }
-
-   
+    
 
     #endregion
 
@@ -396,8 +404,6 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
         AddAction(ac);
     }
     #endregion
-
-
 
     #region Rules/Validation
     public bool UseGameRules = false;
@@ -615,17 +621,33 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
         }
     }
 
+    public void Invert(bool doInvert)
+    {
+        Vector2 rotation = new Vector3(0f, 0f, 180f);
+        if (!doInvert) { rotation = Vector3.zero; }
+
+
+        cardSlotMenu.Invert(doInvert);
+        WorldCanvas.Instance.Invert(doInvert);
+        CameraMotion.InvertCamera(doInvert);
+        Instance.UICanvas.transform.localEulerAngles = rotation;
+    }
+
     public static Player ByNetworkId(ushort id)
     {
-        for (int i = 0; i < ActiveGame.players.Count; i++)
+        if (ActiveGame != null)
         {
-            Player p = ActiveGame.players[i];
-            if (p.lobbyId == id)
+            for (int i = 0; i < ActiveGame.players.Count; i++)
             {
+                Player p = ActiveGame.players[i];
+                if (p.lobbyId == id)
+                {
 
-                return p;
+                    return p;
+                }
             }
         }
+       
         return null;
     }
 
@@ -680,7 +702,7 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
 
     }
 
-    #region Message Pairs
+    #region Message Pairs/Online Game Start
     //public void SyncPlayer(ushort playerId, UploadedDeckDTO dto)
     //{
     //    for (int i = 0; i < ActiveGame.players.Count; i++)
@@ -727,8 +749,7 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
     {
         OnGameLoaded -= AsHost;
         Instance.txtGameId.text = ActiveGame.gameId;
-        Camera.main.transform.localEulerAngles = new Vector3(0f, 0f, 0f);
-        Instance.UICanvas.transform.localEulerAngles = new Vector3(0f, 0f, 0f);
+        Instance.Invert(false);
         Instance.LoadLocalPlayer();
         
 
@@ -736,8 +757,7 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
     private static void AsJoinedPlayer()
     {
         OnGameLoaded -= AsJoinedPlayer;
-        Camera.main.transform.localEulerAngles = new Vector3(0f, 0f, 180f);
-        Instance.UICanvas.transform.localEulerAngles = new Vector3(0f, 0f, 180f);
+        Instance.Invert(true);
         Instance.txtGameId.text = ActiveGame.gameId;
         Instance.arena.SetPlayer(ActiveGame.players[0]);
         Instance.LoadLocalPlayer();

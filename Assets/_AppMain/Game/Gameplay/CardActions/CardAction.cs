@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.Threading.Tasks;
 using RiptideNetworking;
+
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Rendering;
@@ -259,6 +260,7 @@ namespace Gameplay
         protected virtual IEnumerator DoMove(GameCard card, CardSlot to, float time = .65f)
         {
             float acumTime = 0f;
+            card.cardObject.Show();
             Vector3 direction = GetDirection(card, to);
 
             do
@@ -268,8 +270,6 @@ namespace Gameplay
                 float frames = Time.deltaTime / time;
                 Vector3 moveBy = direction * frames;
                 card.MovePosition(moveBy);
-                //card.cardObject.transform.position += (direction * frames);
-                //card.NetworkCard.SendPosition();
                 acumTime += Time.deltaTime;
             } while (Validate(acumTime, time));
             this.Thaw();
@@ -295,8 +295,6 @@ namespace Gameplay
                 {
                     if (acumTime > staggerTime * i)
                     {
-                        //cards[i].cardObject.transform.position += directions[i] * Time.deltaTime;
-                        //cards[i].NetworkCard.SendPosition();
                         Vector3 moveBy = directions[i] * Time.deltaTime;
                         cards[i].MovePosition(moveBy);
                     }
@@ -333,21 +331,14 @@ namespace Gameplay
             {
                 Vector3 cardScale = card.cardObject.GetScale();
                 Vector2 newScale = cardScale - new Vector3((startScale.x * (Time.deltaTime * 2f)), 0f, 0f);
-                //card.cardObject.SetScale(newScale);
-                //card.NetworkCard.SendScale(newScale);
                 card.SetScale(newScale);
                 yield return new WaitForEndOfFrame();
                 acumTime += time;
 
             } while (Validate(acumTime, time) || card.cardObject.GetScale().x > targetVal);
             card.SetCardMode(newMode);
-            //card.NetworkCard.SendRotation();
-            //card.cardObject.SetScale(startScale);
-            //card.NetworkCard.SendScale(startScale);
             card.SetScale(startScale);
             card.FlipCard(toFaceDown);
-            //card.cardObject.Flip(toFaceDown);
-            //card.NetworkCard.Flip(toFaceDown);
         }
         #endregion
 

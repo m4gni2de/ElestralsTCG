@@ -24,6 +24,7 @@ namespace Gameplay
 
         protected override IEnumerator DoMove(GameCard card, CardSlot to, float time = 0.65F)
         {
+            card.cardObject.Show();
             float acumTime = 0f;
             Transform parent = to.transform.parent;
             card.cardObject.SetAsChild(parent, to.CardScale);

@@ -32,21 +32,39 @@ public class CardConfig : MonoBehaviour
     {
         get
         {
-            if (_spriteOffset == null) 
-            { 
+            if (_spriteOffset == null)
+            {
                 _spriteOffset = new Dictionary<Renderer, int>();
-                Renderer[] rends = GetComponentsInChildren<Renderer>(true);
 
-                for (int i = 0; i < rends.Length; i++)
+                for (int i = 0; i < CardRenderers.Count; i++)
                 {
-                    SetSpriteOffset(rends[i], 0);
+                    SetSpriteOffset(CardRenderers[i], 0);
                 }
-              
+
+                //SetSpriteOffset(cardBg, -1);
+                //SetSpriteOffset(cardCover, 8);
+                //SetSpriteOffset(cardBorder, 1);
+                //SetSpriteOffset(raritySp, 0);
+                //Renderer[] rends = GetComponentsInChildren<Renderer>(true);
+
+                //for (int i = 0; i < rends.Length; i++)
+                //{
+                //    SetSpriteOffset(rends[i], 0);
+                //}
+
             }
+          
             return _spriteOffset;
         }
     }
 
+    /// <summary>
+    /// If offset < 0, sort order is considered baseline. When Sort Order is changed, baseline items' new Sort Order is set to the changed value.
+    /// If offset = 0, sort order always stays it's current value apart from baseline. So if item with Offset of 0 has sort order of 2 and baseline is set to -1, item will be set to 1, or 2 more than baseline.
+    /// If > 0, sort order is set to it's offset + the new baseline sortOrder. This is for ensuring certain items remain a specific amount away from Baseline, such as top-most items. 
+    /// </summary>
+    /// <param name="rend"></param>
+    /// <param name="offset"></param>
     private void SetSpriteOffset(Renderer rend, int offset)
     {
         if (!SpritesSortOffset.ContainsKey(rend))
@@ -84,6 +102,7 @@ public class CardConfig : MonoBehaviour
                 allSp.AddRange(SharedRenderers);
                 allSp.Add(cardImageSp);
                 allSp.Add(frameSp);
+                allSp.Add(cardPipping);
                 allSp.Add(glowL);
                 allSp.Add(glowR);
                 allSp.Add(stoneSp);
@@ -123,6 +142,7 @@ public class CardConfig : MonoBehaviour
     public SpriteRenderer cardBg;
     public SpriteRenderer cardCover;
     public SpriteRenderer frameSp;
+    public SpriteRenderer cardPipping;
     public SpriteRenderer glowL;
     public SpriteRenderer glowR;
     public SpriteRenderer stoneSp;
@@ -164,6 +184,8 @@ public class CardConfig : MonoBehaviour
     #endregion
 
     #endregion
+
+   
 
     #region Coloring Properties
     private Dictionary<SpriteRenderer, Color> _defaultColors = new Dictionary<SpriteRenderer, Color>();
@@ -304,6 +326,8 @@ public class CardConfig : MonoBehaviour
     {
         shieldSp.sprite = null;
         swordSp.sprite = null;
+        subSp1.sprite = null;
+        subSp2.sprite = null;
        
 
         Rune r = (Rune)card;
@@ -331,6 +355,8 @@ public class CardConfig : MonoBehaviour
         runeSpL.sprite = null;
         runeSpR.sprite = null;
         raritySp.sprite = null;
+        subSp1.sprite = null;
+        subSp2.sprite = null;
 
         if (card.isFullArt)
         {
@@ -360,15 +386,17 @@ public class CardConfig : MonoBehaviour
         if (!card.isFullArt)
         {
             cardBg.sprite = CardFactory.GetBackground(card.SpiritsReq[0].Code);
-            glowL.sprite = CardFactory.GetGlowSprite(card.SpiritsReq[0].Code);
+            glowL.sprite = CardFactory.GetGlowSprite(card.SpiritsReq[0].Code, true);
+            
             if (card.SpiritsReq.Count > 1)
             {
-                glowR.sprite = CardFactory.GetGlowSprite(card.SpiritsReq[1].Code);
+                glowR.sprite = CardFactory.GetGlowSprite(card.SpiritsReq[1].Code, false);
             }
             else
             {
-                glowR.sprite = glowL.sprite;
+                glowR.sprite = CardFactory.GetGlowSprite(card.SpiritsReq[0].Code, false);
             }
+           
         }
         else
         {
@@ -568,8 +596,9 @@ public class CardConfig : MonoBehaviour
 #endregion
 
 #region Sorting
-    public void ChangeSortOrder(int newOrder)
+    public void ChangeSortOrder(int newOrder, bool refreshRenderers = false)
     {
+        if (refreshRenderers) { allSp = null; }
         
         int current = cardBg.sortingOrder;
 
@@ -593,12 +622,12 @@ public class CardConfig : MonoBehaviour
             }
             else
             {
-                item.Key.sortingOrder += (newOrder + item.Value);
-            }
-           
-            
+                item.Key.sortingOrder = (newOrder + item.Value);
+            } 
         }
 
+
+        cardTexts.ChangeSortingOrder(diff);
         //Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
 
         //for (int i = 0; i < renderers.Length; i++)
@@ -611,9 +640,9 @@ public class CardConfig : MonoBehaviour
     }
 
 
-    public void ChangeSortLayer(string layer)
+    public void ChangeSortLayer(string layer, bool refreshRenderers = false)
     {
-       
+        if (refreshRenderers) { allSp = null; }
 
         SetSpriteOffset(cardBg, -1);
         SetSpriteOffset(cardCover, 8);
@@ -627,6 +656,7 @@ public class CardConfig : MonoBehaviour
 
 
         }
+        cardTexts.SetSortingLayer(layer);
         UpdateMask();
 
     }

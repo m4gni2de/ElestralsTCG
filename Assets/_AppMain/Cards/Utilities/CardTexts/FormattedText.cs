@@ -8,7 +8,7 @@ using GlobalUtilities;
 using Elements;
 using System.Globalization;
 
-public class FormattedText : MonoBehaviour
+public class FormattedText : MonoBehaviour, iSortRenderer
 {
     #region Properties
     private TMP_Text _TextBox = null;
@@ -39,6 +39,30 @@ public class FormattedText : MonoBehaviour
         }
     }
 
+    #region Sort Order/Layer
+    private Renderer _rend = null;
+    protected Renderer textRenderer
+    {
+        get
+        {
+            _rend ??= GetComponent<Renderer>();
+            return _rend;
+        }
+    }
+
+
+   
+    public int SortOrder
+    {
+        get { return textRenderer.sortingOrder; }
+        set { textRenderer.sortingOrder = value;  }
+    }
+    public string SortLayer
+    {
+        get { return SortingLayer.IDToName(textRenderer.sortingLayerID); }
+        set { textRenderer.sortingLayerID = SortingLayer.NameToID(value);  }
+    }
+    #endregion
 
     #endregion
     #region Custom Font Formatting
@@ -101,49 +125,76 @@ public class FormattedText : MonoBehaviour
             {
                 if (_tempMaterial != null) { Destroy(_tempMaterial); }
                 _tempMaterial = null;
-                FontMaterial = defaultMaterial; 
+                FontMaterial = defaultMaterial;
             }
             else
             {
                 if (_tempMaterial != null) { Destroy(_tempMaterial); }
                 _tempMaterial = value;
                FontMaterial = value;
+                
             }
         }
     }
     protected Material FontMaterial
     {
         get { return TextBox.fontSharedMaterial; }
-        set { TextBox.fontSharedMaterial = value; }
+        set { TextBox.fontSharedMaterial = value; TextBox.ForceMeshUpdate(); }
+        
     }
-   
+
     #endregion
 
+    #region Text History
 
+    protected string _savedText = "";
+    public string SavedText
+    {
+        get
+        {
+            return _savedText;
+        }
+    }
+    public void SaveCurrent()
+    {
+        _savedText = TextBox.text;
+    }
+    public void LoadSavedText()
+    {
+        if (!string.IsNullOrEmpty(_savedText))
+        {
+            SetText(_savedText);
+            _savedText = "";
+        }
+    }
+    public void ClearSaved()
+    {
+        _savedText = "";
+    }
+    private List<string> _prevTexts = null;
+    public List<string> PrevTexts
+    {
+        get
+        {
+            _prevTexts ??= new List<string>();
+            return _prevTexts;
+        }
+    }
+
+    public void ArchiveText()
+    {
+        if (!string.IsNullOrEmpty(TextBox.text) && !PrevTexts.Contains(TextBox.text))
+        {
+            PrevTexts.Add(TextBox.text);
+        }
+    }
+    #endregion
 
     private void Awake()
     {
         defaultMaterial = new Material(TextBox.fontSharedMaterial);
     }
-    
-    public void SetText(string txt, bool colorSpirits = false)
-    {
-        SetText(txt, Color.clear, colorSpirits); 
-    }
-   
-    public void SetText(string txt, Color col, bool colorSpirits)
-    {
-        
-        Show();
-        //CustomFont.FormatEffect(txt, TextBox, colorSpirits);
-        Format(txt, colorSpirits);
-        if (col != Color.clear)
-        {
-            SetColor(col);
-        }
-        
-    }
-   
+
     public void Hide(bool blank)
     {
 
@@ -159,13 +210,35 @@ public class FormattedText : MonoBehaviour
     }
     public void Blank()
     {
+       
         TextBox.text = "";
+        
     }
+
+    public void SetText(string txt, bool colorSpirits = false)
+    {
+        SetText(txt, Color.clear, colorSpirits); 
+    }
+   
+    public void SetText(string txt, Color col, bool colorSpirits)
+    {
+        
+        Show();
+
+        //CustomFont.FormatEffect(txt, TextBox, colorSpirits);
+        Format(txt, colorSpirits);
+        if (col != Color.clear)
+        {
+            SetColor(col);
+        }
+        
+    }
+   
+   
     public void SetStellar(string txt)
     {
         Show();
         string newText = $"{CustomGlyph.Stellar.UnicodeString} {txt}";
-        //CustomFont.FormatTextBox(newText, TextBox);
         FormatTextBox(TextBox,newText);
     }
 
@@ -211,7 +284,6 @@ public class FormattedText : MonoBehaviour
         }
 
         FormatTextBox(TextBox,newEffect);
-        //FormatTextBox(newEffect, textLabel);
     }
 
 

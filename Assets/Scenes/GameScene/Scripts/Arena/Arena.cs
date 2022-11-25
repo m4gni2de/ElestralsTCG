@@ -155,13 +155,32 @@ namespace Gameplay
             f.SetPlayer(p);
         }
 
-        public void SetPlayerOffline(Player p)
+
+        /// <summary>
+        /// If UseInvert is set to true, it will swap which field the local and AI players use, to simuate a Joined PvP Player. 
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="useInvert"></param>
+        public void SetPlayerOffline(Player p, bool useInvert = false)
         {
             Field f = NearField;
-            if (p != GameManager.ActiveGame.You) { f = FarField; }
+
+            if (!useInvert)
+            {
+                if (p != GameManager.ActiveGame.You) { f = FarField; }
+            }
+            else
+            {
+                if (p == GameManager.ActiveGame.You) { f = FarField; }
+            }
+            //
+           
+           
             f.SetPlayer(p);
             f.AllocateCards();
         }
+
+       
         
 
 

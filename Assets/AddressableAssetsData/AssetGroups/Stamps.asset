@@ -80,6 +80,13 @@ MonoBehaviour:
     - Preload
     - Sprite
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d6b18bd9fac7b6d4cae0b5b15762e7e2
+    m_Address: ac1Stamp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Sprite
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
   m_SchemaSet:

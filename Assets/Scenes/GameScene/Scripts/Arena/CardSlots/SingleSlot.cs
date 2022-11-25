@@ -210,7 +210,7 @@ public class SingleSlot : CardSlot, iMainCard
             int minCount = 1;
             List<GameCard> toShow = sourceSlot.EnchantingSpirits;
             string title = $"Select up to {maxCount} Spirits to Nexus from {source.cardStats.title} to {target.cardStats.title}!";
-            BrowseCards(toShow, title, true, maxCount, minCount);
+            BrowseCards(toShow, title, true, minCount, maxCount);
             GameManager.Instance.browseMenu.OnMenuClose += DoNexusCommand;
             GameManager.Instance.browseMenu.CastMode(source, null, false);
         }

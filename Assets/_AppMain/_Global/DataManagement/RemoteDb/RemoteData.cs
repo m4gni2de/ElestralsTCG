@@ -11,6 +11,7 @@ using System.Security.Cryptography;
 using System.Security.Policy;
 using Gameplay;
 using System.Net;
+using SimpleSQL;
 
 public class RemoteData
 {
@@ -171,7 +172,7 @@ public class RemoteData
         List<ServerDTO> list = new List<ServerDTO>();
         WWWForm form = new WWWForm();
         form.AddField("action", "getall");
-        form.AddField("port", 7777);
+        //form.AddField("port", 7777);
 
         string results = await DoRemoteQuery(serverInfo, form);
         if (HasResults(results))
@@ -355,12 +356,11 @@ public class RemoteData
         form.AddField("serverKey", servKey);
         string ipAddress = NetworkManager.Instance.myAddressLocal;
 #if UNITY_EDITOR
-        form.AddField("ip", NetworkManager.Instance.myAddressLocal);
 #else
          ipAddress = NetworkManager.Instance.myAddressGlobal;
-        form.AddField("ip", NetworkManager.Instance.myAddressGlobal);
 #endif
 
+        form.AddField("ip", ipAddress);
         form.AddField("port", (int)NetworkManager.Instance.Server.Port);
         form.AddField("name", serverName);
         form.AddField("playersCurrent", 0);

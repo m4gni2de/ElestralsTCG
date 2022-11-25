@@ -6,7 +6,7 @@ using System;
 using Gameplay.CardActions;
 using UnityEngine.Events;
 using Databases;
-using RiptideNetworking;
+
 using Gameplay.Networking;
 using nsSettings;
 using System.Threading.Tasks;
@@ -145,6 +145,10 @@ namespace Gameplay
         public Player(string user, Decklist list, bool isLocal) : this(user, isLocal)
         {
             LoadDeckList(list);
+        }
+        public void SetOfflineLobbyId(ushort id)
+        {
+            lobbyId = id;
         }
 
         public void LoadDeckList(Decklist list, bool shuffle = true)

@@ -21,7 +21,7 @@ public class LoadingBar : MonoBehaviour
     }
     
     #region Properties
-    public event Action OnLoadComplete;
+    //public event Action OnLoadComplete;
     private bool _LoadComplete = false;
     public bool LoadComplete { get { return _LoadComplete; } }
     #endregion

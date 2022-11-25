@@ -33,6 +33,14 @@ namespace Gameplay
             DisplayCardObject(card);
             SetCommands(card);
             spiritCountText.text = cards.Count.ToString();
+
+
+            if (!Owner.deck.SpiritDeck.Cards.Contains(card))
+            {
+                Owner.deck.SpiritDeck.AddCard(card);
+            }
+
+
         }
 
         protected override void SetCommands(GameCard card)
@@ -45,7 +53,9 @@ namespace Gameplay
         public override void RemoveCard(GameCard card)
         {
             base.RemoveCard(card);
+            Owner.deck.RemoveCard(card, Owner.deck.SpiritDeck);
             spiritCountText.text = cards.Count.ToString();
+            Optimize();
         }
         public override bool ValidateCard(GameCard card)
         {
@@ -96,7 +106,7 @@ namespace Gameplay
 
         protected void ExpendCommand()
         {
-            GameManager.Instance.popupMenu.InputNumber("How many Spirits are you Expending?", StartExpend, 1, Owner.gameField.SpiritDeckSlot.cards.Count);
+            GameManager.Instance.popupMenu.InputNumber("How many Spirits are you Expending?", StartExpend, 1, Owner.gameField.SpiritDeckSlot.cards.Count, 1);
         }
 
         protected void StartExpend(int count)

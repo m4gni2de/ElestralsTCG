@@ -12,7 +12,7 @@ namespace Gameplay.Menus
         protected Vector2 _cardScale = new Vector2(16f, 16f);
         public Vector2 CardScale { get { return _cardScale; } }
 
-        public string SortLayer => "InputMenus";
+        public string SortLayer => "GameMenu";
 
         #endregion
 

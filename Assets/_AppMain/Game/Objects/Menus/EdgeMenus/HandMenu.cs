@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using Gameplay;
 
+/// <summary>
+/// Possibly Depreciated
+/// </summary>
 public class HandMenu : EdgeMenu, iScaleCard, iFreeze
 {
     #region Interface
@@ -16,6 +19,8 @@ public class HandMenu : EdgeMenu, iScaleCard, iFreeze
     }
     public string SortLayer { get { return _cardSlot.SortLayer; } }
     public bool IsClicked { get; set; }
+
+   
     #endregion
 
     #region Properties

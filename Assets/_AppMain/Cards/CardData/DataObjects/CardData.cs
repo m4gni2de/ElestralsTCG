@@ -25,48 +25,79 @@ namespace Cards
         public ArtType artType { get; set; }
         public string image { get; set; }
         public string setStamp1 { get; set; }
-        
+        public string baseKey { get; set; }
 
-       
-        public CardData(qBaseCard dto)
+
+        private List<string> _sameBaseCards = null;
+        public List<string> SameBaseCards
         {
-            cardKey = dto.cardKey;
-            cardName = dto.title;
-            cardType = dto.cardClass;
-            cost1 = dto.cost1;
-            if (!dto.cost2.HasValue) { cost2 = -1; } else { cost2 = dto.cost2.Value; }
-            if (!dto.cost3.HasValue) { cost3 = -1; } else { cost3 = dto.cost3.Value; }
-            if (!string.IsNullOrEmpty(dto.artist))
+            get
             {
-                artist = dto.artist;
+                if (_sameBaseCards == null)
+                {
+                    _sameBaseCards = GetSharedCards(cardKey, baseKey);
+                }
+                return _sameBaseCards;
             }
-            else
-            {
-                artist = "";
-            }
-            
-            if (!string.IsNullOrEmpty(dto.effect))
-            {
-                effect = dto.effect;
-            }
-            else
-            {
-                effect = "";
-            }
-
-            rarity = (Rarity)dto.rarity;
-            if (string.IsNullOrEmpty(dto.setName)) { setCode = "na"; } else { setCode = dto.setName; }
-            setStamp1 = CardLibrary.GetCardSetStamp(setCode);
-            setNumber = dto.setNumber;
-            artType = (ArtType)dto.artType;
-            image = CardService.CardArtFile(cardKey);
-
-
         }
+
+        private List<string> GetSharedCards(string baseKey, string setKey)
+        {
+            string whereClause = $"baseKey = '{baseKey}' AND setKey <> '{setKey}'";
+            List<qUniqueCard> sharedCards = CardService.GetAllWhere<qUniqueCard>(CardService.qUniqueCardView, whereClause);
+
+            List<string> cards = new List<string>();
+            for (int i = 0; i < sharedCards.Count; i++)
+            {
+                cards.Add(sharedCards[i].setKey);
+            }
+            return cards;
+        }
+
+        //public CardData(qBaseCard dto)
+        //{
+        //    cardKey = dto.cardKey;
+        //    baseKey = dto.cardKey;
+        //    cardName = dto.title;
+        //    cardType = dto.cardClass;
+        //    cost1 = dto.cost1;
+        //    if (!dto.cost2.HasValue) { cost2 = -1; } else { cost2 = dto.cost2.Value; }
+        //    if (!dto.cost3.HasValue) { cost3 = -1; } else { cost3 = dto.cost3.Value; }
+        //    if (!string.IsNullOrEmpty(dto.artist))
+        //    {
+        //        artist = dto.artist;
+        //    }
+        //    else
+        //    {
+        //        artist = "";
+        //    }
+
+        //    if (!string.IsNullOrEmpty(dto.effect))
+        //    {
+        //        effect = dto.effect;
+        //    }
+        //    else
+        //    {
+        //        effect = "";
+        //    }
+
+        //    rarity = (Rarity)dto.rarity;
+        //    if (string.IsNullOrEmpty(dto.setName)) { setCode = "na"; } else { setCode = dto.setName; }
+        //    setStamp1 = CardLibrary.GetCardSetStamp(setCode);
+        //    setNumber = dto.setNumber;
+        //    artType = (ArtType)dto.artType;
+        //    image = CardService.CardArtFile(cardKey);
+
+        //    _sameBaseCards = GetSharedCards(dto.cardKey, "");
+
+
+
+        //}
 
         public CardData(qUniqueCard dto)
         {
             cardKey = dto.setKey;
+            baseKey = dto.baseKey;
             cardName = dto.title;
             cardType = dto.cardClass;
             cost1 = dto.cost1;
@@ -98,6 +129,8 @@ namespace Cards
            
             image = CardService.CardArtFile(cardKey);
 
+           
+
             //if (!string.IsNullOrEmpty(dto.image))
             //{
             //    image = dto.image;
@@ -123,17 +156,8 @@ namespace Cards
         public Elestral.SubClass subType1 { get; set; }
         public Elestral.SubClass subType2 { get; set; }
         
-        
 
-       
-        public ElestralData(qBaseCard dto) : base(dto)
-        {
-            if (dto.attack.HasValue) { attack = dto.attack.Value; }
-            if (dto.defense.HasValue) { defense = dto.defense.Value; }
-            if (dto.subType1.HasValue) { subType1 = (Elestral.SubClass)dto.subType1.Value; } else { subType1 = Elestral.SubClass.None; }
-            if (dto.subType2.HasValue) { subType2 = (Elestral.SubClass)dto.subType2.Value; } else { subType2 = Elestral.SubClass.None; }
-        }
-
+      
         public ElestralData(qUniqueCard dto) : base(dto)
         {
             if (dto.attack.HasValue) { attack = dto.attack.Value; }
@@ -151,10 +175,6 @@ namespace Cards
     {
         public Rune.RuneType runeType { get; set; }
 
-        public RuneData(qBaseCard dto) :base(dto)
-        {
-            runeType = (Rune.RuneType)dto.subType1;
-        }
 
         public RuneData(qUniqueCard dto) : base(dto)
         {

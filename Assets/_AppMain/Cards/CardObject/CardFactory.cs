@@ -55,7 +55,7 @@ public class CardFactory : MonoBehaviour
     public static Dictionary<ElementCode, Sprite> BackgroundSprites = new Dictionary<ElementCode, Sprite>();
     public static Dictionary<ElementCode, Sprite> TypeStoneSprites = new Dictionary<ElementCode, Sprite>();
     public static Dictionary<ElementCode, Sprite> LargeStoneSprites = new Dictionary<ElementCode, Sprite>();
-    public static Dictionary<ElementCode, Sprite> GlowSprites = new Dictionary<ElementCode, Sprite>();
+    public static Dictionary<string, Sprite> GlowSprites = new Dictionary<string, Sprite>();
     public static Dictionary<Rarity, Sprite> RaritySprites = new Dictionary<Rarity, Sprite>();
     public static Dictionary<Rune.RuneType, Sprite> RuneSprites = new Dictionary<Rune.RuneType, Sprite>();
     public static Dictionary<string, Sprite> SetStampSprites = new Dictionary<string, Sprite>();
@@ -107,7 +107,7 @@ public class CardFactory : MonoBehaviour
 
 
     #region Asset Loading
-    public static event Action OnAssetsLoadComplete;
+    //public static event Action OnAssetsLoadComplete;
 
     public static bool AssetsLoaded = false;
 
@@ -212,7 +212,13 @@ public class CardFactory : MonoBehaviour
                 TypeStoneSprites.Add(code, stoneSp);
                 string glowKey = code.ToString().ToLower() + "L";
                 Sprite glowSp = await AssetPipeline.AwaitDownload<Sprite>(Addressables.LoadAssetAsync<Sprite>(glowKey));
-                GlowSprites.Add(code, glowSp);
+                GlowSprites.Add($"{code.ToString()}L", glowSp);
+
+                string glowKeyR = code.ToString().ToLower() + "R";
+                Sprite glowSpR = await AssetPipeline.AwaitDownload<Sprite>(Addressables.LoadAssetAsync<Sprite>(glowKeyR));
+                GlowSprites.Add($"{code.ToString()}R", glowSpR);
+
+
                 string largeKey = code.ToString() + "Symbol_Large";
                 Sprite largeSp = await AssetPipeline.AwaitDownload<Sprite>(Addressables.LoadAssetAsync<Sprite>(largeKey));
                 LargeStoneSprites.Add(code, largeSp);
@@ -226,12 +232,21 @@ public class CardFactory : MonoBehaviour
         string key = $"bg_{code.ToString().ToLower()}";
         return AssetPipeline.ByKey<Sprite>(key);
     }
-    public static Sprite GetGlowSprite(ElementCode code)
+    public static Sprite GetGlowSprite(ElementCode code, bool isLeft)
     {
-        if (GlowSprites.ContainsKey(code)) { return GlowSprites[code]; }
+        string assetCode = $"{code.ToString()}L";
+        if (!isLeft)
+        {
+            assetCode = $"{code.ToString()}R";
+        }
+        if (GlowSprites.ContainsKey(assetCode)) { return GlowSprites[assetCode]; }
         string glowKey = code.ToString().ToLower() + "L";
+        if (!isLeft)
+        {
+            glowKey = code.ToString().ToLower() + "R";
+        }
         Sprite sp = AssetPipeline.ByKey<Sprite>(glowKey);
-        if (!GlowSprites.ContainsKey(code)) { GlowSprites.Add(code, sp); }
+        if (!GlowSprites.ContainsKey(assetCode)) { GlowSprites.Add(assetCode, sp); }
         return sp;
     }
     public static Sprite GetTypeStoneSprite(ElementCode code)

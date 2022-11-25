@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using RiptideNetworking;
-using RiptideNetworking.Utils;
+
+
 using System;
 using System.IO;
 using System.Net.Sockets;
@@ -14,6 +14,8 @@ using nsSettings;
 using Gameplay.Decks;
 using PopupBox;
 using UnityEngine.Events;
+using RiptideNetworking;
+using RiptideNetworking.Utils;
 using RiptideNetworking.Transports;
 #if UNITY_EDITOR
 using UnityEditor.Networking.PlayerConnection;
@@ -68,13 +70,13 @@ public class NetworkManager : MonoBehaviour
         }
     }
 
-    [SerializeField] private ushort port;
+    [SerializeField] private ushort _port;
+    public ushort Port { get { return _port; } set { _port = value; } }
 
     #region Client Properpties
     public Client Client { get; private set; }
     public static readonly string localIp = "127.0.0.1";
     [SerializeField] private string ip;
-    public ServerDTO connectedServer { get; set; }
 
     #endregion
 
@@ -102,6 +104,12 @@ public class NetworkManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    private void Start()
+    {
+        GetServerAddresses();
+        
     }
 
     private void FixedUpdate()
@@ -139,9 +147,9 @@ public class NetworkManager : MonoBehaviour
     public void ConnectClient(string serverIp, ushort serverPort = 7777)
     {
         this.ip = serverIp;
-        this.port = serverPort;
+        this.Port = serverPort;
         if (Client == null) { CreateClient(); }
-        Client.Connect($"{ip}:{port}");
+        Client.Connect($"{ip}:{Port}");
         DisplayBox box = App.ShowWaitingMessage($"Connecting to server...");
         PopupManager.Instance.AddCloseWatcher(box, OnConnectionChanged);
     }
@@ -177,12 +185,14 @@ public class NetworkManager : MonoBehaviour
     {
         OnConnectionChanged.Invoke();
         App.DisplayError($"Connection failed!");
+        OnConnectionFailed?.Invoke();
         //UIManager.Singleton.BackToMain();
     }
 
     public static event Action OnClientLeave;
     private void ClientLeft(object sender, ClientDisconnectedEventArgs e)
     {
+        OnClientLeave?.Invoke();
         //Destroy(OnlinePlayer.list[e.Id].gameObject);
     }
 
@@ -191,7 +201,6 @@ public class NetworkManager : MonoBehaviour
     {
         OnConnectionChanged.Invoke();
         OnClientDisconnected?.Invoke();
-        connectedServer = null;
     }
     
     #endregion
@@ -230,13 +239,14 @@ public class NetworkManager : MonoBehaviour
 
             RiptideLogger.Initialize(Debug.Log, Debug.Log, Debug.LogWarning, Debug.LogError, false);
             Server = new Server();
-            Server.Start(port, maxClientCount);
+            Server.Start(Port, maxClientCount);
             Server.ClientConnected += ServerManager.OnClientConnected;
             Server.ClientDisconnected += ServerManager.PlayerDisconnect;
             GetServerKey();
         }
         
     }
+
 
     private async void CreateServerAsHost()
     {
@@ -245,16 +255,18 @@ public class NetworkManager : MonoBehaviour
             GetServerAddresses();
             Application.targetFrameRate = 60;
 
-            
+
+           
             RiptideLogger.Initialize(Debug.Log, Debug.Log, Debug.LogWarning, Debug.LogError, false);
             Server = new Server();
-            Server.Start(port, maxClientCount);
+            Server.Start(Port, maxClientCount);
             Server.ClientConnected += ServerManager.OnClientConnected;
             Server.ClientDisconnected += ServerManager.PlayerDisconnect;
 
             _serverInfo = await RemoteData.AddServer();
             if (_serverInfo == null) { return; }
             serverKey = _serverInfo.serverKey;
+
 
             ConnectClient(_serverInfo.ip, (ushort)_serverInfo.port);
 
@@ -281,7 +293,7 @@ public class NetworkManager : MonoBehaviour
                 break;
             } //if
         } //foreach
-        //Get the global IP
+          //Get the global IP
         HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://api.ipify.org");
         request.Method = "GET";
         request.Timeout = 1000; //time in ms
@@ -304,14 +316,24 @@ public class NetworkManager : MonoBehaviour
         {
             Debug.Log("Likely no internet connection: " + ex.Message);
             myAddressGlobal = "127.0.0.1";
-        } //catch
-          //myAddressGlobal=new System.Net.WebClient().DownloadString("https://api.ipify.org"); //single-line solution for the global IP, but long time-out when there is no internet connection, so I prefer to do the method above where I can set a short time-out time
+        }
+        //string localIP;
+        //using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
+        //{
+        //    socket.Connect(myAddressGlobal, 65530);
+        //    IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;
+        //    myAddressLocal = endPoint.Address.ToString();
+        //    Port = (ushort)endPoint.Port;
+        //}
+        //catch
+        //myAddressGlobal=new System.Net.WebClient().DownloadString("https://api.ipify.org"); //single-line solution for the global IP, but long time-out when there is no internet connection, so I prefer to do the method above where I can set a short time-out time
     } //Start
 
 
-   
+
     private void Shutdown()
     {
+        ShutdownServer();
         if (Client != null)
         {
             Client.Connected -= DidConnect;
@@ -323,13 +345,30 @@ public class NetworkManager : MonoBehaviour
             Client = null;
 
         }
-        if (Server != null)
-        {
-            ServerManager.Shutdown();
-        }
-
         
     }
+
+    public async void ShutdownServer()
+    {
+        if (Server != null)
+        {
+            
+            ConnectedClients.Clear();
+            ServerManager.ConnectedPlayers.Clear();
+
+            Server.ClientConnected -= ServerManager.OnClientConnected;
+            Server.ClientDisconnected -= ServerManager.PlayerDisconnect;
+            Server.Stop();
+            
+            await RemoteData.DeleteServer(serverInfo.serverKey);
+            if (ServerGame.Instance != null)
+            {
+                ServerGame.EndGame();
+            }
+
+        }
+    }
+   
     #endregion
     private void OnDestroy()
     {

@@ -1,7 +1,6 @@
 using Gameplay;
 using Gameplay.Networking;
 using RiptideNetworking;
-using RiptideNetworking.Utils;
 using SimpleSQL.Demos;
 using System;
 using UnityEngine;
@@ -21,7 +20,11 @@ public static class ClientManager
         get
         {
             if (client == null) { return ConnectionType.Offline; }
-            return (ConnectionType)NetworkManager.Instance.serverInfo.connType;
+            if (NetworkManager.Instance.serverInfo != null)
+            {
+                return (ConnectionType)NetworkManager.Instance.serverInfo.connType;
+            }
+            return ConnectionType.Remote;
         }
     }
 

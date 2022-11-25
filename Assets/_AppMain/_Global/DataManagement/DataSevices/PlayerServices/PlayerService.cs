@@ -198,6 +198,14 @@ public class PlayerService
     {
         db.Insert(obj, tableName);
     }
+
+    public static bool Delete(string tableName, string queryWhere)
+    {
+        string query = $"DELETE FROM {tableName} WHERE {queryWhere}";
+        db.QueryGeneric(query);
+        db.Commit();
+        return true;
+    }
     #endregion
 
 }

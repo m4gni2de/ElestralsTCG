@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,7 @@ using UnityEngine.UI;
 
 public struct GridSettings
 {
+    #region Properties
     public int cardsPerRow { get; set; }
     public float cardSpace { get; set; }
     public int sidePadding { get; set; }
@@ -13,9 +15,38 @@ public struct GridSettings
 
     public Vector2 GridSpacing { get; private set; }
 
+    public event Action OnSettingsUpdate;
+    public void SettingsUpdated()
+    {
+        OnSettingsUpdate?.Invoke();
+    }
+    #endregion
 
-
-    public static GridSettings Create(int cardsPerRow, int sidePadding, float cardRatio, int perPage, Vector2 gridSpace, float cardSpace = 1f)
+    #region Empty
+    public bool IsEmpty
+    {
+        get
+        {
+            return cardsPerRow == 0;
+        }
+    }
+    public static GridSettings Empty
+    {
+        get
+        {
+            GridSettings settings = new GridSettings();
+            settings.cardsPerRow = 0;
+            settings.cardSpace = 0f;
+            settings.sidePadding = 0;
+            settings.cardRatio = 0f;
+            settings.cardsPerPage = 0;
+            settings.GridSpacing = Vector2.zero;
+            return settings;
+        }
+    }
+    #endregion
+    #region Initialization
+    public static GridSettings Create(int cardsPerRow, int sidePadding, int perPage, Vector2 gridSpacing, float cardRatio = .75f, float cardSpace = 1f)
     {
         GridSettings settings = new GridSettings();
         settings.cardsPerRow = cardsPerRow;
@@ -23,7 +54,7 @@ public struct GridSettings
         settings.sidePadding = sidePadding;
         settings.cardRatio = cardRatio;
         settings.cardsPerPage = perPage;
-        settings.GridSpacing = gridSpace;
+        settings.GridSpacing = gridSpacing;
         return settings;
     }
 
@@ -38,6 +69,7 @@ public struct GridSettings
         settings.GridSpacing = new Vector2(5f, 5f);
         return settings;
     }
+    #endregion
 
     public float TotalPadding()
     {
@@ -45,8 +77,15 @@ public struct GridSettings
     }
 
     
+    public void SetGrid(GridLayoutGroup grid)
+    {
+        grid.spacing = GridSpacing;
+        grid.padding = new RectOffset(sidePadding, sidePadding, grid.padding.top, grid.padding.bottom);
+        grid.constraintCount = cardsPerRow;
+        
+    }
 
-    public void UpdateGrid(GridLayoutGroup Grid, float freeWidth)
+    public void SetGridSize(GridLayoutGroup Grid, float freeWidth)
     {
         float cellWidth = freeWidth / (float)cardsPerRow;
         float cellHeight = (cellWidth / cardRatio);
@@ -57,8 +96,15 @@ public struct GridSettings
         Grid.spacing = GridSpacing;
         Grid.padding.left = sidePadding;
         Grid.padding.right = sidePadding;
+
+
     }
 
+    public void ChangeCellSpacing(Vector2 newSpacing)
+    {
+        GridSpacing = newSpacing;
+        SettingsUpdated();
+    }
 
 
 }

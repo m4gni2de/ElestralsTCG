@@ -139,11 +139,11 @@ namespace Gameplay.CardActions
         public override IEnumerator PerformAction()
         {
             yield return DoMove(sourceCard, toSlot);
-            GameDeck deck = player.deck;
-            Decks.Deck sourceDeck = deck.MainDeck;
-            if (!isMainDeck) { sourceDeck = deck.SpiritDeck; }
+            //GameDeck deck = player.deck;
+            //Decks.Deck sourceDeck = deck.MainDeck;
+            //if (!isMainDeck) { sourceDeck = deck.SpiritDeck; }
             player.SendCardDraw(sourceCard);
-            deck.RemoveCard(sourceCard, sourceDeck);
+            //deck.RemoveCard(sourceCard, sourceDeck);
             toSlot.AllocateTo(sourceCard);
             End(ActionResult.Succeed);
         }

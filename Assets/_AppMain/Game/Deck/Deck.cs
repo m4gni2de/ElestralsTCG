@@ -35,7 +35,7 @@ namespace Gameplay.Decks
             Side = 2
         }
 
-        
+
 
         #region Properties
         protected DeckType _deckType { get; set; }

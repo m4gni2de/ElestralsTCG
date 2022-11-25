@@ -152,7 +152,7 @@ public static class CardUI
         {
             if (spirits[i].CardType != CardType.Spirit) { App.LogError($"Cannot parse string for cards that are not Spirits."); }
 
-            string code = spirits[i].card.OfElement(0).BaseData.UnicodeString; ;
+            string code = spirits[i].card.OfElement(0).BaseData.UnicodeString;
             s += code;
         }
         return $" {s} ";

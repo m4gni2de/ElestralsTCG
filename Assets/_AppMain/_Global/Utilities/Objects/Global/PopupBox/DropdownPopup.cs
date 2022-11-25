@@ -72,7 +72,7 @@ namespace PopupBox
         {
             txtMessage.text = "";
             ConfirmButton.onClick.RemoveAllListeners();
-            CancelButton.onClick.RemoveAllListeners();
+            DenyButton.onClick.RemoveAllListeners();
             ddOptions.onValueChanged.RemoveAllListeners();
             ddOptions.ClearOptions();
             OptionDisplays.Clear();
@@ -99,14 +99,14 @@ namespace PopupBox
             ddOptions.onValueChanged.AddListener(DropdownChanged);
             txtMessage.text = msg;
             ConfirmButton.gameObject.SetActive(true);
-            CancelButton.gameObject.SetActive(false);
+            DenyButton.gameObject.SetActive(false);
             if (callback != null)
             {
                 OnHandled = callback;
 
             }
             ConfirmButton.onClick.AddListener(() => Confirm());
-            CancelButton.onClick.AddListener(() => Cancel());
+            DenyButton.onClick.AddListener(() => Deny());
 
             
             ddOptions.AddOptions(OptionDisplays);
@@ -130,14 +130,14 @@ namespace PopupBox
             ddOptions.onValueChanged.AddListener(DropdownChanged);
             txtMessage.text = msg;
             ConfirmButton.gameObject.SetActive(true);
-            CancelButton.gameObject.SetActive(false);
+            DenyButton.gameObject.SetActive(false);
             if (callback != null)
             {
                 OnHandled = callback;
 
             }
             ConfirmButton.onClick.AddListener(() => Confirm());
-            CancelButton.onClick.AddListener(() => Cancel());
+            DenyButton.onClick.AddListener(() => Deny());
 
             ddOptions.AddOptions(OptionDisplays);
             OptionSelection = 0;
@@ -158,9 +158,9 @@ namespace PopupBox
             SendResult(selected);
         }
        
-        public override void Cancel()
+        public override void Deny()
         {
-            SendCancel();
+            SendDeny();
         }
        
         public override void Close()

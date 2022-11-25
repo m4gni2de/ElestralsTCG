@@ -81,6 +81,7 @@ namespace Databases
         public int setNumber { get; set; }
         public int rarity { get; set; }
         public int artType { get; set; }
+        public string baseKey { get; set; }
 
 
     }

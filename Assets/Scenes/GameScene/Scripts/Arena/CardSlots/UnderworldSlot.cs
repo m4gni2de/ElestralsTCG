@@ -12,6 +12,22 @@ namespace Gameplay
         private TouchObject _touch = null;
         public TouchObject touch { get { _touch ??= GetComponent<TouchObject>(); return _touch; } }
 
+        #region Interface
+        public void Optimize()
+        {
+            for (int i = 0; i < cards.Count; i++)
+            {
+                if (i < cards.Count - 1)
+                {
+                    cards[i].cardObject.Hide();
+                }
+                else
+                {
+                    cards[i].cardObject.Show();
+                }
+            }
+        }
+        #endregion
 
         protected override bool GetIsOpen()
         {
@@ -27,7 +43,18 @@ namespace Gameplay
             touch.AddClickListener(() => ClickSlot());
         }
 
-        
+        public override void AllocateTo(GameCard card, bool sendToServer = true)
+        {
+
+            card.RemoveFromSlot();
+            cards.Add(card);
+            card.AllocateTo(this, sendToServer);
+
+            DisplayCardObject(card);
+            SetCommands(card);
+
+
+        }
 
         protected override void SetCommands(GameCard card)
         {
@@ -42,10 +69,12 @@ namespace Gameplay
             c.SetAsChild(transform, CardScale, SortLayer);
             card.rect.sizeDelta = rect.sizeDelta;
             c.transform.localPosition = new Vector2(0f, 0f);
-            c.SetSortingOrder(cards.Count);
             c.Flip();
             c.Rotate(false);
             card.SetCardMode(CardMode.None);
+
+            Optimize();
+
         }
         public override bool ValidateCard(GameCard card)
         {

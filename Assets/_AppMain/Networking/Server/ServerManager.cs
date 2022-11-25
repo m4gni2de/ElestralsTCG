@@ -3,11 +3,11 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using Gameplay;
-using RiptideNetworking;
-using RiptideNetworking.Utils;
+
 using UnityEngine;
-using RiptideNetworking.Transports;
 using System.Collections.Generic;
+using RiptideNetworking;
+using RiptideNetworking.Transports;
 
 #if UNITY_EDITOR
 using UnityEditor.Networking.PlayerConnection;
@@ -131,44 +131,7 @@ public static class ServerManager
 
 
 
-    #region Shutdown
-    public static async void RemoveGame()
-    {
-        string id = ServerGame.Instance.gameId;
-        App.Log($"Game {id} has been removed!");
-
-        bool removed = await RemoteData.RemoveLobby(id);
-        if (removed)
-        {
-            App.Log($"Game '{id}' has been removed from the Remote Database.");
-        }
-
-    
-      
-    }
-
-    public static async void Shutdown()
-    {
-        if (server != null)
-        {
-            server.Stop();
-            ConnectedClients.Clear();
-            ConnectedPlayers.Clear();
-
-            server.ClientConnected -= OnClientConnected;
-            server.ClientDisconnected -= PlayerDisconnect;
-
-            if (ServerGame.Instance != null)
-            {
-                ServerGame.EndGame();
-            }
-
-            await RemoteData.DeleteServer(serverKey);
-        }
-    }
-
-    #endregion
-
+  
 
 
     #region Host As Server Messages
@@ -194,10 +157,8 @@ public static class ServerManager
 
         }
 
-        string json = JsonUtility.ToJson(NetworkManager.Instance.serverInfo);
         Message outbound = Message.Create(MessageSendMode.reliable, FromServer.Connected);
         outbound.Add(fromClientId);
-        outbound.Add(json);
         SendToClient(outbound, fromClientId);
 
 
@@ -271,7 +232,7 @@ public static class ServerManager
     [MessageHandler((ushort)ToServer.DeckOrder)]
     private static void OrderDeck(ushort fromClientId, Message message)
     {
-        List<string> deckOrder = message.GetStrings(true).ToList();
+        List<string> deckOrder = message.GetStrings().ToList();
         ServerGame.SetDeckOrder(fromClientId, deckOrder);
 
     }
@@ -476,6 +437,25 @@ public static class ServerManager
     #endregion
 
 
+    #region Shutdown
+    public static async void RemoveGame()
+    {
+        string id = ServerGame.Instance.gameId;
+        App.Log($"Game {id} has been removed!");
+
+        bool removed = await RemoteData.RemoveLobby(id);
+        if (removed)
+        {
+            App.Log($"Game '{id}' has been removed from the Remote Database.");
+        }
+
+
+
+    }
+
+   
+
+    #endregion
 
 
 }

@@ -306,7 +306,8 @@ namespace Gameplay
         public void SetPlayer(Player p)
         {
             _player = p;
-            name = _player.lobbyId + "_Field";
+            //name = _player.lobbyId + "_Field";
+            name = _player.userId + "_Field";
             
             Register();
 
@@ -366,19 +367,6 @@ namespace Gameplay
                 DeckSlot.AllocateTo(card);
             }
         }
-
-       
-        //protected CardView SpawnCard(GameCard card, CardSlot slot)
-        //{
-            
-        //    bool displayBack = slot.facing == CardSlot.CardFacing.FaceDown;
-
-        //    CardView c = CardView.GenerateCard(GameManager.Instance.cardTemplate, transform, card.card, displayBack);
-        //    c.LoadCard(card.card);
-        //    c.name = card.name;
-        //    //NetworkPipeline.SpawnNewCard(card.NetworkId, slot.index);
-        //    return c;
-        //}
 
 
 

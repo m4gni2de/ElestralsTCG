@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Gameplay.Menus
 {
-    public class GameMenu : MonoBehaviour
+    public class GameMenu : MonoBehaviour, iInvert
     {
         #region Properties
         public bool IsOpen { get { return gameObject.activeSelf; } }
@@ -18,6 +18,29 @@ namespace Gameplay.Menus
 
         public event Action<bool> OnMenuToggled;
         
+        public string CanvasSortLayer
+        {
+            get
+            {
+                return GetSortLayer;
+            }
+        }
+
+        protected virtual string GetSortLayer { get => "GameMenu"; }
+        #endregion
+
+        #region Interface
+        public void Invert(bool doInvert)
+        {
+            if (doInvert)
+            {
+                transform.localEulerAngles = new Vector3(0f, 0f, 180f);
+            }
+            else
+            {
+                transform.localEulerAngles = new Vector3(0f, 0f, 0f);
+            }
+        }
         #endregion
 
         private void Awake()

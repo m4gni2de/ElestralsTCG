@@ -1,0 +1,37 @@
+11/10/2022 12:21:38 AM - Log Created.
+Client 1 connected to Server from.
+Message
+Thursday, November 10, 2022
+UserID 'usr488W'(NetworkID: '1' has been added to the Lobby.
+Message
+Thursday, November 10, 2022
+Game 15002 has been removed!
+Message
+Thursday, November 10, 2022
+Game 15002 has been removed!
+Message
+Thursday, November 10, 2022
+Game '15002' has been removed from the Remote Database.
+Message
+Thursday, November 10, 2022
+Game '15002' has been removed from the Remote Database.
+Message
+Thursday, November 10, 2022
+Client 1 connected to Server from.
+Message
+Thursday, November 10, 2022
+UserID 'usr488W'(NetworkID: '1' has been added to the Lobby.
+Message
+Thursday, November 10, 2022
+Client 2 connected to Server from.
+Message
+Thursday, November 10, 2022
+UserID 'usr5L0S'(NetworkID: '2' has been added to the Lobby.
+Message
+Thursday, November 10, 2022
+Client 2 Disconnected from the Server.
+Message
+Thursday, November 10, 2022
+Client 1 Disconnected from the Server.
+Message
+Thursday, November 10, 2022

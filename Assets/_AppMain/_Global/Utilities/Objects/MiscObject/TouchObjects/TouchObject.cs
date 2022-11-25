@@ -7,7 +7,7 @@ using UnityEngine.Events;
 using TouchControls;
 
 
-public class TouchObject : MonoBehaviour, iFreeze
+public class TouchObject : ValidationObject, iFreeze
 {
    
 
@@ -267,9 +267,6 @@ public class TouchObject : MonoBehaviour, iFreeze
 
     protected List<float> _TapTimes = null;
     public List<float> TapTimes { get { _TapTimes ??= new List<float>(); return _TapTimes; } }
-
-    protected List<string> _ErrorList = null;
-    protected List<string> ErrorList { get { _ErrorList ??= new List<string>(); return _ErrorList; } }
     #endregion
 
     #region Validation/Functions
@@ -294,9 +291,8 @@ public class TouchObject : MonoBehaviour, iFreeze
 
 
 
-    public virtual bool Validate()
+    public override bool Validate()
     {
-        
 
         if (!IsPointerOverMe()) { return false; }
         if (IsBlocked())
@@ -334,11 +330,6 @@ public class TouchObject : MonoBehaviour, iFreeze
         }
 
             return ErrorList.Count == 0;
-    }
-
-    protected void AddError(string msg)
-    {
-        ErrorList.Add(msg);
     }
     #endregion
 

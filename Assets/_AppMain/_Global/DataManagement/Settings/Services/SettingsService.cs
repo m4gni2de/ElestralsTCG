@@ -4,7 +4,7 @@ using UnityEngine;
 using Databases;
 
 
-    public class SettingsService : DataService
+    public class SettingsService : PlayerService
     {
         public static readonly string SettingsTable = "GameSettings";
 

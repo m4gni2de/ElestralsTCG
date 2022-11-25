@@ -80,6 +80,69 @@ MonoBehaviour:
     - default
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1d2b44bd6caca154cb9df4af04452df7
+    m_Address: thunderR
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2d5af1cd0dc4e81448c9d4111a4f127c
+    m_Address: lightR
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1d0c281471c277440b035d05c91c173f
+    m_Address: fireR
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9ab232769324f9e4e983eb6b146294ba
+    m_Address: waterR
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8fcee0b09d474e346b0e3a17f4e6d2f4
+    m_Address: anyR
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 08044bf830443af4ab2249b6af16905a
+    m_Address: frostR
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 22c57f0c028108b46bad3fbb72ff47aa
+    m_Address: darkR
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a7729988762fab146bb67ef4ebab6f19
+    m_Address: earthR
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8a889392657568840b1afb776bee03aa
+    m_Address: windR
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
   m_SchemaSet:

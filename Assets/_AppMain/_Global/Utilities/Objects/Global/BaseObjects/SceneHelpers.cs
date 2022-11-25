@@ -17,8 +17,9 @@ public class SceneHelpers
                 _sceneNames.Add(typeof(LauncherScene), "LauncherScene");
                 _sceneNames.Add(typeof(MainScene), "MainScene");
                 _sceneNames.Add(typeof(CatalogScene), "CatalogScene");
-                _sceneNames.Add(typeof(GameManager), "OnlineGame");
+                _sceneNames.Add(typeof(GameManager), "GameScene");
                 _sceneNames.Add(typeof(NetworkScene), "NetworkLobby");
+                _sceneNames.Add(typeof(DeckEditorScene), "DeckEditorScene");
             }
             return _sceneNames;
         }

@@ -68,7 +68,7 @@ namespace Gameplay.Messaging
         public void DisplaySimple(GameMessage msg)
         {
             GameMessage plainMessage = msg.message;
-            Show(msg);
+            Show(plainMessage);
         }
 
 
@@ -85,40 +85,8 @@ namespace Gameplay.Messaging
                 }
             }
         }
-
         #endregion
 
-        protected void StopTimer(bool hide)
-        {
-            if (isShowing)
-            {
-                StopAllCoroutines();
-            }
-
-            if (ActiveMessage != null)
-            {
-                ActiveMessage.ForceClose();
-            }
-
-            if (hide)
-            {
-                Hide();
-            }
-            
-        }
-        private IEnumerator TimedShow(float maxTime)
-        {
-            isShowing = true;
-            float acumTime = 0f;
-            do
-            {
-                yield return new WaitForEndOfFrame();
-                acumTime += Time.deltaTime;
-
-            } while (true && acumTime <= maxTime);
-            isShowing = false;
-        }
-       
     }
 }
 

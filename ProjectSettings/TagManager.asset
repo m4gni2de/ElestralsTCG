@@ -60,6 +60,9 @@ TagManager:
   - name: CardSpotlight
     uniqueID: 1671384291
     locked: 0
+  - name: GameMenu
+    uniqueID: 386768785
+    locked: 0
   - name: InputBlocker
     uniqueID: 3487167371
     locked: 0

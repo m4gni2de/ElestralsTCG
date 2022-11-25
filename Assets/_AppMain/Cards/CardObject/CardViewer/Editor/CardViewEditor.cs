@@ -70,7 +70,7 @@ public class CardViewEditor : Editor
     private void OnEnable()
     {
         k_Contents = new Contents();
-        activeCard = (CardView)target;
+        activeCard = (CardView)serializedObject.targetObject;
         //sortLayerName = TargetProperty("_sortLayer");
         for (int i = 0; i < SortLayers.Count; i++)
         {
@@ -101,8 +101,8 @@ public class CardViewEditor : Editor
 
     void SetInspector()
     {
-        
 
+        
         EditorGUILayout.Space(20f);
         EditorGUILayout.Separator();
         EditorGUILayout.LabelField("EDITOR USE ONLY", GUILayout.ExpandWidth(true));
@@ -112,15 +112,19 @@ public class CardViewEditor : Editor
         {
             EditorGUILayout.BeginHorizontal();
             string currentLayer = activeCard.CurrentConfig.BaseSortLayer;
-            cardSortLayer = EditorGUILayout.Popup(Contents.SortLayerLabel, cardSortLayer, SortLayers.ToArray());
+
+            int layerNum = cardSortLayer;
+            cardSortLayer = EditorGUILayout.Popup(Contents.SortLayerLabel, layerNum, SortLayers.ToArray());
             if (currentLayer != SortLayers[cardSortLayer])
             {
-                if (GUILayout.Button(Contents.UpdateSortButton))
-                {
-                    activeCard.DefaultConfig.ChangeSortLayer(SortLayers[cardSortLayer]);
-                    activeCard.FullArtConfig.ChangeSortLayer(SortLayers[cardSortLayer]);
+                    if (GUILayout.Button(Contents.UpdateSortButton))
+                    {
+                   
+                        activeCard.DefaultConfig.ChangeSortLayer(SortLayers[cardSortLayer], true);
+                        activeCard.FullArtConfig.ChangeSortLayer(SortLayers[cardSortLayer], true);
 
-                }
+                    }
+                
             }
 
 
@@ -131,14 +135,13 @@ public class CardViewEditor : Editor
             int currentSortOrder = activeCard.CurrentConfig.BaseSortOrder;
             EditorGUILayout.LabelField(Contents.SortOrderLabel);
             cardSortOrder = EditorGUILayout.IntField(cardSortOrder);
-            if (currentSortOrder != cardSortOrder)
-            {
-                if (GUILayout.Button(Contents.UpdateSortOrderButton))
-                {
-                    activeCard.DefaultConfig.ChangeSortOrder(cardSortOrder);
-                    activeCard.FullArtConfig.ChangeSortOrder(cardSortOrder);
 
-                }
+            if (GUILayout.Button(Contents.UpdateSortOrderButton))
+            {
+
+                activeCard.DefaultConfig.ChangeSortOrder(cardSortOrder, true);
+                activeCard.FullArtConfig.ChangeSortOrder(cardSortOrder, true);
+
             }
 
 

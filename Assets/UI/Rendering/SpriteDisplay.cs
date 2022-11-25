@@ -1,7 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+#if UNITY_EDITOR
+using static UnityEditor.Experimental.GraphView.GraphView;
+#endif
 
 public class SpriteDisplay : MonoBehaviour
 {
@@ -12,7 +16,7 @@ public class SpriteDisplay : MonoBehaviour
         Image = 1
     };
 
-    
+    #region Renderer/Image
     private Sprite _mainSprite = null;
     public Sprite MainSprite
     {
@@ -64,6 +68,7 @@ public class SpriteDisplay : MonoBehaviour
         set { _image = value; }
     }
 
+    #endregion
     public Transform m_Transform
     {
         get
@@ -74,6 +79,9 @@ public class SpriteDisplay : MonoBehaviour
             return t;
         }
     }
+
+
+
     private void Awake()
     {
         CheckDisplay();
@@ -132,28 +140,42 @@ public class SpriteDisplay : MonoBehaviour
     }
 
     #region Functions
+
+    public event Action<string> OnSortLayerSet;
     public void SetSortLayer(string sortLayer)
     {
-        if (RendType == RenderType.Sprite) { _sp.sortingLayerName = sortLayer; }
-        if (RendType == RenderType.Image) { _image.canvas.sortingLayerName = sortLayer; }
+        //if (RendType == RenderType.Sprite) { _sp.sortingLayerName = sortLayer; }
+        //if (RendType == RenderType.Image) { _image.canvas.sortingLayerName = sortLayer; }
+        SortLayer = sortLayer;
+        OnSortLayerSet?.Invoke(sortLayer);
+
+
     }
+
+    public event Action<int> OnSortOrderSet;
     public void SetSortOrder(int order)
     {
-        if (RendType == RenderType.Sprite) { _sp.sortingOrder = order; }
-        if (RendType == RenderType.Image) { _image.canvas.sortingOrder = order; }
+        //if (RendType == RenderType.Sprite) { _sp.sortingOrder = order; }
+        //if (RendType == RenderType.Image) { _image.canvas.sortingOrder = order; }
+        SortOrder = order;
+        OnSortOrderSet?.Invoke(order);
     }
+
+    public event Action<int> OnSortOrderChanged;
     public void ChangeSortOrder(int changeVal)
     {
-        if (RendType == RenderType.Sprite)
-        {
-            _sp.sortingOrder += changeVal;
-        }
-        if (RendType == RenderType.Image)
-        {
-            _image.canvas.sortingOrder += changeVal;
-        }
+        SortOrder += changeVal;
+        OnSortOrderChanged?.Invoke(changeVal);
+        //if (RendType == RenderType.Sprite)
+        //{
+        //    _sp.sortingOrder += changeVal;
+        //}
+        //if (RendType == RenderType.Image)
+        //{
+        //    _image.canvas.sortingOrder += changeVal;
+        //}
     }
-    public string SortLayerName
+    public string SortLayer
     {
         get
         {
@@ -161,6 +183,11 @@ public class SpriteDisplay : MonoBehaviour
             if (RendType == RenderType.Sprite) { layer = _sp.sortingLayerName; }
             if (RendType == RenderType.Image) { layer = _image.canvas.sortingLayerName; }
             return layer;
+        }
+        set
+        {
+            if (RendType == RenderType.Sprite) { _sp.sortingLayerName = value; }
+            if (RendType == RenderType.Image) { _image.canvas.sortingLayerName = value; }
         }
     }
     public int SortOrder
@@ -171,6 +198,11 @@ public class SpriteDisplay : MonoBehaviour
             if (RendType == RenderType.Sprite) { order = _sp.sortingOrder; }
             if (RendType == RenderType.Image) { order = _image.canvas.sortingOrder; }
             return order;
+        }
+        set
+        {
+            if (RendType == RenderType.Sprite) { _sp.sortingOrder = value; }
+            if (RendType == RenderType.Image) { _image.canvas.sortingOrder = value; }
         }
     }
     #endregion

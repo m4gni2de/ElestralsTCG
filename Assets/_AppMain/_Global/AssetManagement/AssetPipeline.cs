@@ -20,7 +20,7 @@ public class AssetPipeline
     {
         OnItemDownloaded.Invoke(val);
     }
-    public static event Action OnDownloadComplete;
+    //public static event Action OnDownloadComplete;
     protected static void DownloadComplete()
     {
         //OnDownloadComplete?.Invoke();
@@ -53,7 +53,7 @@ public class AssetPipeline
 
     #region Properties
     private static bool isDownloading = false;
-    private static bool checkingCatalog = false;
+    //private static bool checkingCatalog = false;
 
     #endregion
     public static async Task<Tuple<List<string>, double>> CheckForCatalogUpdate()
@@ -61,7 +61,7 @@ public class AssetPipeline
         Tuple<List<string>, double> dataInfo = null;
         if (!isDownloading)
         {
-            checkingCatalog = true;
+            //checkingCatalog = true;
             AsyncOperationHandle<List<string>> newAssets = Addressables.CheckForCatalogUpdates();
             await newAssets.Task;
 
@@ -73,7 +73,7 @@ public class AssetPipeline
         }
 
 
-        checkingCatalog = false;
+        //checkingCatalog = false;
         return dataInfo;
 
     }

@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cards;
+using Databases;
+using System.Globalization;
 
 public enum CardType
 {
@@ -33,27 +35,7 @@ public enum ArtType
 public abstract class Card : iCard
 {
 
-    #region Static Constructors
-    public static Elestral ElestralCard(string key)
-    {
-        ElestralData data = CardService.FindElestralCard(key);
-        return new Elestral(data);
-    }
-
-    public static Rune RuneCard(string key)
-    {
-        RuneData data = CardService.FindRuneCard(key);
-        return new Rune(data);
-    }
-
-    public static Spirit SpiritCard(string key)
-    {
-        CardData data = CardService.FindSpiritCard(key);
-        return new Spirit(data);
-    }
-
-
-    #endregion
+   
 
     #region Operatoes and Convertions
     public static Card FromData(CardData data)
@@ -69,6 +51,14 @@ public abstract class Card : iCard
             return new Rune(d);
         }
         return new Spirit(data);
+    }
+
+    public static implicit operator Card(qUniqueCard dto)
+    {
+        if (dto.cardClass == (int)CardType.Elestral) { CardData data = new ElestralData(dto); Elestral e = new Elestral((ElestralData)data); return e; }
+        if (dto.cardClass == (int)CardType.Rune) { CardData data = new RuneData(dto); Rune r = new Rune((RuneData)data); return r; }
+        if (dto.cardClass == (int)CardType.Spirit) { CardData data = new CardData(dto); Spirit s = new Spirit(data); return s; }
+        return null;
     }
 
 
@@ -97,6 +87,29 @@ public abstract class Card : iCard
     }
     #endregion
 
+    private List<string> _altArts = null;
+    public List<string> AltArts
+    {
+        get
+        {
+            if (_altArts == null)
+            {
+                _altArts = new List<string>();
+
+                string whereClause = $"baseKey = '{cardData.cardKey}' AND image <> '{cardData.image}'";
+                List<qUniqueCard> sharedCards = CardService.GetAllWhere<qUniqueCard>(CardService.qUniqueCardView, whereClause);
+
+                for (int i = 0; i < sharedCards.Count; i++)
+                {
+                    _altArts.Add(sharedCards[i].setKey);
+                }
+            }
+            return _altArts;
+           
+        }
+    }
+
+   
     #region Spirits and Elements
     private List<Element> _SpiritsReq = null;
     public List<Element> SpiritsReq
@@ -155,6 +168,10 @@ public abstract class Card : iCard
     }
     #endregion
 
+
+
+    
+   
     #endregion
 
 

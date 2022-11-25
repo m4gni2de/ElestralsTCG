@@ -6,9 +6,15 @@ using System;
 
 namespace PopupBox
 {
+    public enum PopupResposne
+    {
+        Cancel = 0,
+        Yes = 1,
+        No = 2,
+    }
     public class BasePopup : MonoBehaviour
     {
-        public Button ConfirmButton, CancelButton;
+        public Button ConfirmButton, DenyButton;
         protected bool _Handled = false;
         public bool Handled { get { return _Handled; } }
 
@@ -20,7 +26,7 @@ namespace PopupBox
             OnHandled = null;
             Close();
         }
-        protected void SendCancel()
+        protected void SendDeny()
         {
             StopAllCoroutines();
             ToggleHandled(true);
@@ -34,7 +40,7 @@ namespace PopupBox
             if (!isHandled)
             {
                 ConfirmButton.onClick.RemoveAllListeners();
-                CancelButton.onClick.RemoveAllListeners();
+                DenyButton.onClick.RemoveAllListeners();
             }
         }
         public void ForceClose()
@@ -48,6 +54,10 @@ namespace PopupBox
             
         }
         public virtual void Confirm()
+        {
+
+        }
+        public virtual void Deny()
         {
 
         }

@@ -9,6 +9,7 @@ namespace nsSettings
         public static readonly string AdvancedSettingsName = "advSettings";
         public static readonly string AudioSettingsName = "audioSettings";
         public static readonly string AccountSettingsName = "acctSettings";
+        public static readonly string CatalogSettingsName = "catalogSettings";
 
         private static GameSettings<AdvancedSettings> _Advanced = null;
         public static GameSettings<AdvancedSettings> Advanced
@@ -37,6 +38,16 @@ namespace nsSettings
             {
                 _Account ??= new GameSettings<AccountSettings>(AccountSettingsName);
                 return _Account;
+            }
+        }
+
+        private static GameSettings<CatalogSettings> _Catalog = null;
+        public static GameSettings<CatalogSettings> Catalog
+        {
+            get
+            {
+                _Catalog ??= new GameSettings<CatalogSettings>(CatalogSettingsName);
+                return _Catalog;
             }
         }
 

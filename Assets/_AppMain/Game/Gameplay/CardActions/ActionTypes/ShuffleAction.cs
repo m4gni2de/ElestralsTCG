@@ -107,6 +107,7 @@ public class ShuffleAction : CardAction
 
         for (int i = 0; i < sourceDeck.InOrder.Count; i++)
         {
+            sourceDeck.InOrder[0].cardObject.Show();
             int rand = Random.Range(0, 2);
             float targetY = deckSlot.transform.position.y;
             if (rand == 0)
@@ -137,7 +138,8 @@ public class ShuffleAction : CardAction
         {
             foreach (var item in targetPos)
             {
-                item.Key.cardObject.transform.position += (directionMod * (item.Value * Time.deltaTime));
+                //item.Key.cardObject.transform.position += (directionMod * (item.Value * Time.deltaTime));
+                item.Key.MovePosition((directionMod * (item.Value * Time.deltaTime)));
             }
             yield return new WaitForEndOfFrame();
             acumTime += Time.deltaTime;
@@ -160,6 +162,17 @@ public class ShuffleAction : CardAction
         else
         {
             sourceDeck.Shuffle(newOrder);
+        }
+
+        if (sourceDeck.deckType == Deck.DeckType.Main)
+        {
+            iSelectSlot slot = (iSelectSlot)player.gameField.DeckSlot;
+            slot.Optimize();
+        }
+        else if (sourceDeck.deckType == Deck.DeckType.Spirit)
+        {
+            iSelectSlot slot = (iSelectSlot)player.gameField.SpiritDeckSlot;
+            slot.Optimize();
         }
         
         End(ActionResult.Succeed);

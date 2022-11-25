@@ -7,4 +7,5 @@ public interface iSelectSlot
 {
     TouchObject touch { get; }
     void ClickSlot();
+    void Optimize();
 }

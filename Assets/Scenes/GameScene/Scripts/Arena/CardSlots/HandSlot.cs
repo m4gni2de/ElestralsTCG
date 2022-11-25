@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Gameplay.Menus;
 using Gameplay.Menus.Popup;
+using TouchControls;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -13,24 +14,32 @@ namespace Gameplay
 
     public class HandSlot : CardSlot
     {
+        #region Properties
         public ScrollRect m_Scroll;
         protected RectTransform Content { get { return m_Scroll.content; } }
 
         [SerializeField]
         private CanvasGroup m_Canvas;
-        protected void ToggleCanvasGroup(bool turnOn)
-        {
-            m_Canvas.alpha = turnOn ? 1 : 0;
-            m_Canvas.interactable = turnOn;
-        }
 
+        [SerializeField]
+        private GridLayoutGroup layoutGroup;
+       
         protected override Vector2 GetSlotSize()
         {
-            return Content.GetComponent<GridLayoutGroup>().cellSize;
+            return layoutGroup.cellSize;
         }
 
         [SerializeField]
         private SpriteDisplay sp;
+
+        /// <summary>
+        /// the amount of cards before the spacing is reduced, as opposed to just allowing the cards to add themselves horiontally
+        /// </summary>
+        private int maxWidthCount = 7;
+        private int baseSpacing = -15;
+
+        private TouchGroup touchGroup;
+        #endregion
 
         #region Overrides
 
@@ -42,7 +51,8 @@ namespace Gameplay
         {
             orientation = Orientation.Vertical;
             slotType = CardLocation.Hand;
-            //GameManager.Instance.browseMenu.OnMenuToggled += ToggleCanvasGroup;
+            touchGroup = GetComponent<TouchGroup>();
+           
             
         }
 
@@ -67,24 +77,42 @@ namespace Gameplay
             card.cardObject.SetAsChild(Content, CardScale, SortLayer, Content.childCount);
             card.cardObject.SetSortingOrder(Content.childCount * 20);
 
-            card.cardObject.GetComponent<RectTransform>().ForceUpdateRectTransforms();
-            Content.ForceUpdateRectTransforms();
+            if (Content.childCount > maxWidthCount)
+            {
+                float maxWidth = card.rect.rect.width * (float)maxWidthCount;
+                int diff = Content.childCount - maxWidthCount;
+                int spacingX = baseSpacing + (-2 * diff);
+                layoutGroup.spacing = new Vector2(spacingX, 0f);
+            }
+            else
+            {
+                layoutGroup.spacing = new Vector2(baseSpacing, 0f);
+            }
+            
+             card.cardObject.transform.localPosition = new Vector3(0f, 0f, (cards.Count + 1));
+            card.cardObject.touch.IsMaskable = true;
+
+
+            //card.cardObject.GetComponent<RectTransform>().ForceUpdateRectTransforms();
+            //Content.ForceUpdateRectTransforms();
             card.cardObject.Flip(facing == CardFacing.FaceDown);
         }
-        protected override bool GetClickValidation()
-        {
-            if (App.WhoAmI == Owner.userId)
-            {
-                return true;
-            }
-            return false;
-        }
-        //protected override void SetCommands(GameCard card)
+        //protected override bool GetClickValidation()
         //{
-        //    TouchObject to = card.cardObject.touch;
-        //    to.AddClickListener(() => ClickCard(card));
-        //    to.AddHoldListener(() => GameManager.Instance.DragCard(card, this));
+        //    if (App.WhoAmI == Owner.userId)
+        //    {
+        //        return true;
+        //    }
+        //    return false;
+
         //}
+        protected override void SetCommands(GameCard card)
+        {
+            TouchObject to = card.cardObject.touch;
+            to.RemoveFromGroup();
+            touchGroup.Add(to);
+            base.SetCommands(card);
+        }
 
         protected override void ClickCard(GameCard card)
         {
@@ -171,19 +199,22 @@ namespace Gameplay
         protected override List<PopupCommand> GetSlotCommands()
         {
             List<PopupCommand> commands = new List<PopupCommand>();
-            if (IsYours)
-            {
-                commands.Add(PopupCommand.Create("Cast", () => BaseCastCommand(), 0, 0));
-                commands.Add(PopupCommand.Create("Discard", () => DiscardCommand(), 0, 1));
-                commands.Add(PopupCommand.Create("Close", () => CloseCommand()));
-            }
+            //if (IsYours)
+            //{
+            //    commands.Add(PopupCommand.Create("Cast", () => BaseCastCommand(), 0, 0));
+            //    commands.Add(PopupCommand.Create("Discard", () => DiscardCommand(), 0, 1));
+            //    commands.Add(PopupCommand.Create("Close", () => CloseCommand()));
+            //}
+            commands.Add(PopupCommand.Create("Cast", () => BaseCastCommand(), 0, 0));
+            commands.Add(PopupCommand.Create("Discard", () => DiscardCommand(), 0, 1));
+            commands.Add(PopupCommand.Create("Close", () => CloseCommand()));
 
             return commands;
         }
 
-        #endregion
+#endregion
 
-        #region Menu Commands
+#region Menu Commands
         
         protected void DiscardCommand()
         {
@@ -201,6 +232,8 @@ namespace Gameplay
                 MoveAction ac = new MoveAction(Owner, toMove, Owner.gameField.UnderworldSlot);
                 GameManager.Instance.MoveCard(ac);
             }
+
+            Refresh();
             
         }
         protected void CloseCommand()
@@ -232,7 +265,7 @@ namespace Gameplay
             GameManager.SelectedCard = null;
             
         }
-        #endregion
+#endregion
 
 
         private void OnDestroy()

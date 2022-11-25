@@ -156,9 +156,7 @@ namespace Gameplay
         #region Tag Management
         public void SetMode(CardMode mode)
         {
-            CardMode other = CardMode.Defense;
-            if (mode == CardMode.Defense) { other = CardMode.Attack; }
-
+           
             if (mode == CardMode.Defense)
             {
                 if (Contains(CardTag.AttackMode)) { Tags.Remove(CardTag.AttackMode); }

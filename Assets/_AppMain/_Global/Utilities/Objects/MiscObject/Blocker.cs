@@ -4,14 +4,24 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Blocker : MonoBehaviour, IPointerClickHandler
+public class Blocker : MonoBehaviour, IPointerClickHandler, iOwnCanvas
 {
+
     
-    protected string SortLayer { get; set; }
-    protected int SortOrder { get; set; }
+    public string SortLayer
+    {
+        get { return canvas.sortingLayerName; }
+        set { canvas.overrideSorting = true; canvas.sortingLayerName = value; }
+    }
+
+    public int SortOrder
+    {
+        get { return canvas.sortingOrder; }
+        set { canvas.overrideSorting = true; canvas.sortingOrder = value; }
+    }
 
     private Canvas _canvas = null;
-    protected Canvas canvas { get { _canvas ??= GetComponent<Canvas>(); return _canvas; } }
+    public Canvas canvas { get { _canvas ??= GetComponent<Canvas>(); return _canvas; } }
     public virtual void OnPointerClick(PointerEventData eventData)
     {
         return;
@@ -21,9 +31,6 @@ public class Blocker : MonoBehaviour, IPointerClickHandler
     {
         SortLayer = sortingLayer;
         SortOrder = sortOrder;
-        canvas.overrideSorting = true;
-        canvas.sortingLayerName = SortLayer;
-        canvas.sortingOrder = SortOrder;
 
     }
     private void Show()

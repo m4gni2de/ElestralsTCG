@@ -14,4 +14,9 @@ public static class OperatorConvertExtensions
         if (a == false) { return 0; }
         return 1;
     }
+
+    public static bool IsEvenNumber(this int a)
+    {
+        return a % 2 == 0;
+    }
 }

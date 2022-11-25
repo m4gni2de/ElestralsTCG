@@ -41,6 +41,7 @@ namespace Gameplay.Data
             gameId = dto.gameId;
             Decklist deck = Decklist.Load(dto.deckKey);
             opponent = new Player(dto.playerId, deck, false);
+            opponent.SetOfflineLobbyId(99);
         }
        
         

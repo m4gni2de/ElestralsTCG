@@ -12,6 +12,7 @@ public class GameSettings<T> where T : ISettingsType<T>, new()
 
     private T _Settings { get; set; }
     public T Settings { get; set; }
+
        
     public bool isDirty
     {

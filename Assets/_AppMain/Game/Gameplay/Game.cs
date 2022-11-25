@@ -10,7 +10,7 @@ using Gameplay.Turns;
 using UnityEngine.Events;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Users;
-using RiptideNetworking;
+
 using Gameplay.Networking;
 using UnityEditor;
 using UnityEngine.SocialPlatforms;
@@ -213,7 +213,7 @@ namespace Gameplay
             OnNewPhaseStart?.Invoke(turn, index);
         }
 
-        public static event Action<GameMode> OnGameModeSet;
+        //public static event Action<GameMode> OnGameModeSet;
         #endregion
 
         #region Action Events

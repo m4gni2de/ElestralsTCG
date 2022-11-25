@@ -1,22 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using Cards;
-using CardsUI;
 using System;
-using System.Threading.Tasks;
-using Gameplay;
-using static Decks.Decklist;
-using CardsUI.Glowing;
-using Databases;
-using UnityEngine.UIElements;
 
-public class CardView : MonoBehaviour, iRemoteAsset
-{
+public class CardView : MonoBehaviour, iRemoteAsset, iCardView
+{ 
+
+    #region Interfaces
     public static string AssetName { get { return RemoteAssetHelpers.GetAssetName<CardView>(); } }
     public static string BorderMapping = "Border";
     public static readonly Vector2 GameSize = new Vector2(65f, 90f);
+
+    public virtual void Clear()
+    {
+        LoadCard();
+        Hide();
+    }
+    public void Destroy()
+    {
+        Destroy(gameObject);
+    }
+    #endregion
 
     #region Properties
     public string CardName;
@@ -39,7 +43,14 @@ public class CardView : MonoBehaviour, iRemoteAsset
         }
     }
 
-    #region Card Building
+    public float RenderHeight { get { return GetRenderHeight(); } }
+   
+    protected virtual float GetRenderHeight()
+    {
+        return GetComponent<RectTransform>().rect.height;
+    }
+
+    #region Card Building Properties
     [Header("Card Building")]
     [SerializeField]
     protected GameObject Container;
@@ -77,9 +88,13 @@ public class CardView : MonoBehaviour, iRemoteAsset
 
     #endregion
 
-   
+    #region Events
+    public event Action<string> OnSortLayerChange;
+    public event Action<int> OnSortOrderChange;
+    #endregion
 
-   
+
+
     public void Hide()
     {
         gameObject.SetActive(false);
@@ -93,6 +108,7 @@ public class CardView : MonoBehaviour, iRemoteAsset
         DefaultPosition = transform.position;
        
     }
+    
 
     public virtual void LoadCard(Card card = null, bool flip = false)
     {
@@ -117,40 +133,7 @@ public class CardView : MonoBehaviour, iRemoteAsset
         }
         Show();
     }
-    //public virtual void LoadCard(Card card = null, bool flip = false)
-    //{
-       
-    //    if (card != null)
-    //    {
-            
-    //        ActiveCard = card;
-    //        name = $"{card.cardData.cardKey} - {card.cardData.cardName}";
-    //        IsFullArt = card.isFullArt;
-    //        gameObject.SetActive(true);
-    //        Flip(flip);
-    //        CurrentConfig.LoadCard(ActiveCard);
-
-    //    }
-    //    else
-    //    {
-    //        ActiveCard = null;
-    //        name = "empty";
-    //        _isFullArt = false;
-    //        Container.SetActive(false);
-
-    //        Texts.SetBlank();
-    //        CurrentConfig.StoneVariant.SetBlank();
-    //        glowControls.SetBlank();
-    //        ClearSprites();
-    //        gameObject.SetActive(false);
-    //    }
-
-      
-    //    Show();
-        
-
-    //}
-
+   
     #region Card Building
   
     public void MatchSize(Vector2 rectSize)
@@ -168,10 +151,6 @@ public class CardView : MonoBehaviour, iRemoteAsset
         
     }
 
-
-    
-
-   
     #endregion
 
     public virtual void Flip(bool toBack = false)
@@ -197,7 +176,6 @@ public class CardView : MonoBehaviour, iRemoteAsset
     }
     public Vector3 GetScale()
     {
-        //return sp.m_Transform.localScale;
         return Container.transform.localScale;
     }
     public virtual void Rotate(bool isTapped)
@@ -226,15 +204,20 @@ public class CardView : MonoBehaviour, iRemoteAsset
     }
 
 
-    public event Action<string> OnSortLayerChange;
+    
     public virtual void SetSortingLayer(string sortLayer)
     {
-        CurrentConfig.ChangeSortLayer(sortLayer);
-        OnSortLayerChange?.Invoke(sortLayer);
+        string currentLayer = CurrentConfig.BaseSortLayer;
+        if (currentLayer != sortLayer)
+        {
+            CurrentConfig.ChangeSortLayer(sortLayer);
+            OnSortLayerChange?.Invoke(sortLayer);
+        }
+        
         
     }
 
-    public event Action<int> OnSortOrderChange;
+    
     public virtual void SetSortingOrder(int order)
     {
 

@@ -7,6 +7,9 @@ using System;
 using Gameplay.Decks;
 using System.Threading.Tasks;
 using UnityEngine.Networking;
+using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
+using System.Globalization;
+using static UnityEditor.Progress;
 
 namespace Decks
 {
@@ -37,6 +40,18 @@ namespace Decks
             }
             card = DeckCard.Empty;
             return false;
+        }
+        private List<DeckCard> CopiesOfCard(string cardKey)
+        {
+            List<DeckCard> cards = new List<DeckCard>();
+            for (int i = 0; i < Cards.Count; i++)
+            {
+                if (Cards[i].key.ToLower() == cardKey.ToLower())
+                {
+                    cards.Add(Cards[i]);
+                }
+            }
+            return cards;
         }
 
         #region operators
@@ -134,6 +149,15 @@ namespace Decks
             }
         }
 
+        private Dictionary<string, int> _cardCounts = null;
+        public Dictionary<string, int> CardCounts
+        {
+            get
+            {
+                _cardCounts ??= new Dictionary<string, int>();
+                return _cardCounts;
+            }
+        }
         
         protected DeckDTO GetDTO
         {
@@ -151,6 +175,17 @@ namespace Decks
             }
         }
 
+        protected List<DeckCardDTO> GetDeckCards(Dictionary<string, int> cardList)
+        {
+            List<DeckCardDTO> list = new List<DeckCardDTO>();
+            foreach (var item in cardList)
+            {
+                DeckCardDTO dto = new DeckCardDTO { deckKey = _key, setKey = item.Key, qty = item.Value };
+                list.Add(dto);
+            }
+            return list;
+        }
+
         public bool IsUploaded
         {
             get => !string.IsNullOrEmpty(UploadCode);
@@ -162,10 +197,10 @@ namespace Decks
         
         public static Decklist Load(string deckKey)
         {
-            DeckDTO dto = DeckService.LoadDeck(deckKey);
+            DeckDTO deck = DeckService.LoadDeck(deckKey);
             List<qDeckList> cards = DeckService.LoadCards(deckKey);
-            return new Decklist(dto, cards);
-
+            return new Decklist(deck, cards);
+          
         }
 
         
@@ -199,11 +234,7 @@ namespace Decks
 
             return list;
         }
-        public static Decklist Load(DeckDTO deck)
-        {
-            return Load(deck.deckKey);
-        }
-
+       
         #region Empty Deck
         public static Decklist Empty(string owner, string key, string title)
         {
@@ -260,7 +291,9 @@ namespace Decks
                 }
             }
         }
-
+        
+       
+        
 
         public void Save()
         {
@@ -278,7 +311,10 @@ namespace Decks
         protected void AddCard(DeckCard c)
         {
             Cards.Add(c);
+            ChangeCardQuantity(c.key, 1);
+
         }
+        
         #endregion
 
         public async Task<string> DoUpload()
@@ -296,6 +332,73 @@ namespace Decks
             return "";
 
         }
+
+
+        #region Deck Editing
+        public void ChangeCardQuantity(string setKey, int changeVal)
+        {
+            if (changeVal > 0)
+            {
+                //do some validation here
+                bool canAdd = true;
+                
+                if (canAdd)
+                {
+                    _isDirty = true;
+                }
+
+                if (!CardCounts.ContainsKey(setKey))
+                {
+                    CardCounts.Add(setKey, changeVal);
+                }
+                else
+                {
+                    CardCounts[setKey] += changeVal;
+                }
+            }
+            else if (changeVal < 0)
+            {
+                if (CardCounts.ContainsKey(setKey))
+                {
+                    int newQty = CardCounts[setKey] += changeVal;
+                    if (newQty > 0) { CardCounts[setKey] = newQty; } else { CardCounts.Remove(setKey); }
+                }
+            }
+           
+        }
+
+
+        public void SetCardQuantities(Dictionary<string, int> cardList)
+        {
+            UserService.SaveDeckList(_key, GetDeckCards(cardList));
+            ReloadDeck();
+        }
+
+        private void ReloadDeck()
+        {
+            Cards.Clear();
+            CardCounts.Clear();
+
+            string deckKey = _key;
+            DeckDTO deck = UserService.LoadDeck(deckKey);
+            List<DeckCardDTO> cards = UserService.LoadDecklist(deckKey);
+
+            _deckName = deck.title;
+            _key = deck.deckKey;
+            _owner = deck.owner;
+            _whenCreated = deck.whenCreated;
+            _uploadCode = deck.uploadCode;
+
+            for (int i = 0; i < cards.Count; i++)
+            {
+                for (int j = 0; j < cards[i].qty; j++)
+                {
+                    DeckCardDTO c = cards[i];
+                    AddCard(c);
+                }
+            }
+        }
+        #endregion
 
     }
 }

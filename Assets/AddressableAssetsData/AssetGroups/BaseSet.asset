@@ -962,6 +962,69 @@ MonoBehaviour:
     - CardArt
     - Rune
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9129f6e5101ee3c44b48f993f469ab23
+    m_Address: leviaphin_s
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Spirit
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d6d5b9a2ced1c534cb299674c4b08c3e
+    m_Address: soarlet_s
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0ef521aa06f55fc46a28204b234d9271
+    m_Address: astrabbit_s
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: df5df402c83a0b246bfb8eda91e74f46
+    m_Address: lycarus_s
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Spirit
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c0ca83a20bee7fe459ef7fa3302e3ce4
+    m_Address: vipyro_s
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Spirit
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0d15ceb4b64ddb64b961502740647634
+    m_Address: sparkitt_s
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 38eb5ca615df0094fa9594cbe1cdea4d
+    m_Address: zaptor_s
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Spirit
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 16132e6f51373164fae3eb2d430f0552
+    m_Address: teratlas_s
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Spirit
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3cd5fd7214d353943a79a29056444fea
+    m_Address: pandacine_s
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
   m_SchemaSet:

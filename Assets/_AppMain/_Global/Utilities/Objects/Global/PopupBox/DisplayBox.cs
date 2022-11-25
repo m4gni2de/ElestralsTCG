@@ -24,7 +24,7 @@ namespace PopupBox
             ToggleHandled(false);
             txtMessage.text = msg;
             ConfirmButton.gameObject.SetActive(showConfirm);
-            CancelButton.gameObject.SetActive(showCancel);
+            DenyButton.gameObject.SetActive(showCancel);
             if (callback != null)
             {
                 OnHandled = callback;
@@ -40,17 +40,17 @@ namespace PopupBox
         {
             txtMessage.text = "";
             ConfirmButton.onClick.RemoveAllListeners();
-            CancelButton.onClick.RemoveAllListeners();
+            DenyButton.onClick.RemoveAllListeners();
         }
 
         public override void Confirm()
         {
             SendResult();
         }
-        public override void Cancel()
+        public override void Deny()
         {
             
-            SendCancel();
+            SendDeny();
         }
 
 
@@ -60,7 +60,7 @@ namespace PopupBox
             ToggleHandled(false);
             txtMessage.text = msg;
             ConfirmButton.gameObject.SetActive(false);
-            CancelButton.gameObject.SetActive(false);
+            DenyButton.gameObject.SetActive(false);
             if (callback != null)
             {
                 OnHandled = callback;
@@ -87,7 +87,7 @@ namespace PopupBox
             ToggleHandled(false);
             txtMessage.text = msg;
             ConfirmButton.gameObject.SetActive(false);
-            CancelButton.gameObject.SetActive(false);
+            DenyButton.gameObject.SetActive(false);
             if (callback != null)
             {
                 OnHandled = callback;

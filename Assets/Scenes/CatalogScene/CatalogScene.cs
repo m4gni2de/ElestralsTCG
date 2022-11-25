@@ -41,7 +41,7 @@ public class CatalogScene : MonoBehaviour , iSceneScript
     {
         if (Catalog != null)
         {
-            Catalog.Open();
+            Catalog.Open(GridSettings.CatalogDefault());
         }
 
         StartScene();

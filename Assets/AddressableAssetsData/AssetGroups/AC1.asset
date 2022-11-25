@@ -1,0 +1,130 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: AC1
+  m_EditorClassIdentifier: 
+  m_GroupName: AC1
+  m_Data:
+    m_SerializedData: []
+  m_GUID: f8c38103e13e21741a9958f3bcd2801c
+  m_SerializeEntries:
+  - m_GUID: 0c2fd4f180a7aca4a89b86f16732d040
+    m_Address: ac1_exaltair
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b7ff3c5c4993a5c4d99f39b8d2242f1c
+    m_Address: ac1_equilynx
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a13f230b881bd54479656939cc89bfda
+    m_Address: ac1_zaptor
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Spirit
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b7ba7d906b0b46942a3dde82487143a2
+    m_Address: ac1_vipyro
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Spirit
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f10ffde0e2e5da046a9c89c102e65828
+    m_Address: ac1_quackle
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b41b1d22d56e58547a18a1eaedc7f32b
+    m_Address: ac1_jolten
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 092e8e4da2e0b62409f7dcbc5993ce3e
+    m_Address: ac1_carryon
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 79587d7403dfeb94ba9866e1b8369625
+    m_Address: ac1_lycarus
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Spirit
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4477119d92fc36d47a070dacc4450d01
+    m_Address: ac1_moustacean
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6a93d29f03ccd4443858f11583023115
+    m_Address: ac1_sinder
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ef2eba20e4ad85c4ba6a2b756e6803b1
+    m_Address: ac1_galaxea
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 95febbe174bcc1949a4d1062403915bc
+    m_Address: ac1_sonicore
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7eafb089d652f9e4bb341ac6db6c8153
+    m_Address: ac1_demeter
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Rune
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 313cd1589482e184fb59265f5d2f1c9d
+    m_Address: ac1_soarlet
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1e2695847784e264ea7903c493ca6ca0
+    m_Address: ac1_ladogon
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: b8b05f7e1b360644591dc841ea7cd6d9, type: 2}
+    - {fileID: 11400000, guid: 9620a4f16ba3b7f438adae2575e3eb2c, type: 2}

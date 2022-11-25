@@ -10,7 +10,7 @@ namespace Gameplay.Menus
     {
         private GameCard _card;
         public GameCard Card { get { return _card; } }
-        public SpriteDisplay sp;
+        public CardView displayCard;
         public Toggle toggle;
         public TMP_Dropdown ddLocations;
         private List<CardSlot> _slotLocations = null;
@@ -32,17 +32,25 @@ namespace Gameplay.Menus
         
 
         protected CardSlot _startLocation { get; set; }
-        protected CardSlot _newLocation { get; set; }
         public CardSlot Location
         {
             get
             {
-                if (!ddLocations.interactable || ddLocations.options.Count == 0) { return _startLocation; }
-                return slotLocations[ddLocations.value];
+                if (ddLocations.options.Count <= 0) { return _startLocation; }
+                return slotLocations[selectedValue];
             }
         }
+        //public CardSlot Location
+        //{
+        //    get
+        //    {
+        //        if (!ddLocations.interactable || ddLocations.options.Count == 0) { return _startLocation; }
+        //        return slotLocations[ddLocations.value];
+        //    }
+        //}
 
         public bool IsSelected { get { return toggle.isOn; } }
+        public int selectedValue;
 
         private void Awake()
         {
@@ -54,7 +62,8 @@ namespace Gameplay.Menus
             toggle.isOn = false;
             ddLocations.ClearOptions();
             slotLocations.Clear();
-            sp.Clear();
+            displayCard.Clear();
+            selectedValue = 0;
         }
 
         public void Clear()
@@ -69,10 +78,10 @@ namespace Gameplay.Menus
             _startLocation = c.CurrentSlot;
             slotLocations.AddRange(ValidSlots(c, slots));
             ddLocations.AddOptions(SlotOptions);
+            selectedValue = 0;           
             toggle.isOn = true;
-            sp.SetSprite(CardLibrary.GetCardArt(c.card));
+            displayCard.LoadCard(c.card);
             Show();
-            _newLocation = Location;
         }
 
         #region Value Change Watchers
@@ -82,19 +91,20 @@ namespace Gameplay.Menus
         }
         public void OnDropdownChange()
         {
-            _newLocation = Location;
+            selectedValue = ddLocations.value;
+            
         }
         #endregion
 
         public void Confirm(bool showOnMove)
         {
-            if (_startLocation != _newLocation)
+            if (_startLocation != Location)
             {
                 if (showOnMove)
                 {
                     _card.FlipCard(false, true);
                 }
-                GameManager.Instance.MoveCard(Player.LocalPlayer, _card, _newLocation);
+                GameManager.Instance.MoveCard(Player.LocalPlayer, _card, Location);
             }
             
         }
@@ -118,9 +128,9 @@ namespace Gameplay.Menus
         }
         public bool ValidatePlacement()
         {
-            if (_startLocation != _newLocation)
+            if (_startLocation != Location)
             {
-                return _newLocation.ValidateCard(_card);
+                return Location.ValidateCard(_card);
             }
 
             return true;

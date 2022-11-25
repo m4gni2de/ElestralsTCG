@@ -467,7 +467,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvas: {fileID: 919201597}
-  canvasScaler: {fileID: 0}
+  _scalerCanvas: {fileID: 0}
+  worldCanvasScaler: {fileID: 0}
   Scale: {x: 0, y: 0}
 --- !u!1 &972279465
 GameObject:
@@ -639,6 +640,14 @@ PrefabInstance:
     - target: {fileID: 1967069495229486048, guid: f363fad03ab251742ab8cb98bd79c448, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2246147401643933116, guid: f363fad03ab251742ab8cb98bd79c448, type: 3}
+      propertyPath: m_SortingOrder
+      value: -500
+      objectReference: {fileID: 0}
+    - target: {fileID: 2246147401643933116, guid: f363fad03ab251742ab8cb98bd79c448, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 386768785
       objectReference: {fileID: 0}
     - target: {fileID: 2441459619988902736, guid: f363fad03ab251742ab8cb98bd79c448, type: 3}
       propertyPath: m_SortingLayerID

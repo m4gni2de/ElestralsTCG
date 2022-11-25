@@ -22,7 +22,7 @@ namespace Gameplay.CardActions
             string msg = $"Data with Key '{valueKey}' has been set with a Value of '{value}'";
 
             string[] lines = StringTools.Array(a, msg);
-            App.Log(lines);
+            //App.Log(lines);
         }
     }
 }

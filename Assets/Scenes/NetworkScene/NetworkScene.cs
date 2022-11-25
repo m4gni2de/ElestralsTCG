@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using RiptideNetworking;
+
 using UnityEngine.UI;
 using Decks;
 using Gameplay;
@@ -14,6 +14,12 @@ using PopupBox;
 using System.Configuration;
 using AppManagement;
 using GameActions;
+using RiptideNetworking;
+using System.Net.Sockets;
+using System.Net;
+#if UNITY_EDITOR
+using UnityEditor.Experimental.GraphView;
+#endif
 
 public class NetworkScene : MonoBehaviour, iSceneScript
 {
@@ -37,8 +43,6 @@ public class NetworkScene : MonoBehaviour, iSceneScript
         WorldCanvas.SetOverlay();
         DisplayManager.ClearButton();
         DisplayManager.ToggleVisible(true);
-        //DisplayManager.SetDefault(() => App.TryChangeScene("MainScene"));
-        //DisplayManager.SetDefaultAction(()=> App.TryChangeScene("MainScene"), "MainScene");
         
 
         GameAction dc = GameAction.Create(Disconnect);
@@ -214,7 +218,15 @@ public class NetworkScene : MonoBehaviour, iSceneScript
     private void TryConnection(string ip, ushort port)
     {
         //btnServerJoin.interactable = false;
-
+        //string connectIp;
+        //int connectPort;
+        //using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
+        //{
+        //    socket.Connect(ip, port);
+        //    IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;
+        //    connectIp = endPoint.Address.ToString();
+        //    connectPort = (ushort)endPoint.Port;
+        //}
         NetworkManager.OnConnectAsClient -= OnClientConnected;
         NetworkManager.OnConnectAsClient += OnClientConnected;
         NetworkManager.OnConnectionFailed -= OnClientConnectionFailed;
@@ -255,8 +267,6 @@ public class NetworkScene : MonoBehaviour, iSceneScript
 
 
     #endregion
-
-
 
     #region Buttons
     public void CreateServerAsHost()
@@ -408,90 +418,6 @@ public class NetworkScene : MonoBehaviour, iSceneScript
 
     #endregion
 
-    //#region Device Connection
-    //public void ServerConnectButton()
-    //{
-    //    CloseConnectionPanel();
-
-    //    if (ConnectionValid())
-    //    {
-    //        string ip = ipInput.text.Trim();
-    //        if (ClientManager.client == null)
-    //        {
-    //            TryConnection(ip, 7777);
-    //        }
-    //        else
-    //        {
-    //            if (!ClientManager.IsConnected())
-    //            {
-    //                TryConnection(ip, 7777);
-    //            }
-    //            else
-    //            {
-    //                App.ShowMessage($"You are already connected to the server!");
-    //            }
-    //        }
-
-    //    }
-
-    //}
-
-    //public void ToggleConnectionPanel()
-    //{
-    //    if (!isConnecting)
-    //    {
-    //        if (connectionPanel.activeSelf == true)
-    //        {
-    //            CloseConnectionPanel();
-    //        }
-    //        else
-    //        {
-    //            OpenConnectionPanel();
-    //        }
-    //    }
-
-    //}
-    //private bool ConnectionValid()
-    //{
-    //    if (string.IsNullOrEmpty(ipInput.text)) { return App.DisplayError($"IP Address cannot be left blank!", OpenConnectionPanel); }
-    //    if (string.IsNullOrEmpty(portInput.text)) { return App.DisplayError($"Port cannot be left blank!", OpenConnectionPanel); }
-    //    return true;
-    //}
-    //public void OpenConnectionPanel()
-    //{
-    //    mainObject.SetActive(false);
-    //    connectionPanel.SetActive(true);
-    //    btnServerJoin.gameObject.SetActive(true);
-
-
-    //    if (ClientManager.IsConnected() || ClientManager.IsConnecting())
-    //    {
-    //        ipInput.interactable = false;
-    //        portInput.interactable = false;
-    //        btnServerJoin.interactable = false;
-    //    }
-    //    else
-    //    {
-    //        ipInput.interactable = true;
-    //        portInput.interactable = true;
-    //        btnServerJoin.interactable = true;
-    //    }
-
-
-    //}
-    //public void CloseConnectionPanel()
-    //{
-    //    mainObject.SetActive(true);
-    //    connectionPanel.SetActive(false);
-    //    btnServerJoin.gameObject.SetActive(true);
-    //    btnServerJoin.interactable = true;
-    //    ipInput.interactable = false;
-    //    portInput.interactable = false;
-    //}
-
-
-
-    //#endregion
 
     #region Back Commands
     private void Disconnect()

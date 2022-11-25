@@ -13,7 +13,12 @@ public static class UIHelpers
         return totalWidth;
     }
 
-
+    public static float FreeWidth(this RectTransform rect, float totalPadding = 0f)
+    {
+        float totalWidth = rect.sizeDelta.x;
+        totalWidth -= totalPadding;
+        return totalWidth;
+    }
 
 
     public static bool IsPointerOverUIObject()

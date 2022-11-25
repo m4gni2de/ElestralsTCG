@@ -112,14 +112,14 @@ public class PopupManager : MonoBehaviour
             PopList.Add(pop);
             if (closeOnBack)
             {
-                DisplayManager.AddAction(pop.Cancel);
+                DisplayManager.AddAction(pop.Deny);
             }
             
         }
     }
     public static void RemovePopup(BasePopup pop)
     {
-        if (PopList.Contains(pop)) { PopList.Remove(pop); DisplayManager.RemoveAction(pop.Cancel); }
+        if (PopList.Contains(pop)) { PopList.Remove(pop); DisplayManager.RemoveAction(pop.Deny); }
     }
 
     #region Popup Types
@@ -140,6 +140,23 @@ public class PopupManager : MonoBehaviour
             StartCoroutine(AwaitPopup());
         }
         
+    }
+    public void AskYesNoCancel(string msg, Action<PopupResposne> callback, bool createClone = false)
+    {
+        if (createClone)
+        {
+            YesNoBox clone = Instantiate(YesNo, YesNo.transform.parent);
+            YesNo.gameObject.SetActive(false);
+            clone.ShowWithCancel(msg, callback);
+            AddPopup(clone, true);
+            StartCoroutine(AwaitPopup(clone));
+        }
+        else
+        {
+            SetActivePopup(YesNo);
+            YesNo.ShowWithCancel(msg, callback);
+            StartCoroutine(AwaitPopup());
+        }
     }
     public void CloneYesNo(string msg, Action<bool> callback)
     {

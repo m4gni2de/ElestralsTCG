@@ -1,0 +1,133 @@
+11/17/2022 8:54:22 AM - Log Created.
+Ascend Action: ca78648
+Message
+Thursday, November 17, 2022
+Data with Key 'source_card' has been set with a Value of 'dk8317940-28'
+Message
+Thursday, November 17, 2022
+Ascend Action: ca78648
+Message
+Thursday, November 17, 2022
+Data with Key 'catalyst_spirit' has been set with a Value of 'dk8317940-1'
+Message
+Thursday, November 17, 2022
+Ascend Action: ca78648
+Message
+Thursday, November 17, 2022
+Data with Key 'card_mode' has been set with a Value of '1'
+Message
+Thursday, November 17, 2022
+Ascend Action: ca83236
+Message
+Thursday, November 17, 2022
+Data with Key 'source_card' has been set with a Value of 'dk8896008-29'
+Message
+Thursday, November 17, 2022
+Ascend Action: ca83236
+Message
+Thursday, November 17, 2022
+Data with Key 'catalyst_spirit' has been set with a Value of 'dk8896008-1'
+Message
+Thursday, November 17, 2022
+Ascend Action: ca83236
+Message
+Thursday, November 17, 2022
+Data with Key 'card_mode' has been set with a Value of '1'
+Message
+Thursday, November 17, 2022
+Ascend Action: ca67809
+Message
+Thursday, November 17, 2022
+Data with Key 'source_card' has been set with a Value of 'dk5629158-29'
+Message
+Thursday, November 17, 2022
+Ascend Action: ca67809
+Message
+Thursday, November 17, 2022
+Data with Key 'catalyst_spirit' has been set with a Value of 'dk5629158-1'
+Message
+Thursday, November 17, 2022
+Ascend Action: ca67809
+Message
+Thursday, November 17, 2022
+Data with Key 'card_mode' has been set with a Value of '1'
+Message
+Thursday, November 17, 2022
+Ascend Action: ca67809
+Message
+Thursday, November 17, 2022
+Data with Key 'slot_to' has been set with a Value of '001'
+Message
+Thursday, November 17, 2022
+Ascend Action: ca92056
+Message
+Thursday, November 17, 2022
+Data with Key 'source_card' has been set with a Value of 'dk3598339-29'
+Message
+Thursday, November 17, 2022
+Ascend Action: ca92056
+Message
+Thursday, November 17, 2022
+Data with Key 'catalyst_spirit' has been set with a Value of 'dk3598339-2'
+Message
+Thursday, November 17, 2022
+Ascend Action: ca92056
+Message
+Thursday, November 17, 2022
+Data with Key 'card_mode' has been set with a Value of '1'
+Message
+Thursday, November 17, 2022
+Ascend Action: ca75286
+Message
+Thursday, November 17, 2022
+Data with Key 'source_card' has been set with a Value of 'dk5365294-49'
+Message
+Thursday, November 17, 2022
+Ascend Action: ca75286
+Message
+Thursday, November 17, 2022
+Data with Key 'catalyst_spirit' has been set with a Value of 'dk5365294-2'
+Message
+Thursday, November 17, 2022
+Ascend Action: ca75286
+Message
+Thursday, November 17, 2022
+Data with Key 'card_mode' has been set with a Value of '1'
+Message
+Thursday, November 17, 2022
+Ascend Action: ca14333
+Message
+Thursday, November 17, 2022
+Data with Key 'source_card' has been set with a Value of 'dk5365294-29'
+Message
+Thursday, November 17, 2022
+Ascend Action: ca14333
+Message
+Thursday, November 17, 2022
+Data with Key 'catalyst_spirit' has been set with a Value of 'dk5365294-1'
+Message
+Thursday, November 17, 2022
+Ascend Action: ca14333
+Message
+Thursday, November 17, 2022
+Data with Key 'card_mode' has been set with a Value of '1'
+Message
+Thursday, November 17, 2022
+Ascend Action: ca66886
+Message
+Thursday, November 17, 2022
+Data with Key 'source_card' has been set with a Value of 'dk5921038-29'
+Message
+Thursday, November 17, 2022
+Ascend Action: ca66886
+Message
+Thursday, November 17, 2022
+Data with Key 'catalyst_spirit' has been set with a Value of 'dk5921038-3'
+Message
+Thursday, November 17, 2022
+Ascend Action: ca66886
+Message
+Thursday, November 17, 2022
+Data with Key 'card_mode' has been set with a Value of '1'
+Message
+Thursday, November 17, 2022

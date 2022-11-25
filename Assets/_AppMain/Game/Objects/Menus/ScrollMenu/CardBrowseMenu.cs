@@ -73,7 +73,7 @@ namespace Gameplay.Menus
         private UnityEvent _OnSelection = null;
         public UnityEvent OnSelection { get { _OnSelection ??= new UnityEvent(); return _OnSelection; } }
 
-        public event Action<CardBrowseMenu> OnSelectionConfirm;
+        //public event Action<CardBrowseMenu> OnSelectionConfirm;
 
         public event Action<GameCard, bool> OnCardSelected;
         #endregion
@@ -218,6 +218,7 @@ namespace Gameplay.Menus
 
             Open();
             TitleText.SetText(title);
+            
             ShowButtons();
 
         }
@@ -250,6 +251,7 @@ namespace Gameplay.Menus
                 }
                 else if (card.CardType == CardType.Rune)
                 {
+                    TitleText.SaveCurrent();
                     CardModeGroup.SetToggleText(AttackToggle, "Face-Up");
                     CardModeGroup.SetToggleText(DefenseToggle, "Face-Down");
                     DefenseToggle.OnToggleChanged += CheckForFaceDownRune;
@@ -267,6 +269,8 @@ namespace Gameplay.Menus
             bool isOn = toggle.IsToggled;
             if (isOn)
             {
+                string newText = $"Play {SourceCard.cardStats.title} Face-Down?";
+                TitleText.SetText(newText);
                 maxSelectCount = 0;
                 minSelectCount = 0;
                 SelectNone();
@@ -274,6 +278,7 @@ namespace Gameplay.Menus
             }
             else
             {
+                TitleText.LoadSavedText();
                 maxSelectCount = _prevMaxCount;
                 minSelectCount = _prevMinCount;
                 ShowButtons();
@@ -392,6 +397,7 @@ namespace Gameplay.Menus
             DefenseToggle.OnToggleChanged -= CheckForFaceDownRune;
             CardModeGroup.Unload();
             isCastMode = false;
+            TitleText.ClearSaved();
             DoThaw();
 
             DisplayManager.RemoveAction(Cancel);

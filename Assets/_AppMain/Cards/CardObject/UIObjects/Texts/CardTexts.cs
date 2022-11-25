@@ -28,7 +28,7 @@ namespace CardsUI
 
         #region Properties
         private List<FormattedText> _allTexts = null;
-        protected List<FormattedText> AllTexts
+        public List<FormattedText> AllTexts
         {
             get
             {
@@ -110,7 +110,7 @@ namespace CardsUI
             //specialWords.Clear();
 
             string cardTitle = card.cardData.cardName;
-            if (card.cardData.rarity == Rarity.Stellar)
+            if (card.cardData.rarity == Rarity.Stellar || card.cardData.artType == ArtType.Stellar)
             {   
                 title.SetStellar(card.cardData.cardName);
             }
@@ -250,6 +250,32 @@ namespace CardsUI
             }
         }
 
+        public void SetSortingLayer(string layerName)
+        {
+            foreach (FormattedText item in AllTexts)
+            {
+                item.SortLayer = layerName;
+            }
+        }
+
+        public void SetSortingOrder(int sortOrder)
+        {
+            foreach (FormattedText item in AllTexts)
+            {
+                item.SortOrder = sortOrder;
+            }
+        }
+
+        public void ChangeSortingOrder(int changeVal)
+        {
+            foreach (FormattedText item in AllTexts)
+            {
+                item.SortOrder += changeVal;
+            }
+        }
+
+
+
         //public void EffectFormatter(string effect)
         //{
 
@@ -285,18 +311,18 @@ namespace CardsUI
         //    }
 
 
-            //for (int i = 0; i < card.cardEffectList.Count; i++)
-            //{
-            //    CardEffect ce = card.cardEffectList[i];
-            //    if (ce.effectIndex == 0)
-            //    {
-            //        if (effect.ToLower().Contains(ce.name.ToLower()))
-            //        {
-            //            Debug.Log(effect.IndexOf(ce.name.ToLower()));
-            //        }
-            //    }
-            //}
-            //if (effect.Contains())
+        //for (int i = 0; i < card.cardEffectList.Count; i++)
+        //{
+        //    CardEffect ce = card.cardEffectList[i];
+        //    if (ce.effectIndex == 0)
+        //    {
+        //        if (effect.ToLower().Contains(ce.name.ToLower()))
+        //        {
+        //            Debug.Log(effect.IndexOf(ce.name.ToLower()));
+        //        }
+        //    }
+        //}
+        //if (effect.Contains())
 
         //}
 
@@ -356,7 +382,7 @@ namespace CardsUI
         //}
         #endregion
 
-        
+
     }
 }
 

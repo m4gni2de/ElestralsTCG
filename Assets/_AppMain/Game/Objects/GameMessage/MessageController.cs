@@ -100,7 +100,8 @@ namespace Gameplay
 
             if (msg != null && msg.DisplayTime > 0f)
             {
-                
+                StopCoroutine(DoDisplay(0f));
+                StartCoroutine(DoDisplay(msg.DisplayTime));
             }
         }
 

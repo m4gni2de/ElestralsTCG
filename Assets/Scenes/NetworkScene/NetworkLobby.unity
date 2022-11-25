@@ -2274,8 +2274,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvas: {fileID: 883608719}
-  canvasScaler: {fileID: 0}
+  worldCanvasScaler: {fileID: 0}
   Scale: {x: 0, y: 0}
+  _scalerCanvas: {fileID: 0}
 --- !u!114 &883608717
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2371,9 +2372,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf35f9653be9a1d4fbc259a973a35f4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  connTypePanel: {fileID: 0}
-  p2pButton: {fileID: 0}
-  remoteButton: {fileID: 0}
   lobbyInput: {fileID: 972356551}
   mainObject: {fileID: 1156040205}
   hostButton: {fileID: 944536736}

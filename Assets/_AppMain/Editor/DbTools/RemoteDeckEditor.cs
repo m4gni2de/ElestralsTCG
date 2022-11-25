@@ -100,7 +100,7 @@ public class RemoteDeckEditor : EditorWindow
         
 
         
-        bool didImport = false;
+        //bool didImport = false;
         if (GUILayout.Button(contents.ImportButton))
         {
             UploadedDeckDTO imported = FromImport(deckList);
@@ -222,7 +222,7 @@ public class RemoteDeckEditor : EditorWindow
             optionsStr[i] = i.ToString();
         }
 
-        bool changed = false;
+        //bool changed = false;
         
         foreach (var item in currentCounts)
         {

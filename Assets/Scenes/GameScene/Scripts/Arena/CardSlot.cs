@@ -295,13 +295,13 @@ namespace Gameplay
 
         #region Card Management
         public virtual void RemoveCard(GameCard card)
-    {
-        cards.Remove(card);
-        TouchObject to = card.cardObject.touch;
-        to.ClearClick();
-        to.ClearHold();
+        {
+            cards.Remove(card);
+            TouchObject to = card.cardObject.touch;
+            to.ClearClick();
+            to.ClearHold();
 
-    }
+        }
 
     public virtual void AllocateTo(GameCard card, bool sendToServer = true)
     {
@@ -312,6 +312,9 @@ namespace Gameplay
 
         DisplayCardObject(card);
         SetCommands(card);
+
+        
+
     }
     
     
@@ -323,11 +326,11 @@ namespace Gameplay
     {
         TouchObject to = card.cardObject.touch;
         to.AddClickListener(() => ClickCard(card));
-            if (IsYours)
-            {
-                to.AddHoldListener(() => DragCard(card));
-            }
-
+            //if (IsYours)
+            //{
+            //    to.AddHoldListener(() => DragCard(card));
+            //}
+            to.AddHoldListener(() => DragCard(card));
         }
 
     protected virtual void DragCard(GameCard card)
@@ -349,6 +352,7 @@ namespace Gameplay
     }
     protected virtual void DisplayCardObject(GameCard card)
     {
+        card.cardObject.Show();
         CardView c = card.cardObject;
         c.SetAsChild(transform, CardScale, SortLayer);
         card.rect.sizeDelta = rect.sizeDelta;
@@ -447,7 +451,7 @@ namespace Gameplay
             int castCount = SelectedCard.card.SpiritsReq.Count;
             List<GameCard> toShow = Owner.gameField.SpiritDeckSlot.cards;
 
-            string title = $"Select {CardUI.AnySpiritUnicode(castCount)} to Cast {SelectedCard.card.cardData.cardName}";
+            string title = $"Select {CardUI.AnySpiritUnicode(castCount)}    to Cast {SelectedCard.card.cardData.cardName}";
             GameManager.Instance.browseMenu.LoadCards(toShow, title, true, castCount, castCount);
             GameManager.Instance.browseMenu.CastMode(SelectedCard);
             ClosePopMenu(true);

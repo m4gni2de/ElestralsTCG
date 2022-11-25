@@ -93,6 +93,7 @@ namespace CardsUI.Filtering
         public string GenerateQuery()
         {
             string query = "setName is not null";
+            
 
             List<string> wheres = GetQueryWheres();
 
@@ -106,10 +107,10 @@ namespace CardsUI.Filtering
                 {
                     query += " AND ";
                 }
-                else
-                {
-                    query += ";";
-                }
+                //else
+                //{
+                //    query += " ORDER BY title ASC;";
+                //}
             }
 
             return query;

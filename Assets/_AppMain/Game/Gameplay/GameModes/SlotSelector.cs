@@ -103,9 +103,36 @@ public class SlotSelector
             SelectedSlots.Remove(slot);
             ChangeSelection(true, slot);
         }
-
-        
     }
+
+    public void SelectCardInSlot(CardSlot slot)
+    {
+        if (!SelectedSlots.Contains(slot))
+        {
+
+            SelectedSlots.Add(slot);
+            if (SelectedSlots.Count == ExpectedCount)
+            {
+                App.AskYesNo($"Confirm {TargetString()}?", ConfirmSelector);
+            }
+            else if (ConfirmEach)
+            {
+                App.AskYesNo($"Confirm {TargetString()}?", ConfirmSelection);
+            }
+            else
+            {
+                ChangeSelection(true, slot);
+
+            }
+        }
+        else
+        {
+            slot.MainCard.SelectCard(false);
+            SelectedSlots.Remove(slot);
+            ChangeSelection(true, slot);
+        }
+    }
+
 
     public void UndoSelect()
     {

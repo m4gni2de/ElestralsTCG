@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using Databases;
 using Gameplay;
-using RiptideNetworking;
+
 using UnityEngine.Networking;
 using System.Security.Permissions;
 using System.Net.Sockets;
@@ -268,7 +268,7 @@ CheckForAccountDevice();
     #endregion
 
     #region Events
-    public static event Action ChangeLoadingText;
+    //public static event Action ChangeLoadingText;
     #endregion
 
     #region Click Management
@@ -346,6 +346,7 @@ CheckForAccountDevice();
     protected void SetUI()
     {
         worldCanvas = WorldCanvas.Instance;
+        appCanvas.worldCamera = Camera.main;
         
         PopupManager.SetActivePopup();
         

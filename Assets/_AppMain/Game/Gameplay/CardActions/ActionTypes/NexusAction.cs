@@ -97,7 +97,8 @@ namespace Gameplay.CardActions
             toSlot = target.CurrentSlot;
             targetCard = target;
             spirits.AddRange(spiritsMoving);
-            
+            SetDetails(player);
+
         }
 
         public static NexusAction Create(Player p, GameCard source, GameCard target, List<GameCard> spiritsMoving)

@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using RiptideNetworking;
+
 using UnityEngine;
 using Gameplay;
 using Gameplay.Networking;
@@ -10,10 +10,7 @@ using Decks;
 using UnityEditor;
 using System.Linq;
 using Gameplay.Decks;
-
-
-
-
+using RiptideNetworking;
 
 public enum ServerFunction
 {
@@ -123,9 +120,6 @@ public class NetworkPipeline
     private static void PlayerIdRegistered(Message message)
     {
         ushort networkId = message.GetUShort();
-        string json = message.GetString();
-        ServerDTO dto = JsonUtility.FromJson<ServerDTO>(json);
-        NetworkManager.Instance.connectedServer = dto;
         OnPlayerRegistered?.Invoke();
     }
 
@@ -365,7 +359,7 @@ public class NetworkPipeline
     public static void SendDeckOrder(List<string> deckInOrder)
     {
         Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.DeckOrder);
-        message.AddStrings(deckInOrder.ToArray(), true, true);
+        message.AddStrings(deckInOrder.ToArray(), true);
         SendMessageToServer(message);
 
 
@@ -396,19 +390,9 @@ public class NetworkPipeline
 
     public static void SendActionDeclare(CardAction action)
     {
-        if (NetworkManager.IsServer)
-        {
-            Message outbound = Message.Create(MessageSendMode.reliable, (ushort)FromServer.ActionDeclared);
-            outbound.Add(action.ActionData.GetJson);
-            ServerManager.SendToClientsAll(outbound);
-        }
-        else
-        {
-            Message outbound = Message.Create(MessageSendMode.reliable, (ushort)ToServer.ActionDeclared);
-            outbound.Add(action.ActionData.GetJson);
-            SendMessageToServer(outbound);
-        }
-       
+        Message outbound = Message.Create(MessageSendMode.reliable, (ushort)ToServer.ActionDeclared);
+        outbound.Add(action.ActionData.GetJson);
+        SendMessageToServer(outbound);
 
     }
 

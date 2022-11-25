@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Packs;
 using UnityEngine.UI;
+using System.Net.Sockets;
+using System.Net;
 
 public class MainScene : MonoBehaviour, iSceneScript
 {
@@ -57,6 +59,7 @@ public class MainScene : MonoBehaviour, iSceneScript
     void Start()
     {
         StartScene();
+        
     }
 
 
@@ -114,6 +117,12 @@ public class MainScene : MonoBehaviour, iSceneScript
     {
         menuButtons.SetActive(false);
         App.ChangeScene(NetworkScene.SceneName);
+    }
+
+    public void DeckEditorButton()
+    {
+        menuButtons.SetActive(false);
+        App.ChangeScene(DeckEditorScene.SceneName);
     }
     #endregion
 }

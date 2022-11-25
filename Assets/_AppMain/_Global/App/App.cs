@@ -240,6 +240,18 @@ public class App
         }
         
     }
+    public static void AskYesNoCancel(string msg, Action<PopupResposne> callback)
+    {
+        if (PopupManager.ActivePopup == null)
+        {
+            popUp.AskYesNoCancel(msg, callback);
+        }
+        else
+        {
+            popUp.AskYesNoCancel(msg, callback, true);
+        }
+
+    }
     public static void ShowDropdown(string msg, List<string> options, Action<string> callback, bool closeOnBack = true)
     {
         if (PopupManager.ActivePopup == null)

@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 
 public class CameraMotion : MonoBehaviour
 {
+    #region Properties
     public Canvas ParentCanvas;
     private float maxCameraSize, minCameraSize, defaultSize;
     private Vector2 minPos, maxPos;
@@ -21,16 +22,15 @@ public class CameraMotion : MonoBehaviour
     float oldTouchDistance;
 
     public bool isFree = true;
-    private bool isShaking = false;
+    //private bool isShaking = false;
 
-    public static CameraMotion main
-    {
-        get
-        {
-            return Camera.main.GetComponent<CameraMotion>();
-        }
-    }
+    public bool isClicked;
 
+    public float cameraMoveSpeed;
+    private Vector2 facingDirection;
+    private float xDiff, yDiff, acumTime;
+
+    public Vector3 clickPosition;
 
     private Camera _camera;
     private Camera mainCamera
@@ -41,17 +41,21 @@ public class CameraMotion : MonoBehaviour
             return _camera;
         }
     }
-
-    public bool isClicked;
-
-    public float cameraMoveSpeed;
-    private Vector2 facingDirection;
-    private float xDiff, yDiff, acumTime;
-
-    public Vector3 clickPosition;
+    #endregion
+    #region Functions
+    public static CameraMotion main
+    {
+        get
+        {
+            return Camera.main.GetComponent<CameraMotion>();
+        }
+    }
 
     private float ScreenHeight { get { return Screen.safeArea.height; } }
+
     private float ScreenWidth { get { return Screen.safeArea.width; } }
+    private int WidthResolution { get { return Screen.currentResolution.width; } }
+    private int HeightResolution { get { return Screen.currentResolution.height; } }
 
     private float Width { get { return ParentCanvas.GetComponent<RectTransform>().rect.width; } }
     private float Height { get { return ParentCanvas.GetComponent<RectTransform>().rect.height; } }
@@ -62,6 +66,23 @@ public class CameraMotion : MonoBehaviour
     {
         IsFrozen = freeze;
     }
+
+    #endregion
+    #region Interface
+    public static void InvertCamera(bool doInvert)
+    {
+        if (doInvert)
+        {
+            Camera.main.transform.localEulerAngles = new Vector3(0f, 0f, 180f);
+        }
+        else
+        {
+            Camera.main.transform.localEulerAngles = new Vector3(0f, 0f, 0f);
+        }
+    }
+    
+    #endregion
+
     // Start is called before the first frame update
     void Start()
     {
@@ -80,7 +101,8 @@ public class CameraMotion : MonoBehaviour
         EditorScales();
         //defaultSize = Width * ParentCanvas.transform.localScale.x;
 #else
-        defaultSize = ScreenWidth;
+        //defaultSize = ScreenWidth;
+        defaultSize = ParentCanvas.renderingDisplaySize.x;
 #endif
 
         minSizePercent = .2f;
@@ -402,7 +424,7 @@ public class CameraMotion : MonoBehaviour
             float acumTime = 0f;
             do
             {
-                isShaking = true;
+                //isShaking = true;
                 float quakeAmt = UnityEngine.Random.value * shakeAmt * 2 - shakeAmt;
                 Vector3 pp = mainCamera.transform.position;
                 pp.y += quakeAmt; // can also add to x and/or z
@@ -414,7 +436,7 @@ public class CameraMotion : MonoBehaviour
             } while (acumTime < 1f);
 
             mainCamera.transform.position = org;
-            isShaking = false;
+            //isShaking = false;
         }
     }
 

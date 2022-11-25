@@ -66,12 +66,25 @@ namespace Databases
 
 
         #region Other table Management
-       
+
+        public static List<DeckCardDTO> LoadDecklist(string deckKey)
+        {
+            string query = $"deckKey = '{deckKey}'";
+            List<DeckCardDTO> cards = GetAllWhere<DeckCardDTO>(DeckTable, query);
+            return cards;
+
+        }
         public static List<DeckCardDTO> LocalDecklists()
         {
             List<DeckCardDTO> cards = GetAll<DeckCardDTO>(DeckTable);
             return cards;
 
+        }
+        public static DeckDTO LoadDeck(string deckKey)
+        {
+            string query = $"deckKey = '{deckKey}'";
+            DeckDTO deck = GetFirstWhere<DeckDTO>(DeckListTable, query);
+            return deck;
         }
 
         public static List<DeckDTO> LocalUserDeckDTOs()
@@ -80,12 +93,26 @@ namespace Databases
             return cards;
 
         }
+        
         public static void UpdateLocalDecksOwner(string newName, string oldName)
         {
             
             string query = $"Update {DeckListTable} SET owner = '{newName}', whenCreated = '{DateTime.Now}' WHERE owner is null OR owner = '{oldName}'";
             db.QueryGeneric(query);
             db.Commit();
+        }
+
+        public static void SaveDeckList(string deckKey, List<DeckCardDTO> cards)
+        {
+            string queryWhere = $"deckKey = '{deckKey}'";
+            if (Delete(DeckTable, queryWhere))
+            {
+                for (int i = 0; i < cards.Count; i++)
+                {
+                    db.Insert(cards[i], DeckTable);
+                }
+                db.Commit();
+            }
         }
         #endregion
 

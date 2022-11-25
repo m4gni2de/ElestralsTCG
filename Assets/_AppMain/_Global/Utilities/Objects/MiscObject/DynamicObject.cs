@@ -41,6 +41,15 @@ public class DynamicObject : MonoBehaviour
         return null;
     }
 
+
+    public Vector2 WaypointPosition(string key, bool useLocal = false)
+    {
+        Waypoint toMove = ByKey(key);
+        if (toMove == null) { App.LogFatal($"Waypoint of Key {key} does not exist as a Child of this Object."); }
+
+        if (!useLocal) { return toMove.Position; } else { return toMove.transform.localPosition; }
+        
+    }
     public void MoveToWaypoint(string key)
     {
         Waypoint toMove = ByKey(key);
@@ -57,5 +66,10 @@ public static class DynamicObjectExtensions
     {
         DynamicObject obj = dynamicObj.dynamicObject;
         obj.MoveToWaypoint(key);
+    }
+    public static Vector2 WaypointPosition(this iDynamicObject dynamicObj, string key, bool useLocal = false)
+    {
+        DynamicObject obj = dynamicObj.dynamicObject;
+        return obj.WaypointPosition(key, useLocal);
     }
 }

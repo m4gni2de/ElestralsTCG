@@ -6,9 +6,10 @@ using Gameplay.Menus.Popup;
 using UnityEngine.Events;
 using System;
 
+
 namespace Gameplay.Menus
 {
-    public class PopupMenu : MonoBehaviour, iGameMover, iFreeze
+    public class PopupMenu : MonoBehaviour, iGameMover, iFreeze, iDynamicObject
     {
         #region Properties
         
@@ -19,7 +20,7 @@ namespace Gameplay.Menus
         public Vector2 menuPosition { get { return menuObject.transform.position; } set { menuObject.transform.position = value; } }
 
         protected Vector2 DefaultPosition { get; set; }
-
+        protected Vector2 DefaultLocalPosition { get; set; }
 
         protected Vector2 maxPos, minPos;
 
@@ -48,6 +49,10 @@ namespace Gameplay.Menus
 
         [SerializeField]
         private MenuPage PageTemplate;
+        [SerializeField]
+        private Button pageUpButton;
+        [SerializeField]
+        private Button pageDownButton;
         [SerializeField]
         private List<MenuPage> Pages = new List<MenuPage>();
 
@@ -82,16 +87,32 @@ namespace Gameplay.Menus
         }
         #endregion
 
+        #region Interface
+        private DynamicObject _dynamicObject = null;
+        public DynamicObject dynamicObject
+        {
+            get
+            {
+                _dynamicObject ??= GetComponent<DynamicObject>();
+                return _dynamicObject;
+            }
+            set
+            {
+                _dynamicObject = value;
+            }
+        }
+        #endregion
+
         private void Awake()
         {
             gameObject.SetActive(true);
            
             buttons.Add(_templateButton);
             Pages[0].LoadButtons(buttons);
-            PageIndex = 0;
+            SetPageIndex(0);
             for (int i = 0; i < Pages.Count; i++)
             {
-                for (int j = 0; j < buttonsPerPage; j++)
+                for (int j = 0; j < buttonsPerPage - 1; j++)
                 {
                     CreateButton(i);
                 }
@@ -107,6 +128,7 @@ namespace Gameplay.Menus
         private void SetDefaults()
         {
             DefaultPosition = menuPosition;
+            DefaultLocalPosition = menuObject.transform.localPosition;
             //Vector2 max = GameManager.Instance.arena.Width(true);
             //Vector2 min = GameManager.Instance.arena.GetComponent<RectTransform>().rect.min;
 
@@ -116,7 +138,11 @@ namespace Gameplay.Menus
 
             maxPos = new Vector2(DefaultPosition.x + menuObject.GetComponent<RectTransform>().rect.width * 1.5f, DefaultPosition.y + menuObject.GetComponent<RectTransform>().rect.height);
             minPos = new Vector2(DefaultPosition.x - menuObject.GetComponent<RectTransform>().rect.width * 1.5f, DefaultPosition.y - menuObject.GetComponent<RectTransform>().rect.height);
-           
+
+
+            maxPos = new Vector2(this.WaypointPosition("Right", true).x, DefaultLocalPosition.y);
+            minPos = new Vector2(this.WaypointPosition("Left", true).x, DefaultLocalPosition.y);
+
         }
 
         
@@ -154,7 +180,7 @@ namespace Gameplay.Menus
         }
         protected MenuPage CreatePage()
         {
-            return Instantiate(PageTemplate, transform);
+            return Instantiate(PageTemplate, menuObject.transform);
         }
 
         protected PopupButton CreateButton(int page)
@@ -183,7 +209,8 @@ namespace Gameplay.Menus
             {
                 buttons[i].Clear();
             }
-            PageIndex = 0;
+            SetPageIndex(0);
+            
         }
 
 
@@ -196,13 +223,14 @@ namespace Gameplay.Menus
             SetButtons(slotFrom);
             StopAllCoroutines();
             StartCoroutine(MoveLine(slotFrom));
-            StartCoroutine(MoveMenu(slotFrom.gameObject));
+            //StartCoroutine(MoveMenu(slotFrom.gameObject));
+            StartCoroutine(SlideMenu(slotFrom.gameObject));
 
             this.slotFrom = slotFrom;
 
             if (displayCard && slotFrom.SelectedCard != null)
             {
-                GameManager.Instance.DisplayCard(slotFrom.SelectedCard, "InputMenus");
+                GameManager.Instance.DisplayCard(slotFrom.SelectedCard);
             }
             else
             {
@@ -233,7 +261,9 @@ namespace Gameplay.Menus
             int count = 0;
             int pagesNeeded = GetTotalPages(slot.ButtonCommands.Count);
 
-            if (pagesNeeded != Pages.Count)
+            
+
+            if (pagesNeeded > Pages.Count)
             {
                 AddPages(pagesNeeded - Pages.Count);
             }
@@ -246,8 +276,27 @@ namespace Gameplay.Menus
                 count += 1;
             }
 
-            
+            SetPageIndex(0);
 
+        }
+
+        
+        public void ChangePageNumber(int changeVal)
+        {
+            int newIndex = PageIndex + changeVal;
+            if (newIndex > Pages.Count - 1) { newIndex = Pages.Count - 1; }
+            if (newIndex < 0) { newIndex = 0; }
+            SetPageIndex(newIndex);
+        }
+
+        private void SetPageIndex(int newPage)
+        {
+            PageIndex = newPage;
+
+            pageUpButton.interactable = PageIndex < Pages.Count - 1;
+            pageUpButton.gameObject.SetActive(pageUpButton.interactable);
+            pageDownButton.interactable = PageIndex > 0;
+            pageDownButton.gameObject.SetActive(pageDownButton.interactable);
         }
         #endregion
 
@@ -270,24 +319,96 @@ namespace Gameplay.Menus
             } while (true && isOpen);
         }
 
+        public IEnumerator SlideMenu(GameObject btn)
+        {
+            Vector2 maxLocal = this.WaypointPosition("Right", true);
+            Vector2 minLocal = this.WaypointPosition("Left", true);
+
+            Vector2 localPos = menuObject.transform.localPosition;
+            Vector2 localBtn = transform.InverseTransformPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
+
+            Vector2 targetPos = maxLocal;
+
+            if (localBtn.x > 0f)
+            {
+                targetPos = minLocal;
+            }
+            if (localBtn.x < 0f)
+            {
+                targetPos = maxLocal;
+            }
+
+            targetPos = new Vector2(targetPos.x, localPos.y);
+
+
+           
+
+            float acumTime = 0f;
+            float moveTime = .3f;
+            Vector2 direction = targetPos - (Vector2)menuObject.transform.localPosition;
+            float distance = direction.magnitude;
+
+            bool atTarget = false;
+            float speed = 1.4f;
+            do
+            {
+               
+
+                Vector3 perFrame = (Time.deltaTime * direction) * speed;
+                menuObject.transform.localPosition += perFrame;
+                CheckBounds(menuObject);
+                yield return new WaitForEndOfFrame();
+                acumTime += moveTime;
+
+                if (targetPos.x > 0f)
+                {
+                    atTarget = menuObject.transform.localPosition.x >= targetPos.x;
+                }
+                if (targetPos.x < 0f)
+                {
+                    atTarget = menuObject.transform.localPosition.x <= targetPos.x;
+                }
+
+            } while (true && isOpen && !atTarget && acumTime <= moveTime);
+
+            menuObject.transform.localPosition = new Vector2(targetPos.x, 0f);
+
+        }
+
         public IEnumerator MoveMenu(GameObject btn)
         {
-
+            float midPointX = GameManager.Instance.arena.GetComponent<RectTransform>().rect.width / 2f;
             float targetMin = menuObject.GetComponent<RectTransform>().rect.width;
-            float targetMax = menuObject.GetComponent<RectTransform>().rect.width * 2f;
+            float targetMax = menuObject.GetComponent<RectTransform>().rect.width;
             Vector2 targetPos = new Vector2(btn.transform.position.x, menuPosition.y);
             Vector2 slotPos = btn.transform.position;
-            float distance = (targetPos- menuPosition).magnitude;
+            
 
 
-            Vector2 direction = slotPos - menuPosition;
+
+            if (btn.transform.position.x < midPointX)
+            {
+                targetPos = new Vector2(btn.transform.position.x + targetMin, menuPosition.y);
+            }
+            if (btn.transform.position.x > midPointX)
+            {
+                targetPos = new Vector2(btn.transform.position.x - targetMin, menuPosition.y);
+            }
+
+
+            float distance = (targetPos - menuPosition).magnitude;
+
+
+
+            Vector2 direction = targetPos - menuPosition;
             Vector2 perFrame = Time.deltaTime * direction * 2;
 
 
             float acumTime = 0f;
             float moveTime = .3f;
 
-            if (distance >= targetMin && distance <= targetMax)
+            //if (distance >= targetMin && distance <= targetMax)
+            if (distance >= targetMin)
             {
                 yield return null;
             }
@@ -295,15 +416,27 @@ namespace Gameplay.Menus
             {
                 do
                 {
-                    direction = slotPos - menuPosition;
-                    perFrame = Time.deltaTime * direction * 2;
+                    if ((targetPos - menuPosition).magnitude < targetMin)
+                    {
+                        direction = targetPos - menuPosition;
+                        perFrame = Time.deltaTime * direction * 2;
+                        menuPosition += perFrame;
+                        //distance = Mathf.Abs((targetPos - menuPosition).magnitude);
+                        CheckBounds(menuObject);
+                    }
+                    else if ((targetPos - menuPosition).magnitude > targetMax)
+                    {
+                        direction = targetPos - menuPosition;
+                        perFrame = Time.deltaTime * direction * 2;
+                        menuPosition -= perFrame;
+                        //distance = Mathf.Abs((targetPos - menuPosition).magnitude);
+                        CheckBounds(menuObject);
+                    }
 
-                    distance = (targetPos - menuPosition).magnitude;
-                    menuPosition += perFrame;
-                    CheckBounds(menuObject);
                     yield return new WaitForEndOfFrame();
+                    distance = (targetPos - menuPosition).magnitude;
                     acumTime += Time.deltaTime;
-                } while (true && isOpen && acumTime <= moveTime && (distance <= targetMin || distance >= targetMax));
+                } while (true && isOpen && acumTime <= moveTime && distance <= targetMin);
 
 
 
@@ -322,24 +455,24 @@ namespace Gameplay.Menus
         float maxY = maxPos.y;
         float minY = minPos.y;
 
-        if (obj.transform.position.x > maxX)
+        if (obj.transform.localPosition.x > maxX)
         {
-            obj.transform.position = new Vector3(maxX, obj.transform.position.y, -5f);
+            obj.transform.localPosition = new Vector3(maxX, obj.transform.localPosition.y, -5f);
         }
 
-        if (obj.transform.position.x < minX)
+        if (obj.transform.localPosition.x < minX)
         {
-            obj.transform.position = new Vector3(minX, obj.transform.position.y, -5f);
+            obj.transform.localPosition = new Vector3(minX, obj.transform.localPosition.y, -5f);
         }
 
-        if (obj.transform.position.y > maxY)
+        if (obj.transform.localPosition.y > maxY)
         {
-            obj.transform.position = new Vector3(obj.transform.position.x, maxY, -5f);
+            obj.transform.localPosition = new Vector3(obj.transform.localPosition.x, maxY, -5f);
         }
 
-        if (obj.transform.position.y < minY)
+        if (obj.transform.localPosition.y < minY)
         {
-            obj.transform.position = new Vector3(obj.transform.position.x, minY, -5f);
+            obj.transform.localPosition = new Vector3(obj.transform.localPosition.x, minY, -5f);
         }
     }
 
@@ -347,10 +480,10 @@ namespace Gameplay.Menus
         #endregion
 
         #region User Inputs
-        public void InputNumber(string title, Action<int> returnedVal, int min = -1, int max = -1)
+        public void InputNumber(string title, Action<int> returnedVal, int min = -1, int max = -1, int startVal = 0)
         {
             
-            StartCoroutine(AwaitNumericInput(title, min, max, callback =>
+            StartCoroutine(AwaitNumericInput(title, min, max, startVal, callback =>
             {
                 if (callback)
                 {
@@ -362,9 +495,9 @@ namespace Gameplay.Menus
             }));
         }
 
-        protected IEnumerator AwaitNumericInput(string title, int min, int max, Action<bool> callback)
+        protected IEnumerator AwaitNumericInput(string title, int min, int max, int startVal, Action<bool> callback)
         {
-           NumberInput.Load(transform.parent, title, min, max);
+           NumberInput.Load(transform.parent, title, startVal, min, max);
             HideMenu();
             
             do

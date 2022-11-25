@@ -3,47 +3,50 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class WorldCanvas : GlobalObject
+public class WorldCanvas : GlobalObject, iInvert
 {
+    #region Properties
     public static WorldCanvas Instance { get; set; }
     public Canvas canvas;
+    public CanvasScaler worldCanvasScaler;
+    public Vector2 Scale;
 
+    [SerializeField]
     private Canvas _scalerCanvas = null;
     public Canvas scalerCanvas { get { _scalerCanvas ??= GetComponentInChildren<Canvas>(); return _scalerCanvas; } }
 
+    #endregion
+    #region Functions
     public static float scaleX { get => Instance.canvas.transform.localScale.x; }
     public static float scaleY { get => Instance.canvas.transform.localScale.y; }
 
     public static float Height { get => Instance.canvas.transform.GetComponent<RectTransform>().rect.height; }
     public static float Width { get => Instance.canvas.transform.GetComponent<RectTransform>().rect.width; }
 
-
     public static Vector2 ReferenceRes
     {
         get
         {
-            if (Instance.canvasScaler == null)
+            if (Instance.worldCanvasScaler == null)
             {
-                Instance.canvasScaler = Instance.GetComponentInParent<CanvasScaler>();
+                Instance.worldCanvasScaler = Instance.GetComponentInParent<CanvasScaler>();
             }
-            return Instance.canvasScaler.referenceResolution;
+            return Instance.worldCanvasScaler.referenceResolution;
         }
     }
-
-    public CanvasScaler canvasScaler;
     public Vector2 ScreenScale
     {
         get
         {
-            if (canvasScaler == null)
+            if (worldCanvasScaler == null)
             {
-                canvasScaler = GetComponentInParent<CanvasScaler>();
+                worldCanvasScaler = GetComponentInParent<CanvasScaler>();
             }
 
-            if (canvasScaler)
+            if (worldCanvasScaler)
             {
-                Scale = new Vector2(canvasScaler.referenceResolution.x / Screen.width, canvasScaler.referenceResolution.y / Screen.height);
-                return new Vector2(canvasScaler.referenceResolution.x / Screen.width, canvasScaler.referenceResolution.y / Screen.height);
+                Scale = new Vector2(worldCanvasScaler.referenceResolution.x / Screen.width, worldCanvasScaler.referenceResolution.y / Screen.height);
+                return new Vector2(worldCanvasScaler.referenceResolution.x / Screen.width, worldCanvasScaler.referenceResolution.y / Screen.height);
             }
             else
             {
@@ -52,16 +55,28 @@ public class WorldCanvas : GlobalObject
             }
         }
     }
+    #endregion
+    #region Interface
+    public void Invert(bool doInvert)
+    {
+        if (doInvert)
+        {
+            scalerCanvas.transform.localEulerAngles = new Vector3(0f, 0f, 180f);
+        }
+        else
+        {
+            scalerCanvas.transform.localEulerAngles = new Vector3(0f, 0f, 0f);
+        }
+    }
+    #endregion
 
-    public Vector2 Scale;
-
+    #region Overrides
     protected override void Register()
     {
         Instance = this;
         this.Scale = ScreenScale;
-        //StartCoroutine(RegisterObject());
     }
-
+    #endregion
 
     public static void FindCamera()
     {

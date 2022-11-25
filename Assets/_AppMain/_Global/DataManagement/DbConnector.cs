@@ -302,7 +302,7 @@ namespace Databases
             string origLoc = AssetDatabase.GetAssetPath(databaseFile);
 
 
-            bool flag2 = true;
+           
             try
             {
 
@@ -326,18 +326,10 @@ namespace Databases
             }
             catch (Exception ex)
             {
-                flag2 = false;
                 Debug.LogError("Failed to open database at the working path: " + cloneLoc);
                 Debug.LogError(ex.Message);
             }
 
-
-            //if (flag2)
-            //{
-
-            //    CreateConnection(cloneLoc);
-            //    _conn.Trace = debugTrace;
-            //}
 
 
             AssetDatabase.Refresh();

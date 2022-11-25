@@ -20,6 +20,7 @@ namespace Cards
 
         public static readonly string BaseCardView = "qBaseCard";
         public static readonly string qUniqueCardView = "qUniqueCard";
+        private static readonly string qUniqueArtView = "qUniqueArt";
         public static readonly string CardArtView = "qCardArt";
 
         
@@ -46,13 +47,6 @@ namespace Cards
             List<qBaseCard> list = ListByQuery<qBaseCard>(BaseCardView, query);
             return list;
         }
-        public static ElestralData FindElestralCard(string key)
-        {
-            //CardDTO dto = ByPk<CardDTO>(CardTable, key);
-            qBaseCard dto = ByKey<qBaseCard>(BaseCardView, "cardKey", key);
-            ElestralData data = new ElestralData(dto);
-            return data;
-        }
         public static ElestralData FindElestral(string key)
         {
             //CardDTO dto = ByPk<CardDTO>(CardTable, key);
@@ -60,25 +54,11 @@ namespace Cards
             ElestralData data = new ElestralData(dto);
             return data;
         }
-        public static RuneData FindRuneCard(string key)
-        {
-
-            qBaseCard dto = ByKey<qBaseCard>(BaseCardView, "cardKey", key);
-            RuneData data = new RuneData(dto);
-            return data;
-        }
         public static RuneData FindRune(string key)
         {
 
             qUniqueCard dto = ByKey<qUniqueCard>(qUniqueCardView, "setKey", key);
             RuneData data = new RuneData(dto);
-            return data;
-        }
-        public static CardData FindSpiritCard(string key)
-        {
-
-            qBaseCard dto = ByKey<qBaseCard>(BaseCardView, "cardKey", key);
-            CardData data = new CardData(dto);
             return data;
         }
         public static CardData FindSpirit(string key)
@@ -89,13 +69,6 @@ namespace Cards
             return data;
         }
 
-        public static CardData FindCard(string key)
-        {
-            //CardDTO dto = ByPk<CardDTO>(CardTable, key);
-            qBaseCard dto = ByKey<qBaseCard>(BaseCardView, "cardKey", key);
-            CardData data = new CardData(dto);
-            return data;
-        }
         #endregion
 
         #region Find Filtered Cards
@@ -104,6 +77,22 @@ namespace Cards
             string query = $"setName = '{setName}'";
             List<qUniqueCard> list = ListByQuery<qUniqueCard>(table, query);
             return list;
+        }
+        public static List<qUniqueCard> CardsByUniqueArt(string where = "")
+        {
+            List<qUniqueCard> dtos = new List<qUniqueCard>();
+            if (!string.IsNullOrEmpty(where))
+            {
+               dtos = ListByQuery<qUniqueCard>(qUniqueArtView, where);
+            }
+            else
+            {
+                dtos = GetAll<qUniqueCard>(qUniqueArtView);
+            }
+
+            
+            return dtos;
+           
         }
         #endregion
         public static T FindCardWithTitle<T>(string table, string title, string set) where T : new()
@@ -114,11 +103,6 @@ namespace Cards
 
         }
 
-
-
-        #region Elestrals
-
-        #endregion
         public static string CardArtString(string cardKey, string colName)
         {
             string qWhere = $"{colName} = '{cardKey}'";
@@ -129,16 +113,10 @@ namespace Cards
         public static string CardArtFile(string imageKey)
         {
             string qWhere = $"cardKey = '{imageKey}'";
-            //Debug.Log(imageKey);
             qCardArt dto = GetFirstWhere<qCardArt>(CardArtView, qWhere);
             return dto.image;
         }
 
-
-        #region Runes
-
-
-        #endregion
 
 
         #region Network Card
@@ -151,6 +129,14 @@ namespace Cards
         {
             qUniqueCard dto = ByKey<qUniqueCard>(qUniqueCardView, "setKey", card.setKey);
             return new Decks.Decklist.DeckCard { cardType = (CardType)dto.cardClass, copy = card.qty, key = card.setKey };
+        }
+        #endregion
+
+        #region Deck Limits
+        public static int DeckLimit(string cardKey)
+        {
+            //eventually, set up a table that has the restricted/banned cards. for now, the limit for every non-spirit card is 3.
+            return 3;
         }
         #endregion
     }

@@ -126,9 +126,10 @@ namespace Gameplay
                     commands.Add(PopupCommand.Create("Cast", () => CastToSlotCommand(SelectedCard, this)));
                     commands.Add(PopupCommand.Create("Enchant", () => EnchantCommand(1)));
                     commands.Add(PopupCommand.Create("Ascend", () => AscendCommand()));
-                    commands.Add(PopupCommand.Create("DisEnchant", () => DisEnchantCommand(), 1, 0));
+                   
                     commands.Add(PopupCommand.Create("Nexus", () => NexusCommand(), 1, 1));
                     commands.Add(PopupCommand.Create("Attack", () => AttackCommand()));
+                    commands.Add(PopupCommand.Create("DisEnchant", () => DisEnchantCommand(), 1, 0));
                 }
                 else
                 {
