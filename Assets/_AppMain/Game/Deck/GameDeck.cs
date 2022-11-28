@@ -85,7 +85,7 @@ namespace Gameplay
         public GameDeck(Decklist list)
         {
             uniqueId = UniqueString.GetShortId("dk");
-            deckName = list.Name;
+            deckName = list.DeckName;
 
             _spiritDeck = Deck.SpiritDeck();
             _mainDeck = Deck.MainDeck(); 

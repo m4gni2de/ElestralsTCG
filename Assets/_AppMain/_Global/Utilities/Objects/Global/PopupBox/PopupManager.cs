@@ -141,7 +141,7 @@ public class PopupManager : MonoBehaviour
         }
         
     }
-    public void AskYesNoCancel(string msg, Action<PopupResposne> callback, bool createClone = false)
+    public void AskYesNoCancel(string msg, Action<PopupResponse> callback, bool createClone = false)
     {
         if (createClone)
         {

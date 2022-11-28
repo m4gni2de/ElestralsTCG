@@ -12,8 +12,8 @@ namespace Databases
     {
         protected static readonly string UserTable = "uUserDTO";
         protected static readonly string KeyColumn = "userKey";
-        protected static readonly string DeckTable = "DeckCardDTO";
-        protected static readonly string DeckListTable = "uDeckDTO";
+        protected static readonly string DeckCardTable = "DeckCardDTO";
+        public static readonly string UserDeckTable = "uDeckDTO";
 
         public static UserDTO CreateUser(string username)
         {
@@ -70,26 +70,26 @@ namespace Databases
         public static List<DeckCardDTO> LoadDecklist(string deckKey)
         {
             string query = $"deckKey = '{deckKey}'";
-            List<DeckCardDTO> cards = GetAllWhere<DeckCardDTO>(DeckTable, query);
+            List<DeckCardDTO> cards = GetAllWhere<DeckCardDTO>(DeckCardTable, query);
             return cards;
 
         }
         public static List<DeckCardDTO> LocalDecklists()
         {
-            List<DeckCardDTO> cards = GetAll<DeckCardDTO>(DeckTable);
+            List<DeckCardDTO> cards = GetAll<DeckCardDTO>(DeckCardTable);
             return cards;
 
         }
         public static DeckDTO LoadDeck(string deckKey)
         {
             string query = $"deckKey = '{deckKey}'";
-            DeckDTO deck = GetFirstWhere<DeckDTO>(DeckListTable, query);
+            DeckDTO deck = GetFirstWhere<DeckDTO>(UserDeckTable, query);
             return deck;
         }
 
         public static List<DeckDTO> LocalUserDeckDTOs()
         {
-            List<DeckDTO> cards = GetAll<DeckDTO>(DeckListTable);
+            List<DeckDTO> cards = GetAll<DeckDTO>(UserDeckTable);
             return cards;
 
         }
@@ -97,7 +97,7 @@ namespace Databases
         public static void UpdateLocalDecksOwner(string newName, string oldName)
         {
             
-            string query = $"Update {DeckListTable} SET owner = '{newName}', whenCreated = '{DateTime.Now}' WHERE owner is null OR owner = '{oldName}'";
+            string query = $"Update {UserDeckTable} SET owner = '{newName}', whenCreated = '{DateTime.Now}' WHERE owner is null OR owner = '{oldName}'";
             db.QueryGeneric(query);
             db.Commit();
         }
@@ -105,11 +105,11 @@ namespace Databases
         public static void SaveDeckList(string deckKey, List<DeckCardDTO> cards)
         {
             string queryWhere = $"deckKey = '{deckKey}'";
-            if (Delete(DeckTable, queryWhere))
+            if (Delete(DeckCardTable, queryWhere))
             {
                 for (int i = 0; i < cards.Count; i++)
                 {
-                    db.Insert(cards[i], DeckTable);
+                    db.Insert(cards[i], DeckCardTable);
                 }
                 db.Commit();
             }

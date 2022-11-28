@@ -41,17 +41,6 @@ public class CardConfig : MonoBehaviour
                     SetSpriteOffset(CardRenderers[i], 0);
                 }
 
-                //SetSpriteOffset(cardBg, -1);
-                //SetSpriteOffset(cardCover, 8);
-                //SetSpriteOffset(cardBorder, 1);
-                //SetSpriteOffset(raritySp, 0);
-                //Renderer[] rends = GetComponentsInChildren<Renderer>(true);
-
-                //for (int i = 0; i < rends.Length; i++)
-                //{
-                //    SetSpriteOffset(rends[i], 0);
-                //}
-
             }
           
             return _spriteOffset;

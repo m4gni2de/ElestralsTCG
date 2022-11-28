@@ -95,7 +95,7 @@ public class RemoteData
         WWWForm form = new WWWForm();
         form.AddField("action", "insert");
         form.AddField("deckKey", deck.DeckKey);
-        form.AddField("title", deck.Name);
+        form.AddField("title", deck.DeckName);
         form.AddField("deck", deck.GetCardList);
         //form.AddField("created", deck.created.ToString());
         //form.AddField("name", deck.deckName);

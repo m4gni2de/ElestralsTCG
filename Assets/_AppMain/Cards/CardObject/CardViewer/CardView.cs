@@ -30,6 +30,16 @@ public class CardView : MonoBehaviour, iRemoteAsset, iCardView
     public int cardIndex;
 
     protected Vector2 DefaultPosition { get; set; }
+    public string DisplayName
+    {
+        get
+        {
+            string st = "";
+            if (ActiveCard == null) { return st; }
+            st = $"{ActiveCard.cardData.cardName} - ({ActiveCard.cardData.cardKey})";
+            return st;
+        }
+    }
     #endregion
 
     public bool isDragging = false;
@@ -49,6 +59,23 @@ public class CardView : MonoBehaviour, iRemoteAsset, iCardView
     {
         return GetComponent<RectTransform>().rect.height;
     }
+
+    #region Functions
+    public bool IsCard(string cardKey)
+    {
+        if (CardKey == cardKey) { return true; }
+        return false;
+    }
+    public string CardKey
+    {
+        get
+        {
+            
+            if (ActiveCard == null) { return ""; }
+            return ActiveCard.cardData.cardKey;
+        }
+    }
+    #endregion
 
     #region Card Building Properties
     [Header("Card Building")]
@@ -87,10 +114,14 @@ public class CardView : MonoBehaviour, iRemoteAsset, iCardView
     }
 
     #endregion
+    #region Built Card Properties
+    public SpriteDisplay cardBorder { get { return CurrentConfig.cardBorder; } }
+    #endregion
 
     #region Events
     public event Action<string> OnSortLayerChange;
     public event Action<int> OnSortOrderChange;
+    
     #endregion
 
 
@@ -153,6 +184,7 @@ public class CardView : MonoBehaviour, iRemoteAsset, iCardView
 
     #endregion
 
+    #region Card Transforming
     public virtual void Flip(bool toBack = false)
     {
         if (toBack)
@@ -202,7 +234,11 @@ public class CardView : MonoBehaviour, iRemoteAsset, iCardView
             transform.SetSiblingIndex(childIndex);
         }
     }
-
+    public void SetChildIndex(int childIndex)
+    {
+        if (transform.parent == null) { return; }
+        transform.SetSiblingIndex(childIndex);
+    }
 
     
     public virtual void SetSortingLayer(string sortLayer)
@@ -236,18 +272,18 @@ public class CardView : MonoBehaviour, iRemoteAsset, iCardView
 
         
     }
+    #endregion
 
+    #region Card Colors/Highlighting
     public void SelectCard(bool toggle, Color col)
     {
         CurrentConfig.Select(col);
     }
-
-   
     public void MaskCard(Color col)
     {
         CurrentConfig.Mask(col);
     }
-    
+
     public void SetAlpha(float alpha)
     {
         CurrentConfig.SetAlpha(alpha);
@@ -256,8 +292,30 @@ public class CardView : MonoBehaviour, iRemoteAsset, iCardView
     {
         CurrentConfig.ResetColors();
     }
+    public void Highlight(SpriteDisplay sp, Color col, float time = 0f, float fadeTime = 1f)
+    {
+        if (time > 0f)
+        {
+            sp.ChangeToColorForDuration(col, time, fadeTime);
+        }
+        else
+        {
+            sp.SetColor(col);
+        }
+    }
+    #endregion
 
-
+    #region Card Clicking
+    public static event Action<CardView> OnCardClicked;
+    public void ClickCard()
+    {
+        DoCardClick();
+    }
+    private void DoCardClick()
+    {
+        OnCardClicked?.Invoke(this);
+    }
+    #endregion
 
     #region Network Sync
     public void SendNetworkTransform()

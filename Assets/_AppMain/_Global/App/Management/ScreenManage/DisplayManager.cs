@@ -56,7 +56,6 @@ public class DisplayManager : MonoBehaviour
     #endregion
 
     #region Default Action
-
     private static iGameAction _default = null;
     public static iGameAction DefaultAction
     {
@@ -123,6 +122,7 @@ public class DisplayManager : MonoBehaviour
     public static void ClearButton()
     {
         actionOrder.Clear();
+        _default = null;
     }
    
     #region Action Adding

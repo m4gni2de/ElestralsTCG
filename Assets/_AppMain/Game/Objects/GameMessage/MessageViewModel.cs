@@ -13,7 +13,7 @@ namespace Gameplay.Messaging
         #endregion
 
         public GameMessage ActiveMessage { get; set; }
-        public FormattedText messageText;
+        public MagicTextBox messageText;
         public TouchObject touch;
         public bool isShowing = false;
 

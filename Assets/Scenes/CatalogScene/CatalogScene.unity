@@ -965,9 +965,33 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4453310974879140360, guid: ec264dbe8eec28c46b84f3bcfa32068d, type: 3}
+      propertyPath: BorderObjects.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4453310974879140360, guid: ec264dbe8eec28c46b84f3bcfa32068d, type: 3}
+      propertyPath: BorderObjects.Array.data[0]
+      value: 
+      objectReference: {fileID: 185163398}
+    - target: {fileID: 4453310974879140360, guid: ec264dbe8eec28c46b84f3bcfa32068d, type: 3}
+      propertyPath: BorderObjects.Array.data[1]
+      value: 
+      objectReference: {fileID: 1671396123}
+    - target: {fileID: 4453310974879140360, guid: ec264dbe8eec28c46b84f3bcfa32068d, type: 3}
+      propertyPath: BorderObjects.Array.data[2]
+      value: 
+      objectReference: {fileID: 988636154}
+    - target: {fileID: 4453310974879140360, guid: ec264dbe8eec28c46b84f3bcfa32068d, type: 3}
+      propertyPath: BorderObjects.Array.data[3]
+      value: 
+      objectReference: {fileID: 568548483}
     - target: {fileID: 4453310974879140362, guid: ec264dbe8eec28c46b84f3bcfa32068d, type: 3}
       propertyPath: m_PresetInfoIsWorld
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4453310974879140363, guid: ec264dbe8eec28c46b84f3bcfa32068d, type: 3}
+      propertyPath: m_SortingLayerID
+      value: -517378729
       objectReference: {fileID: 0}
     - target: {fileID: 4453310974879140364, guid: ec264dbe8eec28c46b84f3bcfa32068d, type: 3}
       propertyPath: m_Pivot.x

@@ -93,6 +93,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4969792736242750769}
   - component: {fileID: 6443752041615406874}
+  - component: {fileID: 6794876899241620564}
   m_Layer: 0
   m_Name: SpiritGlowL
   m_TagString: Untagged
@@ -167,6 +168,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &6794876899241620564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1984722609875510765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 6443752041615406874}
+  _image: {fileID: 0}
 --- !u!1 &4826053126296010156
 GameObject:
   m_ObjectHideFlags: 0
@@ -177,6 +193,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2670334056828437253}
   - component: {fileID: 3907222095035290301}
+  - component: {fileID: 2098326016379517024}
   m_Layer: 0
   m_Name: SpiritStone
   m_TagString: Untagged
@@ -251,6 +268,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &2098326016379517024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4826053126296010156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 3907222095035290301}
+  _image: {fileID: 0}
 --- !u!1 &5084053945583973232
 GameObject:
   m_ObjectHideFlags: 0
@@ -440,6 +472,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487904954938398}
   - component: {fileID: 5115487904954938393}
+  - component: {fileID: 4433185679784739715}
   m_Layer: 0
   m_Name: StoneLeftCenter
   m_TagString: Untagged
@@ -514,6 +547,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &4433185679784739715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487904954938399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487904954938393}
+  _image: {fileID: 0}
 --- !u!1 &5115487905001572638
 GameObject:
   m_ObjectHideFlags: 0
@@ -561,6 +609,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487905013924743}
   - component: {fileID: 5115487905013924742}
+  - component: {fileID: 6785873908260142958}
   m_Layer: 0
   m_Name: spSub1
   m_TagString: Untagged
@@ -635,6 +684,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &6785873908260142958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487905013924740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487905013924742}
+  _image: {fileID: 0}
 --- !u!1 &5115487905048857438
 GameObject:
   m_ObjectHideFlags: 0
@@ -831,6 +895,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487905099525173}
   - component: {fileID: 5115487905099525172}
+  - component: {fileID: 3739857987158656}
   m_Layer: 0
   m_Name: StoneRightCenter
   m_TagString: Untagged
@@ -905,6 +970,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &3739857987158656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487905099525130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487905099525172}
+  _image: {fileID: 0}
 --- !u!1 &5115487905106233922
 GameObject:
   m_ObjectHideFlags: 0
@@ -915,6 +995,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487905106233933}
   - component: {fileID: 5115487905106233932}
+  - component: {fileID: 8129275149621581019}
   m_Layer: 0
   m_Name: LeftGlow
   m_TagString: Untagged
@@ -989,6 +1070,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &8129275149621581019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487905106233922}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487905106233932}
+  _image: {fileID: 0}
 --- !u!1 &5115487905146739394
 GameObject:
   m_ObjectHideFlags: 0
@@ -999,6 +1095,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487905146739405}
   - component: {fileID: 5115487905146739404}
+  - component: {fileID: 9060066848583243547}
   m_Layer: 0
   m_Name: RuneR
   m_TagString: Untagged
@@ -1073,6 +1170,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &9060066848583243547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487905146739394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487905146739404}
+  _image: {fileID: 0}
 --- !u!1 &5115487905149638514
 GameObject:
   m_ObjectHideFlags: 0
@@ -1365,6 +1477,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487905237212096}
   - component: {fileID: 5115487905237212099}
+  - component: {fileID: 7993382981877014123}
   m_Layer: 0
   m_Name: spSub2
   m_TagString: Untagged
@@ -1439,6 +1552,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &7993382981877014123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487905237212097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487905237212099}
+  _image: {fileID: 0}
 --- !u!1 &5115487905257844598
 GameObject:
   m_ObjectHideFlags: 0
@@ -1449,6 +1577,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487905257844593}
   - component: {fileID: 5115487905257844592}
+  - component: {fileID: 9134655915359867405}
   m_Layer: 0
   m_Name: StoneLeft
   m_TagString: Untagged
@@ -1523,6 +1652,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &9134655915359867405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487905257844598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487905257844592}
+  _image: {fileID: 0}
 --- !u!1 &5115487905293214583
 GameObject:
   m_ObjectHideFlags: 0
@@ -1719,6 +1863,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487905301326447}
   - component: {fileID: 5115487905301326446}
+  - component: {fileID: 4804994200800613606}
   m_Layer: 0
   m_Name: BorderPippng
   m_TagString: Untagged
@@ -1793,6 +1938,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &4804994200800613606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487905301326444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487905301326446}
+  _image: {fileID: 0}
 --- !u!1 &5115487905310883361
 GameObject:
   m_ObjectHideFlags: 0
@@ -1989,6 +2149,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487905318894431}
   - component: {fileID: 5115487905318894430}
+  - component: {fileID: 2353031196632460982}
   m_Layer: 0
   m_Name: StoneRightCenter
   m_TagString: Untagged
@@ -2063,6 +2224,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &2353031196632460982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487905318894428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487905318894430}
+  _image: {fileID: 0}
 --- !u!1 &5115487905323483698
 GameObject:
   m_ObjectHideFlags: 0
@@ -2319,6 +2495,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487905415901181}
   - component: {fileID: 5115487905415901180}
+  - component: {fileID: 305450870965941910}
   m_Layer: 0
   m_Name: BorderPippng
   m_TagString: Untagged
@@ -2393,6 +2570,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &305450870965941910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487905415901170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487905415901180}
+  _image: {fileID: 0}
 --- !u!1 &5115487905420243684
 GameObject:
   m_ObjectHideFlags: 0
@@ -2624,6 +2816,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487905463287364}
   - component: {fileID: 5115487905463287367}
+  - component: {fileID: 5252851464682193134}
   m_Layer: 0
   m_Name: CardImage
   m_TagString: Untagged
@@ -2698,6 +2891,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 1
   m_SpriteSortPoint: 0
+--- !u!114 &5252851464682193134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487905463287365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487905463287367}
+  _image: {fileID: 0}
 --- !u!1 &5115487905502099038
 GameObject:
   m_ObjectHideFlags: 0
@@ -2708,6 +2916,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487905502099033}
   - component: {fileID: 5115487905502099032}
+  - component: {fileID: 2131459858274354846}
   m_Layer: 0
   m_Name: CardStone
   m_TagString: Untagged
@@ -2784,6 +2993,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &2131459858274354846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487905502099038}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487905502099032}
+  _image: {fileID: 0}
 --- !u!1 &5115487905513016460
 GameObject:
   m_ObjectHideFlags: 0
@@ -2908,6 +3132,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487905566820196}
   - component: {fileID: 5115487905566820199}
+  - component: {fileID: 5908493911062114509}
   m_Layer: 0
   m_Name: spSub1
   m_TagString: Untagged
@@ -2982,6 +3207,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &5908493911062114509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487905566820197}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487905566820199}
+  _image: {fileID: 0}
 --- !u!1 &5115487905631748806
 GameObject:
   m_ObjectHideFlags: 0
@@ -2992,6 +3232,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487905631748801}
   - component: {fileID: 5115487905631748800}
+  - component: {fileID: 1834365219290208948}
   m_Layer: 0
   m_Name: spStamp2
   m_TagString: Untagged
@@ -3066,6 +3307,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1834365219290208948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487905631748806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487905631748800}
+  _image: {fileID: 0}
 --- !u!1 &5115487905659377535
 GameObject:
   m_ObjectHideFlags: 0
@@ -3077,6 +3333,7 @@ GameObject:
   - component: {fileID: 5115487905659377534}
   - component: {fileID: 5115487905659377529}
   - component: {fileID: 7829466614710230838}
+  - component: {fileID: 5500428111626092728}
   m_Layer: 0
   m_Name: RaritySp
   m_TagString: Untagged
@@ -3174,6 +3431,21 @@ MonoBehaviour:
   _Color3: {r: 0, g: 1, b: 1, a: 1}
   _Color4: {r: 0, g: 1, b: 0, a: 1}
   _Alpha: 1
+--- !u!114 &5500428111626092728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487905659377535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487905659377529}
+  _image: {fileID: 0}
 --- !u!1 &5115487905674720666
 GameObject:
   m_ObjectHideFlags: 0
@@ -3184,6 +3456,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487905674720645}
   - component: {fileID: 5115487905674720644}
+  - component: {fileID: 1796326321163406832}
   m_Layer: 0
   m_Name: StoneRight
   m_TagString: Untagged
@@ -3258,6 +3531,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1796326321163406832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487905674720666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487905674720644}
+  _image: {fileID: 0}
 --- !u!1 &5115487905677894697
 GameObject:
   m_ObjectHideFlags: 0
@@ -3268,6 +3556,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487905677894696}
   - component: {fileID: 5115487905677894699}
+  - component: {fileID: 4494064263550933802}
   m_Layer: 0
   m_Name: StoneRight
   m_TagString: Untagged
@@ -3342,6 +3631,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &4494064263550933802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487905677894697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487905677894699}
+  _image: {fileID: 0}
 --- !u!1 &5115487905688651524
 GameObject:
   m_ObjectHideFlags: 0
@@ -3352,6 +3656,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487905688651527}
   - component: {fileID: 5115487905688651526}
+  - component: {fileID: 82733549413455144}
   m_Layer: 0
   m_Name: RuneL
   m_TagString: Untagged
@@ -3426,6 +3731,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &82733549413455144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487905688651524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487905688651526}
+  _image: {fileID: 0}
 --- !u!1 &5115487905706574487
 GameObject:
   m_ObjectHideFlags: 0
@@ -3622,6 +3942,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487905779193534}
   - component: {fileID: 5115487905779193529}
+  - component: {fileID: 2886139523664772662}
   m_Layer: 0
   m_Name: Shield
   m_TagString: Untagged
@@ -3696,6 +4017,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &2886139523664772662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487905779193535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487905779193529}
+  _image: {fileID: 0}
 --- !u!1 &5115487905798388624
 GameObject:
   m_ObjectHideFlags: 0
@@ -3706,6 +4042,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487905798388627}
   - component: {fileID: 5115487905798388626}
+  - component: {fileID: 4765989819507216697}
   m_Layer: 0
   m_Name: StoneCenter
   m_TagString: Untagged
@@ -3780,6 +4117,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &4765989819507216697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487905798388624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487905798388626}
+  _image: {fileID: 0}
 --- !u!1 &5115487905806959289
 GameObject:
   m_ObjectHideFlags: 0
@@ -3790,6 +4142,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487905806959288}
   - component: {fileID: 5115487905806959291}
+  - component: {fileID: 5370469142665714451}
   m_Layer: 0
   m_Name: RuneR
   m_TagString: Untagged
@@ -3864,6 +4217,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &5370469142665714451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487905806959289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487905806959291}
+  _image: {fileID: 0}
 --- !u!1 &5115487905824493202
 GameObject:
   m_ObjectHideFlags: 0
@@ -4246,6 +4614,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487905955634512}
   - component: {fileID: 5115487905955634515}
+  - component: {fileID: 5337902157773747483}
   m_Layer: 0
   m_Name: spStamp1
   m_TagString: Untagged
@@ -4320,6 +4689,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &5337902157773747483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487905955634513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487905955634515}
+  _image: {fileID: 0}
 --- !u!1 &5115487905973792933
 GameObject:
   m_ObjectHideFlags: 0
@@ -4516,6 +4900,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487906093552985}
   - component: {fileID: 5115487906093552984}
+  - component: {fileID: 2274690602190552167}
   m_Layer: 0
   m_Name: StoneLeft
   m_TagString: Untagged
@@ -4590,6 +4975,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &2274690602190552167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487906093552990}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487906093552984}
+  _image: {fileID: 0}
 --- !u!1 &5115487906150680223
 GameObject:
   m_ObjectHideFlags: 0
@@ -4821,6 +5221,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487906293136759}
   - component: {fileID: 5115487906293136758}
+  - component: {fileID: 5534028939766544197}
   m_Layer: 0
   m_Name: spSub2
   m_TagString: Untagged
@@ -4895,6 +5296,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &5534028939766544197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487906293136756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487906293136758}
+  _image: {fileID: 0}
 --- !u!1 &5115487906461050447
 GameObject:
   m_ObjectHideFlags: 0
@@ -4905,6 +5321,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487906461050446}
   - component: {fileID: 5115487906461050441}
+  - component: {fileID: 1994866171825669374}
   m_Layer: 0
   m_Name: StoneCenter
   m_TagString: Untagged
@@ -4979,6 +5396,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1994866171825669374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487906461050447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487906461050441}
+  _image: {fileID: 0}
 --- !u!1 &5115487906471239353
 GameObject:
   m_ObjectHideFlags: 0
@@ -4989,6 +5421,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487906471239352}
   - component: {fileID: 5115487906471239355}
+  - component: {fileID: 7512722716549130998}
   m_Layer: 0
   m_Name: CardImage
   m_TagString: Untagged
@@ -5063,6 +5496,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &7512722716549130998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487906471239353}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487906471239355}
+  _image: {fileID: 0}
 --- !u!1 &5115487906487019786
 GameObject:
   m_ObjectHideFlags: 0
@@ -5259,6 +5707,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487906603953905}
   - component: {fileID: 5115487906603953904}
+  - component: {fileID: 888477417859526060}
   m_Layer: 0
   m_Name: RightGlow
   m_TagString: Untagged
@@ -5333,6 +5782,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &888477417859526060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487906603953910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487906603953904}
+  _image: {fileID: 0}
 --- !u!1 &5115487906626605749
 GameObject:
   m_ObjectHideFlags: 0
@@ -5529,6 +5993,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487906659210203}
   - component: {fileID: 5115487906659210202}
+  - component: {fileID: 5208485021635204665}
   m_Layer: 0
   m_Name: CardFrame
   m_TagString: Untagged
@@ -5605,6 +6070,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &5208485021635204665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487906659210200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487906659210202}
+  _image: {fileID: 0}
 --- !u!1 &5115487906680641561
 GameObject:
   m_ObjectHideFlags: 0
@@ -5615,6 +6095,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487906680641560}
   - component: {fileID: 5115487906680641563}
+  - component: {fileID: 2100758839562878797}
   m_Layer: 0
   m_Name: spStamp1
   m_TagString: Untagged
@@ -5689,6 +6170,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &2100758839562878797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487906680641561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487906680641563}
+  _image: {fileID: 0}
 --- !u!1 &5115487906700658983
 GameObject:
   m_ObjectHideFlags: 0
@@ -5699,6 +6195,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487906700658982}
   - component: {fileID: 5115487906700658977}
+  - component: {fileID: 9159393744315095871}
   m_Layer: 0
   m_Name: spStamp2
   m_TagString: Untagged
@@ -5773,6 +6270,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &9159393744315095871
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487906700658983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487906700658977}
+  _image: {fileID: 0}
 --- !u!1 &5115487906706197273
 GameObject:
   m_ObjectHideFlags: 0
@@ -5783,6 +6295,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487906706197272}
   - component: {fileID: 5115487906706197275}
+  - component: {fileID: 2534640049480608002}
   m_Layer: 0
   m_Name: Sword
   m_TagString: Untagged
@@ -5857,6 +6370,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &2534640049480608002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487906706197273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487906706197275}
+  _image: {fileID: 0}
 --- !u!1 &5115487906755170601
 GameObject:
   m_ObjectHideFlags: 0
@@ -6053,6 +6581,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487906757951724}
   - component: {fileID: 5115487906757951727}
+  - component: {fileID: 2206006347908593837}
   m_Layer: 0
   m_Name: StoneLeftCenter
   m_TagString: Untagged
@@ -6127,6 +6656,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &2206006347908593837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487906757951725}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487906757951727}
+  _image: {fileID: 0}
 --- !u!1 &5115487906759580731
 GameObject:
   m_ObjectHideFlags: 0
@@ -6172,6 +6716,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487906760519898}
   - component: {fileID: 5115487906760519877}
+  - component: {fileID: 7330609888480436922}
   m_Layer: 0
   m_Name: CardStone
   m_TagString: Untagged
@@ -6251,6 +6796,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &7330609888480436922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487906760519899}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487906760519877}
+  _image: {fileID: 0}
 --- !u!1 &5115487906781142594
 GameObject:
   m_ObjectHideFlags: 0
@@ -6447,6 +7007,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487906815562710}
   - component: {fileID: 5115487906815562705}
+  - component: {fileID: 7134598922869249968}
   m_Layer: 0
   m_Name: RuneL
   m_TagString: Untagged
@@ -6521,6 +7082,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &7134598922869249968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487906815562711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487906815562705}
+  _image: {fileID: 0}
 --- !u!1 &5115487906832775287
 GameObject:
   m_ObjectHideFlags: 0
@@ -6625,6 +7201,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487906838051839}
   - component: {fileID: 5115487906838051838}
+  - component: {fileID: 915254404689920964}
   m_Layer: 0
   m_Name: Shield
   m_TagString: Untagged
@@ -6699,6 +7276,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &915254404689920964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487906838051836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487906838051838}
+  _image: {fileID: 0}
 --- !u!1 &5115487906893995570
 GameObject:
   m_ObjectHideFlags: 0
@@ -6709,6 +7301,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487906893995581}
   - component: {fileID: 5115487906893995580}
+  - component: {fileID: 1791350834121355501}
   m_Layer: 0
   m_Name: Sword
   m_TagString: Untagged
@@ -6783,6 +7376,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1791350834121355501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487906893995570}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487906893995580}
+  _image: {fileID: 0}
 --- !u!1 &5115487906897567117
 GameObject:
   m_ObjectHideFlags: 0
@@ -7079,6 +7687,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5115487906953653752}
   - component: {fileID: 5115487906953653755}
+  - component: {fileID: 4537866484823810523}
   m_Layer: 0
   m_Name: CardFrame
   m_TagString: Untagged
@@ -7153,6 +7762,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &4537866484823810523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5115487906953653753}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 5115487906953653755}
+  _image: {fileID: 0}
 --- !u!1 &5115487906984556785
 GameObject:
   m_ObjectHideFlags: 0
@@ -7298,6 +7922,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4707745295744515504}
   - component: {fileID: 4089137273604447570}
+  - component: {fileID: 1493812068880514342}
   m_Layer: 0
   m_Name: SpiritGlowR
   m_TagString: Untagged
@@ -7372,3 +7997,18 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1493812068880514342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7192471386985865864}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf85ca0d44499246ad7775de6f82a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rendType: 0
+  _sp: {fileID: 4089137273604447570}
+  _image: {fileID: 0}

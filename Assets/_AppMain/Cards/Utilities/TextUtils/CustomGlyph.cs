@@ -11,7 +11,7 @@ namespace GlobalUtilities
         {
             get
             {
-                return FormattedText.CustomChars["<S>"];
+                return MagicTextBox.CustomChars["<S>"];
             }
         }
         #endregion

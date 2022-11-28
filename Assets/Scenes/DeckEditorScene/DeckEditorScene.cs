@@ -14,18 +14,18 @@ public class DeckEditorScene : MonoBehaviour, iSceneScript
         WorldCanvas.FindCamera();
         DisplayManager.ClearButton();
         DisplayManager.ToggleVisible(true);
-        DisplayManager.SetDefault(() => SetDefaultLeaveScene());
+        DisplayManager.SetDefault(SetDefaultLeaveScene);
     }
 
     private void SetDefaultLeaveScene()
     {
         if (!DeckEditor.HasChanges)
         {
-            DisplayManager.SetDefault(() => App.TryChangeScene("MainScene"));
+            App.TryChangeScene("MainScene");
         }
         else
         {
-            DisplayManager.SetDefault(() => TryQuitEditor());
+            TryQuitEditor();
         }
     }
 
@@ -34,18 +34,18 @@ public class DeckEditorScene : MonoBehaviour, iSceneScript
         string msg = $"There are unsaved changes to the deck. Do you wish to Save them before quitting?";
         App.AskYesNoCancel(msg, TryLeaveScene);
     }
-    private void TryLeaveScene(PopupResposne response)
+    private void TryLeaveScene(PopupResponse response)
     {
 
         switch (response)
         {
-            case PopupResposne.Cancel:
+            case PopupResponse.Cancel:
                 break;
-            case PopupResposne.Yes:
+            case PopupResponse.Yes:
                 DeckEditor.Instance.SaveActiveDeck();
                 App.ChangeScene("MainScene");
                 break;
-            case PopupResposne.No:
+            case PopupResponse.No:
                 App.ChangeScene("MainScene");
                 break;
         }

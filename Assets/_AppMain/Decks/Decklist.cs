@@ -6,16 +6,13 @@ using Cards;
 using System;
 using Gameplay.Decks;
 using System.Threading.Tasks;
-using UnityEngine.Networking;
-using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
-using System.Globalization;
-using static UnityEditor.Progress;
 
 namespace Decks
 {
     [System.Serializable]
-    public class Decklist 
+    public class Decklist : iDto<DeckDTO>
     {
+        #region Deck Card
         [System.Serializable]
         public class DeckCard
         {
@@ -54,6 +51,8 @@ namespace Decks
             return cards;
         }
 
+        
+        #endregion
         #region operators
         public static implicit operator Decklist(UploadedDeckDTO dto)
         {
@@ -86,7 +85,37 @@ namespace Decks
             }
             deck.Cards.AddRange(cards);
             return deck;
-        } 
+        }
+        #endregion
+
+        #region Interface
+        private DeckDTO _zeroDto = null;
+        public DeckDTO ZeroDTO
+        {
+            get
+            {
+                return _zeroDto;
+            }
+        }
+        public void SetZeroDTO(DeckDTO dto)
+        {
+            _zeroDto = dto;
+        }
+        public DeckDTO GetDTO
+        {
+            get
+            {
+                DeckDTO dto = new DeckDTO
+                {
+                    title = _deckName,
+                    deckKey = _key,
+                    owner = _owner,
+                    whenCreated = _whenCreated,
+                    uploadCode = _uploadCode,
+                };
+                return dto;
+            }
+        }
         #endregion
 
         public string AsJson
@@ -112,17 +141,12 @@ namespace Decks
             }
         }
 
-        private bool _isDirty = false;
-        public bool IsDirty
-        {
-            get => _isDirty;
-        }
 
         private List<DeckCard> _cards = null;
         public List<DeckCard> Cards { get { _cards ??= new List<DeckCard>(); return _cards; } }
         #region Properties
         private string _deckName;
-        public string Name { get { return _deckName; } }
+        public string DeckName { get { return _deckName; } set { _deckName = value; } }
 
         private string _key;
         public string DeckKey { get { return _key; } }
@@ -159,32 +183,9 @@ namespace Decks
             }
         }
         
-        protected DeckDTO GetDTO
-        {
-            get
-            {
-                DeckDTO dto = new DeckDTO
-                {
-                    title = _deckName,
-                    deckKey = _key,
-                    owner = _owner,
-                    whenCreated = _whenCreated,
-                    uploadCode = _uploadCode,
-                };
-                return dto;
-            }
-        }
+        
 
-        protected List<DeckCardDTO> GetDeckCards(Dictionary<string, int> cardList)
-        {
-            List<DeckCardDTO> list = new List<DeckCardDTO>();
-            foreach (var item in cardList)
-            {
-                DeckCardDTO dto = new DeckCardDTO { deckKey = _key, setKey = item.Key, qty = item.Value };
-                list.Add(dto);
-            }
-            return list;
-        }
+       
 
         public bool IsUploaded
         {
@@ -249,6 +250,8 @@ namespace Decks
             _whenCreated = DateTime.Now;
             _deckName = name;
             _uploadCode = "";
+
+            SetZeroDTO(GetDTO);
         }
         public DeckCard AddCard(string setKey)
         {
@@ -266,13 +269,15 @@ namespace Decks
         }
         #endregion
 
-
+        #region Initialization
         Decklist(string owner, string uploadKey)
         {
             _key = uploadKey;
             _owner = owner;
             _whenCreated = DateTime.Now;
             _deckName = $"{owner}'s Uploaded Deck";
+
+            SetZeroDTO(GetDTO);
         }
         Decklist(DeckDTO deck, List<qDeckList> cards)
         {
@@ -290,16 +295,13 @@ namespace Decks
                     AddCard(c);
                 }
             }
+            SetZeroDTO(GetDTO);
         }
-        
-       
-        
+        #endregion
 
-        public void Save()
-        {
-            DeckDTO dto = GetDTO;
-            DeckService.Save<DeckDTO>(dto, DeckService.DeckTable, "deckKey", dto.deckKey);
-        }
+
+
+
 
         #region Adding Cards
         protected static DeckCard NewCard(string key, int cardType, int indexOfCopy)
@@ -325,7 +327,7 @@ namespace Decks
 
             string upCode = UniqueString.Create("dk", 9);
             _uploadCode = upCode;
-            Save();
+            SaveDeck();
             bool uploaded = await RemoteData.AddDeckToRemoteDB(this);
             if (uploaded) { return _uploadCode; }
 
@@ -335,18 +337,11 @@ namespace Decks
 
 
         #region Deck Editing
+       
         public void ChangeCardQuantity(string setKey, int changeVal)
         {
             if (changeVal > 0)
             {
-                //do some validation here
-                bool canAdd = true;
-                
-                if (canAdd)
-                {
-                    _isDirty = true;
-                }
-
                 if (!CardCounts.ContainsKey(setKey))
                 {
                     CardCounts.Add(setKey, changeVal);
@@ -364,20 +359,20 @@ namespace Decks
                     if (newQty > 0) { CardCounts[setKey] = newQty; } else { CardCounts.Remove(setKey); }
                 }
             }
-           
         }
 
-
-        public void SetCardQuantities(Dictionary<string, int> cardList)
+        
+        public void SetCards(Dictionary<string, int> cardList)
         {
-            UserService.SaveDeckList(_key, GetDeckCards(cardList));
-            ReloadDeck();
+            _cardCounts = cardList;
+            SaveDeck();
         }
 
-        private void ReloadDeck()
+        public void ReloadDeck()
         {
             Cards.Clear();
             CardCounts.Clear();
+            
 
             string deckKey = _key;
             DeckDTO deck = UserService.LoadDeck(deckKey);
@@ -388,6 +383,7 @@ namespace Decks
             _owner = deck.owner;
             _whenCreated = deck.whenCreated;
             _uploadCode = deck.uploadCode;
+            SetZeroDTO(deck);
 
             for (int i = 0; i < cards.Count; i++)
             {
@@ -397,6 +393,27 @@ namespace Decks
                     AddCard(c);
                 }
             }
+        }
+        #endregion
+
+        #region Saving
+        public void SaveDeck()
+        {
+            DeckDTO dto = GetDTO;
+            UserService.Save<DeckDTO>(dto, UserService.UserDeckTable, "deckKey", dto.deckKey);
+            UserService.SaveDeckList(_key, GetDeckCards(CardCounts));
+            ReloadDeck();
+        }
+       
+        protected List<DeckCardDTO> GetDeckCards(Dictionary<string, int> cardList)
+        {
+            List<DeckCardDTO> list = new List<DeckCardDTO>();
+            foreach (var item in cardList)
+            {
+                DeckCardDTO dto = new DeckCardDTO { deckKey = _key, setKey = item.Key, qty = item.Value };
+                list.Add(dto);
+            }
+            return list;
         }
         #endregion
 

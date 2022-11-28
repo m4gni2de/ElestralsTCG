@@ -27,8 +27,8 @@ namespace CardsUI
         #endregion
 
         #region Properties
-        private List<FormattedText> _allTexts = null;
-        public List<FormattedText> AllTexts
+        private List<MagicTextBox> _allTexts = null;
+        public List<MagicTextBox> AllTexts
         {
             get
             {
@@ -37,21 +37,21 @@ namespace CardsUI
             }
         }
 
-        public FormattedText title;
-        public FormattedText artist;
-        public FormattedText cardNumber;
-        public FormattedText edition;
-        public FormattedText Effect;
-        public FormattedText Attack;
-        public FormattedText Defense;
-        public FormattedText trademark;
+        public MagicTextBox title;
+        public MagicTextBox artist;
+        public MagicTextBox cardNumber;
+        public MagicTextBox edition;
+        public MagicTextBox Effect;
+        public MagicTextBox Attack;
+        public MagicTextBox Defense;
+        public MagicTextBox trademark;
 
-        private Dictionary<FormattedText, Color> _defaultColors = null;
-        public Dictionary<FormattedText, Color> DefaultColors
+        private Dictionary<MagicTextBox, Color> _defaultColors = null;
+        public Dictionary<MagicTextBox, Color> DefaultColors
         {
             get
             {
-                _defaultColors ??= new Dictionary<FormattedText, Color>();
+                _defaultColors ??= new Dictionary<MagicTextBox, Color>();
                 return _defaultColors;
             }
         }
@@ -222,7 +222,7 @@ namespace CardsUI
 
             for (int i = 0; i < AllTexts.Count; i++)
             {
-                FormattedText t = AllTexts[i];
+                MagicTextBox t = AllTexts[i];
                 DefaultColors.Add(t, t.TextColor);
             }
         }
@@ -252,7 +252,7 @@ namespace CardsUI
 
         public void SetSortingLayer(string layerName)
         {
-            foreach (FormattedText item in AllTexts)
+            foreach (MagicTextBox item in AllTexts)
             {
                 item.SortLayer = layerName;
             }
@@ -260,7 +260,7 @@ namespace CardsUI
 
         public void SetSortingOrder(int sortOrder)
         {
-            foreach (FormattedText item in AllTexts)
+            foreach (MagicTextBox item in AllTexts)
             {
                 item.SortOrder = sortOrder;
             }
@@ -268,7 +268,7 @@ namespace CardsUI
 
         public void ChangeSortingOrder(int changeVal)
         {
-            foreach (FormattedText item in AllTexts)
+            foreach (MagicTextBox item in AllTexts)
             {
                 item.SortOrder += changeVal;
             }

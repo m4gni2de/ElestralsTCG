@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -114,5 +116,30 @@ public static class UIHelpers
 
        
        
+    }
+
+    public static void OverrideCanvas(this Canvas canvas, string sortLayer, int sortOrder)
+    {
+        canvas.overrideSorting = true;
+        canvas.sortingLayerName = sortLayer;
+        canvas.sortingOrder = sortOrder;
+        
+    }
+    public static Canvas GetDropdownCanvas(this TMP_Dropdown drop)
+    {
+        FieldInfo[] fields = drop.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        foreach (var item in fields)
+        {
+            if (item.Name == "m_Dropdown")
+            {
+                GameObject go = (GameObject)item.GetValue(drop);
+                if (go != null)
+                {
+                    return go.GetComponent<Canvas>();
+                }
+                
+            }
+        }
+        return null;
     }
 }

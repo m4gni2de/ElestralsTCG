@@ -103,11 +103,21 @@ namespace Logging
     public class LogController
     {
         #region Properties
+        private static string LogPath
+        {
+            get
+            {
+                return GetLogPath();
+            }
+        }
+        private static string GetLogPath()
+        {
 #if UNITY_EDITOR
-        private static readonly string LogPath = "Assets/Logging";
+            return "Assets/Logging";
 #else
-private static readonly string LogPath = $"{Application.persistentDataPath}/Logging";
+            return $"{Application.persistentDataPath}/Logging";
 #endif
+        }
         
         public static string FileName
         {
@@ -134,7 +144,10 @@ private static readonly string LogPath = $"{Application.persistentDataPath}/Logg
 #region Writing
         public static void CheckFile()
         {
-
+            if (!Directory.Exists(LogPath))
+            {
+                Directory.CreateDirectory(LogPath);
+            }
             if (!File.Exists(FilePath))
             {
                 using (StreamWriter sw = File.CreateText(FilePath))

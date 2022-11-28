@@ -25,7 +25,8 @@ public class CatalogScene : MonoBehaviour , iSceneScript
         WorldCanvas.FindCamera();
         DisplayManager.ClearButton();
         DisplayManager.ToggleVisible(true);
-        DisplayManager.SetDefault(() => App.TryChangeScene("MainScene"));
+        //DisplayManager.SetDefault(() => App.TryChangeScene("MainScene"));
+        DisplayManager.SetDefault(App.TryChangeScene, "MainScene");
     }
     #endregion
 

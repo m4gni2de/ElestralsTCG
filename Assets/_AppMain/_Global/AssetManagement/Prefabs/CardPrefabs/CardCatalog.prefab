@@ -4491,11 +4491,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51a379376b9a3aa4fa4e82000fc4d1c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _settCatalog:
-    displayDuplicates: 0
   cardDisplay: {fileID: 2671350655325444041}
   CardScroll: {fileID: 4453310975606767056}
   scrollBar: {fileID: 4453310975842406036}
+  PagesObject: {fileID: 7201069304078813163}
+  BorderObjects: []
   filtersCanvasGroup: {fileID: 6587583295920856852}
   nonCardCanvas: {fileID: 7201069304842024385}
   _templateCard: {fileID: 2671350657208360051}
@@ -4547,7 +4547,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &4453310974879140365
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9357,6 +9357,10 @@ PrefabInstance:
     - target: {fileID: 5115487906832775287, guid: 2fceee3f729dbd347a516b71bfde1839, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7829466614710230838, guid: 2fceee3f729dbd347a516b71bfde1839, type: 3}
+      propertyPath: _defaultMaterial
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2fceee3f729dbd347a516b71bfde1839, type: 3}

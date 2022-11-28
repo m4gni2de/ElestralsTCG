@@ -240,7 +240,7 @@ public class App
         }
         
     }
-    public static void AskYesNoCancel(string msg, Action<PopupResposne> callback)
+    public static void AskYesNoCancel(string msg, Action<PopupResponse> callback)
     {
         if (PopupManager.ActivePopup == null)
         {

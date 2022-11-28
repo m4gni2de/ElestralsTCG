@@ -6,7 +6,7 @@ using System;
 
 namespace PopupBox
 {
-    public enum PopupResposne
+    public enum PopupResponse
     {
         Cancel = 0,
         Yes = 1,

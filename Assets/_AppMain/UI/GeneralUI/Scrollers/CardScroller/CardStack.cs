@@ -11,45 +11,19 @@ namespace CardsUI.Filtering
     {
         #region Properties
         [SerializeField]
-        private FormattedText txtQuantity;
+        private MagicTextBox txtQuantity;
+        public MagicTextBox QuantityText { get { return txtQuantity; } }
         [SerializeField]
         private GameObject qtyObject;
-        [SerializeField]
-        private Button upQtyButton;
-        [SerializeField]
-        private Button downQtyButton;
-
-
-        private List<Renderer> _buttonRenderers = null;
-        protected List<Renderer> buttonRenderers
-        {
-            get
-            {
-                if (_buttonRenderers == null)
-                {
-                    _buttonRenderers = new List<Renderer>();
-                    Renderer[] rends = qtyObject.GetComponentsInChildren<Renderer>();
-                    _buttonRenderers.AddRange(rends);
-                }
-                return _buttonRenderers;
-            }
-        }
         #endregion
+
         #region Events & Button Listeners
-        public static event Action<CardView, int> OnQuantityChanged;
-        private void DoChangeQuantity()
+        public static event Action<CardView, int, bool> OnQuantityChanged;
+        private void DoChangeQuantity(bool addHistory)
         {
-            OnQuantityChanged?.Invoke(this, quantity);
+            OnQuantityChanged?.Invoke(this, quantity, addHistory);
         }
 
-        public void ToggleUpButton(bool isInteractable)
-        {
-            upQtyButton.interactable = isInteractable;
-        }
-        public void ToggleDownButton(bool isInteractable)
-        {
-            downQtyButton.interactable = isInteractable;
-        }
         #endregion
 
 
@@ -67,27 +41,38 @@ namespace CardsUI.Filtering
                 {
                     _quantity = value;
                     UpdateQuantity(value);
-                    DoChangeQuantity();
+                    
                 }
             }
         }
 
-        public void ChangeQuantity(int changeVal)
+        public void SetQuantity(float changeVal)
+        {
+            SetQuantity((int)changeVal, true);
+        }
+        public void SetQuantity(int newVal, bool addHistory)
+        {
+            quantity = newVal;
+            DoChangeQuantity(addHistory);
+        }
+        public void ChangeQuantity(int changeVal, bool addHistory)
         {
             quantity = _quantity + changeVal;
+            DoChangeQuantity(addHistory);
         }
 
         private void UpdateQuantity(int newQty)
         {
-            if (newQty > 0)
-            {
-                txtQuantity.SetText(newQty.ToString());
-            }
-            else
-            {
-                txtQuantity.SetText("0");
-                Hide();
-            }
+            txtQuantity.SetText(newQty.ToString());
+            //if (newQty > 0)
+            //{
+            //    txtQuantity.SetText(newQty.ToString());
+            //}
+            //else
+            //{
+            //    txtQuantity.SetText("0");
+            //    Hide();
+            //}
 
             
             
@@ -106,25 +91,25 @@ namespace CardsUI.Filtering
         {
             return GetComponent<RectTransform>().rect.height + qtyObject.GetComponent<RectTransform>().rect.height;
         }
-        public override void SetSortingLayer(string sortLayer)
-        {
-            base.SetSortingLayer(sortLayer);
-            for (int i = 0; i < buttonRenderers.Count; i++)
-            {
-                buttonRenderers[i].sortingLayerName = sortLayer;
-            }
+        //public override void SetSortingLayer(string sortLayer)
+        //{
+        //    base.SetSortingLayer(sortLayer);
+        //    for (int i = 0; i < buttonRenderers.Count; i++)
+        //    {
+        //        buttonRenderers[i].sortingLayerName = sortLayer;
+        //    }
 
-        }
+        //}
 
-        public override void SetSortingOrder(int order)
-        {
+        //public override void SetSortingOrder(int order)
+        //{
 
-            base.SetSortingOrder(order);
-            for (int i = 0; i < buttonRenderers.Count; i++)
-            {
-                buttonRenderers[i].sortingOrder = CurrentConfig.raritySp.sortingOrder + order;
-            }
-        }
+        //    base.SetSortingOrder(order);
+        //    for (int i = 0; i < buttonRenderers.Count; i++)
+        //    {
+        //        buttonRenderers[i].sortingOrder = CurrentConfig.raritySp.sortingOrder + order;
+        //    }
+        //}
         #endregion
 
       

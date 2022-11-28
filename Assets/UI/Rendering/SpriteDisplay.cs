@@ -9,6 +9,16 @@ using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class SpriteDisplay : MonoBehaviour
 {
+    #region Operators
+    public static implicit operator SpriteDisplay(SpriteRenderer rend)
+    {
+        SpriteDisplay display;
+        rend.TryGetComponent(out display);
+        if (display != null) { return display; }
+        return null;
+    }
+
+    #endregion
     public enum RenderType
     {
         Undefined = -1,
@@ -127,6 +137,7 @@ public class SpriteDisplay : MonoBehaviour
         //if (RendType == RenderType.Image) { _image.sprite = null; }
     }
 
+    #region Colors
     public void SetColor(Color color)
     {
         if (RendType == RenderType.Image) { _image.color = color; }
@@ -138,6 +149,66 @@ public class SpriteDisplay : MonoBehaviour
         if (RendType == RenderType.Sprite) { return _sp.color; }
         return Color.white;
     }
+    public void ChangeToColor(Color col, float changeDuration)
+    {
+        StartCoroutine(FadeColor(col, changeDuration));
+    }
+    private IEnumerator FadeColor(Color col, float totalTime)
+    {
+        Color prevCol = GetColor();
+        float acumTime = 0f;
+        SetColor(col);
+
+
+        do
+        {
+            yield return new WaitForEndOfFrame();
+            acumTime += Time.deltaTime;
+            float percElapsed = (acumTime - totalTime) / totalTime;
+            Color fade = Color.Lerp(col, prevCol, percElapsed);
+            SetColor(fade);
+        } while (true && acumTime <= totalTime);
+
+        SetColor(col);
+    }
+    public void ChangeToColorForDuration(Color col, float time, float fadeDuration = 0f)
+    {
+        StartCoroutine(DoChangeAndFadeBack(col, time, fadeDuration));
+    }
+
+    /// <summary>
+    /// Change the color of the spite to a certain color for a certain period of time, then fades back to the original color.
+    /// </summary>
+    /// <param name="col"></param>
+    /// <param name="time"></param>
+    /// <param name="fadeDuration"></param>
+    /// <returns></returns>
+    private IEnumerator DoChangeAndFadeBack(Color col, float time, float fadeDuration)
+    {
+        Color prevCol = GetColor();
+        float acumTime = 0f;
+        float totalTime = time + fadeDuration;
+        SetColor(col);
+
+
+        do
+        {
+            yield return new WaitForEndOfFrame();
+            acumTime += Time.deltaTime;
+
+            if (acumTime >= time)
+            {
+                float elapsedFade = acumTime - time;
+                float percFade = elapsedFade / fadeDuration;
+
+                Color fade = Color.Lerp(col, prevCol, percFade);
+                SetColor(fade);
+            }
+        } while (true && acumTime <= totalTime);
+
+        SetColor(prevCol);
+    }
+    #endregion
 
     #region Functions
 

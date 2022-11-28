@@ -1,13 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using Gameplay;
-using JetBrains.Annotations;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.Rendering;
-using UnityEngine.UIElements;
 
 namespace GameActions    
 {
@@ -26,8 +18,11 @@ namespace GameActions
         public void SetAction(Delegate ac, params object[] args)
         {
             Action = ac;
-            parameters = new object[args.Length];
-            for (int i = 0; i < args.Length; i++)
+
+            int argLength = 0;
+            if (args != null) { argLength = args.Length; }
+            parameters = new object[argLength];
+            for (int i = 0; i < argLength; i++)
             {
                 parameters[i] = args[i];
             }
@@ -36,6 +31,10 @@ namespace GameActions
         public void Invoke()
         {
             this.Action.DynamicInvoke(parameters);
+        }
+        public void Invoke(params object[] args)
+        {
+            this.Action.DynamicInvoke(args);
         }
 
         public bool IsEqual(Delegate a)
@@ -57,6 +56,17 @@ namespace GameActions
         private static GameAction CreatedAction(Delegate de, params object[] args)
         {
             return new GameAction(de, args);
+        }
+        /// <summary>
+        /// Creating a Game Action with no variable input parameters and no output parameters means that it is expecting parameters when it's Invoked.
+        /// Eventually this will be converted to a GameEvent, which will be designed specifically for accepting parameters on Invoke.
+        /// GameEvents will watch for GameActions. 
+        /// </summary>
+        /// <param name="de"></param>
+        /// <returns></returns>
+        public static GameAction Create(Delegate de)
+        {
+            return new GameAction(de, null);
         }
         public static GameAction Create(Action ac)
         {
@@ -109,6 +119,17 @@ namespace GameActions
 
                 de.DynamicInvoke(args);
             }
+        }
+
+        /// <summary>
+        /// Work on this. Eventually create a GameEvent, which will be for accepting input Parameters.
+        /// GameActions are designed to be baked Actions with pre-defined Parameters, whereas GameEvents will be designed to accept variable amounts and types of parameters.
+        /// </summary>
+        /// <param name="args"></param>
+        /// <exception cref="System.Exception"></exception>
+        public void Invoke(params object[] args)
+        {
+            throw new System.Exception("MultiActions cannot recieve Parameter Inputs");
         }
         public void SetAction(Delegate ac, params object[] args)
         {

@@ -109,7 +109,30 @@ public abstract class Card : iCard
         }
     }
 
-   
+
+    private List<string> reprints = null;
+    public List<string> Reprints
+    {
+        get
+        {
+            if (reprints == null)
+            {
+                reprints = new List<string>();
+
+                string whereClause = $"baseKey = '{cardData.cardKey}' AND image = '{cardData.image}'";
+                List<qUniqueCard> sharedCards = CardService.GetAllWhere<qUniqueCard>(CardService.qUniqueCardView, whereClause);
+
+                for (int i = 0; i < sharedCards.Count; i++)
+                {
+                    reprints.Add(sharedCards[i].setKey);
+                }
+            }
+            return reprints;
+
+        }
+    }
+
+
     #region Spirits and Elements
     private List<Element> _SpiritsReq = null;
     public List<Element> SpiritsReq

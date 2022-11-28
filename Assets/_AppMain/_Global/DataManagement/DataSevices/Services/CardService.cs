@@ -4,7 +4,8 @@ using UnityEngine;
 using Databases;
 using Databases.Views;
 using static UnityEngine.Rendering.DebugUI;
-
+using UnityEditor.Searcher;
+using SimpleSQL;
 
 namespace Cards
 {
@@ -93,6 +94,53 @@ namespace Cards
             
             return dtos;
            
+        }
+        public static List<qUniqueCard> GetAllReprints(iCardData data, string whereClause = "")
+        {
+            string query = $"baseKey = '{data.baseKey}' AND image = '{data.image}";
+
+            if (!string.IsNullOrEmpty(whereClause)) { query += $" AND {whereClause};"; } else { query += ";"; }
+            List<qUniqueCard> dtos = ListByQuery<qUniqueCard>(qUniqueCardView, query);
+            return dtos;
+        }
+        public static List<string> GetAllReprintKeys(iCardData data, string whereClause = "")
+        {
+            string query = $"SELECT setKey FROM {qUniqueCardView} WHERE baseKey = '{data.baseKey}' AND image = '{data.image}";
+
+            if (!string.IsNullOrEmpty(whereClause)) { query += $" AND {whereClause};"; } else { query += ";"; }
+            SimpleDataTable item = db.QueryGeneric(query);
+
+            List<string> keys = new List<string>();
+            for (int i = 0; i < item.rows.Count; i++)
+            {
+                string res = item.rows[i].fields[0].ToString();
+                keys.Add(res);
+            }
+            return keys;
+        }
+
+        public static List<qUniqueCard> GetAllDuplicates(iCardData data, string whereClause = "")
+        {
+            string query = $"baseKey = '{data.baseKey}'";
+
+            if (!string.IsNullOrEmpty(whereClause)) { query += $" AND {whereClause};"; } else { query += ";"; }
+            List<qUniqueCard> dtos = ListByQuery<qUniqueCard>(qUniqueCardView, query);
+            return dtos;
+        }
+        public static List<string> GetAllDuplicateKeys(iCardData data, string whereClause = "")
+        {
+            string query = $"SELECT setKey FROM {qUniqueCardView} WHERE baseKey = '{data.baseKey}'";
+
+            if (!string.IsNullOrEmpty(whereClause)) { query += $" AND {whereClause};"; } else { query += ";"; }
+            SimpleDataTable item = db.QueryGeneric(query);
+
+            List<string> keys = new List<string>();
+            for (int i = 0; i < item.rows.Count; i++)
+            {
+                string res = item.rows[i].fields[0].ToString();
+                keys.Add(res);
+            }
+            return keys;
         }
         #endregion
         public static T FindCardWithTitle<T>(string table, string title, string set) where T : new()

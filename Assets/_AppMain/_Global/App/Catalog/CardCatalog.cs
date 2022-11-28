@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using TMPro;
 using nsSettings;
 using System.Reflection;
+using System;
 
 public enum CatalogMode
 {
@@ -50,8 +51,18 @@ public class CardCatalog : MonoBehaviour, iScaleCard
     private Scrollbar scrollBar;
 
     [SerializeField]
+    private GameObject PagesObject;
 
-   
+    private Canvas _pagesCanvas = null;
+    public Canvas pagesCanvas
+    {
+        get
+        {
+            _pagesCanvas ??= PagesObject.GetComponent<Canvas>();
+            return _pagesCanvas;
+        }
+    }
+    [SerializeField] private List<GameObject> BorderObjects = new List<GameObject>();
 
     private Transform Content { get { return CardScroll.content; } }
     private GridLayoutGroup Grid { get { return Content.GetComponent<GridLayoutGroup>(); } }
@@ -79,6 +90,11 @@ public class CardCatalog : MonoBehaviour, iScaleCard
         }
     }
 
+    private bool _isLoaded = false;
+    public bool IsLoaded { get { return _isLoaded; } }
+
+    private bool _isOpen = false;
+    public bool IsOpen { get { return _isOpen; } }
    
     #endregion
 
@@ -128,12 +144,12 @@ public class CardCatalog : MonoBehaviour, iScaleCard
 
     protected int GetTotalPages(int cardCount)
     {
-        if (cardCount <= settings.cardsPerPage) { return 1; }
-        if (cardCount % settings.cardsPerPage > 0)
+        if (cardCount <= settings.itemsPerPage) { return 1; }
+        if (cardCount % settings.itemsPerPage > 0)
         {
-            return (cardCount / settings.cardsPerPage) + 1;
+            return (cardCount / settings.itemsPerPage) + 1;
         }
-        return cardCount / settings.cardsPerPage;
+        return cardCount / settings.itemsPerPage;
     }
     private List<Card> _results = null;
     private List<Card> results { get { _results ??= new List<Card>(); return _results; } }
@@ -168,6 +184,16 @@ public class CardCatalog : MonoBehaviour, iScaleCard
     {
         return _visibleCards[index];
     }
+
+    public int GetIndexOfCard(string cardKey)
+    {
+        
+        for (int i = 0; i < results.Count; i++)
+        {
+            if (results[i].cardData.cardKey.ToLower() == cardKey.ToLower()) { return i; }
+        }
+        return -1;
+    }
     #endregion
 
     #region Filters
@@ -177,33 +203,7 @@ public class CardCatalog : MonoBehaviour, iScaleCard
 
     public TMP_Text cPageText;
     public TMP_Text totalText;
-    #endregion
-
    
-
-    #region Filters
-    //private bool IsCardDuplicate(Card original, List<Card> toCheck)
-    //{
-    //    List<string> altArts = original.AltArts;
-
-    //    bool inList = false;
-    //    for (int i = 0; i < toCheck.Count; i++)
-    //    {
-    //        Card c = toCheck[i];
-    //        if (altArts.Contains(c.cardData.cardKey))
-    //        {
-    //            inList = true;
-    //            bool cStellar = c.cardData.rarity == Rarity.Stellar;
-    //            bool originalStellar = original.cardData.rarity == Rarity.Stellar;
-
-
-
-    //            if (c.cardData.artType != original.cardData.artType || original.cardData.rarity != c.cardData.rarity)
-    //        }
-           
-    //    }
-    //    return false;
-    //}
     protected List<Card> Results()
     {
         List<Card> list = new List<Card>();
@@ -219,11 +219,11 @@ public class CardCatalog : MonoBehaviour, iScaleCard
         //    queryWhere += " GROUP BY baseKey";
         //}
 
-        queryWhere += " ORDER BY title ASC";
+        queryWhere += " ORDER BY title ASC;";
         Debug.Log(queryWhere);
 
         List<qUniqueCard> dtos = new List<qUniqueCard>();
-        if (!settCatalog.displayDuplicates) { dtos = dtos = CardService.CardsByUniqueArt(queryWhere); } else { dtos = CardService.ListByQuery<qUniqueCard>(CardService.qUniqueCardView, queryWhere); }
+        if (!settCatalog.displayDuplicates) { dtos = CardService.CardsByUniqueArt(queryWhere); } else { dtos = CardService.ListByQuery<qUniqueCard>(CardService.qUniqueCardView, queryWhere); }
 
         for (int i = 0; i < dtos.Count; i++)
         {
@@ -268,12 +268,45 @@ public class CardCatalog : MonoBehaviour, iScaleCard
         cardDisplay.gameObject.SetActive(false);
         name = "CardCatalog";
         FilterMenu.SetFilter<qBaseCard>();
+        _isLoaded = false;
     }
 
-    public void Open(GridSettings sett)
+    public void Toggle(bool isOn)
+    {
+        _isOpen = isOn;
+        gameObject.SetActive(isOn);
+    }
+    public void Open(GridSettings sett, string sortLayerName = "", int sortOrder = -1)
     {
         settings = sett;
+
+        Toggle(true);
+        if (!string.IsNullOrEmpty(sortLayerName) && sortOrder > - 1)
+        {
+            canvas.overrideSorting = true;
+            canvas.sortingLayerName = sortLayerName;
+            canvas.sortingOrder = sortOrder;
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.worldCamera = Camera.main;
+
+            pagesCanvas.overrideSorting = true;
+
+            int order = SortingLayer.GetLayerValueFromName(sortLayerName);
+            string sortName = SortingLayer.layers[order + 6].name;
+            pagesCanvas.sortingLayerName = sortName;
+            pagesCanvas.sortingOrder = canvas.sortingOrder + 500;
+            pagesCanvas.renderMode = RenderMode.ScreenSpaceCamera;
+            pagesCanvas.worldCamera = Camera.main;
+
+            for (int i = 0; i < BorderObjects.Count; i++)
+            {
+                SpriteRenderer sp = BorderObjects[i].GetComponent<SpriteRenderer>();
+                sp.sortingLayerName = sortName;
+                sp.sortingOrder = canvas.sortingOrder + 499;
+            }
+        }
         SetupCatalog();
+        _isLoaded = true;
     }
 
    
@@ -286,10 +319,14 @@ public class CardCatalog : MonoBehaviour, iScaleCard
 
         closeFiltersBtn.gameObject.SetActive(false);
         openFiltersBtn.gameObject.SetActive(true);
+
+       
+
+
         CardsList.Add(_templateCard);
         
 
-        for (int i = 1; i < settings.cardsPerPage; i++)
+        for (int i = 1; i < settings.itemsPerPage; i++)
         {
             CardView g = Instantiate(_templateCard, Content.transform);
 
@@ -309,7 +346,7 @@ public class CardCatalog : MonoBehaviour, iScaleCard
         TotalPages = GetTotalPages(results.Count);
 
 
-        int loadCount = settings.cardsPerPage;
+        int loadCount = settings.itemsPerPage;
         if (TotalPages == 1) { loadCount = results.Count; }
 
         
@@ -347,7 +384,7 @@ public class CardCatalog : MonoBehaviour, iScaleCard
         TotalPages = GetTotalPages(results.Count);
 
 
-        int loadCount = settings.cardsPerPage;
+        int loadCount = settings.itemsPerPage;
         if (TotalPages == 1) { loadCount = results.Count; }
 
         LoadCards(0, loadCount);
@@ -380,9 +417,9 @@ public class CardCatalog : MonoBehaviour, iScaleCard
     protected void JumpToPage(int newPage)
     {
         PageNumber = newPage;
-        int loadCount = settings.cardsPerPage;
-        int startIndex = (PageNumber - 1) * settings.cardsPerPage;
-        if (results.Count - startIndex < settings.cardsPerPage) { loadCount = results.Count - startIndex; }
+        int loadCount = settings.itemsPerPage;
+        int startIndex = (PageNumber - 1) * settings.itemsPerPage;
+        if (results.Count - startIndex < settings.itemsPerPage) { loadCount = results.Count - startIndex; }
         
         LoadCards(startIndex, loadCount);
 
@@ -425,8 +462,33 @@ public class CardCatalog : MonoBehaviour, iScaleCard
         CardView v = GetCardAtVisibleIndex(nextIndex);
         DisplayCard(v);
     }
+
+    public void JumpToCard(string key)
+    {
+        int resIndex = -1;
+        for (int i = 0; i < results.Count; i++)
+        {
+            if (results[i].cardData.cardKey.ToLower() == key.ToLower())
+            {
+                resIndex = i;
+                break;
+            }
+        }
+        if (resIndex > -1)
+        {
+            var coords = CardScroll.FindCoordinates(resIndex, results.Count, settings);
+            JumpToPage(coords.page);
+            scrollBar.value = coords.scrollValue;
+            CardView card = GetCardAtVisibleIndex(coords.indexOnPage);
+            card.Highlight(card.cardBorder, Color.yellow, 3f, 1f);
+        }
+    }
     #endregion
 
+    public void CardClicked(CardView card)
+    {
+
+    }
     public void DisplayCard(CardView card)
     {
         if (card.ActiveCard != null)

@@ -17,4 +17,5 @@ public interface iCardData
     public Rarity rarity { get; set; }
     public ArtType artType { get; set; }
     public string setStamp1 { get; set; }
+    public string baseKey { get; set; }
 }

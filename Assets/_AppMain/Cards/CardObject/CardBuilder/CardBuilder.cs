@@ -17,8 +17,8 @@ public class CardBuilder : MonoBehaviour
 
     #region Texts
     [Header("Texts")]
-    public FormattedText NameText;
-    public FormattedText EffectText;
+    public MagicTextBox NameText;
+    public MagicTextBox EffectText;
     public TMP_Text attackText;
     public TMP_Text defenseText;
     #endregion

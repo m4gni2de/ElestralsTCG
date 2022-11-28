@@ -44,7 +44,7 @@ namespace PopupBox
             }
         }
 
-        public void ShowWithCancel(string msg, Action<PopupResposne> callback)
+        public void ShowWithCancel(string msg, Action<PopupResponse> callback)
         {
             Refresh();
             txtMessage.text = msg;
@@ -72,18 +72,18 @@ namespace PopupBox
         }
         public override void Confirm()
         {
-            if (!CanCancel) { SendResult(true); } else { SendResult(PopupResposne.Yes); }
+            if (!CanCancel) { SendResult(true); } else { SendResult(PopupResponse.Yes); }
             
         }
         public override void Deny()
         {
-            if (!CanCancel) { SendResult(false); } else { SendResult(PopupResposne.No); }
+            if (!CanCancel) { SendResult(false); } else { SendResult(PopupResponse.No); }
         }
         public override void Cancel()
         {
             if (CanCancel)
             {
-                SendResult(PopupResposne.Cancel);
+                SendResult(PopupResponse.Cancel);
             }
             
         }

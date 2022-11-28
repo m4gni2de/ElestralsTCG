@@ -56,7 +56,7 @@ namespace Gameplay.Menus
         [SerializeField]
         private Button CancelButton;
         [SerializeField]
-        private FormattedText TitleText;
+        private MagicTextBox TitleText;
 
         public GameToggleGroup CardModeGroup;
         public GameToggle AttackToggle, DefenseToggle;
