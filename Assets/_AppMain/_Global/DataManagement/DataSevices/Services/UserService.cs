@@ -14,6 +14,7 @@ namespace Databases
         protected static readonly string KeyColumn = "userKey";
         protected static readonly string DeckCardTable = "DeckCardDTO";
         public static readonly string UserDeckTable = "uDeckDTO";
+        public static readonly string SideDeckTable = "uSideDeckDTO";
 
         public static UserDTO CreateUser(string username)
         {

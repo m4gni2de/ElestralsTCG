@@ -1251,7 +1251,7 @@ MonoBehaviour:
   workingName: 
   overwriteIfExists: 1
   overwriteMaster: 0
-  debugTrace: 0
+  debugTrace: 1
 --- !u!1 &3561014839276487208
 GameObject:
   m_ObjectHideFlags: 0

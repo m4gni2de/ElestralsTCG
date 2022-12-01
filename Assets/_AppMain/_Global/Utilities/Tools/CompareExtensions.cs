@@ -33,7 +33,7 @@ public static class CompareExtensions
             bool a = obj1.BoolValueGeneric();
             bool b = obj2.BoolValueGeneric();
 
-            if (a == b) { return ComparedTo.EqualTo; }
+            if (a == b) { return ComparedTo.EqualTo; } else { return ComparedTo.NoComparison; }
         }
 
         if (obj1.GetType() == typeof(string))
@@ -41,7 +41,17 @@ public static class CompareExtensions
             string a1 = obj1.ToString();
             string b1 = obj2.ToString();
 
-            if (a1.ToLower() == b1.ToLower()) { return ComparedTo.EqualTo; }
+            if (a1.ToLower() == b1.ToLower()) { return ComparedTo.EqualTo; } else { return ComparedTo.NoComparison; }
+        }
+
+        if (obj1.GetType() == typeof(DateTime))
+        {
+            DateTime a = DateTime.Parse(obj1.ToString());
+            DateTime b = DateTime.Parse(obj2.ToString());
+
+            if (a > b) { return ComparedTo.GreaterThan; }
+            if (a < b) { return ComparedTo.LessThan; }
+            return ComparedTo.EqualTo;
         }
 
         return ComparedTo.NoComparison;

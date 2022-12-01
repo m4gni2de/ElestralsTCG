@@ -20,6 +20,12 @@ public class CardView : MonoBehaviour, iRemoteAsset, iCardView
     {
         Destroy(gameObject);
     }
+    public iCard GetCard()
+    {
+        if (ActiveCard == null) { return null; }
+        return ActiveCard;
+    }
+    
     #endregion
 
     #region Properties
@@ -36,8 +42,22 @@ public class CardView : MonoBehaviour, iRemoteAsset, iCardView
         {
             string st = "";
             if (ActiveCard == null) { return st; }
-            st = $"{ActiveCard.cardData.cardName} - ({ActiveCard.cardData.cardKey})";
-            return st;
+
+            st = $"{ActiveCard.cardData.cardName}";
+            if (ActiveCard.cardData.artType == ArtType.AltArt)
+            {
+                st += " - (Alternate Art)";
+            }
+            else if (ActiveCard.cardData.artType == ArtType.FullArt)
+            {
+                st += " - (Full Art)";
+            }
+            if (ActiveCard.cardData.artType == ArtType.Stellar || ActiveCard.cardData.rarity == Rarity.Stellar)
+            {
+                st = $"Stellar {ActiveCard.cardData.cardName}";
+            }
+            
+                return st;
         }
     }
     #endregion
@@ -305,15 +325,22 @@ public class CardView : MonoBehaviour, iRemoteAsset, iCardView
     }
     #endregion
 
-    #region Card Clicking
+    #region Card Touch Events
     public static event Action<CardView> OnCardClicked;
+    public static event Action<CardView> OnCardHeld;
+    /// <summary>
+    /// Set this as a Persistent Listener for OnCardClicked in the inspector to get the CardView that's clicked by subscribing to the OnCardClicked event
+    /// </summary>
     public void ClickCard()
     {
-        DoCardClick();
-    }
-    private void DoCardClick()
-    {
         OnCardClicked?.Invoke(this);
+    }
+    /// <summary>
+    /// Set this as a Persistent Listener for OnCardHeld in the inspector to get the CardView that's Held by subscribing to the OnCardHeld event
+    /// </summary>
+    public void HoldCard()
+    {
+        OnCardHeld?.Invoke(this);
     }
     #endregion
 

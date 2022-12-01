@@ -8,12 +8,13 @@ using Databases;
 using Decks;
 using Gameplay;
 using Newtonsoft.Json.Bson;
+using Newtonsoft.Json.Schema;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class CardScroll : MonoBehaviour
 {
-
+    
     #region ScrollSettings
     public class ScrollSettings
     {
@@ -22,6 +23,7 @@ public class CardScroll : MonoBehaviour
     }
     #endregion
 
+   
     #region Properties
     public CardView templateCard;
     public CardView displayCard;
@@ -34,6 +36,7 @@ public class CardScroll : MonoBehaviour
     [Header("Scroll Properties")]
     public Transform ScrollContent;
     public ScrollRect Scroll;
+    
     [SerializeField]
     private GridLayoutGroup Grid;
     private GridSettings gridSettings;
@@ -144,7 +147,7 @@ public class CardScroll : MonoBehaviour
     {
         int perPage = gridSettings.itemsPerPage;
         if (gridSettings.InfiniteMode) { perPage = cardCount; }
-        if (cardCount <= perPage) { return 1; }
+        if (cardCount <= perPage || perPage == 0) { return 1; }
         if (cardCount % perPage > 0)
         {
             return (cardCount / perPage) + 1;
@@ -359,17 +362,13 @@ public class CardScroll : MonoBehaviour
             count += 1;
         }
 
-
         int additionalSpacing = Mathf.Abs((int)templateCard.RenderHeight - (int)Grid.cellSize.y);
         gridSettings.ChangeCellSpacing(new Vector2(Grid.spacing.x * 2f, additionalSpacing));
         PageNumber = 1;
-        TotalPages = GetTotalPages(cardCells.Count);
 
-
-        //int loadCount = gridSettings.cardsPerPage;
-        //if (TotalPages == 1) { loadCount = cardCells.Count; }
-
-
+        int loadCount = cardCells.Count;
+        if (cardCells.Count <= 0) { TotalPages = 1; } else { TotalPages = GetTotalPages(cardCells.Count); }
+       
 
         //LoadCards(0, loadCount);
     }

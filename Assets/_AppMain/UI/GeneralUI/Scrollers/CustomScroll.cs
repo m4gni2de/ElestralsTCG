@@ -2,10 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using GameActions;
-using Newtonsoft.Json.Bson;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
 
 public class CustomScroll : MonoBehaviour
 {
@@ -34,8 +32,6 @@ public class CustomScroll : MonoBehaviour
     private void LoadGridSetings(GridSettings sett)
     {
         gridSettings = sett;
-        //float freeWidth = Scroll.GetComponent<RectTransform>().FreeWidth(Scroll.verticalScrollbar.handleRect, gridSettings.TotalPadding());
-        //gridSettings.SetGridSize(Grid, freeWidth);
         gridSettings.OnSettingsUpdate -= UpdateGrid;
         gridSettings.OnSettingsUpdate += UpdateGrid;
     }
@@ -105,6 +101,7 @@ public class CustomScroll : MonoBehaviour
     private bool _isDirty = false;
     public bool IsDirty { get { return _isDirty; } private set { _isDirty = value; } }
     #endregion
+
 
     #region Initialization
     private void Refresh()

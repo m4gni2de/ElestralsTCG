@@ -44,6 +44,8 @@ namespace Gameplay
 
         #endregion
 
+        
+
         #region Network Linking
         //the id of the card in as it appears in order on the uploaded deck list. 
         protected int _networkId;

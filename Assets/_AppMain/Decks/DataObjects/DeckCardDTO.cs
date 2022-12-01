@@ -14,6 +14,8 @@ namespace Databases
         public int qty { get; set; }
     }
 
+
+
     [System.Serializable]
     public class qDeckList
     {

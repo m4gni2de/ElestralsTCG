@@ -15,6 +15,7 @@ namespace Databases
         public string owner { get; set; }
         public DateTime whenCreated { get; set; }
         public string uploadCode { get; set; }
+        public string sDeckKey { get; set; }
     }
 }
 

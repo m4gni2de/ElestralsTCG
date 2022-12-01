@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Gameplay.Menus
 {
-    public class GameToggleGroup : MonoBehaviour
+    public class MagicToggleGroup : MonoBehaviour
     {
         #region Properties
         public enum ToggleMode
@@ -27,18 +27,18 @@ namespace Gameplay.Menus
             }
         }
 
-        public List<GameToggle> Toggles = new List<GameToggle>();
+        public List<MagicToggle> Toggles = new List<MagicToggle>();
 
         [SerializeField]
-        protected List<GameToggle> m_toggled = null;
-        protected List<GameToggle> toggled
+        protected List<MagicToggle> m_toggled = null;
+        protected List<MagicToggle> toggled
         {
             get
             {
-                List<GameToggle> list = new List<GameToggle>();
+                List<MagicToggle> list = new List<MagicToggle>();
                 for (int i = 0; i < Toggles.Count; i++)
                 {
-                    if (Toggles[i].IsToggled)
+                    if (Toggles[i].IsOn)
                     {
                         list.Add(Toggles[i]);
                     }
@@ -69,15 +69,15 @@ namespace Gameplay.Menus
             }
         }
 
-        public void ToggleChanged(GameToggle toggle)
+        public void ToggleChanged(MagicToggle toggle)
         {
             
-            if (toggle.IsToggled)
+            if (toggle.IsOn)
             {
                 
                 if (toggled.Count > ToggleLimit)
                 {
-                    List<GameToggle> byDate = m_toggled;
+                    List<MagicToggle> byDate = m_toggled;
                     byDate.Sort(ByDateDescend);
                     byDate[0].Toggle(false);
                 }
@@ -110,15 +110,15 @@ namespace Gameplay.Menus
 
         public void SetToggleText(string toggleKey, string txt)
         {
-            GameToggle t = GetToggleByKey(toggleKey);
+            MagicToggle t = GetToggleByKey(toggleKey);
             SetToggleText(t, txt);
         }
-        public void SetToggleText(GameToggle toggle, string txt)
+        public void SetToggleText(MagicToggle toggle, string txt)
         {
             toggle.SetText(txt);
         }
 
-        protected GameToggle GetToggleByKey(string toggleKey)
+        protected MagicToggle GetToggleByKey(string toggleKey)
         {
             for (int i = 0; i < Toggles.Count; i++)
             {
@@ -153,14 +153,14 @@ namespace Gameplay.Menus
 
 
         #region Sorters
-        public int ByDate(GameToggle x, GameToggle y)
+        public int ByDate(MagicToggle x, MagicToggle y)
         {
             if (x.whenToggled > y.whenToggled) { return 1; }
             if (x.whenToggled < y.whenToggled) { return -1; }
             return 0;
         }
 
-        public int ByDateDescend(GameToggle x, GameToggle y)
+        public int ByDateDescend(MagicToggle x, MagicToggle y)
         {
             if (x.whenToggled > y.whenToggled) { return -1; }
             if (x.whenToggled < y.whenToggled) { return 1; }

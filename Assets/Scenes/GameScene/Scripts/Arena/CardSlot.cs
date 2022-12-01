@@ -289,10 +289,6 @@ namespace Gameplay
         }
         #endregion
 
-        #region Drag Event Watchers
-       
-        #endregion
-
         #region Card Management
         public virtual void RemoveCard(GameCard card)
         {
@@ -312,8 +308,6 @@ namespace Gameplay
 
         DisplayCardObject(card);
         SetCommands(card);
-
-        
 
     }
     

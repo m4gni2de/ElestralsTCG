@@ -8,9 +8,10 @@ using System;
 
 namespace Gameplay.Menus
 {
-    public class GameToggle : MonoBehaviour
+    public class MagicToggle : MonoBehaviour
     {
         #region Properties
+        
         private Toggle m_toggle = null;
         private Toggle _toggle
         {
@@ -31,12 +32,13 @@ namespace Gameplay.Menus
             }
         }
 
+
         [SerializeField]
         private TMP_Text label;
         public string valName;
 
-        public event Action<GameToggle> OnToggleChanged;
-        public bool IsToggled { get { return _toggle.isOn; } }
+        public event Action<MagicToggle> OnToggleChanged;
+        public bool IsOn { get { return _toggle.isOn; } }
         private DateTime _whenToggled = DateTime.MinValue;
         public DateTime whenToggled { get { return _whenToggled; } }
         #endregion
@@ -44,16 +46,16 @@ namespace Gameplay.Menus
 
         private void Awake()
         {
-            if (IsToggled)
+            if (IsOn)
             {
                 _whenToggled = DateTime.Now;
             }
         }
-        //this is the listener for the Toggle's OnValueChanged
+        //set this the listener for the Toggle's OnValueChanged
         public void Toggle()
         {
             OnToggleChanged?.Invoke(this);
-            if (IsToggled)
+            if (IsOn)
             {
                 _whenToggled = DateTime.Now;
             }
@@ -62,6 +64,7 @@ namespace Gameplay.Menus
                 _whenToggled = DateTime.MinValue;
             }
         }
+
         public void Toggle(bool isOn)
         {
             _toggle.isOn = isOn;
@@ -87,7 +90,11 @@ namespace Gameplay.Menus
             gameObject.SetActive(false);
         }
 
-        
+
+        #endregion
+
+        #region Controld
+        public bool Interactable { get { return _toggle.interactable; } set { _toggle.interactable = value; } }
         #endregion
     }
 }

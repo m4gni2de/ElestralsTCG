@@ -58,8 +58,8 @@ namespace Gameplay.Menus
         [SerializeField]
         private MagicTextBox TitleText;
 
-        public GameToggleGroup CardModeGroup;
-        public GameToggle AttackToggle, DefenseToggle;
+        public MagicToggleGroup CardModeGroup;
+        public MagicToggle AttackToggle, DefenseToggle;
         protected bool isCastMode = false;
         #endregion
 
@@ -264,9 +264,9 @@ namespace Gameplay.Menus
         
 
 
-        protected void CheckForFaceDownRune(GameToggle toggle)
+        protected void CheckForFaceDownRune(MagicToggle toggle)
         {
-            bool isOn = toggle.IsToggled;
+            bool isOn = toggle.IsOn;
             if (isOn)
             {
                 string newText = $"Play {SourceCard.cardStats.title} Face-Down?";

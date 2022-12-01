@@ -6,5 +6,6 @@ public interface iCardView
 {
     void Clear();
     void Destroy();
+    iCard GetCard();
    
 }

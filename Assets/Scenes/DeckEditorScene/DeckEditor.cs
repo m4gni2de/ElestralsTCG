@@ -7,14 +7,10 @@ using CardsUI.Filtering;
 using static Decks.Decklist;
 using System;
 using PopupBox;
-using UnityEditor.Rendering.LookDev;
-using Newtonsoft.Json.Bson;
 using Cards;
 using UnityEngine.UI;
-using Gameplay;
-using System.Globalization;
-using Databases;
-using UnityEditor.U2D.Path;
+using Gameplay.Menus;
+using nsSettings;
 
 public class DeckEditor : ValidationObject
 {
@@ -31,8 +27,8 @@ public class DeckEditor : ValidationObject
         get
         {
             if (Instance == null) { return false; }
-            if (Instance.IsDirty) { return true; }
-            return Instance.Validate();
+            //if (Instance.IsDirty) { return true; }
+            return !Instance.Validate();
         }
     }
 
@@ -104,7 +100,7 @@ public class DeckEditor : ValidationObject
    
     #endregion
 
-    #region Deck Selecting
+    #region Deck Selecting Properties
     [SerializeField] private GameObject selectorPanel;
     [SerializeField] private Button showSelectorBtn;
     [SerializeField] private Button hideSelectorBtn;
@@ -133,9 +129,12 @@ public class DeckEditor : ValidationObject
     }
     #endregion
 
-    #region Deck Editing
+    #region Deck Editing Properties
+
+
     [SerializeField] private GameObject DeckInfo;
     [SerializeField] private MagicInputText deckNameText;
+    [SerializeField] private MagicToggle activeToggle;
 
     private Archive<CardHistory> _history = null;
     public Archive<CardHistory> History
@@ -156,7 +155,7 @@ public class DeckEditor : ValidationObject
         }
     }
 
-    
+
     private int _deckindex = -1;
     private int deckIndex { get { return _deckindex; } set { _deckindex = value; } }
     private int _pendingDeckIndex = -1;
@@ -190,9 +189,15 @@ public class DeckEditor : ValidationObject
             _isDirty = value;
         }
     }
-    #endregion
 
-   
+    //private void ToggleDirty(bool setDirty)
+    //{
+    //    IsDirty = setDirty;
+    //}
+
+
+
+    #endregion
 
     #region Initialization
 
@@ -253,7 +258,6 @@ public class DeckEditor : ValidationObject
     }
 
     #endregion
-
     #region Deck Selection
     public void ToggleSelector(bool isOn)
     {
@@ -272,16 +276,7 @@ public class DeckEditor : ValidationObject
         }
     }
 
-    public void OpenDeckEditor()
-    {
-        GridSettings sett = GridSettings.Create(8, 8, 60, new Vector2(5f, 5f));
-        deckScroll.Setup(sett, false);
-        deckScroll.Settings.stackDuplicates = true;
-    }
-    private void ReloadDeckEditor()
-    {
-
-    }
+   
 
     public void SelectDeck()
     {
@@ -289,6 +284,7 @@ public class DeckEditor : ValidationObject
         if (index != deckIndex || ActiveDeck == null)
         {
             //do some save validation stuff here before changing decks
+            
             TryChangeDeck(index);
 
 
@@ -311,68 +307,136 @@ public class DeckEditor : ValidationObject
 
     }
 
-    private void SaveDeckChanges(PopupResponse response)
+    public void OpenDeckEditor()
     {
-
-        switch (response)
-        {
-            case PopupResponse.Cancel:
-                break;
-            case PopupResponse.Yes:
-                SaveActiveDeck();
-                SetActiveDeck(Decklist[_pendingDeckIndex]);
-                deckIndex = _pendingDeckIndex;
-                break;
-            case PopupResponse.No:
-                SetActiveDeck(Decklist[_pendingDeckIndex]);
-                deckIndex = _pendingDeckIndex;
-                break;
-        }
-
-        _pendingDeckIndex = -1;
-
+        GridSettings sett = GridSettings.Create(8, 8, 60, new Vector2(5f, 5f));
+        deckScroll.Setup(sett, false);
+        deckScroll.Settings.stackDuplicates = true;
     }
-
-    private void SetActiveDeck(Decklist deck)
+    
+    private void UpdateDeckEditor(Decklist deck)
     {
-        CardStack.OnQuantityChanged -= SetCardQuantity;
-        CardView.OnCardClicked -= CardClick;
-        if (deckIndex < 0)
-        {
-            OpenDeckEditor();
-        }
-        else
-        {
-            ReloadDeckEditor();
-        }
-        ActiveDeck = deck;
-        SetDeckInfo(deck);
+        IsDirty = false;
+        History.Clear();
+        
+
         CardCounts.Clear();
-        foreach (var item in deck.CardCounts)
+        foreach (var item in deck.Quantities)
         {
             CardCounts.Add(item.Key, item.Value);
         }
         deckScroll.LoadDeck(CardCounts);
-        IsDirty = false;
-        ToggleSelector(false);
-        CardStack.OnQuantityChanged += SetCardQuantity;
-        CardView.OnCardClicked += CardClick;
-        ToggleCatalog(false);
+        SetDeckInfo(deck);
         SetQuantityTexts();
+
     }
 
+    private void SetWatchers(bool turnOn)
+    {
+        if (turnOn)
+        {
+            CardStack.OnQuantityChanged += SetCardQuantity;
+            CardView.OnCardClicked += CardClick;
+            CardView.OnCardHeld += StartCardHold;
+        }
+        else
+        {
+            CardStack.OnQuantityChanged -= SetCardQuantity;
+            CardView.OnCardClicked -= CardClick;
+            CardView.OnCardHeld -= StartCardHold;
+        }
+    }
+    private void SetActiveDeck(Decklist deck)
+    {
+        SetWatchers(false);
+        IsDirty = false;
+        History.Clear();
+
+        if (deckIndex < 0)
+        {
+            OpenDeckEditor();
+        }
+        ActiveDeck = deck;
+        
+        CardCounts.Clear();
+        foreach (var item in deck.Quantities)
+        {
+            CardCounts.Add(item.Key, item.Value);
+        }
+        deckScroll.LoadDeck(CardCounts);
+       
+        ToggleSelector(false);
+        SetDeckInfo(deck);
+        SetWatchers(true);
+        ToggleCatalog(false);
+        
+    }
+
+
+
+
+    #endregion
+
+    #region Deck Information
     private void SetDeckInfo(Decklist deck)
     {
         deckNameText.Refresh();
         deckNameText.SetText(deck.DeckName);
+        deckNameText.AddTextChangeListener(() => SetDeckName(deckNameText.Content));
+
+        SetActiveToggle(deck);
 
     }
 
-    public void SaveActiveDeck()
+    private void SetDeckName(string newName)
     {
-        if (deckNameText.IsContentChanged()) { ActiveDeck.DeckName = deckNameText.Content; }
-        ActiveDeck.SetCards(CardCounts);
+        if (ActiveDeck != null) { ActiveDeck.DeckName = newName; SaveActiveDeck(); }
     }
+
+    #region Active Status Toggle
+    private void SetActiveToggle(Decklist deck)
+    {
+        bool isActiveDeck = deck.IsActiveDeck;
+        activeToggle.OnToggleChanged -= OnActiveDeckChanged;
+        if (isActiveDeck)
+        {
+            activeToggle.Toggle(true);
+            activeToggle.Interactable = false;
+            activeToggle.SetText("Already active.");
+        }
+        else
+        {
+            activeToggle.Interactable = true;
+            activeToggle.Toggle(false);
+            activeToggle.SetText("Make active deck?");
+            activeToggle.OnToggleChanged += OnActiveDeckChanged;
+        }
+    }
+
+    private void OnActiveDeckChanged(MagicToggle toggle)
+    {
+        if (toggle.IsOn)
+        {
+            int currentUserActive = SettingsManager.Account.Settings.ActiveDeck;
+            App.AskYesNo($"Would you like to change your Active Deck from {App.Account.DeckLists[currentUserActive].DeckName} to {ActiveDeck.DeckName}?", ConfirmActiveSelection);
+        }
+    }
+
+    private void ConfirmActiveSelection(bool confirm)
+    {
+        if (confirm)
+        {
+            SettingsManager.Account.Settings.ActiveDeck = int.Parse(ActiveDeck.DeckKey);
+            SetActiveToggle(ActiveDeck);
+        }
+        else
+        {
+            activeToggle.Toggle(false);
+        }
+    }
+    #endregion
+
+   
     #endregion
 
     #region Undo
@@ -472,52 +536,7 @@ public class DeckEditor : ValidationObject
     #endregion
 
     #region Card Quantity 
-    #region Quantity Changer
     [SerializeField] private IncrementChanger qtyChanger;
-    #endregion
-
-
-    /// <summary>
-    /// CardStacks in the DeckScroll and CardViews in the Catalog are set with this
-    /// </summary>
-    /// <param name="view"></param>
-    private void CardClick(CardView view)
-    {
-        if (_selectedCard != null && _selectedCard == view)
-        {
-            if (qtyChanger.gameObject.activeSelf)
-            {
-                qtyChanger.Hide();
-                return;
-            }
-        }
-        SelectedCard = view;
-        if (view is CardStack)
-        {
-            ClickCardStack(view as CardStack);
-        }
-        else
-        {
-            ClickCatalogCard(view);
-        }
-    }
-    private void ClickCardStack(CardStack view)
-    {
-        float max = 3f;
-        if (view.ActiveCard.CardType == CardType.Spirit) { max = 20f; }
-        qtyChanger.Load(view.DisplayName, view.quantity, 1f, 0f, max);
-        qtyChanger.AddValueListener(view.SetQuantity);
-    }
-    private void ClickCatalogCard(CardView view)
-    {
-        float max = 3f;
-        if (view.ActiveCard.CardType == CardType.Spirit) { max = 20f; }
-
-        int deckQty = QuantityInDeck(view);
-        qtyChanger.Load(view.DisplayName, deckQty, 1f, 0f, max);
-        qtyChanger.AddValueListener(ChangeQuantityInDeck);
-    }
-
     private void AddHistory(string cardKey, int oldQty, int newQty)
     {
         CardHistory h = new CardHistory(cardKey, oldQty, newQty);
@@ -671,8 +690,14 @@ public class DeckEditor : ValidationObject
 
 
     #endregion
-
     #region Card Adding/Removing
+    public bool CanAddCard(CardView view)
+    {
+        float max = 3f;
+        if (view.ActiveCard.CardType == CardType.Spirit) { max = 20f; }
+        int deckQty = QuantityInDeck(view);
+        return deckQty < max;
+    }
     public void CatalogToggleButton(bool turnOn)
     {
         ToggleCatalog(turnOn);
@@ -702,14 +727,140 @@ public class DeckEditor : ValidationObject
     }
     #endregion
 
+    #region Card Click/Hold
+    private Coroutine _cardHeld = null;
+    protected Coroutine CardHeld { get { return _cardHeld; } set { _cardHeld = value; } }
+
+    /// <summary>
+    /// CardStacks in the DeckScroll and CardViews in the Catalog are set with this
+    /// </summary>
+    /// <param name="view"></param>
+    private void CardClick(CardView view)
+    {
+        if (_selectedCard != null && _selectedCard == view)
+        {
+            if (qtyChanger.gameObject.activeSelf)
+            {
+                qtyChanger.Hide();
+                return;
+            }
+        }
+        SelectedCard = view;
+        if (view is CardStack)
+        {
+            ClickCardStack(view as CardStack);
+        }
+        else
+        {
+            ClickCatalogCard(view);
+        }
+    }
+    private void ClickCardStack(CardStack view)
+    {
+        float max = 3f;
+        if (view.ActiveCard.CardType == CardType.Spirit) { max = 20f; }
+        qtyChanger.Load(view.DisplayName, view.quantity, 1f, 0f, max);
+        qtyChanger.AddValueListener(view.SetQuantity);
+    }
+    private void ClickCatalogCard(CardView view)
+    {
+        float max = 3f;
+        if (view.ActiveCard.CardType == CardType.Spirit) { max = 20f; }
+
+        int deckQty = QuantityInDeck(view);
+        qtyChanger.Load(view.DisplayName, deckQty, 1f, 0f, max);
+        qtyChanger.AddValueListener(ChangeQuantityInDeck);
+    }
+
+    public void StartCardHold(CardView view)
+    {
+        if (CardHeld != null) { StopCoroutine(CardHeld); }
+        //CardHeld = StartCoroutine(DoCardHold(view));
+    }
+
+    private void HoldCardStack(CardStack view)
+    {
+        float max = 3f;
+        if (view.ActiveCard.CardType == CardType.Spirit) { max = 20f; }
+        qtyChanger.Load(view.DisplayName, view.quantity, 1f, 0f, max);
+        qtyChanger.AddValueListener(view.SetQuantity);
+    }
+    private void HoldCardView(CardView view)
+    {
+        float max = 3f;
+        if (view.ActiveCard.CardType == CardType.Spirit) { max = 20f; }
+
+        int deckQty = QuantityInDeck(view);
+        qtyChanger.Load(view.DisplayName, deckQty, 1f, 0f, max);
+        qtyChanger.AddValueListener(ChangeQuantityInDeck);
+    }
+
+   
+    #endregion
+
+
+
+
+
+
+
+
+
     #region Validation/Saving
     public override bool Validate()
     {
-        return deckNameText.IsContentChanged();
+        ErrorList.Clear();
+        if (deckNameText.IsContentChanged()) { AddError($"Deck Name has un-saved changes."); }
+        if (History.Count > 0) { AddError($"Deck has un-saved card changes."); }
+        if (IsDeckChanged()) { AddError($"Quantities in deck and in editor don't match."); }
+        return ErrorList.Count == 0;
     }
-    public void SaveDeck()
+
+    public bool IsDeckChanged()
+    {
+        if (ActiveDeck == null) { return false; }
+
+        Dictionary<string, int> originalQty = ActiveDeck.Quantities;
+        foreach (var item in CardCounts)
+        {
+            if (originalQty.ContainsKey(item.Key))
+            {
+                int startQty = originalQty[item.Key];
+                if (startQty != item.Value) { continue; }
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    private void SaveDeckChanges(PopupResponse response)
     {
 
+        switch (response)
+        {
+            case PopupResponse.Cancel:
+                break;
+            case PopupResponse.Yes:
+                SaveActiveDeck();
+                SetActiveDeck(Decklist[_pendingDeckIndex]);
+                deckIndex = _pendingDeckIndex;
+                break;
+            case PopupResponse.No:
+                SetActiveDeck(Decklist[_pendingDeckIndex]);
+                deckIndex = _pendingDeckIndex;
+                break;
+        }
+
+        _pendingDeckIndex = -1;
+
+    }
+    public void SaveActiveDeck()
+    {
+        ActiveDeck.Save(CardCounts);
+        UpdateDeckEditor(ActiveDeck);
     }
     #endregion
 

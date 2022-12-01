@@ -3,25 +3,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Databases;
+using System.Globalization;
 
 
 public class GameSettings<T> where T : ISettingsType<T>, new()
 {
-      
+    #region Properties
     public string Key { get; set; }
 
-    private T _Settings { get; set; }
     public T Settings { get; set; }
 
-       
-    public bool isDirty
+    public T this[T val]
     {
-        get
-        {
-            return LastSaved.settingsValue != Data.settingsValue;
-        }
+        get { return Settings; }
     }
 
+    /// <summary>
+    /// Depreciated
+    /// </summary>
     public SettingsData Data
     {
         get
@@ -29,10 +28,13 @@ public class GameSettings<T> where T : ISettingsType<T>, new()
             return SettingsData.Create(Key, Settings);
         }
     }
+
+
     private SettingsData LastSaved { get; set; }
 
-        
-        
+    #endregion
+
+    #region Initialization
     public GameSettings(string settKey)
     {
         SettingsData data = SettingsService.FindSettings(settKey);
@@ -61,11 +63,44 @@ public class GameSettings<T> where T : ISettingsType<T>, new()
         Settings = JsonUtility.FromJson<T>(data.settingsValue);
             
     }
+
+    #endregion
+
+    #region Changing Values
+
+    #endregion
+
+    #region Saving
+    
+    public bool IsDirty
+    {
+        get
+        {
+            T zero = JsonUtility.FromJson<T>(LastSaved.settingsValue);
+            T current = Settings;
+
+            foreach (var item in zero.GetType().GetProperties())
+            {
+                object zVal = item.GetValue(zero);
+                object currVal = item.GetValue(current);
+
+                if (zVal.CompareTo(currVal) != ComparedTo.EqualTo) { return true; }
+            }
+            return false;
+        }
+    }
+
+    public void SetValue<T1>(ref T1 valToChange, T1 newVal)
+    {
+        valToChange = newVal;
+    }
+
     public void Save()
     {
         SettingsService.Save(Key, Settings);
     }
-        
+    #endregion
+
 }
 
 

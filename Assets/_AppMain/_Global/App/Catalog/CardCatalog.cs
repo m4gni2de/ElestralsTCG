@@ -25,8 +25,9 @@ public class CardCatalog : MonoBehaviour, iScaleCard
     private string m_sortLayer = "Card";
     public string SortLayer => m_sortLayer;
 
-
+   
     #endregion
+
     #region Properties
 
     private CatalogSettings _settCatalog = null;
@@ -46,7 +47,7 @@ public class CardCatalog : MonoBehaviour, iScaleCard
     #region UI
     public CardView cardDisplay;
     public ScrollRect CardScroll;
-
+   
     [SerializeField]
     private Scrollbar scrollBar;
 

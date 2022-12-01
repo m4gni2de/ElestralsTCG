@@ -3,7 +3,7 @@
     "m_SelectedPackage": {
         "deviceId": "R5CR20B30MT",
         "name": "com.M4GStudios.ElestralsTCG.com",
-        "processId": 25722,
+        "processId": 23540,
         "exited": false
     },
     "m_SelectedPriority": 0,
@@ -84,6 +84,12 @@
             "deviceId": "R5CR20B30MT",
             "name": "com.M4GStudios.ElestralsTCG.com",
             "processId": 25722,
+            "exited": false
+        },
+        {
+            "deviceId": "R5CR20B30MT",
+            "name": "com.M4GStudios.ElestralsTCG.com",
+            "processId": 23540,
             "exited": false
         },
         {

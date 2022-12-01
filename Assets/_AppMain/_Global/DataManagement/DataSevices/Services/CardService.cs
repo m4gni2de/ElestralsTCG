@@ -2,9 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Databases;
-using Databases.Views;
-using static UnityEngine.Rendering.DebugUI;
-using UnityEditor.Searcher;
 using SimpleSQL;
 
 namespace Cards
@@ -171,12 +168,12 @@ namespace Cards
         public static Decks.Decklist.DeckCard DeckCardFromDownload(string cardKey)
         {
             qUniqueCard dto = CardService.ByKey<qUniqueCard>(CardService.qUniqueCardView, "setKey", cardKey);
-            return new Decks.Decklist.DeckCard { cardType = (CardType)dto.cardClass, copy = 1, key = cardKey };
+            return new Decks.Decklist.DeckCard(cardKey, (CardType)dto.cardClass, 1);
         }
         public static Decks.Decklist.DeckCard DeckCardFromDTO(DeckCardDTO card)
         {
             qUniqueCard dto = ByKey<qUniqueCard>(qUniqueCardView, "setKey", card.setKey);
-            return new Decks.Decklist.DeckCard { cardType = (CardType)dto.cardClass, copy = card.qty, key = card.setKey };
+            return new Decks.Decklist.DeckCard(card.setKey, (CardType)dto.cardClass, card.qty); 
         }
         #endregion
 

@@ -3670,7 +3670,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1eae253299f11646b1c543ba2e6c83d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultMaterial: {fileID: 0}
+  _TextBox: {fileID: 0}
+  SaveInitialText: 0
 --- !u!114 &482521702
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4036,6 +4037,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9df3f4d1120c1fc45af1bce6a0dbe664, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_toggle: {fileID: 0}
   label: {fileID: 518973251}
   valName: Defense
 --- !u!1 &507778958
@@ -9547,7 +9549,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1eae253299f11646b1c543ba2e6c83d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultMaterial: {fileID: 0}
+  _TextBox: {fileID: 0}
+  SaveInitialText: 0
 --- !u!1 &1352291338
 GameObject:
   m_ObjectHideFlags: 0
@@ -9655,6 +9658,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9df3f4d1120c1fc45af1bce6a0dbe664, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_toggle: {fileID: 1356436034}
   label: {fileID: 734169500}
   valName: Attack
 --- !u!114 &1356436034
@@ -10362,6 +10366,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9df3f4d1120c1fc45af1bce6a0dbe664, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_toggle: {fileID: 0}
   label: {fileID: 1955472189}
   valName: Attack
 --- !u!1 &1472218776
@@ -13019,6 +13024,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9df3f4d1120c1fc45af1bce6a0dbe664, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_toggle: {fileID: 1800541791}
   label: {fileID: 684196205}
   valName: Defense
 --- !u!114 &1800541791
@@ -16004,7 +16010,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1eae253299f11646b1c543ba2e6c83d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultMaterial: {fileID: 0}
+  _TextBox: {fileID: 0}
+  SaveInitialText: 0
 --- !u!114 &2390769317909957043
 MonoBehaviour:
   m_ObjectHideFlags: 0

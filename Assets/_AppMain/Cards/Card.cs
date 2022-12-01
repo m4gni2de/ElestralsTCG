@@ -110,24 +110,24 @@ public abstract class Card : iCard
     }
 
 
-    private List<string> reprints = null;
-    public List<string> Reprints
+    private List<string> _duplicates = null;
+    public List<string> DuplicatePrints
     {
         get
         {
-            if (reprints == null)
+            if (_duplicates == null)
             {
-                reprints = new List<string>();
+                _duplicates = new List<string>();
 
                 string whereClause = $"baseKey = '{cardData.cardKey}' AND image = '{cardData.image}'";
                 List<qUniqueCard> sharedCards = CardService.GetAllWhere<qUniqueCard>(CardService.qUniqueCardView, whereClause);
 
                 for (int i = 0; i < sharedCards.Count; i++)
                 {
-                    reprints.Add(sharedCards[i].setKey);
+                    _duplicates.Add(sharedCards[i].setKey);
                 }
             }
-            return reprints;
+            return _duplicates;
 
         }
     }

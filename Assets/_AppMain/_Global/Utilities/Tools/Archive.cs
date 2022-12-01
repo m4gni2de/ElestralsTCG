@@ -55,7 +55,7 @@ public class Archive<T> where T : iArchive
     public bool IsLocked => _Lock;
     private bool CanAddEntry(Entry entry)
     {
-        if (IsLocked) { return false; }
+        if (IsLocked) { return App.DisplayError($"The Archive cannot add new Entries while Locked."); }
         if (Entries.Contains(entry)) return false;
         return true;
     }
@@ -168,6 +168,7 @@ public class Archive<T> where T : iArchive
     }
     public void Add(T obj, string title, params string[] tags)
     {
+        
         int index = Count;
         Entry entry = new Entry(obj, title, index, tags);
         AddEntry(entry);
@@ -188,6 +189,7 @@ public class Archive<T> where T : iArchive
 
     public void Remove(Entry entry)
     {
+        if (IsLocked) { App.DisplayError($"The Archive cannot add new Entries while Locked."); return; }
         if (Entries.Contains(entry)) { Entries.Remove(entry); }
     }
     public void Remove(T obj)
@@ -204,6 +206,13 @@ public class Archive<T> where T : iArchive
     public void RemoveLatest()
     {
         Remove(LastEntry);
+    }
+
+    public void Clear()
+    {
+        Entries.Clear();
+        _Creation = DateTime.Now;
+        _Entries = new List<Entry>();
     }
     #endregion
 

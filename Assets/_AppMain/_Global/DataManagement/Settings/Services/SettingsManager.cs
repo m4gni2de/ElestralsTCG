@@ -11,6 +11,7 @@ namespace nsSettings
         public static readonly string AccountSettingsName = "acctSettings";
         public static readonly string CatalogSettingsName = "catalogSettings";
 
+
         private static GameSettings<AdvancedSettings> _Advanced = null;
         public static GameSettings<AdvancedSettings> Advanced
         {
@@ -31,6 +32,7 @@ namespace nsSettings
             }
         }
 
+        #region Account
         private static GameSettings<AccountSettings> _Account = null;
         public static GameSettings<AccountSettings> Account
         {
@@ -40,7 +42,7 @@ namespace nsSettings
                 return _Account;
             }
         }
-
+        #endregion
         private static GameSettings<CatalogSettings> _Catalog = null;
         public static GameSettings<CatalogSettings> Catalog
         {

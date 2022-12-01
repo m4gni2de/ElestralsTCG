@@ -60,8 +60,6 @@ public class TouchObject : ValidationObject, iFreeze
         return buttons;
     }
     #endregion
-
-
     #region Properties
 
     protected Transform Source;
@@ -91,14 +89,12 @@ public class TouchObject : ValidationObject, iFreeze
     }
     #endregion
 
-
-
     #region Customization
 
     [Tooltip("Use this to allow the object to recieve click/touch events at all.")]
-    public bool Interactable = true;
-    [Tooltip("If true, this object's touches can be blocked by UI objects.")]
+    public bool Interactable = true;   
     [Header("Customize Clickability")]
+    [Tooltip("If true, this object's touches are blocked by if it is within a UI object.")]
     public bool IsMaskable;
     [Tooltip("If true, this object's touches are still live even when the app is in Frozen Mode.")]
     public bool bypassFreeze;
@@ -107,7 +103,7 @@ public class TouchObject : ValidationObject, iFreeze
     [Tooltip("If true, button will only register clicks if it's within a UI Object, like a Button")]
     public bool UIMode = false;
     [Tooltip("If true, any TouchObjects behind this object will not have touches registered.")]
-    public bool BlocksTouches = false;
+    public bool BlocksTouchesBehind = false;
     #endregion
 
     #region Group Management
@@ -156,8 +152,9 @@ public class TouchObject : ValidationObject, iFreeze
     #endregion
 
     #endregion
-
     #region Event Management
+
+    #region OnClick
     protected List<UnityAction> _ClickListeners = null;
     protected List<UnityAction> ClickListeners
     {
@@ -174,7 +171,7 @@ public class TouchObject : ValidationObject, iFreeze
             ClickListeners.Add(ac);
             OnClickEvent.AddListener(ac);
         }
-        Interactable = ClickListeners.Count + HoldListeners.Count > 0;
+        Interactable = GetInteractable(true, false);
 
     }
     public void RemoveClickListener(UnityAction ac)
@@ -184,10 +181,12 @@ public class TouchObject : ValidationObject, iFreeze
             ClickListeners.Remove(ac);
             OnClickEvent.RemoveListener(ac);
         }
-        Interactable = ClickListeners.Count + HoldListeners.Count > 0;
+        Interactable = GetInteractable(true, false);
 
     }
+    #endregion
 
+    #region OnHold
     protected List<UnityAction> _HoldListeners = null;
     protected List<UnityAction> HoldListeners
     {
@@ -213,7 +212,7 @@ public class TouchObject : ValidationObject, iFreeze
         {
             holdThreshold = m_holdThresholdDefault;
         }
-        Interactable = ClickListeners.Count + HoldListeners.Count > 0;
+        Interactable = GetInteractable(true, false);
 
     }
     public void RemoveHoldListener(UnityAction ac)
@@ -223,11 +222,39 @@ public class TouchObject : ValidationObject, iFreeze
             HoldListeners.Remove(ac);
             OnHoldEvent.RemoveListener(ac);
         }
-        Interactable = ClickListeners.Count + HoldListeners.Count > 0;
+        Interactable = GetInteractable(true, false);
 
     }
+    #endregion
 
-    public void OverrideClick(UnityAction ac)
+    #region OverrideClick
+    protected List<UnityAction> _OverClickListeners = null;
+    protected List<UnityAction> OverClickListeners
+    {
+        get
+        {
+            _OverClickListeners ??= new List<UnityAction>();
+            return _OverClickListeners;
+        }
+    }
+    public void AddOverrideClickListener(UnityAction ac)
+    {
+        if (!OverClickListeners.Contains(ac))
+        {
+            OverClickListeners.Add(ac);
+            OverrideClickEvent.AddListener(ac);
+        }
+    }
+    public void RemoveOverrideClickListener(UnityAction ac)
+    {
+        if (OverClickListeners.Contains(ac))
+        {
+            OverClickListeners.Remove(ac);
+            OverrideClickEvent.RemoveListener(ac);
+        }
+
+    }
+    public void SetOverrideClick(UnityAction ac)
     {
         ForceClickOverride = true;
         OverrideClickEvent.RemoveAllListeners();
@@ -238,17 +265,62 @@ public class TouchObject : ValidationObject, iFreeze
         ForceClickOverride = false;
         OverrideClickEvent.RemoveAllListeners();
     }
+    #endregion
+
+
     public void FreezeClick()
     {
         Interactable = false;
     }
     public void CheckFreeze()
     {
-        Interactable = ClickListeners.Count + HoldListeners.Count > 0;
+        Interactable = GetInteractable(true, false);
+    }
+
+    private int PersistentListenerCount(bool includeHold = false, bool includeOverride = false)
+    {
+        int count = OnClickEvent.GetPersistentEventCount();
+        if (includeHold) { count += OnHoldEvent.GetPersistentEventCount(); }
+        if (includeOverride) { count += OverrideClickEvent.GetPersistentEventCount(); }
+        return count;
+        
+    }
+    private int AddedListenerCount(bool includeHold = false, bool includeOverride = false)
+    {
+        int count = ClickListeners.Count;
+        if (includeHold) { count += HoldListeners.Count; }
+        if (includeOverride) { count += OverClickListeners.Count; }
+        return count;
+
+    }
+    private bool GetInteractable(bool includeHold = false, bool includeOverride = false)
+    {
+        bool isInteractable = false;
+        isInteractable = (AddedListenerCount(includeHold, includeOverride) > 0 || PersistentListenerCount(includeHold, includeOverride) > 0);
+        return isInteractable;
     }
     #endregion
 
-   
+    #region Click Listener Management
+    public void ClearClick()
+    {
+        OnClickEvent.RemoveAllListeners();
+        ClickListeners.Clear();
+        Interactable = GetInteractable(true, false);
+    }
+    public void ClearHold()
+    {
+        HoldListeners.Clear();
+        OnHoldEvent.RemoveAllListeners();
+        Interactable = GetInteractable(true, false);
+    }
+    public void ClearAll()
+    {
+        ClearClick();
+        ClearHold();
+    }
+
+    #endregion
 
     #region Tap Properties
     protected float m_holdThresholdDefault = 1f;
@@ -281,7 +353,7 @@ public class TouchObject : ValidationObject, iFreeze
         {
             TouchObject obj = CurrentObjects[i];
             if (obj != this) { continue;}
-            if (obj.BlocksTouches && obj.GetSortValue() > GetSortValue())
+            if (obj.BlocksTouchesBehind && obj.GetSortValue() > GetSortValue())
             {
                 return true;
             }
@@ -331,6 +403,8 @@ public class TouchObject : ValidationObject, iFreeze
 
             return ErrorList.Count == 0;
     }
+
+    
     #endregion
 
 
@@ -367,27 +441,6 @@ public class TouchObject : ValidationObject, iFreeze
     {
         GroupId = group.groupName;
     }
-
-    #region Click Listeners
-    public void ClearClick()
-    {
-        OnClickEvent.RemoveAllListeners();
-        ClickListeners.Clear();
-        Interactable = ClickListeners.Count + HoldListeners.Count > 0;
-    }
-    public void ClearHold()
-    {
-        HoldListeners.Clear();
-        OnHoldEvent.RemoveAllListeners();
-        Interactable = ClickListeners.Count + HoldListeners.Count > 0;
-    }
-    public void ClearAll()
-    {
-        ClearClick();
-        ClearHold();
-    }
-   
-    #endregion
 
     
     protected void Update()

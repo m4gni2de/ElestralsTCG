@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ValidationObject : MonoBehaviour
+public class ValidationObject : MonoBehaviour, iValidate
 {
     private List<string> _errorList = null;
     public List<string> ErrorList
@@ -14,7 +14,7 @@ public class ValidationObject : MonoBehaviour
         }
     }
 
-    protected virtual void AddError(string msg)
+    public virtual void AddError(string msg)
     {
         ErrorList.Add(msg);
     }

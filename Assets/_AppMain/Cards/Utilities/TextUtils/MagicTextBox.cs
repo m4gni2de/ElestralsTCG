@@ -34,26 +34,27 @@ public class MagicTextBox : MonoBehaviour, iSortRenderer
         }
     }
 
-    protected bool IsDirty = false;
-    protected void SetDirty(bool dirty)
-    {
-        IsDirty = dirty;
-    }
     
     public string Content
     {
         get
         {
-            return TextBox.text;
+            return TextBox.text.Trim();
         }
         set
         {
             TextBox.text = value;
         }
     }
-    protected string _plainText = "";
-    public string PlainText { get { return _plainText; } }
 
+    protected string _plainText = "";
+    public string PlainText { get { return _plainText.Trim(); } }
+
+    protected bool IsDirty = false;
+    protected void SetDirty(bool dirty)
+    {
+        IsDirty = dirty;
+    }
     public Color TextColor
     {
         get
@@ -119,6 +120,7 @@ public class MagicTextBox : MonoBehaviour, iSortRenderer
     [SerializeField] protected bool SaveInitialText = false;
     #endregion
 
+    
     #region Text Events
     private UnityEvent _OnTextChanged = null;
     public UnityEvent OnTextChanged
@@ -172,13 +174,17 @@ public class MagicTextBox : MonoBehaviour, iSortRenderer
         HasInitialText = false;
         
     }
-    public virtual void Refresh()
+    public virtual void Refresh(bool clearListeners = true)
     {
         ClearSaved();
-        PrevTexts.Clear();
+        TextHistory.Clear();
         Blank();
         SetDirty(false);
         _isLoaded = false;
+        if (clearListeners)
+        {
+            OnTextChanged.RemoveAllListeners();
+        }
 
 
     }
@@ -202,9 +208,9 @@ public class MagicTextBox : MonoBehaviour, iSortRenderer
     {
         SetText(txt, Color.clear, false, false);
     }
-    public void SetText(string txt, bool colorSpirits)
+    public void SetText(string txt, bool saveToHistory)
     {
-        SetText(txt, Color.clear, colorSpirits, false);
+        SetText(txt, Color.clear, false, saveToHistory);
     }
     public void SetText(string txt, Color col, bool colorSpirits)
     {
@@ -225,14 +231,16 @@ public class MagicTextBox : MonoBehaviour, iSortRenderer
         if (!HasInitialText)
         {
             HasInitialText = true;
-            if (SaveInitialText || saveToHistory) { SaveCurrent(); }
-        }
-        else
-        {
-            if (saveToHistory)
+            if (SaveInitialText)
             {
                 SaveCurrent();
             }
+            
+        }
+
+        if (saveToHistory)
+        {
+            ArchiveText();
         }
     }
     
@@ -444,6 +452,7 @@ public class MagicTextBox : MonoBehaviour, iSortRenderer
     public void SaveCurrent()
     {
         _savedText = PlainText;
+
     }
     public void LoadSavedText()
     {
@@ -457,21 +466,38 @@ public class MagicTextBox : MonoBehaviour, iSortRenderer
     {
         _savedText = "";
     }
-    private List<string> _prevTexts = null;
-    public List<string> PrevTexts
+    private List<string> _textHistory = null;
+    public List<string> TextHistory
     {
         get
         {
-            _prevTexts ??= new List<string>();
-            return _prevTexts;
+            _textHistory ??= new List<string>();
+            return _textHistory;
         }
     }
 
     public void ArchiveText()
     {
-        if (!string.IsNullOrEmpty(PlainText) && !PrevTexts.Contains(PlainText))
+        bool addText = false;
+        if (!string.IsNullOrEmpty(PlainText))
         {
-            PrevTexts.Add(PlainText);
+            if (TextHistory.Count == 0)
+            {
+                addText = true;
+            }
+            else
+            {
+                string last = TextHistory.Last();
+                if (last.Trim() != PlainText)
+                {
+                    addText = true;
+                }
+            
+            }
+        }
+        if (addText)
+        {
+            TextHistory.Add(PlainText);
         }
     }
     #endregion
