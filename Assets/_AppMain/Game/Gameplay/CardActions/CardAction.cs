@@ -263,9 +263,10 @@ namespace Gameplay
             card.cardObject.Show();
             Vector3 direction = GetDirection(card, to);
 
+            this.Freeze();
             do
             {
-                this.Freeze();
+                
                 yield return new WaitForEndOfFrame();
                 float frames = Time.deltaTime / time;
                 Vector3 moveBy = direction * frames;
@@ -352,8 +353,12 @@ namespace Gameplay
 
         protected Vector3 GetDirection(GameCard card, CardSlot to)
         {
-            Vector3 from = Camera.main.ScreenToWorldPoint(card.cardObject.transform.position);
-            Vector3 moveTo = Camera.main.ScreenToWorldPoint(to.Position);
+            //Vector3 from = Camera.main.ScreenToWorldPoint(card.cardObject.transform.position);
+            //Vector3 moveTo = Camera.main.ScreenToWorldPoint(to.Position);
+            //Vector3 direction = (moveTo - from);
+            //return direction;
+            Vector3 from = card.cardObject.transform.position;
+            Vector3 moveTo = to.Position;
             Vector3 direction = (moveTo - from);
             return direction;
         }

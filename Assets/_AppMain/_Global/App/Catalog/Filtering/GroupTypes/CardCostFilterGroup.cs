@@ -47,19 +47,19 @@ namespace CardsUI.Filtering
 
             if (Cost3.IsChecked)
             {
-                query += "(cost3 is not null)";
+                query += "(cost3 is not null and cost3 > -1)";
                 isEmpty = false;
             }
             if (Cost2.IsChecked)
             {
                 if (!isEmpty) { query += " or "; }
-                query += "(cost2 is not null and cost3 is null)";
+                query += "((cost2 is not null and cost2 > -1) and (cost3 is null or cost3 = -1))";
                 isEmpty = false;
             }
             if (Cost1.IsChecked)
             {
                 if (!isEmpty) { query += " or "; }
-                query += "(cost1 is not null and cost2 is null and cost3 is null and cardClass <> 0)";
+                query += "((cost1 is not null and cost1 > -1) and (cost2 is null or cost2 = -1) and (cost3 is null or cost3 = -1) and cardClass <> 0)";
                 isEmpty = false;
             }
             if (Cost0.IsChecked)

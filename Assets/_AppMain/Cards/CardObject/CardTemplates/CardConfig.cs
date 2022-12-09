@@ -54,7 +54,7 @@ public class CardConfig : MonoBehaviour
     /// </summary>
     /// <param name="rend"></param>
     /// <param name="offset"></param>
-    private void SetSpriteOffset(Renderer rend, int offset)
+    public void SetSpriteOffset(Renderer rend, int offset)
     {
         if (!SpritesSortOffset.ContainsKey(rend))
         {
@@ -64,6 +64,17 @@ public class CardConfig : MonoBehaviour
         {
             SpritesSortOffset[rend] = offset;
         }
+    }
+    public void SendToTop(Renderer rend)
+    {
+        int highest = 0;
+        foreach (var item in SpritesSortOffset)
+        {
+            if (item.Value > highest) { highest = item.Value; }
+        }
+        int newOffset = highest + 1;
+
+        SetSpriteOffset(rend, newOffset);
     }
 
    
@@ -250,7 +261,7 @@ public class CardConfig : MonoBehaviour
         spiritGlowR.sprite = null;
 
         
-        raritySp.sprite = CardFactory.GetRaritySprite(card.GetRarity());
+        raritySp.sprite = CardFactory.GetRaritySprite(card.GetRarity);
 
         cardTexts.LoadTexts(card);
         if (ty == CardType.Elestral)
@@ -525,6 +536,7 @@ public class CardConfig : MonoBehaviour
             cardBg.gameObject.SetActive(false);
             cardBorder.sprite = CardFactory.borderSp;
             cardBorder.color = Color.black;
+            cardBorder.sortingOrder = cardCover.sortingOrder + 1;
         }
         else
         {
@@ -532,6 +544,7 @@ public class CardConfig : MonoBehaviour
             cardBg.gameObject.SetActive(true);
             cardBorder.sprite = CardFactory.borderSp;
             cardBorder.color = Color.black;
+            cardBorder.sortingOrder = BaseSortOrder + 1;
         }
     }
 
@@ -649,6 +662,8 @@ public class CardConfig : MonoBehaviour
         UpdateMask();
 
     }
+
+    
 #endregion
 
 

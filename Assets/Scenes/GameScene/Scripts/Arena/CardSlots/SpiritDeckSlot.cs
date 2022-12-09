@@ -26,6 +26,7 @@ namespace Gameplay
 
         public override void AllocateTo(GameCard card, bool sendToServer = true)
         {
+           
             card.RemoveFromSlot();
             cards.Insert(0, card);
             card.AllocateTo(this, sendToServer);
@@ -72,9 +73,6 @@ namespace Gameplay
                 //commands.Add(PopupCommand.Create("Browse", () => BrowseCommand(), 0, 1));
                 commands.Add(PopupCommand.Create("Manage", () => ManageCards(cards, $"{Owner.userId}'s Spirit Deck", true, 1, Owner.gameField.SpiritDeckSlot.cards.Count)));
                 commands.Add(PopupCommand.Create("Expend", () => ExpendCommand(), 0, 1));
-            }
-            else
-            {
                 commands.Add(PopupCommand.Create("Browse", () => BrowseCards(cards, $"{Owner.userId}'s Spirit Deck", true, 0, 0)));
             }
 

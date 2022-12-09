@@ -398,7 +398,7 @@ namespace Gameplay.Menus
             CardModeGroup.Unload();
             isCastMode = false;
             TitleText.ClearSaved();
-            DoThaw();
+            
 
             DisplayManager.RemoveAction(Cancel);
             OnClosed?.Invoke(menuArgs);

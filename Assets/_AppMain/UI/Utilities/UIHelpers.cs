@@ -77,7 +77,11 @@ public static class UIHelpers
         return fourCornersArray;
     }
 
-
+    /// <summary>
+    /// Corners in order: Bottom Left, Top Left, Top Right, Bottom Right
+    /// </summary>
+    /// <param name="rect"></param>
+    /// <returns></returns>
     public static Vector3[] GetLocalCorners(Rect rect)
     {
         Vector3[] fourCornersArray = new Vector3[4];

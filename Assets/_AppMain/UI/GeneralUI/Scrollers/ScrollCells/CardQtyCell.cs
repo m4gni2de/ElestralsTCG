@@ -1,9 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using Cards;
 using CardsUI.Filtering;
+using Databases;
+using Decks;
+using GlobalUtilities;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using static Decks.Decklist;
 
 public class CardQtyCell : MonoBehaviour, iGridCell
 {
@@ -12,19 +17,18 @@ public class CardQtyCell : MonoBehaviour, iGridCell
     public int Index { get { return _index; } }
     public void LoadData(object data, int index)
     {
-        CardStack stack = data as CardStack;
+        DeckCard stack = data as DeckCard;
         SetCard(stack, index);
     }
     public void Clear()
     {
-        if (_connectedCard != null)
-        {
-            _connectedCard.QuantityText.RemoveTextChangeListener(() => UpdateQuantity());
-        }
+       
         nameText.Blank();
         qtyText.Blank();
-        _connectedCard = null;
         touch.ClearAll();
+        _connectedCard = null;
+        _index = -1;
+        _activeCard = null;
         Hide();
     }
     public void Hide()
@@ -40,9 +44,9 @@ public class CardQtyCell : MonoBehaviour, iGridCell
         Destroy(gameObject);
     }
 
-    private void UpdateQuantity()
+    public void SetInsideView(bool isInside)
     {
-        qtyText.SetText($"x {_connectedCard.quantity}");
+        touch.Interactable = isInside;
     }
     #endregion
 
@@ -50,8 +54,11 @@ public class CardQtyCell : MonoBehaviour, iGridCell
     private RectTransform rect;
     private int _index;
     
-    private CardStack _connectedCard = null;
-    public CardStack ConnectedCard { get { return _connectedCard; } }
+    private DeckCard _connectedCard = null;
+    public DeckCard ConnectedCard { get { return _connectedCard; } }
+
+    private Card _activeCard = null;
+    public Card ActiveCard { get { return _activeCard; } }
 
     [SerializeField] private MagicTextBox nameText;
     [SerializeField] private MagicTextBox qtyText;
@@ -75,15 +82,16 @@ public class CardQtyCell : MonoBehaviour, iGridCell
         rect = GetComponent<RectTransform>();
     }
 
-    private void SetCard(CardStack stack, int index)
+    private void SetCard(DeckCard card, int index)
     {
-        _connectedCard = stack;
-        nameText.SetText(_connectedCard.DisplayName);
-        qtyText.SetText($"x {_connectedCard.quantity}");
+        qUniqueCard dto = CardService.ByKey<qUniqueCard>(CardService.qUniqueCardView, "setKey", card.key);
+        Card c = dto;
+        _connectedCard = card;
+        _activeCard = c;
+        nameText.SetText(c.DisplayName);
+        qtyText.SetText($"x {_connectedCard.copy}");
         this._index = index;
         Show();
-
-        _connectedCard.QuantityText.AddTextChangeListener(() => UpdateQuantity());
     }
     public void SetClickListener(UnityAction ac)
     {
@@ -100,10 +108,6 @@ public class CardQtyCell : MonoBehaviour, iGridCell
     private void OnDestroy()
     {
         touch.ClearAll();
-        if (_connectedCard != null)
-        {
-            _connectedCard.QuantityText.RemoveTextChangeListener(() => UpdateQuantity());
-        }
         
     }
 }

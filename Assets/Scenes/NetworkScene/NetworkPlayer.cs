@@ -12,6 +12,7 @@ public class NetworkPlayer
     public static readonly int DeckSize = 60;
     public ushort networkId { get; private set; }
     public string userId { get; private set; }
+    public string username { get; private set; }
     public int index { get; private set; }
     public string deckKey { get; private set; }
     public string deckName { get; private set; }
@@ -48,13 +49,14 @@ public class NetworkPlayer
     public bool isReady = false;
 
 
-    public NetworkPlayer(ushort netId, string id, string key, string name)
+    public NetworkPlayer(ushort netId, string id, string key, string name, string username)
     {
         networkId = netId;
         userId = id;
         deckKey = key;
         deckName = name;
         isConnected = true;
+        this.username = username;
         Cards.Clear();
         CreateSlots();
 

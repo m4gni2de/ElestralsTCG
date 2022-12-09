@@ -29,8 +29,19 @@ public class TouchObject : ValidationObject, iFreeze
             LayerFilters.Add(layer);
         }
     }
+    public static void RemoveFilter(int layer)
+    {
+        if (LayerFilters.Contains(layer))
+        {
+            LayerFilters.Remove(layer);
+        }
+    }
+    public static void RemoveAllFilters()
+    {
+        LayerFilters.Clear();
+    }
 
-    
+
     private static List<TouchObject> _currentObjects = null;
     public static List<TouchObject> CurrentObjects
     {
@@ -87,6 +98,11 @@ public class TouchObject : ValidationObject, iFreeze
     {
         OnThisHeld?.Invoke(this);
     }
+    public event Action<TouchObject> OnStartClick;
+    protected void ClickStart()
+    {
+        OnStartClick?.Invoke(this);
+    }
     #endregion
 
     #region Customization
@@ -108,7 +124,7 @@ public class TouchObject : ValidationObject, iFreeze
 
     #region Group Management
     protected string GroupId;
-    protected bool HasGroup
+    public bool HasGroup
     {
         get
         {
@@ -121,6 +137,14 @@ public class TouchObject : ValidationObject, iFreeze
         if (!HasGroup) { return; }
         TouchGroup group = ObjectPool.FindByKey<TouchGroup>(GroupId);
         group.Remove(this);
+    }
+    public TouchGroup Group
+    {
+        get
+        {
+            if (!HasGroup) { return null; }
+            return ObjectPool.FindByKey<TouchGroup>(GroupId);
+        }
     }
     #endregion
 
@@ -424,6 +448,7 @@ public class TouchObject : ValidationObject, iFreeze
         {
             CurrentObjects.Remove(this);
         }
+        DoThaw();
     }
 
     protected void Start()
@@ -445,6 +470,7 @@ public class TouchObject : ValidationObject, iFreeze
     
     protected void Update()
     {
+
         CheckTouch();  
 
     }
@@ -489,12 +515,13 @@ public class TouchObject : ValidationObject, iFreeze
         _isClicked = true;
         _holdTime = 0f;
         tapTimer = Time.time;
-        DoFreeze();
+        ClickStart();
+        //DoFreeze();
 
     }
     public virtual void EndClick()
     {
-        DoThaw();
+        //DoThaw();
         _isClicked = false;
         if (!_isHeld) { TryClick(); }
         IsHeld = false;
@@ -504,7 +531,7 @@ public class TouchObject : ValidationObject, iFreeze
 
     public virtual void Cancel()
     {
-        DoThaw();
+        //DoThaw();
         _isClicked = false;
         _isHeld = false;
         _holdTime = 0f;

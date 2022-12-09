@@ -126,6 +126,7 @@ namespace Gameplay
                     commands.Add(PopupCommand.Create("Enchant", () => EnchantCommand(1)));
                     commands.Add(PopupCommand.Create("DisEnchant", () => DisEnchantCommand(), 1, 0));
                     commands.Add(PopupCommand.Create("Empower", () => EmpowerCommand(), 1, 0));
+                    commands.Add(PopupCommand.Create("Destroy", () => DestroyCommand(), 1, 0));
                 }
 
                 commands.Add(PopupCommand.Create("Close", () => CloseCommand()));
@@ -232,10 +233,33 @@ namespace Gameplay
             Refresh();
 
         }
-       
+
         #endregion
 
-       
+
+        protected override void DestroyCommand()
+        {
+            if (MainCard != null)
+            {
+                App.AskYesNo($"Send {MainCard.cardStats.title} and all of its Enchanting Spirits to the Underworld?", DestroyResponse);
+                ClosePopMenu(false);
+            }
+            
+        }
+        protected override void DestroyResponse(bool confirm)
+        {
+            if (confirm)
+            {
+                for (int i = 0; i < cards.Count; i++)
+                {
+                    GameManager.Instance.MoveCard(Owner, cards[i], cards[i].Owner.gameField.UnderworldSlot);
+                }
+                GameManager.Instance.cardSlotMenu.Close();
+                
+            }
+            Refresh();
+        }
+
         protected void CloseCommand()
         {
             ClosePopMenu();

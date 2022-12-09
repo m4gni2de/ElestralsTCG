@@ -7,6 +7,6 @@ public static class ClickHelpers
     
     public static string WhoAmI(this object obj)
     {
-        return App.Account.Name;
+        return App.Account.Id;
     }
 }

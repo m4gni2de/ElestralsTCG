@@ -109,6 +109,14 @@ public class CardLibrary
         }
         return 0;
     }
+    public static GameSetDTO GetGameSet(string setName)
+    {
+        if (GameSets.ContainsKey(setName))
+        {
+            return GameSets[setName];
+        }
+        return null;
+    }
 
     #endregion
 

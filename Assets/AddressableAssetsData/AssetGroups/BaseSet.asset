@@ -486,8 +486,8 @@ MonoBehaviour:
     - CardArt
     - Elestral
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e20b98332db0b4c4d823d72e2c02480c
-    m_Address: sparkitt_s
+  - m_GUID: fb85a08b462efb64ebf30c571f4c2f93
+    m_Address: boombatt_s
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardArt
@@ -766,12 +766,12 @@ MonoBehaviour:
     - Rune
     - CardArt
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: a0eb4e09717fdd242a7cc9a8bee41c12
-    m_Address: mountolympus
+  - m_GUID: df797d30d18d52f41b2412551f97dd82
+    m_Address: quackle_s
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Rune
     - CardArt
+    - Elestral
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4f114726d52ded14591d93d08b24f2c0
     m_Address: necklaceofharmonia
@@ -1020,6 +1020,13 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3cd5fd7214d353943a79a29056444fea
     m_Address: pandacine_s
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a47ad9b157334ce41b086e4943627036
+    m_Address: rummagem_s
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardArt

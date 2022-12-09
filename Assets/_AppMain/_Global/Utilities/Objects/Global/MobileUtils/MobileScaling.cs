@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Device;
 using UnityEngine.UI;
 
 public class MobileScaling : MonoBehaviour
@@ -56,7 +55,12 @@ public class MobileScaling : MonoBehaviour
         float newY = (offset / xDiff);
         // newY = (1f / xDiff) * offset;
         scalerCanvas.transform.localScale = new Vector3(newX, newY, scalerCanvas.transform.localScale.z);
+
+
+      
+        
     }
+
 
     // Update is called once per frame
     void Update()

@@ -21,14 +21,15 @@ public static class iGameMoverExtensions
     public static void MoveGamePosition(this iGameMover obj, Transform t, Vector3 toMove)
     {
         //t.position += toMove;
-        if (IsInverted(obj))
-        {
-            t.position -= toMove;
-        }
-        else
-        {
-            t.position += toMove;
-        }
+        t.position += toMove;
+        //if (IsInverted(obj))
+        //{
+        //    t.position -= toMove;
+        //}
+        //else
+        //{
+        //    t.position += toMove;
+        //}
     }
 
     

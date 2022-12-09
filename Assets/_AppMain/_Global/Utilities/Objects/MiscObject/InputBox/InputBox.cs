@@ -45,12 +45,12 @@ public class InputBox : MonoBehaviour, iFreeze
     }
     public void Open()
     {
-        IsHandled = false;
         
     }
     public virtual void Close()
     {
         gameObject.SetActive(false);
+        
     }
 
     public virtual void Hide()
@@ -72,5 +72,18 @@ public class InputBox : MonoBehaviour, iFreeze
     public virtual void Cancel()
     {
         SetHandled(InputResult.Cancel);
+    }
+    private void OnDestroy()
+    {
+        DoThaw();
+    }
+
+    protected void DoFreeze()
+    {
+        this.Freeze();
+    }
+    protected void DoThaw()
+    {
+        this.Thaw();
     }
 }

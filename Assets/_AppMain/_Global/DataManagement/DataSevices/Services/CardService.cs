@@ -184,6 +184,7 @@ namespace Cards
             return 3;
         }
         #endregion
+
     }
 }
 

@@ -14,6 +14,7 @@ using Users;
 
 namespace Gameplay
 {
+    [System.Serializable]
     public class Player
     {
 
@@ -98,9 +99,10 @@ namespace Gameplay
         }
 
         //eventually have this changed to show the actual username
+        private string _username;
         public string username
         {
-            get { return userId; }
+            get { return _username; }
         }
 
         public Decklist decklist { get; private set; }
@@ -113,7 +115,7 @@ namespace Gameplay
             }
             return list;
         }
-        private GameDeck _deck = null;
+        [SerializeField] private GameDeck _deck = null;
         public GameDeck deck { get { return _deck; } }
 
         private Field _gameField = null;
@@ -131,18 +133,19 @@ namespace Gameplay
         #endregion
 
         #region Constructors
-        Player(string userName, bool isLocal)
+        Player(string userId, string username, bool isLocal)
         {
-            _userId = userName;
+            _userId = userId;
+            _username = username;
             this.IsLocal = isLocal;
 
         }
-        public Player(ushort tempGameId, string userId, bool isLocal) : this(userId, isLocal)
+        public Player(ushort tempGameId, string userId, string username, bool isLocal) : this(userId, username, isLocal)
         {
             lobbyId = tempGameId;
         }
 
-        public Player(string user, Decklist list, bool isLocal) : this(user, isLocal)
+        public Player(string userId, string username, Decklist list, bool isLocal) : this(userId, username, isLocal)
         {
             LoadDeckList(list);
         }

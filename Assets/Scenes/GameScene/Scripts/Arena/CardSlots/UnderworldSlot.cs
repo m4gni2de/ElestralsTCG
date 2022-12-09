@@ -45,7 +45,7 @@ namespace Gameplay
 
         public override void AllocateTo(GameCard card, bool sendToServer = true)
         {
-
+            card.cardObject.Show();
             card.RemoveFromSlot();
             cards.Add(card);
             card.AllocateTo(this, sendToServer);

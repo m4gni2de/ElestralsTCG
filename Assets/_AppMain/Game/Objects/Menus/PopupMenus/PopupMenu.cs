@@ -325,7 +325,7 @@ namespace Gameplay.Menus
             Vector2 minLocal = this.WaypointPosition("Left", true);
 
             Vector2 localPos = menuObject.transform.localPosition;
-            Vector2 localBtn = transform.InverseTransformPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
+            Vector2 localBtn = GameManager.Instance.arena.transform.InverseTransformPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
 
             Vector2 targetPos = maxLocal;
 
@@ -490,7 +490,7 @@ namespace Gameplay.Menus
                     int val = NumberInput.Instance.Value;
                     returnedVal(val);
                 }
-                NumberInput.Instance.Close();
+                
                 CloseMenu();
             }));
         }
@@ -504,17 +504,18 @@ namespace Gameplay.Menus
             {
                 
                 yield return new WaitForEndOfFrame();
-            } while (true && !NumberInput.Instance.IsHandled);
-           
+            } while (true && !NumberInput.Instance.IsHandled && NumberInput.Instance);
 
+
+            if (NumberInput.Instance == null || NumberInput.Instance.Result == InputBox.InputResult.Cancel)
+            {
+                callback(false);
+            }
             if (NumberInput.Instance.Result == InputBox.InputResult.Confirm)
             {
                 callback(true);
             }
-            if (NumberInput.Instance.Result == InputBox.InputResult.Cancel)
-            {
-                callback(false);
-            }
+            
         }
 
         public void ConfirmAction(string msg, Action<bool> action)

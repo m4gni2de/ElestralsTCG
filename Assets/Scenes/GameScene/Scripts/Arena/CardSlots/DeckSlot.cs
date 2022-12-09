@@ -19,17 +19,17 @@ namespace Gameplay
         #region Interface
         public void Optimize()
         {
-            for (int i = 0; i < cards.Count; i++)
-            {
-                if (i == 0)
-                {
-                    cards[i].cardObject.Show();
-                }
-                else
-                {
-                    cards[i].cardObject.Hide();
-                }
-            }
+            //for (int i = 0; i < cards.Count; i++)
+            //{
+            //    if (i == 0)
+            //    {
+            //        cards[i].cardObject.Show();
+            //    }
+            //    else
+            //    {
+            //        cards[i].cardObject.Hide();
+            //    }
+            //}
         }
         #endregion
 
@@ -53,10 +53,10 @@ namespace Gameplay
 
         public override void AllocateTo(GameCard card, bool sendToServer = true)
         {
+            
             card.RemoveFromSlot();
             cards.Insert(0, card);
             card.AllocateTo(this, sendToServer);
-
             DisplayCardObject(card);
             SetCommands(card);
 
@@ -77,6 +77,7 @@ namespace Gameplay
 
         public override void RemoveCard(GameCard card)
         {
+            
             base.RemoveCard(card);
             Owner.deck.RemoveCard(card, Owner.deck.MainDeck);
             Optimize();
@@ -104,18 +105,18 @@ namespace Gameplay
         {
             List<PopupCommand> commands = new List<PopupCommand>();
 
-            //if (IsYours)
-            //{
-            //    commands.Add(PopupCommand.Create("Draw", () => DrawCommand(), 0, 0));
-            //    commands.Add(PopupCommand.Create("Browse", () => ManageCards(Owner.deck.MainDeck.InOrder, "Manage Deck", IsYours, 1, Owner.deck.MainDeck.InOrder.Count)));
-            //    commands.Add(PopupCommand.Create("Mill", () => MillCommand(), 0, 2));
-            //    commands.Add(PopupCommand.Create("Shuffle", () => ShuffleCommand(), 0, 2));
-            //}
+            if (IsYours)
+            {
+                commands.Add(PopupCommand.Create("Draw", () => DrawCommand(), 0, 0));
+                commands.Add(PopupCommand.Create("Browse", () => ManageCards(Owner.deck.MainDeck.InOrder, "Manage Deck", IsYours, 1, Owner.deck.MainDeck.InOrder.Count)));
+                commands.Add(PopupCommand.Create("Mill", () => MillCommand(), 0, 2));
+                commands.Add(PopupCommand.Create("Shuffle", () => ShuffleCommand(), 0, 2));
+            }
 
-            commands.Add(PopupCommand.Create("Draw", () => DrawCommand(), 0, 0));
-            commands.Add(PopupCommand.Create("Browse", () => ManageCards(Owner.deck.MainDeck.InOrder.ReverseOf(), "Manage Deck", IsYours, 1, Owner.deck.MainDeck.InOrder.Count)));
-            commands.Add(PopupCommand.Create("Mill", () => MillCommand(), 0, 2));
-            commands.Add(PopupCommand.Create("Shuffle", () => ShuffleCommand(), 0, 2));
+            //commands.Add(PopupCommand.Create("Draw", () => DrawCommand(), 0, 0));
+            //commands.Add(PopupCommand.Create("Browse", () => ManageCards(Owner.deck.MainDeck.InOrder.ReverseOf(), "Manage Deck", IsYours, 1, Owner.deck.MainDeck.InOrder.Count)));
+            //commands.Add(PopupCommand.Create("Mill", () => MillCommand(), 0, 2));
+            //commands.Add(PopupCommand.Create("Shuffle", () => ShuffleCommand(), 0, 2));
 
             commands.Add(PopupCommand.Create("Close", () => CloseCommand(), 0, 5));
             return commands;

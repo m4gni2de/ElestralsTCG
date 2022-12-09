@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using nsSettings;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -7,7 +8,7 @@ public class CameraMotion : MonoBehaviour
 {
     #region Properties
     public Canvas ParentCanvas;
-    private float maxCameraSize, minCameraSize, defaultSize;
+    [SerializeField] private float maxCameraSize, minCameraSize, defaultSize;
     private Vector2 minPos, maxPos;
     private float sizeDiff;
     public float minSizePercent = .2f;
@@ -47,7 +48,11 @@ public class CameraMotion : MonoBehaviour
     {
         get
         {
-            return Camera.main.GetComponent<CameraMotion>();
+            if (Camera.main == null) { return null; }
+            CameraMotion motion = null;
+            Camera.main.TryGetComponent<CameraMotion>(out motion);
+            if (motion == null) { return null; }
+            return motion;
         }
     }
 
@@ -81,6 +86,12 @@ public class CameraMotion : MonoBehaviour
         }
     }
     
+    public static void ReScale()
+    {
+        main.minSizePercent = .7f;
+        main.mainCamera.orthographicSize = main.defaultSize;
+        main.mainCamera.orthographicSize *= SettingsManager.Graphics.Settings.cameraZoom;
+    }
     #endregion
 
     // Start is called before the first frame update
@@ -91,7 +102,7 @@ public class CameraMotion : MonoBehaviour
         
     }
 
-    void GetScales()
+    public void GetScales()
     {
         float screenRatio = ScreenHeight / ScreenWidth;
         float targetRatio = Height / Width;
@@ -102,15 +113,17 @@ public class CameraMotion : MonoBehaviour
         //defaultSize = Width * ParentCanvas.transform.localScale.x;
 #else
         //defaultSize = ScreenWidth;
-        defaultSize = ParentCanvas.renderingDisplaySize.x;
+        defaultSize = (ParentCanvas.renderingDisplaySize.y / 2);
 #endif
 
-        minSizePercent = .2f;
+        defaultSize = (ParentCanvas.renderingDisplaySize.y / 2);
+        minSizePercent = .7f;
 
         minCameraSize = defaultSize * (1 - minSizePercent);
         maxCameraSize = defaultSize * (1 + minSizePercent);
 
         mainCamera.orthographicSize = defaultSize;
+        mainCamera.orthographicSize *= SettingsManager.Graphics.Settings.cameraZoom;
         //#if UNITY_EDITOR
 
         //        EditorScales();
@@ -162,7 +175,7 @@ public class CameraMotion : MonoBehaviour
     void EditorScales()
     {
        
-        defaultSize = ParentCanvas.renderingDisplaySize.x;
+        defaultSize = ParentCanvas.renderingDisplaySize.y / 2f;
 
         maxCameraSize = defaultSize * (1 + minSizePercent);
     }

@@ -94,7 +94,7 @@ public class SingleSlot : CardSlot, iMainCard
 
     public override void AllocateTo(GameCard card,bool sendToServer = true)
     {
-
+        card.cardObject.Show();
         card.RemoveFromSlot();
         cards.Add(card);
         card.AllocateTo(this, sendToServer);
@@ -112,6 +112,7 @@ public class SingleSlot : CardSlot, iMainCard
 
     protected override void DisplayCardObject(GameCard card)
     {
+        
         CardView c = card.cardObject;
         string sortLayer = SortLayer;
         float height = rect.sizeDelta.y;
@@ -154,6 +155,7 @@ public class SingleSlot : CardSlot, iMainCard
     {
         TouchObject to = card.cardObject.touch;
         to.RemoveFromGroup();
+        to.ClearAll();
         touchGroup.Add(to);
         to.AddClickListener(() => ClickCard(card));
         //to.AddHoldListener(() => GameManager.Instance.DragCard(card, this));
@@ -176,6 +178,7 @@ public class SingleSlot : CardSlot, iMainCard
         GameManager.Instance.browseMenu.SelectedCards.Clear();
         SelectedCard = null;
         GameManager.SelectedCard = null;
+        GameManager.Instance.cardSlotMenu.Close();
     }
 
 
@@ -356,6 +359,29 @@ public class SingleSlot : CardSlot, iMainCard
        
     }
 
+
+    protected virtual void DestroyCommand()
+    {
+        if (MainCard != null)
+        {
+            App.AskYesNo($"Send {MainCard.cardStats.title} and all linked cards to the Underworld?", DestroyResponse);
+
+        }
+        ClosePopMenu(false);
+    }
+
+    protected virtual void DestroyResponse(bool confirm)
+    {
+        if (confirm)
+        {
+            for (int i = 0; i < cards.Count; i++)
+            {
+                GameManager.Instance.MoveCard(Owner, cards[i], cards[i].Owner.gameField.UnderworldSlot);
+            }
+            GameManager.Instance.cardSlotMenu.Close();
+        }
+        Refresh();
+    }
     
 
 }

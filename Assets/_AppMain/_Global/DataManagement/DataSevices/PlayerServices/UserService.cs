@@ -66,7 +66,7 @@ namespace Databases
         }
 
 
-        #region Other table Management
+        #region Deck Management
 
         public static List<DeckCardDTO> LoadDecklist(string deckKey)
         {
@@ -94,7 +94,7 @@ namespace Databases
             return cards;
 
         }
-        
+
         public static void UpdateLocalDecksOwner(string newName, string oldName)
         {
             
@@ -116,6 +116,8 @@ namespace Databases
             }
         }
         #endregion
+
+      
 
     }
 }

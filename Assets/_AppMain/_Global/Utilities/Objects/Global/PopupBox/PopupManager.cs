@@ -28,7 +28,7 @@ public class PopupManager : MonoBehaviour
 
     #region Event Watchers
     private static UnityEvent _OnCloseWatcher = null;
-    protected static UnityEvent OnCloseWatchr
+    protected static UnityEvent OnCloseWatcher
     {
         get
         {
@@ -39,14 +39,18 @@ public class PopupManager : MonoBehaviour
 
     public void ClosePopupWatcher()
     {
-        _OnCloseWatcher.RemoveAllListeners();
-        SetActivePopup();
-        _OnCloseWatcher = null;
+        if (_OnCloseWatcher != null)
+        {
+            _OnCloseWatcher.RemoveAllListeners();
+            SetActivePopup();
+            _OnCloseWatcher = null;
+        }
+       
     }
     public void AddCloseWatcher(BasePopup popup, UnityEvent ev)
     {
         _OnCloseWatcher = ev;
-        _OnCloseWatcher.AddListener(ClosePopupWatcher);
+        OnCloseWatcher.AddListener(ClosePopupWatcher);
     }
     #endregion
 

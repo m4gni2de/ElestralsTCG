@@ -6,10 +6,11 @@ namespace nsSettings
 {
     public static class SettingsManager
     {
-        public static readonly string AdvancedSettingsName = "advSettings";
-        public static readonly string AudioSettingsName = "audioSettings";
-        public static readonly string AccountSettingsName = "acctSettings";
-        public static readonly string CatalogSettingsName = "catalogSettings";
+        private static readonly string AdvancedSettingsName = "advSettings";
+        private static readonly string AudioSettingsName = "audioSettings";
+        private static readonly string AccountSettingsName = "acctSettings";
+        private static readonly string CatalogSettingsName = "catalogSettings";
+        private static readonly string GraphicsSettingsName = "graphicsSettings";
 
 
         private static GameSettings<AdvancedSettings> _Advanced = null;
@@ -21,7 +22,7 @@ namespace nsSettings
                 return _Advanced;
             }
         }
-
+        #region Audio
         private static GameSettings<AudioSettings> _Audio = null;
         public static GameSettings<AudioSettings> Audio
         {
@@ -31,6 +32,7 @@ namespace nsSettings
                 return _Audio;
             }
         }
+        #endregion
 
         #region Account
         private static GameSettings<AccountSettings> _Account = null;
@@ -43,6 +45,8 @@ namespace nsSettings
             }
         }
         #endregion
+
+        #region Catalog
         private static GameSettings<CatalogSettings> _Catalog = null;
         public static GameSettings<CatalogSettings> Catalog
         {
@@ -52,9 +56,19 @@ namespace nsSettings
                 return _Catalog;
             }
         }
+        #endregion
 
-
-
+        #region Graphics
+        private static GameSettings<GraphicsSettings> _graphics = null;
+        public static GameSettings<GraphicsSettings> Graphics
+        {
+            get
+            {
+                _graphics ??= new GameSettings<GraphicsSettings>(GraphicsSettingsName);
+                return _graphics;
+            }
+        }
+        #endregion
 
     }
 }

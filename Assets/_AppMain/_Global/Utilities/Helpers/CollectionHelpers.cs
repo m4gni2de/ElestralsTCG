@@ -1,8 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using GlobalUtilities;
 using UnityEngine;
 
-public static class CollectionHelpers 
+public static class CollectionHelpers
 {
     /// <summary>
     /// Use this to make a list from the objects using in a params T[]
@@ -63,10 +67,23 @@ public static class CollectionHelpers
     public static List<T> ReverseOf<T>(this List<T> original)
     {
         List<T> list = new List<T>();
-        for (int i = original.Count -1; i > -1; i--)
+        for (int i = original.Count - 1; i > -1; i--)
         {
             list.Add(original[i]);
         }
         return list;
     }
+
+    public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, SortDirection direction)
+    {
+        if (direction == SortDirection.ASC) { return source.OrderBy(keySelector); } else { return source.OrderByDescending(keySelector); }
+    }
+
+    public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector, SortDirection direction)
+    {
+        bool isDescending = direction == SortDirection.DESC;
+        return source.CreateOrderedEnumerable(keySelector, null, descending: isDescending);
+    }
+
+
 }

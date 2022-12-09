@@ -157,6 +157,13 @@ MonoBehaviour:
     - CardArt
     - Rune
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 03238beeb1cf4e342b6567390f87fc69
+    m_Address: hydrake_s
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
   m_SchemaSet:

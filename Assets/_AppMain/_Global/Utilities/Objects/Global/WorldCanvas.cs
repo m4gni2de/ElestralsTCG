@@ -55,18 +55,19 @@ public class WorldCanvas : GlobalObject, iInvert
             }
         }
     }
+
     #endregion
     #region Interface
     public void Invert(bool doInvert)
     {
-        if (doInvert)
-        {
-            scalerCanvas.transform.localEulerAngles = new Vector3(0f, 0f, 180f);
-        }
-        else
-        {
-            scalerCanvas.transform.localEulerAngles = new Vector3(0f, 0f, 0f);
-        }
+        //if (doInvert)
+        //{
+        //    scalerCanvas.transform.localEulerAngles = new Vector3(0f, 0f, 180f);
+        //}
+        //else
+        //{
+        //    scalerCanvas.transform.localEulerAngles = new Vector3(0f, 0f, 0f);
+        //}
     }
     #endregion
 

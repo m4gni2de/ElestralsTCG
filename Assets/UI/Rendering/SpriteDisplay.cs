@@ -226,8 +226,6 @@ public class SpriteDisplay : MonoBehaviour
     public event Action<int> OnSortOrderSet;
     public void SetSortOrder(int order)
     {
-        //if (RendType == RenderType.Sprite) { _sp.sortingOrder = order; }
-        //if (RendType == RenderType.Image) { _image.canvas.sortingOrder = order; }
         SortOrder = order;
         OnSortOrderSet?.Invoke(order);
     }
@@ -237,14 +235,6 @@ public class SpriteDisplay : MonoBehaviour
     {
         SortOrder += changeVal;
         OnSortOrderChanged?.Invoke(changeVal);
-        //if (RendType == RenderType.Sprite)
-        //{
-        //    _sp.sortingOrder += changeVal;
-        //}
-        //if (RendType == RenderType.Image)
-        //{
-        //    _image.canvas.sortingOrder += changeVal;
-        //}
     }
     public string SortLayer
     {
@@ -306,6 +296,14 @@ public class SpriteDisplay : MonoBehaviour
         }
         return false;
         
+    }
+    #endregion
+
+
+    #region Transform Controls
+    public void Rotate(Vector3 rotation)
+    {
+        m_Transform.localEulerAngles = rotation;
     }
     #endregion
 }

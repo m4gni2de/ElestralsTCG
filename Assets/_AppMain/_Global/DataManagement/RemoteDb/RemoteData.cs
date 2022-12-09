@@ -12,6 +12,7 @@ using System.Security.Policy;
 using Gameplay;
 using System.Net;
 using SimpleSQL;
+using System;
 
 public class RemoteData
 {
@@ -165,14 +166,13 @@ public class RemoteData
     }
 
 
-    #region Server Management
+    #region Server List
     public static async Task<List<ServerDTO>> ServerList()
     {
 
         List<ServerDTO> list = new List<ServerDTO>();
         WWWForm form = new WWWForm();
         form.AddField("action", "getall");
-        //form.AddField("port", 7777);
 
         string results = await DoRemoteQuery(serverInfo, form);
         if (HasResults(results))
@@ -296,9 +296,63 @@ public class RemoteData
 
         return list;
     }
+
+    //public static async Task<bool> RegisterPlayer()
+    //{
+    //    ConnectedPlayerDTO player = await FindPlayer(App.Account.Id);
+    //    bool exists = (player != null);
+    //    if (exists) { return true; }
+
+    //    WWWForm form = new WWWForm();
+    //    form.AddField("action", "registerPlayer");
+    //    form.AddField("lobbyId", (int)NetworkManager.Instance.Client.Id);
+    //    form.AddField("id", App.Account.Id);
+    //    form.AddField("name", App.Account.Name);
+
+    //    string results = await DoRemoteQuery(pvpLobby, form);
+    //    return results != "error";
+    //}
+    public static async Task<ConnectedPlayerDTO> FindPlayer(string id)
+    {
+
+        WWWForm form = new WWWForm();
+        form.AddField("action", "findPlayer");
+        form.AddField("id", id);
+
+        string results = await DoRemoteQuery(pvpLobby, form);
+        if (HasResults(results))
+        {
+            var array = new JSONObject(results);
+            if (!array.isNull)
+            {
+                foreach (var prop in array)
+                {
+                    ConnectedPlayerDTO player = new ConnectedPlayerDTO();
+                    player.serverId = prop[0].intValue;
+                    player.userId = prop[1].stringValue;
+                    player.username = prop[2].stringValue;
+                    player.whenConnect = DateTime.Parse(prop[3].stringValue);
+
+                    return player;
+                }
+
+
+            }
+        }
+        return null;
+    }
+
+    public static async void DeletePlayer()
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("action", "deletePlayer");
+        form.AddField("id", App.Account.Id);
+
+        string results = await DoRemoteQuery(pvpLobby, form);
+    }
     #endregion
 
-    #region Lobby Management
+    #region Lobby Management(AS SERVER)
     public static async Task<string> CreateLobby(string player1)
     {
         string lobbyId = UniqueString.CreateId(5);
@@ -466,5 +520,12 @@ public class ServerDTO
     public int connType { get; set; }
 }
 
+public class ConnectedPlayerDTO
+{
+    public int serverId { get; set; }
+    public string userId { get; set; }
+    public string username { get; set; }
+    public DateTime whenConnect { get; set; }
+}
 
 #endregion

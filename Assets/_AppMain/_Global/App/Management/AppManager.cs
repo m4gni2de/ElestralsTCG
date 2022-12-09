@@ -19,6 +19,7 @@ using System.Security.Permissions;
 using System.Net.Sockets;
 using AppManagement;
 using UnityEngine.Events;
+using Cards.Collection;
 #if UNITY_EDITOR
 using ParrelSync;
 #endif
@@ -35,6 +36,8 @@ public class AppManager : MonoBehaviour
             DontDestroyOnLoad(this);
             CheckAssets();
         }
+
+      
     }
 
     #region Assets
@@ -65,10 +68,11 @@ public class AppManager : MonoBehaviour
 
         }
 
-        
+
         //AssetPipeline.DoRedownloadAllCards();
         if (hasDb)
         {
+            CardCollection.GenerateCollection();
             SetupManager();
             //AssetPipeline.DoRedownloadAllCards();
             CheckForAccount();
@@ -272,11 +276,25 @@ CheckForAccountDevice();
     #endregion
 
     #region Click Management
-   
+    public static event Action<bool> OnTapped;
+    private static bool _tap = false;
+    public static bool tap
+    {
+        get
+        {
+            return _tap;
+        }
+        set
+        {
+            if (_tap == value) { return; }
+            _tap = value;
+            OnTapped?.Invoke(value);
+        }
+    }
     #region Game Time/Freeze Management
     [SerializeField]
     private GameLog _freezeLog = null;
-    public GameLog FreezeLog { get { _freezeLog ??= GameLog.Create("FreezeLog", false); return _freezeLog; } }
+    public GameLog FreezeLog { get { _freezeLog ??= GameLog.Create("FreezeLog", true); return _freezeLog; } }
     protected static List<iFreeze> _FreezeObjects = null;
     public static List<iFreeze> FreezeObjects { get { _FreezeObjects ??= new List<iFreeze>(); return _FreezeObjects; } }
     public static void Freeze(bool isFreeze = true)
@@ -286,7 +304,7 @@ CheckForAccountDevice();
         {
             CameraMotion.main.Freeze(_IsFrozen);
         }
-        
+
     }
     public static void Freeze(iFreeze obj)
     {
@@ -294,7 +312,10 @@ CheckForAccountDevice();
         {
             FreezeObjects.Add(obj);
             string logMsg = $"{obj} was added as a Freeze Object. There are now {FreezeObjects.Count} Freeze Objects.";
-            Instance.FreezeLog.AddLog(logMsg);
+            if (Instance)
+            {
+                Instance.FreezeLog.AddLog(logMsg);
+            }
         }
 
         Freeze(true);
@@ -305,12 +326,41 @@ CheckForAccountDevice();
         {
             FreezeObjects.Remove(obj);
             string logMsg = $"{obj} was removed as a Freeze Object. There are now {FreezeObjects.Count} Freeze Objects.";
-            Instance.FreezeLog.AddLog(logMsg);
+            if (Instance)
+            {
+                Instance.FreezeLog.AddLog(logMsg);
+            }
+
         }
         if (FreezeObjects.Count == 0)
         {
             Freeze(false);
         }
+    }
+    public static void ThawOnRelease(iFreeze obj)
+    {
+        if (Input.touchCount > 0 || Input.GetMouseButton(0))
+        {
+            Instance.StartCoroutine(Instance.AwaitRelease(obj));
+        }
+        else
+        {
+            Thaw(obj);
+        }
+    }
+    private IEnumerator AwaitRelease(iFreeze obj)
+    {
+        do
+        {
+            yield return null;
+        } while (true && Input.GetMouseButton(0));
+
+        if (obj != null)
+        {
+            Thaw(obj);
+        }
+            
+
     }
     #endregion
 
@@ -355,23 +405,17 @@ CheckForAccountDevice();
     #region Update
     private void Update()
     {
-        //if (!IsClicked)
-        //{
-        //    if (Input.GetMouseButton(0))
-        //    {
-        //        IsClicked = Input.GetMouseButton(0);
-        //        //var worldMousePosition =
-        //        //       Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f));
-        //        //var x = worldMousePosition.x;
-        //        //var y = worldMousePosition.y;
-
-        //        TouchButton.CheckTouch();
-        //    }
-        //}
-        //else
-        //{
-        //    if (!Input.GetMouseButton(0)) { IsClicked = false; }
-        //}
+        if (!tap)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                tap = true;
+            }
+        }
+        else
+        {
+            if (!Input.GetMouseButton(0)) { tap = false; }
+        }
 
     }
     #endregion

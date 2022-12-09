@@ -50,7 +50,7 @@ public class NumberInput : InputBox, iRemoteAsset
         Instance.transform.SetParent(parent, true);
         Instance.transform.localPosition = Vector2.zero;
         Instance.transform.localEulerAngles = Vector3.zero;
-
+        
         return Instance;
     }
 
@@ -61,16 +61,9 @@ public class NumberInput : InputBox, iRemoteAsset
 
     }
 
-    private void OnEnable()
-    {
-        this.Freeze();
-    }
-    private void OnDisable()
-    {
-        this.Thaw();
-    }
     public void Open(string title, int startVal, int min, int max)
     {
+        DoFreeze();
         IsHandled = false;
         gameObject.SetActive(true);
         placeHolder.text = title;
@@ -81,23 +74,29 @@ public class NumberInput : InputBox, iRemoteAsset
     }
     public override void Close()
     {
+        DoThaw();
         if (Instance != null)
         {
             Instance.gameObject.SetActive(false);
         }
+      
     }
     #endregion
 
 
     #region Commands
+    
     public override void Confirm()
     {
         SetValueInput(Value);
         base.Confirm();
+        Close();
+        
     }
     public override void Cancel()
     {
         base.Cancel();
+        Close();
     }
     #endregion
 }

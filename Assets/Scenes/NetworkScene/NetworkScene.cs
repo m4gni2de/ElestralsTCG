@@ -17,6 +17,7 @@ using GameActions;
 using RiptideNetworking;
 using System.Net.Sockets;
 using System.Net;
+using Mono.Cecil.Cil;
 #if UNITY_EDITOR
 using UnityEditor.Experimental.GraphView;
 #endif
@@ -61,6 +62,8 @@ public class NetworkScene : MonoBehaviour, iSceneScript
     public bool isConnecting = false;
 
     [Header("Lobby Managing")]
+    private int connectAttempts = 0;
+    private int maxConnectAttmempts = 5;
     public GameObject gamesListPanel;
     public VmGameSelect _templateGameSelect;
     [SerializeField]
@@ -102,7 +105,8 @@ public class NetworkScene : MonoBehaviour, iSceneScript
     {
         StartScene();
         GetServerList();
-        
+
+     
 
     }
 
@@ -158,10 +162,10 @@ public class NetworkScene : MonoBehaviour, iSceneScript
     
     private async void GetServerList()
     {
-
+        
         List<ServerDTO> servers = new List<ServerDTO>();
-        ServerDTO local = ServerManager.LocalServer();
-        servers.Add(local);
+        //ServerDTO local = ServerManager.LocalServer();
+        //servers.Add(local);
         List<ServerDTO> remoteServers = await RemoteData.ServerList();
         servers.AddRange(remoteServers);
 
@@ -245,26 +249,53 @@ public class NetworkScene : MonoBehaviour, iSceneScript
         isConnecting = false;
         NetworkManager.OnConnectAsClient -= OnClientConnected;
         ToggleMainMenu(true);
-        //DisplayManager.SetAction(() => Disconnect());
-        
-
         Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.Connected);
         message.AddUShort(NetworkManager.Instance.Client.Id);
         message.AddString(App.Account.Id);
+        message.AddString(App.Account.Name);
         NetworkPipeline.SendMessageToServer(message);
-
-        //CloseConnectionPanel();
     }
 
     protected void OnClientConnectionFailed()
     {
         NetworkManager.OnConnectionFailed -= OnClientConnectionFailed;
         NetworkManager.OnConnectAsClient -= OnClientConnected;
+
+        App.ShowMessage($"Connection to Server Failed. Please check your connection and try again.");
+        GetServerList();
         //OpenConnectionPanel();
-       // btnServerJoin.interactable = true;
+        // btnServerJoin.interactable = true;
 
     }
 
+
+    //private async void RegisterPlayer()
+    //{
+    //    bool didRegister = await RemoteData.RegisterPlayer();
+    //    if (didRegister)
+    //    {
+    //        NetworkManager.OnConnectAsClient -= OnClientConnected;
+    //        ToggleMainMenu(true);
+    //        Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.Connected);
+    //        message.AddUShort(NetworkManager.Instance.Client.Id);
+    //        message.AddString(App.Account.Id);
+    //        NetworkPipeline.SendMessageToServer(message);
+    //    }
+    //    else
+    //    {
+    //        App.ShowMessage($"Connection to Server Failed. Please check your connection and try again.");
+    //        connectAttempts += 1;
+    //        if (connectAttempts > maxConnectAttmempts)
+    //        {
+    //            Disconnect();
+    //        }
+    //        else
+    //        {
+    //            RegisterPlayer();
+    //        }
+            
+    //    }
+    //}
 
     #endregion
 
@@ -414,8 +445,10 @@ public class NetworkScene : MonoBehaviour, iSceneScript
         NetworkPlayer player = otherPlayers[0];
 
         GameManager.JoinGame(gameId, player);
+
     }
 
+    
     #endregion
 
 
@@ -425,6 +458,7 @@ public class NetworkScene : MonoBehaviour, iSceneScript
         ClientManager.Disconnect();
         ToggleMainMenu(false);
         ToggleGamesList(false);
+        connectAttempts = 0;
         GetServerList();
     }
     private void HideGamesDisplayLobby()

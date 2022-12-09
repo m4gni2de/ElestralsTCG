@@ -6,10 +6,10 @@ using System;
 
 public enum ComparedTo
 {
+    LessThan = -1,
     EqualTo = 0,
     GreaterThan = 1,
-    LessThan = -1,
-    NoComparison = -2,
+    NoComparison = 2,
 }
 public static class CompareExtensions
 {
@@ -17,6 +17,14 @@ public static class CompareExtensions
 
     public static ComparedTo CompareTo<T>(this T obj1, T obj2)
     {
+
+        if (obj1 == null)
+        {
+            if (obj2 == null) { return ComparedTo.EqualTo; } else { return ComparedTo.NoComparison; }
+
+        }
+        else if (obj2 == null) { if (obj1 == null) { return ComparedTo.EqualTo; } else { return ComparedTo.NoComparison; } }
+
         if (obj1.GetType().IsNumeric())
         {
             GenericNumber<T> a = new GenericNumber<T>(obj1);
@@ -64,6 +72,8 @@ public static class CompareExtensions
         return objBool;
     }
 
+
+    
 
 
 }

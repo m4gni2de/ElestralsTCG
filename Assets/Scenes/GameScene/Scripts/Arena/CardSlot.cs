@@ -181,7 +181,6 @@ namespace Gameplay
         
         protected virtual List<PopupCommand> GetSlotCommands()
         {
-            App.LogFatal($"{name} has no Commands Set!");
             return new List<PopupCommand>();
         }
 
@@ -299,9 +298,10 @@ namespace Gameplay
 
         }
 
+
     public virtual void AllocateTo(GameCard card, bool sendToServer = true)
     {
-       
+        
         card.RemoveFromSlot();
         cards.Add(card);
         card.AllocateTo(this, sendToServer);
@@ -319,6 +319,7 @@ namespace Gameplay
     protected virtual void SetCommands(GameCard card)
     {
         TouchObject to = card.cardObject.touch;
+            to.ClearAll();
         to.AddClickListener(() => ClickCard(card));
             //if (IsYours)
             //{

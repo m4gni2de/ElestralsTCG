@@ -2,8 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+#if UNITY_EDITOR
+using UnityEditor.Build.Pipeline;
+#endif
 
-public class CardView : MonoBehaviour, iRemoteAsset, iCardView
+using GlobalUtilities;
+
+[SortableObject]
+public class CardView : MonoBehaviour, iRemoteAsset, iGridCell
 { 
 
     #region Interfaces
@@ -11,31 +17,61 @@ public class CardView : MonoBehaviour, iRemoteAsset, iCardView
     public static string BorderMapping = "Border";
     public static readonly Vector2 GameSize = new Vector2(65f, 90f);
 
+    
+
+
+    #region iGridCell
+    public GameObject GetGameObject() { return gameObject; }
+    protected int _index;
+    
+    public int Index { get => _index; }
+    public virtual void LoadData(object data, int index)
+    {
+        _index = index;
+        LoadCard((Card)data);
+    }
+    public void Remove()
+    {
+        Destroy(gameObject);
+    }
     public virtual void Clear()
     {
         LoadCard();
         Hide();
     }
-    public void Destroy()
+    public virtual void SetInsideView(bool isInside)
     {
-        Destroy(gameObject);
+        touch.Interactable = isInside;
     }
-    public iCard GetCard()
-    {
-        if (ActiveCard == null) { return null; }
-        return ActiveCard;
-    }
-    
+
+    #endregion
+
     #endregion
 
     #region Properties
+
     public string CardName;
     public string CardSessionId;
-    public Card ActiveCard;
+
+    private Card _activeCard = null;
+    [SortableProxy(typeof(Card))]
+    public Card ActiveCard
+    {
+        get
+        {
+            return _activeCard;
+        }
+        set
+        {
+            _activeCard = value;
+        }
+    }
     public TouchObject touch;
     public int cardIndex;
 
     protected Vector2 DefaultPosition { get; set; }
+
+    [SortableValue(SortBy.Name)]
     public string DisplayName
     {
         get
@@ -60,26 +96,20 @@ public class CardView : MonoBehaviour, iRemoteAsset, iCardView
                 return st;
         }
     }
-    #endregion
-
     public bool isDragging = false;
 
     public bool IsFaceUp { get; set; }
-    public bool IsVertical
+
+    private RectTransform _rect = null;
+    public RectTransform Rect
     {
         get
         {
-            return transform.localEulerAngles.z == 0f;
+            _rect ??= GetComponent<RectTransform>();
+            return _rect;
         }
     }
-
-    public float RenderHeight { get { return GetRenderHeight(); } }
-   
-    protected virtual float GetRenderHeight()
-    {
-        return GetComponent<RectTransform>().rect.height;
-    }
-
+    #endregion
     #region Functions
     public bool IsCard(string cardKey)
     {
@@ -95,7 +125,23 @@ public class CardView : MonoBehaviour, iRemoteAsset, iCardView
             return ActiveCard.cardData.cardKey;
         }
     }
+    public bool IsVertical
+    {
+        get
+        {
+            return transform.localEulerAngles.z == 0f;
+        }
+    }
+
+    public float RenderHeight { get { return GetRenderHeight(); } }
+
+    protected virtual float GetRenderHeight()
+    {
+        return GetComponent<RectTransform>().rect.height;
+    }
+
     #endregion
+
 
     #region Card Building Properties
     [Header("Card Building")]
@@ -143,8 +189,6 @@ public class CardView : MonoBehaviour, iRemoteAsset, iCardView
     public event Action<int> OnSortOrderChange;
     
     #endregion
-
-
 
     public void Hide()
     {
@@ -356,7 +400,9 @@ public class CardView : MonoBehaviour, iRemoteAsset, iCardView
     #endregion
 
 
-    
+    #region Sortable Properties
+
+    #endregion
 
 
 }

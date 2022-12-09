@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -18,23 +19,20 @@ public class IncrementChanger : MonoBehaviour
     [SerializeField] private float minValue;
     [SerializeField] private SpriteDisplay bg;
 
+   
     private float _currentValue = 0;
     public float CurrentValue
     {
         get { return _currentValue; }
         private set
         {
-            bool didChange = value != _currentValue;
+            
             _currentValue = value;
-            if (didChange) { ValueChanged(); }
+            ValueChanged();
         }
     }
 
-    #region Functions
-    public float UpValue { get { return changeValue; } }
-    public float DownValue { get { return -changeValue; } }
-    #endregion
-
+    
     #endregion
 
     #region Initialization
@@ -51,39 +49,31 @@ public class IncrementChanger : MonoBehaviour
     }
     public void Hide()
     {
-        OnValueChanged.RemoveAllListeners();
         gameObject.SetActive(false);
     }
     void Refresh()
     {
-        OnValueChanged.RemoveAllListeners();
+        
 
     }
     public void Load(string title, float startVal, float changeVal, float min = float.MinValue, float max = float.MaxValue)
     {
-        Refresh();
-
+        
         this.titleText.SetText(title);
         this.maxValue = max;
         this.minValue = min;
         this.changeValue = changeVal;
         _currentValue = startVal;
+        qtyText.SetText(_currentValue.ToString());
         Show();
-        ValueChanged();
     }
 
+    
     #endregion
 
     #region Value Events
-    private UnityEvent<float> _onValueChanged = null;
-    public UnityEvent<float> OnValueChanged
-    {
-        get
-        {
-            _onValueChanged ??= new UnityEvent<float>();
-            return _onValueChanged;
-        }
-    }
+    public event Action<float> OnValueChanged;
+
     private void ValueChanged()
     {
         qtyText.SetText(CurrentValue.ToString());
@@ -95,12 +85,7 @@ public class IncrementChanger : MonoBehaviour
         if (newVal <= minValue) { newVal = minValue; }
         CurrentValue = newVal;
     }
-    public void AddValueListener(Action<float> ac)
-    {
-        OnValueChanged.RemoveAllListeners();
-        UnityAction<float> uac = new UnityAction<float>(ac);
-        OnValueChanged.AddListener(uac);
-    }
+   
     #endregion
 
     #region Buttons
@@ -159,11 +144,7 @@ public class IncrementChanger : MonoBehaviour
     #region Clean Up
     private void OnDestroy()
     {
-        if (_onValueChanged != null)
-        {
-            OnValueChanged.RemoveAllListeners();
-            _onValueChanged = null;
-        }
+       
     }
     #endregion
 }

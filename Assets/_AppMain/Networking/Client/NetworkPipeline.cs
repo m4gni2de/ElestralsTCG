@@ -20,7 +20,7 @@ public enum ServerFunction
 
 public enum ToServer : ushort
 {
-    
+    ServerTime = 100,
     Connected = 99,
     CreateGame = 98,
     JoinGame = 97,
@@ -45,7 +45,7 @@ public enum ToServer : ushort
 }
 public enum FromServer :ushort
 {
-    
+    ServerTime = 100,
     Connected = 99,
     CreateGame = 98,
     JoinGame = 97,
@@ -106,6 +106,14 @@ public class NetworkPipeline
 
 
     #region FromServer enum
+    [MessageHandler((ushort)FromServer.ServerTime)]
+    private static void GetServerTime(Message message)
+    {
+        
+
+    }
+
+
     public static event Action<string> OnJoinedFailed;
     [MessageHandler((ushort)FromServer.JoinFailed)]
     private static void JoinLobbyFailed(Message message)
@@ -149,23 +157,25 @@ public class NetworkPipeline
             string user = message.GetString();
             string deckKey = message.GetString();
             string deckName = message.GetString();
-            NetworkPlayer p = new NetworkPlayer(netId, user, deckKey, deckName);
+            string username = message.GetString();
+            NetworkPlayer p = new NetworkPlayer(netId, user, deckKey, deckName, username);
             otherPlayers.Add(p);
         }
         OnGameJoined?.Invoke(lobbyId, otherPlayers);
     }
 
-    public static event Action<ushort, string> OnPlayerJoined;
-    public static void DoPlayerJoined(ushort netId, string userId)
+    public static event Action<ushort, string, string> OnPlayerJoined;
+    public static void DoPlayerJoined(ushort netId, string userId, string username)
     {
-        OnPlayerJoined?.Invoke(netId, userId);
+        OnPlayerJoined?.Invoke(netId, userId, username);
     }
     [MessageHandler((ushort)FromServer.PlayerJoined)]
     private static void PlayerJoined(Message message)
     {
         ushort netId = message.GetUShort();
         string userId = message.GetString();
-        DoPlayerJoined(netId, userId);
+        string username = message.GetString();
+        DoPlayerJoined(netId, userId, username);
     }
 
 
@@ -208,7 +218,6 @@ public class NetworkPipeline
         int cardIndex = message.GetInt();
         string cardRealId = message.GetString();
         string cardNetworkId = message.GetString();
-
 
         GameManager.SyncPlayerCard(sender, cardIndex, cardRealId, cardNetworkId);
 

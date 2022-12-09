@@ -25,6 +25,8 @@ public class MainScene : MonoBehaviour, iSceneScript
     #region Interface
     public void StartScene()
     {
+       
+
         WorldCanvas.FindCamera();
         ToggleButtons(true);
         menuButtons.SetActive(true);

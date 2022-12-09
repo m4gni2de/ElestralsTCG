@@ -148,12 +148,5 @@ public class NetworkCard : MonoBehaviour
         NetworkPipeline.SendMessageToServer(message);
     }
 
-    #region Messages
-
-    #region Outbound
-
-    #endregion
-
-
-    #endregion
+   
 }

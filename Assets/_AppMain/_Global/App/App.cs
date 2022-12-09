@@ -65,6 +65,8 @@ public class App
     {
         _account = user;
         ChangeScene(MainScene.SceneName);
+
+        
     }
     public static void LoadGuest()
     {
@@ -153,7 +155,7 @@ public class App
         }
         else
         {
-            //DisplayManager.SetAction(() => TryChangeScene(scene));
+
             DisplayManager.AddAction(TryChangeScene, scene);
         }
     }

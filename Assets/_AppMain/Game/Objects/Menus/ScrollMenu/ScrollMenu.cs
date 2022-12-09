@@ -77,6 +77,7 @@ namespace Gameplay.Menus
         {
             base.Close();
             gameObject.SetActive(false);
+            DoThaw();
         }
 
         private void LateUpdate()

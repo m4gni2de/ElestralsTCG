@@ -327,7 +327,7 @@ namespace Gameplay
             }
             AllocateCards();
         }
-        public void AllocateCards()
+        public void AllocateCards(bool sendToServer = true)
         {
             Deck sp = _deck.SpiritDeck;
             for (int i = 0; i < sp.Cards.Count; i++)
@@ -335,7 +335,7 @@ namespace Gameplay
                 GameCard g = sp.Cards[i];
                 CardView co = SpawnCard(g, SpiritDeckSlot);
                 g.SetObject(co);
-                SpiritDeckSlot.AllocateTo(g);
+                SpiritDeckSlot.AllocateTo(g, sendToServer);
 
             }
 
@@ -345,7 +345,7 @@ namespace Gameplay
                 GameCard g = de.InOrder[i];
                 CardView co = SpawnCard(g, DeckSlot);
                 g.SetObject(co);
-                DeckSlot.AllocateTo(g);
+                DeckSlot.AllocateTo(g, sendToServer);
 
             }
 

@@ -34,6 +34,7 @@ namespace Gameplay
 
         protected override void ClickCard(GameCard card)
         {
+          
             bool sameCard = GameManager.SelectedCard == card;
             base.ClickCard(card);
             SetSelectedCard(card);
@@ -104,10 +105,8 @@ namespace Gameplay
 
         protected override bool GetClickValidation()
         {
-            
-            bool isYours = Owner.userId == App.WhoAmI;
-            bool validate = isYours;
-            return validate;
+
+            return IsYours;
         }
 
         protected override List<PopupCommand> GetSlotCommands()
@@ -130,6 +129,7 @@ namespace Gameplay
                     commands.Add(PopupCommand.Create("Nexus", () => NexusCommand(), 1, 1));
                     commands.Add(PopupCommand.Create("Attack", () => AttackCommand()));
                     commands.Add(PopupCommand.Create("DisEnchant", () => DisEnchantCommand(), 1, 0));
+                    commands.Add(PopupCommand.Create("Destroy", () => DestroyCommand(), 1, 0));
                 }
                 else
                 {
@@ -309,10 +309,30 @@ namespace Gameplay
 
         #endregion
 
-
+        
+        protected override void DestroyResponse(bool confirm)
+        {
+            if (confirm)
+            {
+                List<GameCard> toMove = new List<GameCard>();
+                toMove.AddRange(cards);
+                for (int i = 0; i < EmpoweringRunes.Count; i++)
+                {
+                    GameCard rune = EmpoweringRunes[i];
+                    toMove.Add(rune);
+                    toMove.AddRange(rune.EnchantingSpirits);
+                }
+                for (int i = 0; i < toMove.Count; i++)
+                {
+                    GameManager.Instance.MoveCard(Owner, toMove[i], toMove[i].Owner.gameField.UnderworldSlot);
+                }
+                GameManager.Instance.cardSlotMenu.Close();
+            }
+            Refresh();
+        }
 
         #region Rune Empowering
-       
+
         protected void ToggleEmpowerLink(GameCard rune, bool isAdding)
         {
             

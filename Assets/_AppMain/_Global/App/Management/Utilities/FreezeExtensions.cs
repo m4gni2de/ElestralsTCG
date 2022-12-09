@@ -12,4 +12,11 @@ public static class FreezeExtensions
     {
         AppManager.Thaw(obj);
     }
+
+    public static void ThawOnRelease(this iFreeze obj)
+    {
+        AppManager.ThawOnRelease(obj);
+    }
+
+    
 }

@@ -1,18 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using TMPro;
-using Decks;
-using CardsUI.Filtering;
-using static Decks.Decklist;
-using System;
-using PopupBox;
+using System.Globalization;
 using Cards;
-using UnityEngine.UI;
+using CardsUI.Filtering;
+using Databases;
+using Decks;
 using Gameplay.Menus;
 using nsSettings;
+using PopupBox;
+using TMPro;
+using TouchControls;
+#if UNITY_EDITOR
+using UnityEditor.Experimental.GraphView;
+#endif
 
-public class DeckEditor : ValidationObject
+using UnityEngine;
+using UnityEngine.UI;
+using static Decks.Decklist;
+
+public class DeckEditor : ValidationObject, iFreeze
 {
     #region Deck Constraints
     public static readonly int MaxSpiritCount = 20;
@@ -36,6 +42,19 @@ public class DeckEditor : ValidationObject
     #endregion
 
     #region Properties
+
+    private Card _activeCard = null;
+    public Card ActiveCard
+    {
+        get
+        {
+            return _activeCard;
+        }
+        set
+        {
+            _activeCard = value;
+        }
+    }
     private CardView _selectedCard = null;
     public CardView SelectedCard
     {
@@ -43,17 +62,42 @@ public class DeckEditor : ValidationObject
         {
             return _selectedCard;
         }
-        private set
+        set
         {
-            bool didChange = value != _selectedCard;
-            if (didChange)
+            if (_selectedCard == value) { return; }
+            if (_selectedCard != null)
             {
-                qtyChanger.Hide();
+                _selectedCard.ResetColors();
             }
+            value.Highlight(value.cardBorder, Color.yellow);
             _selectedCard = value;
         }
     }
-    public CardScroll deckScroll;
+
+    
+
+    private void SetActiveCard(Card card = null)
+    {
+        if (card == null)
+        {
+            ActiveCard = null;
+            SelectedCard = null;
+            qtyChanger.Hide();
+        }
+        else
+        {
+            ActiveCard = card;
+            int qty = QuantityInDeck(card);
+            float max = 3f;
+            if (card.CardType == CardType.Spirit) { max = 20f; }
+            qtyChanger.Load(card.DisplayName, qty, 1f, 0f, max);
+
+            bool canAdd = CanAddCard(ActiveCard.CardType, qty);
+            bool canRemove = qty > 0;
+            SetQtyButtons(canAdd, canRemove);
+        }
+    }
+
     public TMP_Dropdown deckSelector;
 
    
@@ -65,39 +109,183 @@ public class DeckEditor : ValidationObject
     [SerializeField] private int _catalogSortId = 2;
     [SerializeField] private int _catalogSortOrder = 0;
 
+
+    public CardScroll deckScroller;
+    [SerializeField] private CardView DisplayCard;
     #region Catalog Section
     public CardCatalog catalog;
     [SerializeField] private CustomScroll deckCardScroll;
 
+    
+
 
     public void ToggleCatalog(bool isOn)
     {
-       
+      
         if (isOn)
         {
-            GridSettings sett = GridSettings.Create(5, 3, 70, new Vector2(4f, 12f));
-            catalog.Open(sett, SortingLayer.IDToName(_catalogSortId), _catalogSortOrder);
+            if (!deckCardScroll.IsLoaded)
+            {
+                GridSettings sett = GridSettings.Create(5, 3, 70, new Vector2(4f, 12f));
+                catalog.Open(sett, SortingLayer.IDToName(_catalogSortId), _catalogSortOrder);
 
-            GridSettings deckListSettings = GridSettings.Create(1, 0, -1, new Vector2(0f, 0f));
-            deckCardScroll.Initialize(deckListSettings, SetDeckCard);
-            deckCardScroll.SetDataContext(deckScroll.Cards);
+                GridSettings deckListSettings = GridSettings.Create(1, 0, -1, new Vector2(0f, 0f));
+                deckCardScroll.Initialize(deckListSettings, SetDeckCard);
+                
+            }
+               deckCardScroll.SetDataContext(DeckCards);
+            catalog.Toggle(true);
+            deckCardScroll.Toggle(true);
+            deckScroller.Toggle(false);
         }
-        
-        catalog.Toggle(isOn);
-        deckCardScroll.Toggle(isOn);
-        deckScroll.Toggle(!isOn);
-        
+        else
+        {
+            catalog.Toggle(false);
+            deckCardScroll.Toggle(false);
+            deckScroller.Toggle(true);
+        }  
     }
 
+    #region Scroll Cell Data Overrides
     private void SetDeckCard(iGridCell obj, object data)
     {
         CardQtyCell cell = (CardQtyCell)obj;
-        cell.SetClickListener(() => catalog.JumpToCard(cell.ConnectedCard.ActiveCard.cardData.cardKey));
+        cell.SetClickListener(() => SelectDeckQtyCard(cell));
     }
+    private void SelectDeckQtyCard(CardQtyCell cell)
+    {
+        catalog.JumpToCard(cell.ConnectedCard.key);
+        SetActiveCard(cell.ActiveCard);
+    }
+
+   
+    #endregion
 
     #endregion
 
+
+    #endregion
+
+    #region Deck Functions
+    public List<CardView> CardsWithSharedBase(Card card, List<CardView> cardsToSearch)
+    {
+        List<CardView> cards = new List<CardView>();
+        List<string> allDupes = card.AltArts;
+        for (int i = 0; i < cardsToSearch.Count; i++)
+        {
+            CardView view = cardsToSearch[i];
+            if (view.ActiveCard != null)
+            {
+                if (allDupes.Contains(view.CardKey))
+                {
+                    cards.Add(view);
+                }
+            }
+        }
+        return cards;
+
+    }
+
+    public List<DeckCard> CardsWithSharedBase(Card card, List<DeckCard> cardsToSearch)
+    {
+        List<DeckCard> cards = new List<DeckCard>();
+        List<string> allDupes = card.AltArts;
+        for (int i = 0; i < cardsToSearch.Count; i++)
+        {
+            DeckCard dc = cardsToSearch[i];
+            if (allDupes.Contains(dc.key))
+            {
+                cards.Add(dc);
+            }
+
+        }
+        return cards;
+
+    }
+    public int IndexInDeck(string setKey)
+    {
+        for (int i = 0; i < DeckCards.Count; i++)
+        {
+            if (DeckCards[i].key == setKey) { return i; }
+        }
+        return -1;
+    }
+    public DeckCard FindCardInDeck(string setKey)
+    {
+        for (int i = 0; i < DeckCards.Count; i++)
+        {
+            if (DeckCards[i].key == setKey) { return DeckCards[i]; }
+        }
+        return null;
+    }
+
+    public int SpiritCount
+    {
+        get
+        {
+            int count = 0;
+            for (int i = 0; i < DeckCards.Count; i++)
+            {
+                if (DeckCards[i].cardType == CardType.Spirit)
+                {
+                    count += DeckCards[i].copy;
+                }
+
+            }
+            return count;
+        }
+    }
+    public int MainDeckCount
+    {
+        get
+        {
+
+            int count = 0;
+            for (int i = 0; i < DeckCards.Count; i++)
+            {
+                if (DeckCards[i].cardType != CardType.Spirit)
+                {
+                    count += DeckCards[i].copy;
+                }
+
+            }
+
+
+            return count;
+        }
+    }
+    public int DeckCardCount
+    {
+        get
+        {
+            int count = 0;
+            foreach (var item in DeckCards)
+            {
+                count += item.copy;
+            }
+            return count;
+        }
+    }
+
    
+    public int QuantityInDeck(Card card)
+    {
+
+        List<string> alts = CardService.GetAllDuplicateKeys(card.cardData);
+        int cardQty = 0;
+        for (int i = 0; i < alts.Count; i++)
+        {
+            string cardKey = alts[i];
+            DeckCard c = FindCardInDeck(cardKey);
+            if (c != null)
+            {
+                cardQty += c.copy;
+            }
+        }
+
+
+        return cardQty;
+    }
     #endregion
 
     #region Deck Selecting Properties
@@ -145,13 +333,28 @@ public class DeckEditor : ValidationObject
             return _history;
         }
     }
-    private Dictionary<string, int> _cardCounts = null;
-    public Dictionary<string, int> CardCounts
+    
+    private List<DeckCard> _deckCards = null;
+    public List<DeckCard> DeckCards
     {
         get
         {
-            _cardCounts ??= new Dictionary<string, int>();
-            return _cardCounts;
+            _deckCards ??= new List<DeckCard>();
+            return _deckCards;
+        }
+    }
+
+    public List<Card> Cards
+    {
+        get
+        {
+            List<Card> card = new List<Card>();
+            for (int i = 0; i < DeckCards.Count; i++)
+            {
+                Card c = DeckCards[i];
+                card.Add(c);
+            }
+            return card;
         }
     }
 
@@ -190,10 +393,6 @@ public class DeckEditor : ValidationObject
         }
     }
 
-    //private void ToggleDirty(bool setDirty)
-    //{
-    //    IsDirty = setDirty;
-    //}
 
 
 
@@ -230,12 +429,14 @@ public class DeckEditor : ValidationObject
     }
     private void Start()
     {
-
+        qtyChanger.OnValueChanged += ChangeCardQtyInDeck;
     }
     private void OnDestroy()
     {
-        CardStack.OnQuantityChanged -= SetCardQuantity;
-        CardView.OnCardClicked -= CardClick;
+        //CardStack.OnQuantityChanged -= SetCardQuantity;
+        CardView.OnCardClicked -= SelectCard;
+        CardView.OnCardHeld -= StartCardHold;
+        qtyChanger.OnValueChanged -= ChangeCardQtyInDeck;
         if (Instance != null)
         {
             Instance = null;
@@ -258,25 +459,14 @@ public class DeckEditor : ValidationObject
     }
 
     #endregion
+
     #region Deck Selection
     public void ToggleSelector(bool isOn)
     {
-       
         selectorPanel.SetActive(isOn);
-        
         showSelectorBtn.gameObject.SetActive(!isOn);
-        if (isOn)
-        {
-            deckScroll.ToggleCanvas(false);
-
-        }
-        else
-        {
-            deckScroll.ToggleCanvas(true);
-        }
+        deckScroller.ToggleCanvas(!isOn);
     }
-
-   
 
     public void SelectDeck()
     {
@@ -286,8 +476,6 @@ public class DeckEditor : ValidationObject
             //do some save validation stuff here before changing decks
             
             TryChangeDeck(index);
-
-
         }
     }
     private void TryChangeDeck(int newIndex)
@@ -295,6 +483,7 @@ public class DeckEditor : ValidationObject
         _pendingDeckIndex = newIndex;
         if (IsDirty || deckNameText.IsContentChanged())
         {
+            
             string msg = $"There are unsaved changes to the deck. Do you wish to Save them before changing Decks?";
             App.AskYesNoCancel(msg, SaveDeckChanges);
         }
@@ -310,24 +499,23 @@ public class DeckEditor : ValidationObject
     public void OpenDeckEditor()
     {
         GridSettings sett = GridSettings.Create(8, 8, 60, new Vector2(5f, 5f));
-        deckScroll.Setup(sett, false);
-        deckScroll.Settings.stackDuplicates = true;
+        deckScroller.Initialize(sett);
+        deckScroller.Settings.stackDuplicates = true;
     }
-    
+   
     private void UpdateDeckEditor(Decklist deck)
     {
+        SetWatchers(false);
         IsDirty = false;
         History.Clear();
-        
 
-        CardCounts.Clear();
-        foreach (var item in deck.Quantities)
-        {
-            CardCounts.Add(item.Key, item.Value);
-        }
-        deckScroll.LoadDeck(CardCounts);
+        DeckCards.Clear();
+        DeckCards.AddRange(deck.GetCardQuantities);
+        deckScroller.SetDataContext(Cards);
+
         SetDeckInfo(deck);
-        SetQuantityTexts();
+        SetWatchers(true);
+        
 
     }
 
@@ -335,14 +523,15 @@ public class DeckEditor : ValidationObject
     {
         if (turnOn)
         {
-            CardStack.OnQuantityChanged += SetCardQuantity;
-            CardView.OnCardClicked += CardClick;
+            //CardStack.OnQuantityChanged += SetCardQuantity;
+            CardView.OnCardClicked += SelectCard;
             CardView.OnCardHeld += StartCardHold;
+            
         }
         else
         {
-            CardStack.OnQuantityChanged -= SetCardQuantity;
-            CardView.OnCardClicked -= CardClick;
+            //CardStack.OnQuantityChanged -= SetCardQuantity;
+            CardView.OnCardClicked -= SelectCard;
             CardView.OnCardHeld -= StartCardHold;
         }
     }
@@ -352,18 +541,18 @@ public class DeckEditor : ValidationObject
         IsDirty = false;
         History.Clear();
 
+        //SelectedCard = null;
+        ActiveCard = null;
+
         if (deckIndex < 0)
         {
             OpenDeckEditor();
         }
         ActiveDeck = deck;
-        
-        CardCounts.Clear();
-        foreach (var item in deck.Quantities)
-        {
-            CardCounts.Add(item.Key, item.Value);
-        }
-        deckScroll.LoadDeck(CardCounts);
+
+        DeckCards.Clear();
+        DeckCards.AddRange(deck.GetCardQuantities);
+        deckScroller.SetDataContext(Cards);
        
         ToggleSelector(false);
         SetDeckInfo(deck);
@@ -385,12 +574,13 @@ public class DeckEditor : ValidationObject
         deckNameText.AddTextChangeListener(() => SetDeckName(deckNameText.Content));
 
         SetActiveToggle(deck);
+        SetQuantityTexts();
 
     }
 
     private void SetDeckName(string newName)
     {
-        if (ActiveDeck != null) { ActiveDeck.DeckName = newName; SaveActiveDeck(); }
+        if (ActiveDeck != null) { ActiveDeck.DeckName = newName; SaveActiveDeck(); UpdateDeckEditor(ActiveDeck); }
     }
 
     #region Active Status Toggle
@@ -417,8 +607,18 @@ public class DeckEditor : ValidationObject
     {
         if (toggle.IsOn)
         {
-            int currentUserActive = SettingsManager.Account.Settings.ActiveDeck;
-            App.AskYesNo($"Would you like to change your Active Deck from {App.Account.DeckLists[currentUserActive].DeckName} to {ActiveDeck.DeckName}?", ConfirmActiveSelection);
+            if (DeckCardCount < MaxDeckCount)
+            {
+                App.DisplayError($"Deck must have 60 cards to be used in-game. Please select a deck with 60 cards to be your Active Deck.");
+                activeToggle.Toggle(false);
+            }
+
+            if (DeckCardCount == MaxDeckCount)
+            {
+                int currentUserActive = SettingsManager.Account.Settings.ActiveDeck;
+                App.AskYesNo($"Would you like to change your Active Deck from {App.Account.DeckLists[currentUserActive].DeckName} to {ActiveDeck.DeckName}?", ConfirmActiveSelection);
+            }
+            
         }
     }
 
@@ -442,98 +642,12 @@ public class DeckEditor : ValidationObject
     #region Undo
     public void UndoButtonClick()
     {
+        DoFreeze();
         App.AskYesNo($"Do you want to Undo the last change?", UndoChange);
     }
     #endregion
 
-    #region Deck Functions
-    public List<CardView> CardsWithSharedBase(Card card, List<CardView> cardsToSearch)
-    {
-        List<CardView> cards = new List<CardView>();
-        List<string> allDupes = card.AltArts;
-        for (int i = 0; i < cardsToSearch.Count; i++)
-        {
-            CardView view = cardsToSearch[i];
-            if (view.ActiveCard != null)
-            {
-                if (allDupes.Contains(view.CardKey))
-                {
-                    cards.Add(view);
-                }
-            }
-        }
-        return cards;
-
-    }
-
-    public int SpiritCount
-    {
-        get
-        {
-            int count = 0;
-            for (int i = 0; i < deckScroll.Cards.Count; i++)
-            {
-                CardStack card = (CardStack)deckScroll.Cards[i];
-                if (card.ActiveCard != null)
-                {
-                    if (card.ActiveCard.CardType == CardType.Spirit)
-                    {
-                        count += card.quantity;
-                    }
-                }
-            }
-            return count;
-        }
-    }
-    public int MainDeckCount
-    {
-        get
-        {
-            int count = 0;
-            for (int i = 0; i < deckScroll.Cards.Count; i++)
-            {
-                CardStack card = (CardStack)deckScroll.Cards[i];
-                if (card.ActiveCard != null)
-                {
-                    if (card.ActiveCard.CardType != CardType.Spirit)
-                    {
-                        count += card.quantity;
-                    }
-                }
-            }
-            return count;
-        }
-    }
-    public int DeckCardCount
-    {
-        get
-        {
-            int count = 0;
-            foreach (var item in CardCounts)
-            {
-                count += item.Value;
-            }
-            return count;
-        }
-    }
-
-    public int QuantityInDeck(CardView view)
-    {
-
-        List<string> alts = CardService.GetAllDuplicateKeys(view.ActiveCard.cardData);
-        if (!alts.Contains(view.CardKey)) { alts.Add(view.CardKey); }
-        int cardQty = 0;
-        for (int i = 0; i < alts.Count; i++)
-        {
-            string cardKey = alts[i];
-            if (CardCounts.ContainsKey(cardKey))
-            {
-                cardQty += CardCounts[cardKey];
-            }
-        }
-        return cardQty;
-    }
-    #endregion
+   
 
     #region Card Quantity 
     [SerializeField] private IncrementChanger qtyChanger;
@@ -541,83 +655,152 @@ public class DeckEditor : ValidationObject
     {
         CardHistory h = new CardHistory(cardKey, oldQty, newQty);
         History.Add(h);
+        btnUndo.interactable = true;
     }
     private void UndoChange(bool undo)
     {
+        Invoke("DoThaw", .5f);
         if (!undo) { return; }
-        if (History.Count == 0) { IsDirty = false;  return; }
+        if (History.Count == 0) { IsDirty = false;  btnUndo.interactable = false; return; }
        
         CardHistory mostRecent = History.LastItem;
+
+        int changeVal = mostRecent.oldQty - mostRecent.qty;
         History.RemoveLatest();
-        if (mostRecent.qty > 0)
+
+        SetActiveCardFromKey(mostRecent.cardKey, true);
+        ActiveCardQuantityChange(mostRecent.oldQty, false);
+
+       
+        if (History.Count == 0) { btnUndo.interactable = false; }  
+    }
+
+
+    #region Active Card instead of SelectedCard
+    public void SelectCard(CardView view)
+    {
+        SelectedCard = view;
+        if (view.ActiveCard != null)
         {
-            bool cardObjCreated;
-            AddCard(mostRecent.cardKey, mostRecent.oldQty, false, out cardObjCreated);
+            
+            SetActiveCard(view.ActiveCard);
 
         }
         else
         {
-            RemoveCard(mostRecent.cardKey, false);
+            SetActiveCard();
         }
-        IsDirty = History.Count > 0;
-
+    }
+    private void SetActiveCardFromKey(string cardKey, bool doSilent = false)
+    {
+        qUniqueCard dto = CardService.ByKey<qUniqueCard>(CardService.qUniqueCardView, "setKey", cardKey);
+        Card c = dto;
+        if (doSilent)
+        {
+            ActiveCard = c;
+        }
+        else
+        {
+            SetActiveCard(c);
+        }
         
+
+
     }
-    //public void ChangeQuantityButton(float qty)
-    //{
-    //    CardStack stack = SelectedCard as CardStack;
-    //    stack.SetQuantity((int)qty, true);
-    //}
-
-    /// <summary>
-    /// This is called when changing the qty of a card in the deck, but when selecting a card from another scroll or window. Finds the corresponding card in the deck, then sets/changes the qty.
-    /// </summary>
-    /// <param name="qty"></param>
-    private void ChangeQuantityInDeck(float quantity)
+    private void ChangeCardQtyInDeck(float quantity)
     {
-        CardView selected = SelectedCard;
-        string cardKey = selected.CardKey;
+        ActiveCardQuantityChange((int)quantity, true);
 
-        bool addedNewCard;
-        AddCard(cardKey, (int)quantity, true, out addedNewCard);
-        if (addedNewCard)
-        {
-            deckCardScroll.AddData(deckScroll.Cards.Last());
-        }
     }
 
-    /// <summary>
-    /// The Up and Down Qty Buttons on the template card in the card scroll must call this
-    /// </summary>
-    /// <param name="setKey"></param>
-    /// <param name="qty"></param>
-    public void SetCardQuantity(CardView card, int qty, bool addHistory)
+    public void ActiveCardQuantityChange(int qty, bool addHistory)
     {
-        string setKey = card.CardKey;
-        if (CardCounts.ContainsKey(setKey))
+        string cardKey = ActiveCard.cardData.cardKey;
+        int index = IndexInDeck(cardKey);
+        if (index > -1)
         {
-            int oldQty = CardCounts[setKey];
-            CardCounts[setKey] = qty;
+            DeckCard inDeck = FindCardInDeck(cardKey);
+            int oldQty = inDeck.copy;
+            inDeck.copy = qty;
             if (addHistory)
             {
-                AddHistory(setKey, oldQty, qty);
+                AddHistory(cardKey, oldQty, qty);
+            }
+
+
+            if (qty <= 0)
+            {
+                DeckCards.Remove(inDeck);
+                
+            }
+
+            deckScroller.SetDataContext(Cards);
+            if (deckCardScroll.gameObject.activeSelf == true)
+            {
+                deckCardScroll.SetDataContext(DeckCards);
             }
         }
         else
         {
-            CardCounts.Add(setKey, qty);
+            DeckCard newCard = new DeckCard(cardKey, ActiveCard.CardType, qty);
+            DeckCards.Add(newCard);
             if (addHistory)
             {
-                AddHistory(setKey, 0, qty);
+                AddHistory(cardKey, 0, qty);
             }
-           
+            Card c = newCard;
+            deckScroller.AddData(c);
+            if (deckCardScroll.gameObject.activeSelf == true)
+            {
+                deckCardScroll.AddData(newCard);
+            }
         }
+
 
         IsDirty = true;
-        CheckCardQuantities();
-       
+
+        int newQty = QuantityInDeck(ActiveCard);
+        bool canAdd = CanAddCard(ActiveCard.CardType, newQty);
+        bool canRemove = newQty > 0;
+        SetQtyButtons(canAdd, canRemove);
+
+        
+        float max = 3f;
+        if (ActiveCard.CardType == CardType.Spirit) { max = 20f; }
+        qtyChanger.Load(ActiveCard.DisplayName, newQty, 1f, 0f, max);
+
+        SetQuantityTexts();
+
+
     }
 
+
+    public bool CanAddCard(CardType type, int deckQty)
+    {
+
+        float max = 3f;
+        if (type == CardType.Spirit)
+        {
+            max = 20f;
+            if (SpiritCount >= MaxSpiritCount) { return false; }
+
+        }
+        else
+        {
+            if (MainDeckCount >= (MaxDeckCount - MaxSpiritCount)) { return false; }
+        }
+
+        if (DeckCardCount >= MaxDeckCount) { return false; }
+        if (deckQty >= max) { return false; }
+
+
+        return true;
+    }
+    #endregion
+
+
+    #region SELECTED CARD DEPRECIATED
+   
     #region Card Qty Constraints
     private void SetQuantityTexts()
     {
@@ -627,63 +810,10 @@ public class DeckEditor : ValidationObject
 
         btnOpenCatalog.interactable = DeckCardCount < MaxDeckCount;
     }
-    private void CheckCardQuantities()
-    {
-        if (SelectedCard != null)
-        {
-           
-            CardType type = SelectedCard.ActiveCard.CardType;
-            if (SelectedCard is CardStack)
-            {
-                if (type == CardType.Spirit)
-                {
-                    if (SpiritCount >= MaxSpiritCount) { SetQtyButtons(false, true); }
-                    if (SpiritCount <= 0) { SetQtyButtons(true, false); }
-                    if (SpiritCount > 0 && SpiritCount < MaxSpiritCount) { SetQtyButtons(true, true); }
-                }
-                else
-                {
-                    CheckCardLimits(SelectedCard as CardStack);
-                    
-                }
-            }
-
-
-        }
-    }
-
     private void SetQtyButtons(bool canAdd, bool canRemove)
     {
         qtyChanger.ToggleUpButton(canAdd);
         qtyChanger.ToggleDownButton(canRemove);
-    }
-    private void CheckCardLimits(CardStack view)
-    {
-        bool canAdd = true;
-        bool canRemove = true;
-
-        List<CardView> alts = CardsWithSharedBase(view.ActiveCard, deckScroll.Cards);
-        string cardKey = view.ActiveCard.cardData.cardKey;
-        int qty = view.quantity;
-
-        int altCount = 0;
-        for (int i = 0; i < alts.Count; i++)
-        {
-            CardStack card = (CardStack)alts[i];
-            altCount += card.quantity;
-        }
-        int totalCopies = qty + altCount;
-        if (totalCopies >= CardService.DeckLimit(cardKey))
-        {
-            canAdd = false;
-            canRemove = true;
-        }
-        else
-        {
-            canAdd = true;
-            canRemove = totalCopies > 0;
-        }
-        SetQtyButtons(canAdd, canRemove);
     }
 
     #endregion
@@ -691,118 +821,66 @@ public class DeckEditor : ValidationObject
 
     #endregion
     #region Card Adding/Removing
-    public bool CanAddCard(CardView view)
-    {
-        float max = 3f;
-        if (view.ActiveCard.CardType == CardType.Spirit) { max = 20f; }
-        int deckQty = QuantityInDeck(view);
-        return deckQty < max;
-    }
+   
     public void CatalogToggleButton(bool turnOn)
     {
         ToggleCatalog(turnOn);
     }
-    public void AddCard(string setKey, int qty, bool addHistory, out bool wasCreated)
-    {
-        wasCreated = false;
-        CardStack stack = (CardStack)deckScroll.FindCard(setKey);
-        if (stack != null)
-        {
-            stack.ChangeQuantity(qty, addHistory);
-        }
-        else
-        {
-            deckScroll.AddCardByKey(setKey, addHistory, qty);
-            wasCreated = true;
-        }
 
-    }
+  
     public void RemoveCard(string setKey, bool addHistory)
     {
-        CardStack stack = (CardStack)deckScroll.FindCard(setKey);
+        CardStack stack = (CardStack)deckScroller.FindCard(setKey);
         if (stack != null)
         {
-            stack.ChangeQuantity(0, addHistory);
+            stack.SetQuantity(0, addHistory);
         }
     }
+
+    #endregion
     #endregion
 
     #region Card Click/Hold
     private Coroutine _cardHeld = null;
     protected Coroutine CardHeld { get { return _cardHeld; } set { _cardHeld = value; } }
 
-    /// <summary>
-    /// CardStacks in the DeckScroll and CardViews in the Catalog are set with this
-    /// </summary>
-    /// <param name="view"></param>
-    private void CardClick(CardView view)
-    {
-        if (_selectedCard != null && _selectedCard == view)
-        {
-            if (qtyChanger.gameObject.activeSelf)
-            {
-                qtyChanger.Hide();
-                return;
-            }
-        }
-        SelectedCard = view;
-        if (view is CardStack)
-        {
-            ClickCardStack(view as CardStack);
-        }
-        else
-        {
-            ClickCatalogCard(view);
-        }
-    }
-    private void ClickCardStack(CardStack view)
-    {
-        float max = 3f;
-        if (view.ActiveCard.CardType == CardType.Spirit) { max = 20f; }
-        qtyChanger.Load(view.DisplayName, view.quantity, 1f, 0f, max);
-        qtyChanger.AddValueListener(view.SetQuantity);
-    }
-    private void ClickCatalogCard(CardView view)
-    {
-        float max = 3f;
-        if (view.ActiveCard.CardType == CardType.Spirit) { max = 20f; }
-
-        int deckQty = QuantityInDeck(view);
-        qtyChanger.Load(view.DisplayName, deckQty, 1f, 0f, max);
-        qtyChanger.AddValueListener(ChangeQuantityInDeck);
-    }
-
     public void StartCardHold(CardView view)
     {
         if (CardHeld != null) { StopCoroutine(CardHeld); }
-        //CardHeld = StartCoroutine(DoCardHold(view));
+        SelectedCard = view;
+        CardHeld = StartCoroutine(DoCardHold(view.ActiveCard));
     }
-
-    private void HoldCardStack(CardStack view)
+    private IEnumerator DoCardHold(Card card)
     {
-        float max = 3f;
-        if (view.ActiveCard.CardType == CardType.Spirit) { max = 20f; }
-        qtyChanger.Load(view.DisplayName, view.quantity, 1f, 0f, max);
-        qtyChanger.AddValueListener(view.SetQuantity);
+        deckScroller.ToggleCanvas(false);
+        deckCardScroll.EnableScroll(false);
+        catalog.CardScroll.enabled = false;
+        SetDisplayCard(card);
+        do
+        {
+            yield return null;
+
+        } while (true && Input.GetMouseButton(0));
+        SetDisplayCard();
+        deckScroller.ToggleCanvas(true);
+        catalog.CardScroll.enabled = true;
+        deckCardScroll.EnableScroll(true);
+
     }
-    private void HoldCardView(CardView view)
+
+    private void SetDisplayCard(Card card = null)
     {
-        float max = 3f;
-        if (view.ActiveCard.CardType == CardType.Spirit) { max = 20f; }
-
-        int deckQty = QuantityInDeck(view);
-        qtyChanger.Load(view.DisplayName, deckQty, 1f, 0f, max);
-        qtyChanger.AddValueListener(ChangeQuantityInDeck);
+        if (card != null)
+        {
+            DisplayCard.LoadCard(card);
+        }
+        else
+        {
+            DisplayCard.Clear();
+        }
     }
-
    
     #endregion
-
-
-
-
-
-
 
 
 
@@ -820,19 +898,36 @@ public class DeckEditor : ValidationObject
     {
         if (ActiveDeck == null) { return false; }
 
-        Dictionary<string, int> originalQty = ActiveDeck.Quantities;
-        foreach (var item in CardCounts)
+        List<DeckCard> originalCards = ActiveDeck.GetCardQuantities;
+
+
+        for (int i = 0; i < originalCards.Count; i++)
         {
-            if (originalQty.ContainsKey(item.Key))
+
+            bool containsCard = false;
+            DeckCard card = originalCards[i];
+            int expectedQty = card.copy;
+
+            for (int j = 0; j < DeckCards.Count; j++)
             {
-                int startQty = originalQty[item.Key];
-                if (startQty != item.Value) { continue; }
+                if (DeckCards[j].key == card.key)
+                {
+                    containsCard = true;
+                    if (expectedQty == DeckCards[j].copy)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
             }
-            else
-            {
-                return true;
-            }
+
+            if (!containsCard) { return true; }
         }
+
+
 
         return false;
     }
@@ -853,14 +948,27 @@ public class DeckEditor : ValidationObject
                 deckIndex = _pendingDeckIndex;
                 break;
         }
-
+        
         _pendingDeckIndex = -1;
 
     }
     public void SaveActiveDeck()
     {
-        ActiveDeck.Save(CardCounts);
-        UpdateDeckEditor(ActiveDeck);
+        //ActiveDeck.Save(CardCounts);
+        ActiveDeck.Save(DeckCards);
+        
+    }
+    #endregion
+
+    #region Touch Freezing
+    protected void DoFreeze()
+    {
+        this.Freeze();
+    }
+
+    protected void DoThaw()
+    {
+        this.Thaw();
     }
     #endregion
 

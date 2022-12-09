@@ -19,9 +19,9 @@ namespace Decks
         
         public CardHistory(string card, int oldQty, int newQty)
         {
-            cardKey = card;
+            this.cardKey = card;
             this.oldQty = oldQty;
-            qty = newQty;
+            this.qty = newQty;
         }
     }
 }

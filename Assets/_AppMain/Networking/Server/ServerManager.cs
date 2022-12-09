@@ -139,7 +139,7 @@ public static class ServerManager
     {
 
         string gameId = await RemoteData.CreateLobby(App.Account.Id);
-        ServerGame.Create(gameId, NetworkManager.Instance.Client.Id, App.Account.Id);
+        ServerGame.Create(gameId, NetworkManager.Instance.Client.Id, App.Account.Id, App.Account.Name);
     }
     #endregion
 
@@ -170,8 +170,9 @@ public static class ServerManager
         ushort netId = fromClientId;
         string creator = ConnectedPlayers[netId];
         string gameId = await RemoteData.CreateLobby(creator);
+        
 
-        ServerGame.Create(gameId, netId, creator);
+        //ServerGame.Create(gameId, netId, creator);
 
         Message outbound = Message.Create(MessageSendMode.reliable, (ushort)FromServer.CreateGame);
         outbound.AddString(gameId);
@@ -182,26 +183,26 @@ public static class ServerManager
     [MessageHandler((ushort)ToServer.JoinGame)]
     private static async void JoinGame(ushort fromClientId, Message message)
     {
-        ushort netId = fromClientId;
-        string gameId = message.GetString();
-        string player = ConnectedPlayers[netId];
+        //ushort netId = fromClientId;
+        //string gameId = message.GetString();
+        //string player = ConnectedPlayers[netId];
 
-        //also do validation that the lobby is available
-        bool canJoin = await RemoteData.JoinLobby(gameId, player);
-        if (canJoin)
-        {
-            App.Log($"Client {netId}(userId: {player}) has Joined Game '{gameId}'!");
-            ServerGame.Instance.AddPlayer(netId, player, gameId);
-        }
-        else
-        {
-            //do a disconnect message here so the player leaves
-            App.Log($"Client {netId}(userId: {player}) was not able to Join Game '{gameId}'!");
+        ////also do validation that the lobby is available
+        //bool canJoin = await RemoteData.JoinLobby(gameId, player);
+        //if (canJoin)
+        //{
+        //    App.Log($"Client {netId}(userId: {player}) has Joined Game '{gameId}'!");
+        //    ServerGame.Instance.AddPlayer(netId, player, gameId);
+        //}
+        //else
+        //{
+        //    //do a disconnect message here so the player leaves
+        //    App.Log($"Client {netId}(userId: {player}) was not able to Join Game '{gameId}'!");
 
-            Message outbound = Message.Create(MessageSendMode.reliable, (ushort)FromServer.JoinFailed);
-            outbound.AddString(gameId);
-            SendToClient(outbound, fromClientId);
-        }
+        //    Message outbound = Message.Create(MessageSendMode.reliable, (ushort)FromServer.JoinFailed);
+        //    outbound.AddString(gameId);
+        //    SendToClient(outbound, fromClientId);
+        //}
 
 
     }

@@ -140,14 +140,14 @@ namespace Gameplay
         }
 
         
-        public void AddPlayer(string userid, string deckKey, bool isLocal)
-        {
-            Decklist decklist = Decklist.Load(deckKey);
-            Player player = new Player(userid, decklist, isLocal);
-            AddPlayer(player);
-        }
+        //public void AddPlayer(string userid, string deckKey, bool isLocal)
+        //{
+        //    Decklist decklist = Decklist.Load(deckKey);
+        //    Player player = new Player(userid, decklist, isLocal);
+        //    AddPlayer(player);
+        //}
 
-        public void AddLocalPlayer(string userid, string deckKey)
+        public void AddLocalPlayer(string userid, string deckKey, string username)
         {
             Decklist decklist = null;
             for (int i = 0; i < App.Account.DeckLists.Count; i++)
@@ -158,7 +158,7 @@ namespace Gameplay
                     decklist = d;
                 }
             }
-            Player player = new Player(userid, decklist, true);
+            Player player = new Player(userid, username, decklist, true);
             AddPlayer(player);
         }
         

@@ -6,6 +6,7 @@ using Cards;
 
 namespace Gameplay.Decks
 {
+    [System.Serializable]
     public class Deck
     {
         #region Static Constructors
@@ -88,7 +89,6 @@ namespace Gameplay.Decks
 
         protected void AddAtIndex(int pos, GameCard card)
         {
-
             if (pos > InOrder.Count) { pos = InOrder.Count - 1; }
             InOrder.Insert(pos, card);
             ReorderCards();
@@ -110,8 +110,8 @@ namespace Gameplay.Decks
 
         public void ToBottom(GameCard card)
         {
-            int index = InOrder.Count;
-            AddAtIndex(index, card);
+            InOrder.Add(card);
+            ReorderCards();
         }
 
         public void Shuffle(List<string> idsInOrder = null)

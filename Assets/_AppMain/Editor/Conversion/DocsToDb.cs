@@ -12,13 +12,7 @@ using Defective.JSON;
 using UnityEditor.ShaderGraph.Serialization;
 using Logging;
 
-[System.Serializable]
-public class AllElestrals
-{
-    [PrimaryKey]
-    public int uniqueId { get; set; }
-    public string species { get; set; }
-}
+
 namespace Conversion
 {
     public static class DocsToDb

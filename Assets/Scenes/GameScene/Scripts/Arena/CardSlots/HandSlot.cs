@@ -73,7 +73,7 @@ namespace Gameplay
         }
         protected override void DisplayCardObject(GameCard card)
         {
-            
+            card.cardObject.Show();
             card.cardObject.SetAsChild(Content, CardScale, SortLayer, Content.childCount);
             card.cardObject.SetSortingOrder(Content.childCount * 20);
 
@@ -97,15 +97,15 @@ namespace Gameplay
             //Content.ForceUpdateRectTransforms();
             card.cardObject.Flip(facing == CardFacing.FaceDown);
         }
-        //protected override bool GetClickValidation()
-        //{
-        //    if (App.WhoAmI == Owner.userId)
-        //    {
-        //        return true;
-        //    }
-        //    return false;
+        protected override bool GetClickValidation()
+        {
+            if (App.WhoAmI == Owner.userId)
+            {
+                return true;
+            }
+            return false;
 
-        //}
+        }
         protected override void SetCommands(GameCard card)
         {
             TouchObject to = card.cardObject.touch;
@@ -199,15 +199,15 @@ namespace Gameplay
         protected override List<PopupCommand> GetSlotCommands()
         {
             List<PopupCommand> commands = new List<PopupCommand>();
-            //if (IsYours)
-            //{
-            //    commands.Add(PopupCommand.Create("Cast", () => BaseCastCommand(), 0, 0));
-            //    commands.Add(PopupCommand.Create("Discard", () => DiscardCommand(), 0, 1));
-            //    commands.Add(PopupCommand.Create("Close", () => CloseCommand()));
-            //}
-            commands.Add(PopupCommand.Create("Cast", () => BaseCastCommand(), 0, 0));
-            commands.Add(PopupCommand.Create("Discard", () => DiscardCommand(), 0, 1));
-            commands.Add(PopupCommand.Create("Close", () => CloseCommand()));
+            if (IsYours)
+            {
+                commands.Add(PopupCommand.Create("Cast", () => BaseCastCommand(), 0, 0));
+                commands.Add(PopupCommand.Create("Discard", () => DiscardCommand(), 0, 1));
+                commands.Add(PopupCommand.Create("Close", () => CloseCommand()));
+            }
+            //commands.Add(PopupCommand.Create("Cast", () => BaseCastCommand(), 0, 0));
+            //commands.Add(PopupCommand.Create("Discard", () => DiscardCommand(), 0, 1));
+           
 
             return commands;
         }

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class Blocker : MonoBehaviour, IPointerClickHandler, iOwnCanvas
 {
 
-    
+    private string prevSortLayer = "";
     public string SortLayer
     {
         get { return canvas.sortingLayerName; }
@@ -29,6 +29,7 @@ public class Blocker : MonoBehaviour, IPointerClickHandler, iOwnCanvas
 
     public void SetBlocker(string sortingLayer, int sortOrder)
     {
+        prevSortLayer = canvas.sortingLayerName;
         SortLayer = sortingLayer;
         SortOrder = sortOrder;
 
@@ -48,8 +49,12 @@ public class Blocker : MonoBehaviour, IPointerClickHandler, iOwnCanvas
     {
         Show();
     }
-    public void HideBlocker()
+    public void HideBlocker(bool rollbackSort = true)
     {
+        if (rollbackSort)
+        {
+            SortLayer = prevSortLayer;
+        }
         Hide();
     }
 }

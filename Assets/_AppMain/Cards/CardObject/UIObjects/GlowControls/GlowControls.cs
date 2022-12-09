@@ -127,7 +127,7 @@ namespace CardsUI.Glowing
 
 
 
-            string spriteStr = card.GetRarity().SpriteString();
+            string spriteStr = card.GetRarity.SpriteString();
             Sprite baseSp = AssetPipeline.ByKey<Sprite>(spriteStr);
 
             spRarity.sprite = baseSp;

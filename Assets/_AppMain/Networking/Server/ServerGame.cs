@@ -117,9 +117,9 @@ public class ServerGame
     #endregion
 
 
-    public static void Create(string lobbyId, ushort host, string userId, int players = 2)
+    public static void Create(string lobbyId, ushort host, string userId, string username, int players = 2)
     {
-        NetworkPlayer p = new NetworkPlayer(host, userId, "", "");
+        NetworkPlayer p = new NetworkPlayer(host, userId, "", "", username);
         Instance = new ServerGame(lobbyId, p, players);
     }
 
@@ -134,7 +134,7 @@ public class ServerGame
 
     public void AddPlayer(ushort id, string username, string gameId)
     {
-        NetworkPlayer p = new NetworkPlayer(id, username, "", "");
+        NetworkPlayer p = new NetworkPlayer(id, username, "", "", "");
 
         List<NetworkPlayer> otherPlayers = new List<NetworkPlayer>();
         foreach (NetworkPlayer player in Players)

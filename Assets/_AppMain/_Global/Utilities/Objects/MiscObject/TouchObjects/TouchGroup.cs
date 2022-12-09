@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 namespace TouchControls
@@ -10,7 +11,7 @@ namespace TouchControls
         ByAge = 1,
         BySortLayer = 2,
     }
-    public class TouchGroup : MonoBehaviour
+    public class TouchGroup : ValidationObject
     {
        
         #region Properties
@@ -51,6 +52,7 @@ namespace TouchControls
             }
         }
 
+
         //make it so if you click on a staggered stack of buttons when ordered by z, get the highest Z button in the uncovered stack
         private List<TouchObject> _ClickOrder = null;
         protected List<TouchObject> ClickOrder
@@ -77,23 +79,101 @@ namespace TouchControls
             _ClickOrder.Sort(Compare);
             isDirty = false;
         }
-        
+
+        private bool _blockTouch = false;
+        public bool BlockTouch
+        {
+            get
+            {
+                return _blockTouch;
+            }
+            set
+            {
+                _blockTouch = value;
+            }
+        }
         #endregion
 
         #region Events
+        public override bool Validate()
+        {
+            ErrorList.Clear();
+
+            if (BlockTouch) { return false; }
+            return ErrorList.Count == 0;
+        }
+
+        private List<TouchObject> _clickedObjects = null;
+        protected List<TouchObject> ClickedObjects
+        {
+            get
+            {
+                _clickedObjects ??= new List<TouchObject>();
+                return _clickedObjects;
+            }
+        }
         protected void OnClick(TouchObject button)
         {
-            List<TouchObject> clicked = GetClickedButtons();
+            if (Buttons.Count == 1) { button.DoClick(); Refresh();  return; }
+            if (WaitForClick == null) { ClickedObjects.Clear();  WaitForClick = StartCoroutine(AwaitingClicks()); }
+            ClickedObjects.Add(button);
+
+            //_clickCount += 1;
+            
+            //if (Validate())
+            //{
+            //    List<TouchObject> clicked = GetClickedButtons();
+            //    expectedCount = clicked.Count;                
+            //    if (clicked.Count > 0)
+            //    {
+            //        clicked.Sort(Compare);
+            //        if (SingleClick)
+            //        {
+            //            clicked[0].DoClick();
+            //        }
+            //    }
+            //}
+
+            //if (_clickCount >= expectedCount)
+            //{
+            //    _clickCount = 0;
+            //    expectedCount = 0;
+            //}
+
            
-            if (clicked.Count > 0)
+           
+        }
+
+        private IEnumerator AwaitingClicks()
+        {
+            int prevCount = ClickedObjects.Count;
+            int newCount = prevCount;
+            do
             {
-                clicked.Sort(Compare);
-                if (SingleClick) { clicked[0].DoClick(); }
+                prevCount = ClickedObjects.Count;
+                yield return new WaitForEndOfFrame();
+                newCount = ClickedObjects.Count;
+
+            } while (prevCount != newCount);
+
+            DoClick();
+        }
+
+        private void DoClick()
+        {
+            if (ClickedObjects.Count > 0)
+            {
+                ClickedObjects.Sort(Compare);
+                if (SingleClick)
+                {
+                    ClickedObjects[0].DoClick();
+                }
             }
-           
+            Refresh();
         }
         protected void OnHold(TouchObject button)
         {
+            if (!Validate()) { return; }
             List<TouchObject> clicked = GetClickedButtons();
            
             if (clicked.Count > 0)
@@ -103,6 +183,18 @@ namespace TouchControls
             }
         }
         #endregion
+
+
+        #region Click Processing
+        private Coroutine WaitForClick = null;
+        private void Refresh()
+        {
+            ClickedObjects.Clear();
+            WaitForClick = null;
+        }
+      
+        #endregion
+
 
         protected bool Validate(TouchObject button)
         {
@@ -141,8 +233,6 @@ namespace TouchControls
                 default:
                     return 0;
             }
-
-
         }
         #endregion
 
@@ -168,6 +258,8 @@ namespace TouchControls
                 isDirty = true;
             }
         }
+
+       
         #endregion
 
         private void Awake()
@@ -197,6 +289,9 @@ namespace TouchControls
             }
             return buttons;
         }
+
+
+       
     }
 }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Databases;
 using System.Configuration;
+using GlobalUtilities;
 
 namespace Cards
 {
@@ -11,6 +12,7 @@ namespace Cards
     [System.Serializable]
     public class CardData : iCardData
     {
+        
         public string cardKey { get; set; }
         public string cardName { get; set; }
         public int cardType { get; set; }

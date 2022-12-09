@@ -13,7 +13,7 @@ namespace Gameplay
         #region Properties
         public string uniqueId { get; set; }
         public string deckName { get; set; }
-        private Deck _mainDeck = null;
+        [SerializeField] private Deck _mainDeck = null;
         public Deck MainDeck { get { return _mainDeck; } }
 
         private Deck _spiritDeck = null;

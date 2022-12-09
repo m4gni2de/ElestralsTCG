@@ -104,7 +104,7 @@ public class TurnMenu : EdgeMenu, iDynamicObject
         }
 
         BattleButton.interactable = index == 1;
-        EndButton.interactable = index > 1;
+        EndButton.interactable = index > 0;
     }
 
     public void BattleCommand()

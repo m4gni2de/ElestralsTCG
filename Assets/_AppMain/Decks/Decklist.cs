@@ -7,6 +7,7 @@ using System;
 using Gameplay.Decks;
 using System.Threading.Tasks;
 using nsSettings;
+using static Decks.Decklist;
 
 namespace Decks
 {
@@ -96,6 +97,7 @@ namespace Decks
             card = DeckCard.Empty;
             return false;
         }
+
         private List<DeckCard> CopiesOfCard(string cardKey)
         {
             List<DeckCard> cards = new List<DeckCard>();
@@ -120,37 +122,9 @@ namespace Decks
             deck.Cards.AddRange(cards);
             return deck;
 
-
-            //List<DeckCard> cards = new List<DeckCard>();
-            //for (int i = 0; i < dto.deck.Count; i++)
-            //{
-            //    string cardKey = dto.deck[i];
-            //    //DeckCard card = DeckCard.Empty;
-
-            //    bool hasCard = false;
-            //    int countOf = 1;
-            //    for (int j = 0; j < cards.Count; j++)
-            //    {
-            //        DeckCard d = cards[j];
-
-            //        if (d.key.ToLower() == cardKey.ToLower())
-            //        {
-            //            hasCard = true;
-            //            countOf += 1;
-            //        }
-            //    }
-
-            //    DeckCard card = CardService.DeckCardFromDownload(cardKey);
-            //    if (hasCard)
-            //    {
-            //        card.copy = countOf;
-            //    }
-            //    cards.Add(card);
-            //}
-
         }
         #endregion
-       
+
         #region Interface
         private DeckDTO _zeroDto = null;
         public DeckDTO ZeroDTO
@@ -224,6 +198,8 @@ namespace Decks
             return list;
         }
 
+        
+
         #region Empty Deck
        
         #endregion
@@ -254,8 +230,23 @@ namespace Decks
             }
             return list;
         }
+        protected List<DeckCardDTO> GetDeckCards(List<DeckCard> cardKeys)
+        {
+            List<DeckCardDTO> cards = new List<DeckCardDTO>();
+            Dictionary<string, int> counts = new Dictionary<string, int>();
 
-      
+            for (int i = 0; i < cardKeys.Count; i++)
+            {
+                DeckCard key = cardKeys[i];
+                DeckCardDTO newCard = new DeckCardDTO { deckKey = _key, setKey = key.key, qty = key.copy };
+                cards.Add(newCard);
+
+            }
+
+            return cards;
+        }
+
+
         public bool IsActiveDeck
         {
             get
@@ -267,45 +258,52 @@ namespace Decks
         }
 
 
-        public Dictionary<string, int> Quantities
+        
+
+        /// <summary>
+        /// Return a list of DeckCards(CardKey, CardType, Qty) that corresponnds to 1 Object for each card in the deck. 
+        /// The Copy property in this list is equal to the amount of copies the deck has of that card.
+        /// </summary>
+        public List<DeckCard> GetCardQuantities
         {
             get
             {
-                Dictionary<string, int> result = new Dictionary<string, int>();
+                Dictionary<DeckCard, int> result = new Dictionary<DeckCard, int>();
+                List<DeckCard> cards = new List<DeckCard>();
+
                 for (int i = 0; i < Cards.Count; i++)
                 {
                     DeckCard c = Cards[i];
-                    if (!result.ContainsKey(c.key))
-                    {
-                        result.Add(c.key, 1);
-                    }
-                    else
-                    {
-                        result[c.key] += 1;
-                    }
-                }
-                return result;
-            }
-        }
+                    bool hasCard = false;
 
-        public Dictionary<string, int> SideDeckQuantities
-        {
-            get
-            {
-                Dictionary<string, int> result = new Dictionary<string, int>();
-                for (int i = 0; i < SideDeck.Count; i++)
-                {
-                    DeckCard c = Cards[i];
-                    if (!result.ContainsKey(c.key))
+                    foreach (var item in result)
                     {
-                        result.Add(c.key, 1);
+                        if (item.Key.key == Cards[i].key)
+                        {
+                            DeckCard inResult = item.Key;
+                            result[inResult] += 1;
+                            hasCard = true;
+                            break;
+                        }
                     }
-                    else
+
+                    if (!hasCard)
                     {
-                        result[c.key] += 1;
+                        DeckCard dc = new DeckCard(c.key, c.cardType, 1);
+                        result.Add(dc, 1);
                     }
                 }
-                return result;
+
+
+                foreach (var item in result)
+                {
+                    DeckCard d = item.Key;
+                    d.copy = item.Value;
+                    cards.Add(d);
+                }
+
+                return cards;
+               
             }
         }
         #endregion
@@ -357,9 +355,19 @@ namespace Decks
         private string _sideDeckKey;
         public string sideDeckKey { get { return _sideDeckKey; } }
 
-       
 
-
+        public int CardCount
+        {
+            get
+            {
+                int count = 0;
+                foreach (var item in GetCardQuantities)
+                {
+                    count += item.copy;
+                }
+                return count;
+            }
+        }
 
 
         public bool IsUploaded
@@ -371,20 +379,10 @@ namespace Decks
         #region DeckCard Creating
         public DeckCard AddCard(string setKey)
         {
-            //DeckCard card = DeckCard.Empty;
-            //card = CardService.DeckCardFromDownload(setKey);
             DeckCard card = DeckCard.ByCardKey(setKey);
             AddCard(card);
             return card;
         }
-        //public DeckCard AddCard(DeckCardDTO dto)
-        //{
-        //    //DeckCard card = DeckCard.Empty;
-        //    //card = CardService.DeckCardFromDTO(dto);
-        //    DeckCard card = DeckCard.FromDTO(dto);
-        //    AddCard(card);
-        //    return card;
-        //}
         #endregion
 
         #region Initialization
@@ -521,7 +519,23 @@ namespace Decks
 
 
         #region Editing/Saving Deck
-        public void Save(Dictionary<string, int> cardList = null)
+        //public void Save(Dictionary<string, int> cardList = null)
+        //{
+        //    if (this.IsDirty())
+        //    {
+        //        DeckDTO dto = GetDTO;
+        //        UserService.Save<DeckDTO>(dto, UserService.UserDeckTable, "deckKey", dto.deckKey);
+        //    }
+        //    if (cardList != null)
+        //    {
+        //        UserService.SaveDeckList(_key, GetDeckCards(cardList));
+        //    }
+
+        //    ReloadDeck();
+
+        //}
+
+        public void Save(List<DeckCard> cardList = null)
         {
             if (this.IsDirty())
             {
@@ -536,7 +550,7 @@ namespace Decks
             ReloadDeck();
 
         }
-       
+
 
         public async Task<string> DoUpload()
         {

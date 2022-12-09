@@ -18,6 +18,7 @@ using System.Drawing.Text;
 using TMPro;
 using RiptideNetworking;
 using System.Security.Cryptography;
+using UnityEngine.Networking.Types;
 
 #if UNITY_EDITOR
 using UnityEditorInternal;
@@ -100,7 +101,6 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
     public CardView cardTemplate { get { return CardFactory.Instance.templateCard; } }
     public Canvas UICanvas;
     public Blocker m_Blocker;
-    public HandMenu handMenu;
     public CardBrowseMenu browseMenu;
     public PopupMenu popupMenu;
     public TurnMenu turnMenu;
@@ -207,6 +207,7 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
     public static event Action OnGameLoaded;
     private void Start()
     {
+        //CameraMotion.ReScale();
         OnGameLoaded?.Invoke();
         StartScene();
         
@@ -216,12 +217,13 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
     #region Local Game
     private void CreateLocalGame()
     {
-        Invert(true);
+        bool invert = true;
+        Invert(invert);
         ActiveGame = Game.RandomGame();
         turnManager.LoadGame(ActiveGame);
         gameLog = GameLog.Create(ActiveGame.gameId, false);
         gameLog.AddLog($"Game '{ActiveGame.gameId}' has been started.");
-        ActiveGame.AddLocalPlayer(App.Account.Id, "1");
+        ActiveGame.AddLocalPlayer(App.Account.Id, "1", App.Account.Name);
         SetGameWatchers();
         SetPlayerFields();
     }
@@ -480,6 +482,7 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
     {
         StartCoroutine(DoDragCard(card, from, newSlot =>
         {
+          
             if (newSlot == from)
             {
                 card.ReAddToSlot(false);
@@ -730,19 +733,20 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
         IsOnline = true;
         ConnectionType ty = ClientManager.ConnectionType;
         ActiveGame = Game.ConnectToNetwork(gameId, ty);
-        Player opp = new Player(opponent.networkId, opponent.userId, false);
+        Player opp = new Player(opponent.networkId, opponent.userId, opponent.username, false);
         opp.SetBlankDeck(opponent.deckKey, opponent.deckName);
         ActiveGame.AddPlayer(opp);
         OnGameLoaded += AsJoinedPlayer;
         App.ChangeScene(SceneName);
     }
-    public static void NewPlayerJoined(ushort networkId, string userId)
+    public static void NewPlayerJoined(ushort networkId, string userId, string username)
     {
         NetworkPipeline.OnPlayerJoined -= NewPlayerJoined;
-        Player opp = new Player(networkId, userId, false);
+        Player opp = new Player(networkId, userId, username, false);
         MessageController.Instance.ShowMessage($"{opp.username} has joined the Battle!", true);
         ActiveGame.AddPlayer(opp);
         Instance.arena.SetPlayer(opp);
+
     }
 
     private static void AsHost()
@@ -764,9 +768,10 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
 
     }
 
+    
     protected void LoadLocalPlayer()
     {
-        Player p = new Player(NetworkManager.Instance.Client.Id, App.Account.Id, true);
+        Player p = new Player(NetworkManager.Instance.Client.Id, App.Account.Id, App.Account.Name, true);
         Instance.turnManager.LoadGame(ActiveGame);
         ActiveGame.AddPlayer(p);
         arena.SetPlayer(p);
@@ -782,7 +787,8 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
         if (RemoteDeckChoices.Count == 0)
         {
             RemoteDeckChoices = new List<UploadedDeckDTO>();
-            RemoteDeckChoices = await RemoteData.ViewDecks($"");
+            RemoteDeckChoices = App.Account.DecksAsUploaded;
+              //RemoteDeckChoices = await RemoteData.ViewDecks($"");
         }
 
         List<string> titles = new List<string>();
@@ -831,7 +837,7 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
     private void SendDeckSelection(UploadedDeckDTO deck)
     {
 
-        //do this is the server is REMOTE
+        //do this if the server is REMOTE
         NetworkPipeline.SendDeckSelection(deck.deckKey, deck.title);
         //send deck to server here
         Decklist decklist = deck;
@@ -884,7 +890,7 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
             int cardCount = player.deck.Cards.Count;
             if (cardCount == 60)
             {
-                player.gameField.AllocateCards();
+                player.gameField.AllocateCards(false);
                 //OnlineInstance.arena.SetPlayer(player);
             }
         }

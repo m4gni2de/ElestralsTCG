@@ -169,16 +169,10 @@ public class NetworkManager : MonoBehaviour
         OnConnectAsClient?.Invoke(Client.Id);
         OnConnectionChanged.Invoke();
 
-        //PlayerConnected();
     }
-    //private async void PlayerConnected()
-    //{
-    //   string code = await App.ActiveDeck.DoUpload();
-    //   if (string.IsNullOrEmpty(code)) { Client.Disconnect(); return; }
-    //   Player.CreateLocalPlayer(Client.Id, App.Account.Id, App.ActiveDeck);
-    //}
     
-   
+
+
 
     public static event Action OnConnectionFailed;
     private void FailedToConnect(object sender, EventArgs e)
@@ -201,6 +195,8 @@ public class NetworkManager : MonoBehaviour
     {
         OnConnectionChanged.Invoke();
         OnClientDisconnected?.Invoke();
+
+        RemoteData.DeletePlayer();
     }
     
     #endregion

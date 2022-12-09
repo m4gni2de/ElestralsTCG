@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using Mono.Data.Sqlite;
 using UnityEditor;
 using System.IO;
+using Cards.Collection;
+using Gameplay.Decks;
+using Newtonsoft.Json;
 #if UNITY_EDITOR
 using ParrelSync;
 #endif
@@ -74,6 +77,33 @@ namespace Users
         [SerializeField]
         private List<Decklist> _deckLists = null;
         public List<Decklist> DeckLists { get { _deckLists ??= new List<Decklist>(); return _deckLists; }}
+
+        public List<UploadedDeckDTO> DecksAsUploaded
+        {
+            get
+            {
+                List<UploadedDeckDTO> list = new List<UploadedDeckDTO>();
+                for (int i = 0; i < DeckLists.Count; i++)
+                {
+                    if (DeckLists[i].CardCount < 60) { continue; }
+                    UploadedDeckDTO dto = new UploadedDeckDTO();
+                    dto.title = DeckLists[i].DeckName;
+                    dto.deckKey = DeckLists[i].DeckKey;
+                    DataList d = JsonConvert.DeserializeObject<DataList>(DeckLists[i].GetCardList);
+                    dto.deck = d.items;
+                    //for (int j = 0; j < DeckLists[i].Cards.Count; j++)
+                    //{
+                    //    dto.deck.Add(DeckLists[i].Cards[j].key);
+                    //}
+
+                    list.Add(dto);
+                }
+                return list;
+            }
+        }
+
+        public CardCollection Collection { get { return CardCollection.Instance; } }
+        
         #endregion
 
         #region Static Functions
@@ -123,26 +153,7 @@ namespace Users
         {
             data = dto;
             LoadAllDecks();
-
-
         }
-        //protected void LoadDecks()
-        //{
-        //    DeckLists.Clear();
-
-        //    List<DeckCardDTO> deckCards = UserService.LocalDecklists();
-        //    List<DeckDTO> deckKeys = UserService.LocalUserDeckDTOs();
-        //    DeckService.CopyFromLocal(deckCards, deckKeys);
-
-
-        //    for (int i = 0; i < deckKeys.Count; i++)
-        //    {
-        //        Decklist deck = Decklist.Load(deckKeys[i]);
-        //        DeckLists.Add(deck);
-        //    }
-            
-            
-        //}
 
         protected void LoadAllDecks()
         {
@@ -152,6 +163,7 @@ namespace Users
             List<DeckDTO> deckKeys = UserService.LocalUserDeckDTOs();
             List<Decklist> decks = Decklist.LoadAllLocalDecks(deckKeys, deckCards);
             DeckLists.AddRange(decks);
+
         }
         #endregion
 
@@ -183,8 +195,19 @@ namespace Users
         #endregion
 
 
+        #region Card Collection
+        public void AcquireCard(string setKey, int rarity, int qty)
+        {
+            Collection.AddQuantity(setKey, rarity, qty);
+        }
+        public void RemoveCard(string setKey, int rarity, int qty)
+        {
+            Collection.RemoveQuantity(setKey, rarity, qty);
+        }
+        #endregion
+
         #region Network Properties
-        
+
         #endregion
 
     }

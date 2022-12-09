@@ -7,7 +7,7 @@ using Gameplay;
 /// <summary>
 /// Possibly Depreciated
 /// </summary>
-public class HandMenu : EdgeMenu, iScaleCard, iFreeze
+public class HandMenu : EdgeMenu, iScaleCard
 {
     #region Interface
     public Vector2 CardScale
@@ -151,16 +151,6 @@ public class HandMenu : EdgeMenu, iScaleCard, iFreeze
     }
 
 
-    #region Game Freezing
-    protected void DoFreeze()
-    {
-        this.Freeze();
-    }
-
-    protected void DoThaw()
-    {
-        this.Thaw();
-    }
-    #endregion
+   
 
 }

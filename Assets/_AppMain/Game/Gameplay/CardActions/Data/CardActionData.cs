@@ -96,7 +96,7 @@ namespace Gameplay
         public static readonly string PlayerKey = "player";
         public void SetPlayer(Player p)
         {
-            SetData(PlayerKey, p.username);
+            SetData(PlayerKey, p.userId);
         }
         public Player FindPlayer(string playerKey = "")
         {

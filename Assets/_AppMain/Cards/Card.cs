@@ -4,6 +4,9 @@ using UnityEngine;
 using Cards;
 using Databases;
 using System.Globalization;
+using TouchControls;
+using GlobalUtilities;
+using System;
 
 public enum CardType
 {
@@ -32,6 +35,7 @@ public enum ArtType
     Stellar = 3,
 }
 
+[SortableObject]
 public abstract class Card : iCard
 {
 
@@ -70,10 +74,10 @@ public abstract class Card : iCard
     #region Properties
 
     #region iCard Interface
-    public CardType CardType { get { return GetCardType(); } }
+    [SortableValue(SortBy.CardType)] public CardType CardType { get { return GetCardType(); } }
     public iCardData cardData { get { return GetCardData(); } }
 
-    public Rarity GetRarity() { return cardData.rarity; }
+    [SortableValue(SortBy.Rarity)] public Rarity GetRarity { get => cardData.rarity; }
     //private bool _isFullArt = false;
     public bool isFullArt { get { return cardData.artType == ArtType.FullArt; } }
 
@@ -85,7 +89,17 @@ public abstract class Card : iCard
     {
         return CardType.None;
     }
+
+    #region Compare
+    public int Compare<T>(T x, T y)
+    {
+        ComparedTo compare = x.CompareTo(y);
+        return (int)compare;
+    }
     #endregion
+    #endregion
+
+
 
     private List<string> _altArts = null;
     public List<string> AltArts
@@ -96,7 +110,7 @@ public abstract class Card : iCard
             {
                 _altArts = new List<string>();
 
-                string whereClause = $"baseKey = '{cardData.cardKey}' AND image <> '{cardData.image}'";
+                string whereClause = $"baseKey = '{cardData.baseKey}' AND image <> '{cardData.image}'";
                 List<qUniqueCard> sharedCards = CardService.GetAllWhere<qUniqueCard>(CardService.qUniqueCardView, whereClause);
 
                 for (int i = 0; i < sharedCards.Count; i++)
@@ -119,7 +133,7 @@ public abstract class Card : iCard
             {
                 _duplicates = new List<string>();
 
-                string whereClause = $"baseKey = '{cardData.cardKey}' AND image = '{cardData.image}'";
+                string whereClause = $"baseKey = '{cardData.baseKey}' AND image = '{cardData.image}'";
                 List<qUniqueCard> sharedCards = CardService.GetAllWhere<qUniqueCard>(CardService.qUniqueCardView, whereClause);
 
                 for (int i = 0; i < sharedCards.Count; i++)
@@ -130,6 +144,11 @@ public abstract class Card : iCard
             return _duplicates;
 
         }
+    }
+
+    public int GetQuantityOwned()
+    {
+        return CardCollection.GetQuantity(this);
     }
 
 
@@ -192,14 +211,136 @@ public abstract class Card : iCard
     #endregion
 
 
+    public static Card FromKey(string setKey)
+    {
+        qUniqueCard dto = CardService.ByKey<qUniqueCard>(CardService.qUniqueCardView, "setKey", setKey);
+        Card c = dto;
+        return c;
+    }
 
-    
-   
+    public static implicit operator Card(Decks.Decklist.DeckCard dc)
+    {
+        qUniqueCard dto = CardService.ByKey<qUniqueCard>(CardService.qUniqueCardView, "setKey", dc.key);
+        Card c = dto;
+        c._quantity = dc.copy;
+        return c;
+    }
+    public static Card FromDeckCard(Decks.Decklist.DeckCard dc)
+    {
+        qUniqueCard dto = CardService.ByKey<qUniqueCard>(CardService.qUniqueCardView, "setKey", dc.key);
+        Card c = dto;
+        c._quantity = dc.copy;
+        return c;
+    }
+    #endregion
+
+
+    #region Specific Card Type Values
+    [SortableValue(SortBy.Attack)]
+    public virtual int Attack
+    {
+        get
+        {
+            if (CardType == CardType.Elestral)
+            {
+                ElestralData d = (ElestralData)cardData;
+                return d.attack;
+            }
+            return 0;
+        }
+    }
+    [SortableValue(SortBy.Defense)]
+    public virtual int Defense
+    {
+        get
+        {
+            if (CardType == CardType.Elestral)
+            {
+                ElestralData d = (ElestralData)cardData;
+                return d.defense;
+            }
+            return 0;
+        }
+    }
+    [SortableValue(SortBy.CardElement)]
+    public int GetElementValue
+    {
+        get
+        {
+            int value = 0;
+            List<ElementCode> elements = new List<ElementCode>();
+
+            for (int i = 0; i < SpiritsReq.Count; i++)
+            {
+                if (!elements.Contains(SpiritsReq[i].Code))
+                {
+                    elements.Add(SpiritsReq[i].Code);
+                    value += (int)SpiritsReq[i].Code * 3;
+
+                }
+                else
+                {
+                    value += 1;
+                }
+
+            }
+            return value;
+        }
+    }
+
+    #endregion
+
+    #region Sorting
+    [SortableValue(SortBy.Name)] protected string Title { get { return cardData.cardName; } }
+    [SortableValue(SortBy.Cost)] protected int Cost { get { return SpiritsReq.Count; } }
+    [SortableValue(SortBy.CardSetName)] protected string SetName { get { return cardData.setCode; } }
+    [SortableValue(SortBy.CardSetDate)] protected DateTime WhenReleased
+    {
+        get
+        {
+            var gameSet = CardLibrary.GetGameSet(cardData.setCode);
+            if (gameSet != null) { return gameSet.releaseDate; }
+            return DateTime.MaxValue;
+        }
+    }
+    [SortableValue(SortBy.CardSetNumber)] protected int NumberInSet { get { return cardData.setNumber; } }
+
+    public string DisplayName
+    {
+        get
+        {
+            string st = "";
+           
+
+            st = $"{cardData.cardName}";
+            if (cardData.artType == ArtType.AltArt)
+            {
+                st += " - (Alternate Art)";
+            }
+            else if (cardData.artType == ArtType.FullArt)
+            {
+                st += " - (Full Art)";
+            }
+            if (cardData.artType == ArtType.Stellar || cardData.rarity == Rarity.Stellar)
+            {
+                st = $"Stellar {cardData.cardName}";
+            }
+
+            return st;
+        }
+    }
+
+    private int _quantity = 1;
+    [SortableValue(SortBy.Quantity)]
+    public int quantity
+    {
+        get { return _quantity; }
+    }
     #endregion
 
 
 
-   
+
 }
 
 

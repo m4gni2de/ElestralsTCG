@@ -4,6 +4,11 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System;
+using GlobalUtilities;
+using System.Reflection;
+using Decks;
+using Cards;
+using Databases;
 
 namespace CardsUI.Filtering
 {
@@ -37,12 +42,8 @@ namespace CardsUI.Filtering
             }
             set
             {
-                if (value != _quantity)
-                {
-                    _quantity = value;
-                    UpdateQuantity(value);
-                    
-                }
+                _quantity = value;
+                UpdateQuantity(value);
             }
         }
 
@@ -59,6 +60,10 @@ namespace CardsUI.Filtering
         {
             quantity = _quantity + changeVal;
             DoChangeQuantity(addHistory);
+        }
+        public void SetQuantitySilent(int newVal)
+        {
+            quantity = newVal;
         }
 
         private void UpdateQuantity(int newQty)
@@ -82,6 +87,16 @@ namespace CardsUI.Filtering
         #endregion
 
         #region Overrides
+        public override void LoadData(object data, int index)
+        {
+            _index = index;
+            //Decklist.DeckCard deckCard = data as Decklist.DeckCard;
+            //Card c = deckCard;
+
+            Card c = data as Card;
+            LoadCard(c);
+            quantity = c.quantity;
+        }
         public override void Clear()
         {
             base.Clear();

@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using GlobalUtilities;
 using UnityEngine;
 
 public interface iCardData
 {
+    
     public string cardName { get; set; }
     public string cardKey { get; set; }
     public int cost1 { get; set; }

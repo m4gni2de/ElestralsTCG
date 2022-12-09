@@ -112,7 +112,7 @@ private static readonly string LogPath = $"{Application.persistentDataPath}/Logg
         GameLog(string logTitle, bool isWriter)
         {
             WritesFile = isWriter;
-            fileName = logTitle;
+            fileName = $"{logTitle}_{LogController.FileName}";
         }
 
         public static GameLog Create(string title, bool isWriter)

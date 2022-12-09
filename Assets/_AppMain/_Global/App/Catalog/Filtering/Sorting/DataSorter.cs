@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace GlobalUtilities
@@ -19,6 +21,12 @@ namespace GlobalUtilities
         CardSetName = 3,
         CardSetDate = 4,
         CardSetNumber = 5,
+        CardType = 6,
+        Attack = 7,
+        Defense = 8,
+        CardElement = 9,
+        Quantity = 10,
+
 
     }
     #endregion
@@ -26,12 +34,11 @@ namespace GlobalUtilities
     public class DataSorter
     {
         public SortBy sortBy { get; set; }
-        public string sortColumn { get; set; }
        public SortDirection sortDirection { get; set; }
 
-        public DataSorter(string column, SortDirection sortDirection)
+        public DataSorter(SortBy sorter, SortDirection sortDirection)
         {
-            this.sortColumn = column;
+            this.sortBy = sorter;
             this.sortDirection = sortDirection;
         }
 
@@ -39,6 +46,9 @@ namespace GlobalUtilities
         {
             sortDirection = dir;
         }
+
+
+
     }
 
     
