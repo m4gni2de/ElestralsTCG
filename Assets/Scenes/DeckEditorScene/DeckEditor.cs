@@ -137,6 +137,9 @@ public class DeckEditor : ValidationObject, iFreeze
             catalog.Toggle(true);
             deckCardScroll.Toggle(true);
             deckScroller.Toggle(false);
+            //spiritTxt.SetSortLayer(catalog.SortLayer);
+            //mainTxt.SetSortLayer(catalog.SortLayer);
+            //totalTxt.SetSortLayer(catalog.SortLayer);
         }
         else
         {

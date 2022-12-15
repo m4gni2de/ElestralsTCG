@@ -17,50 +17,15 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: f8c38103e13e21741a9958f3bcd2801c
   m_SerializeEntries:
-  - m_GUID: 0c2fd4f180a7aca4a89b86f16732d040
-    m_Address: ac1_exaltair
+  - m_GUID: 2826379263d64d040b8bc2857ceb72dc
+    m_Address: ac1_sluggle
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardArt
     - Elestral
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b7ff3c5c4993a5c4d99f39b8d2242f1c
-    m_Address: ac1_equilynx
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - CardArt
-    - Elestral
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: a13f230b881bd54479656939cc89bfda
-    m_Address: ac1_zaptor
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - CardArt
-    - Spirit
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b7ba7d906b0b46942a3dde82487143a2
-    m_Address: ac1_vipyro
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - CardArt
-    - Spirit
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f10ffde0e2e5da046a9c89c102e65828
-    m_Address: ac1_quackle
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - CardArt
-    - Elestral
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b41b1d22d56e58547a18a1eaedc7f32b
-    m_Address: ac1_jolten
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - CardArt
-    - Elestral
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 092e8e4da2e0b62409f7dcbc5993ce3e
-    m_Address: ac1_carryon
+  - m_GUID: b8daf40bc1dbc5e40915068dfc81ade3
+    m_Address: ac1_necruff
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardArt
@@ -68,20 +33,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 79587d7403dfeb94ba9866e1b8369625
     m_Address: ac1_lycarus
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - CardArt
-    - Spirit
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 4477119d92fc36d47a070dacc4450d01
-    m_Address: ac1_moustacean
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - CardArt
-    - Elestral
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6a93d29f03ccd4443858f11583023115
-    m_Address: ac1_sinder
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardArt
@@ -94,8 +45,50 @@ MonoBehaviour:
     - CardArt
     - Elestral
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 95febbe174bcc1949a4d1062403915bc
-    m_Address: ac1_sonicore
+  - m_GUID: 6a93d29f03ccd4443858f11583023115
+    m_Address: ac1_sinder
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1e2695847784e264ea7903c493ca6ca0
+    m_Address: ac1_ladogon
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c1d4bd110b161254f92ecd62e46ac09a
+    m_Address: ac1_lycavolt
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ade8844afad8f924cbff718436890bef
+    m_Address: ac1_sproutyr
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0c2fd4f180a7aca4a89b86f16732d040
+    m_Address: ac1_exaltair
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bb374ed6291ad83428f8f7a0feade04f
+    m_Address: ac1_quackle_01
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d21439c1ce552904e8ca10522fe270b3
+    m_Address: ac1_tectaurus
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardArt
@@ -106,7 +99,77 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardArt
-    - Rune
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ed1ffb45653393e45b7409185dbf98eb
+    m_Address: ac1_krakking
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 092e8e4da2e0b62409f7dcbc5993ce3e
+    m_Address: ac1_carryon
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3e8986c1e7bcf1a408343b15112975a1
+    m_Address: ac1_sakurasaur
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b7ff3c5c4993a5c4d99f39b8d2242f1c
+    m_Address: ac1_equilynx
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b7ba7d906b0b46942a3dde82487143a2
+    m_Address: ac1_vipyro
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 95febbe174bcc1949a4d1062403915bc
+    m_Address: ac1_sonicore
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b41b1d22d56e58547a18a1eaedc7f32b
+    m_Address: ac1_jolten
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4477119d92fc36d47a070dacc4450d01
+    m_Address: ac1_moustacean
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f10ffde0e2e5da046a9c89c102e65828
+    m_Address: ac1_quackle
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a13f230b881bd54479656939cc89bfda
+    m_Address: ac1_zaptor
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CardArt
+    - Elestral
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 313cd1589482e184fb59265f5d2f1c9d
     m_Address: ac1_soarlet
@@ -115,8 +178,8 @@ MonoBehaviour:
     - CardArt
     - Elestral
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 1e2695847784e264ea7903c493ca6ca0
-    m_Address: ac1_ladogon
+  - m_GUID: b43f0888c6cf4ad48a03f42939df4385
+    m_Address: ac1_hydrake
     m_ReadOnly: 0
     m_SerializedLabels:
     - CardArt

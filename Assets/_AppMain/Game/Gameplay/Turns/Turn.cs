@@ -30,7 +30,7 @@ namespace Gameplay.Turns
             }
         }
 
-        protected int _PhaseIndex { get { return ActivePhase.TurnIndex; } }
+        public int phaseIndex { get; private set; }
         private int _NextPhase;
         public int NextPhase
         {
@@ -93,6 +93,7 @@ namespace Gameplay.Turns
         }
 
 
+        #region Phases
         public void AddPhaseAction(CardAction ac, GamePhase phase)
         {
             phase.AddAction(ac);
@@ -100,6 +101,7 @@ namespace Gameplay.Turns
 
         public void StartPhase(int index)
         {
+            phaseIndex = index;
             SetActivePhase(index);
         }
 
@@ -161,7 +163,8 @@ namespace Gameplay.Turns
             NextPhase = newIndex;
             EndActivePhase(phase);
         }
-       
+        #endregion
+
         #endregion
     }
 }

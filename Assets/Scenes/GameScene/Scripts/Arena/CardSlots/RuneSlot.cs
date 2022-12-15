@@ -21,6 +21,17 @@ namespace Gameplay
                 return GameManager.ActiveGame.EmpoweredRunes.ContainsKey(MainCard);
             }
         }
+        public GameCard EmpoweredElestral
+        {
+            get
+            {
+                if (IsEmpowering)
+                {
+                    return GameManager.ActiveGame.EmpoweredRunes[MainCard];
+                }
+                return null;
+            }
+        }
         protected override void WakeSlot()
         {
             base.WakeSlot();
@@ -91,6 +102,38 @@ namespace Gameplay
                 }
             }
 
+        }
+
+        protected override void SetSelectedCard(GameCard view = null)
+        {
+            base.SetSelectedCard(view);
+
+            if (view != null)
+            {
+                if (view.CardType == CardType.Rune)
+                {
+                    if (IsEmpowering)
+                    {
+                        EmpoweredElestral.SelectCard(true, false);
+                    }
+                }
+                else
+                {
+                    if (IsEmpowering)
+                    {
+                        EmpoweredElestral.SelectCard(false, false);
+                    }
+                }
+                
+                
+            }
+            else
+            {
+                if (IsEmpowering)
+                {
+                    EmpoweredElestral.SelectCard(false, false);
+                }
+            }
         }
 
         public override void OpenPopMenu()

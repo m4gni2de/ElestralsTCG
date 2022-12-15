@@ -148,33 +148,65 @@ namespace CardsUI
 
 
 
-       
+
 
         private void DoElestral(Elestral e)
         {
-            Attack.SetText(e.Data.attack.ToString(), e.OfElement(0).Code.TextColor(), false);
-            Defense.SetText(e.Data.defense.ToString(), e.OfElement(1).Code.TextColor(), false);
-
-            if (!e.isFullArt)
+            bool isGold = e.IsGold;
+            if (isGold)
             {
-                
-                title.SetColor(Color.black);
-                Effect.SetColor(Color.black);
-                title.SetMaterial();
-                Effect.SetMaterial();
+                Attack.SetText(e.Data.attack.ToString(), Color.yellow, false);
+                Defense.SetText(e.Data.defense.ToString(), Color.yellow, false);
             }
             else
             {
-                title.SetColor(ElementCode.Any.TextColor());
-                Effect.SetColor(ElementCode.Any.TextColor());
+                Attack.SetText(e.Data.attack.ToString(), e.OfElement(0).Code.TextColor(), false);
+                Defense.SetText(e.Data.defense.ToString(), e.OfElement(1).Code.TextColor(), false);
+            }
+            
+            if (!e.isFullArt)
+            {
+                if (isGold)
+                {
+                    title.SetColor(Color.yellow);
+                    Effect.SetColor(Color.yellow);
+                }
+                else
+                {
+                    title.SetColor(Color.black);
+                    Effect.SetColor(Color.black);
+                    title.SetMaterial();
+                    Effect.SetMaterial();
 
-                Material titleMat = e.OfElement(0).FontMaterial("Name");
-                Material effectMat = e.OfElement(0).FontMaterial("Effect");
-                if (titleMat != null) { title.SetMaterial(titleMat); Effect.SetMaterial(effectMat); }
+                }
                 
+            }
+            else
+            {
+                if (isGold)
+                {
+                    title.SetColor(Color.yellow);
+                    Effect.SetColor(Color.yellow);
+                    title.SetMaterial();
+                    Effect.SetMaterial();
+                }
+                else
+                {
+                    title.SetColor(ElementCode.Any.TextColor());
+                    Effect.SetColor(ElementCode.Any.TextColor());
+
+                    Material titleMat = e.OfElement(0).FontMaterial("Name");
+                    Material effectMat = e.OfElement(0).FontMaterial("Effect");
+                    if (titleMat != null) { title.SetMaterial(titleMat); Effect.SetMaterial(effectMat); }
+                }
+               
+
+
 
 
             }
+
+           
 
            
 
@@ -185,22 +217,44 @@ namespace CardsUI
             Attack.Hide(true);
             Defense.Hide(true);
 
+            bool isGold = r.IsGold;
+
             if (!r.isFullArt)
             {
-                title.SetColor(Color.black);
-                Effect.SetColor(Color.black);
-                title.SetMaterial();
-                Effect.SetMaterial();
+                if (isGold)
+                {
+                    title.SetColor(Color.yellow);
+                    Effect.SetColor(Color.yellow);
+                }
+                else
+                {
+                    title.SetColor(Color.black);
+                    Effect.SetColor(Color.black);
+                    title.SetMaterial();
+                    Effect.SetMaterial();
+                }
+               
             }
             else
             {
-                
-                title.SetColor(ElementCode.Any.TextColor());
-                Effect.SetColor(ElementCode.Any.TextColor());
+                if (isGold)
+                {
+                    title.SetColor(Color.yellow);
+                    Effect.SetColor(Color.yellow);
+                    title.SetMaterial();
+                    Effect.SetMaterial();
+                }
+                else
+                {
+                    title.SetColor(ElementCode.Any.TextColor());
+                    Effect.SetColor(ElementCode.Any.TextColor());
+                    Material titleMat = r.OfElement(0).FontMaterial("Name");
+                    Material effectMat = r.OfElement(0).FontMaterial("Effect");
+                    if (titleMat != null) { title.SetMaterial(titleMat); Effect.SetMaterial(effectMat); }
+                }
+               
 
-                Material titleMat = r.OfElement(0).FontMaterial("Name");
-                Material effectMat = r.OfElement(0).FontMaterial("Effect");
-                if (titleMat != null) { title.SetMaterial(titleMat); Effect.SetMaterial(effectMat); }
+                
             }
             
         }
@@ -209,8 +263,17 @@ namespace CardsUI
         {
             Attack.Hide(true);
             Defense.Hide(true);
-            title.SetMaterial();
-            Effect.SetMaterial();
+            if (card.IsGold)
+            {
+                title.SetColor(Color.yellow);
+                Effect.SetColor(Color.yellow);
+            }
+            else
+            {
+                title.SetMaterial();
+                Effect.SetMaterial();
+            }
+           
         }
 #endregion
 

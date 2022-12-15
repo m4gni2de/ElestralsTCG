@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Databases;
 using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 
@@ -77,11 +78,17 @@ namespace Gameplay.Menus
             _card = c;
             _startLocation = c.CurrentSlot;
             slotLocations.AddRange(ValidSlots(c, slots));
+            if (slotLocations.Contains(_startLocation))
+            {
+                slotLocations.Remove(_startLocation);
+            }
             ddLocations.AddOptions(SlotOptions);
             selectedValue = 0;           
             toggle.isOn = true;
             displayCard.LoadCard(c.card);
             Show();
+
+            
         }
 
         #region Value Change Watchers

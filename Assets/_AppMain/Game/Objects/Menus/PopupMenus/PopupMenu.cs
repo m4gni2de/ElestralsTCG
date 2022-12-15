@@ -243,7 +243,6 @@ namespace Gameplay.Menus
         {
             Refresh();
             menuObject.SetActive(false);
-            //selectedCard.gameObject.SetActive(false);
             GameManager.Instance.HideDisplayCard();
             _isOpen = false;
         }
@@ -293,7 +292,7 @@ namespace Gameplay.Menus
         {
             PageIndex = newPage;
 
-            pageUpButton.interactable = PageIndex < Pages.Count - 1;
+            pageUpButton.interactable = (PageIndex < Pages.Count - 1);
             pageUpButton.gameObject.SetActive(pageUpButton.interactable);
             pageDownButton.interactable = PageIndex > 0;
             pageDownButton.gameObject.SetActive(pageDownButton.interactable);
@@ -489,9 +488,13 @@ namespace Gameplay.Menus
                 {
                     int val = NumberInput.Instance.Value;
                     returnedVal(val);
+                    CloseMenu();
                 }
-                
-                CloseMenu();
+                else
+                {
+                    CloseMenu();
+                }
+               
             }));
         }
 

@@ -216,6 +216,7 @@ public class App
         }
         else
         {
+            popUp.StopAllCoroutines();
             popUp.DisplayNewMessage(msg, callback, true, false);
         }
 

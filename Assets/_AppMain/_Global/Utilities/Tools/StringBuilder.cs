@@ -6,6 +6,20 @@ namespace GlobalUtilities
 {
     public static class StringBuilder 
     {
+        public static string InAlphabet(this int index)
+        {
+            index = Mathf.Clamp(index, 0, 25);
+
+            List<string> letters = new List<string>();
+            string alpha = "abcdefghijklmnopqrstuvwxyz";
+
+            for (int i = 0; i < alpha.Length; i++)
+            {
+                letters.Add(alpha[i].ToString());
+            }
+
+            return letters[index];
+        }
         //public static string FromList(List<string> items, bool canBePlural)
         //{
            

@@ -72,16 +72,27 @@ namespace Gameplay
 
             if (view != null)
             {
-                for (int i = 0; i < EmpoweringRunes.Count; i++)
+                if (view.CardType == CardType.Elestral)
                 {
-                    EmpoweringRunes[i].SelectCard(true, false);
+                    for (int i = 0; i < EmpoweringRunes.Count; i++)
+                    {
+                        EmpoweringRunes[i].SelectCard(true, false);
+                    }
                 }
+                else
+                {
+                    for (int i = 0; i < EmpoweringRunes.Count; i++)
+                    {
+                        EmpoweringRunes[i].SelectCard(false, false);
+                    }
+                }
+               
             }
             else
             {
                 for (int i = 0; i < EmpoweringRunes.Count; i++)
                 {
-                    EmpoweringRunes[i].SelectCard(true, false);
+                    EmpoweringRunes[i].SelectCard(false, false);
                 }
             }
         }
@@ -99,8 +110,18 @@ namespace Gameplay
             }
             return false;
         }
+        public override void RemoveCard(GameCard card)
+        {
+            base.RemoveCard(card);
+            card.EmpoweredChanged -= EmpowerElestral;
+        }
 
-       
+        public override void AllocateTo(GameCard card, bool sendToServer = true)
+        {
+            base.AllocateTo(card, sendToServer);
+            card.EmpoweredChanged += EmpowerElestral;
+
+        }
         #region Slot Menu
 
         protected override bool GetClickValidation()
@@ -158,24 +179,28 @@ namespace Gameplay
         #region Change Card Mode
         protected override void ChangeModeCommand()
         {
-            CardMode current = SelectedCard.mode;
+            CardMode current = MainCard.mode;
             CardMode newMode = CardMode.Defense;
             if (current == CardMode.Defense) { newMode = CardMode.Attack; }
 
-            GameManager.Instance.ChangeCardMode(Owner, SelectedCard, newMode);
+            GameManager.Instance.ChangeCardMode(Owner, MainCard, newMode);
 
             ClosePopMenu();
             Refresh();
 
         }
-        
+        protected override void ClosePopMenu(bool keepSelected = false)
+        {
+            base.ClosePopMenu(keepSelected);
+        }
+
         #endregion
-       
+
         #region Enchant Command
 
         // right now, this command works for dragging an elestral on to the slot and then doing the Cast from there, or doing an Enchant from an Elestral that already exists in the slot
         //currently app just assumes there will be clicking and dragging, so you might be technically Casting a card that you drag to the field first
-       
+
         public override void CastToSlotCommand(GameCard card, CardSlot from)
         {
             int enchantCount = card.card.SpiritsReq.Count;
@@ -333,9 +358,11 @@ namespace Gameplay
 
         #region Rune Empowering
 
-        protected void ToggleEmpowerLink(GameCard rune, bool isAdding)
+        protected void EmpowerElestral(GameCard card)
         {
-            
+            if (card == null) { return; }
+            if (card.CurrentSlot != null && card.CurrentSlot != this) { return; }
+            _empoweringRunes = GameManager.ActiveGame.EmpoweringRunes(card);
         }
         #endregion
     }

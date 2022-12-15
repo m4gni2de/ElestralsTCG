@@ -8,5 +8,11 @@ namespace GameEvents
     public class Watcher
     {
         public Delegate Response;
+
+
+        public void ParseCall(GameEventArgs args)
+        {
+
+        }
     }
 }

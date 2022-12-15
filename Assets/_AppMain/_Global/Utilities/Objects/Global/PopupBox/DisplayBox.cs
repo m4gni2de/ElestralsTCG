@@ -30,6 +30,7 @@ namespace PopupBox
                 OnHandled = callback;
                 
             }
+            gameObject.SetActive(true);
             ConfirmButton.onClick.AddListener(() => Confirm());
 
 
@@ -66,6 +67,7 @@ namespace PopupBox
                 OnHandled = callback;
 
             }
+            gameObject.SetActive(true);
             StartCoroutine(ShowTimedMessage(time));
         }
 
@@ -93,6 +95,7 @@ namespace PopupBox
                 OnHandled = callback;
 
             }
+            gameObject.SetActive(true);
             StartCoroutine(ShowConditionalMessage(func, conditionValue));
         }
 

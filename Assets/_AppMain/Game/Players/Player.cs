@@ -133,25 +133,18 @@ namespace Gameplay
         #endregion
 
         #region Constructors
-        Player(string userId, string username, bool isLocal)
+        public Player(ushort tempGameId, string userId, string username, bool isLocal)
         {
             _userId = userId;
             _username = username;
+            lobbyId = tempGameId;
             this.IsLocal = isLocal;
 
         }
-        public Player(ushort tempGameId, string userId, string username, bool isLocal) : this(userId, username, isLocal)
-        {
-            lobbyId = tempGameId;
-        }
 
-        public Player(string userId, string username, Decklist list, bool isLocal) : this(userId, username, isLocal)
+        public Player(ushort tempGameId, string userId, string username, Decklist list, bool isLocal) : this(tempGameId, userId, username, isLocal)
         {
             LoadDeckList(list);
-        }
-        public void SetOfflineLobbyId(ushort id)
-        {
-            lobbyId = id;
         }
 
         public void LoadDeckList(Decklist list, bool shuffle = true)

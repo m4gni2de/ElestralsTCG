@@ -41,7 +41,7 @@ namespace Gameplay
                 Owner.deck.SpiritDeck.AddCard(card);
             }
 
-
+            Optimize();
         }
 
         protected override void SetCommands(GameCard card)
@@ -71,7 +71,7 @@ namespace Gameplay
             if (IsYours)
             {
                 //commands.Add(PopupCommand.Create("Browse", () => BrowseCommand(), 0, 1));
-                commands.Add(PopupCommand.Create("Manage", () => ManageCards(cards, $"{Owner.userId}'s Spirit Deck", true, 1, Owner.gameField.SpiritDeckSlot.cards.Count)));
+                commands.Add(PopupCommand.Create("Manage", () => ManageCards(cards, $"{Owner.userId}'s Spirit Deck", true, 1, cards.Count)));
                 commands.Add(PopupCommand.Create("Expend", () => ExpendCommand(), 0, 1));
                 commands.Add(PopupCommand.Create("Browse", () => BrowseCards(cards, $"{Owner.userId}'s Spirit Deck", true, 0, 0)));
             }
@@ -95,16 +95,9 @@ namespace Gameplay
 
        
 
-        protected override void AwaitManage(BrowseArgs args)
-        {
-            base.AwaitManage(args);
-            if (!args.IsConfirm || args.Selections.Count <= 0) { return; }
-            LocationMenu.Load(Owner, args.Selections);
-        }
-
         protected void ExpendCommand()
         {
-            GameManager.Instance.popupMenu.InputNumber("How many Spirits are you Expending?", StartExpend, 1, Owner.gameField.SpiritDeckSlot.cards.Count, 1);
+            GameManager.Instance.popupMenu.InputNumber("How many Spirits are you Expending?", StartExpend, 1, cards.Count, 1);
         }
 
         protected void StartExpend(int count)
@@ -116,7 +109,7 @@ namespace Gameplay
 
         protected void AwaitExpend(BrowseArgs args)
         {
-            GameManager.Instance.browseMenu.OnClosed -= AwaitManage;
+            GameManager.Instance.browseMenu.OnClosed -= AwaitExpend;
             if (!args.IsConfirm || args.Selections.Count <= 0) { return; }
 
             for (int i = 0; i < args.Selections.Count; i++)

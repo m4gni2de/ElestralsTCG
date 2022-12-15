@@ -151,7 +151,7 @@ namespace Gameplay.Turns
             int index = 0;
             if (TurnCount == 0) { index = 1; }
             turn.StartPhase(index);
-
+            Game.SetGameState(GameManager.ActiveGame);
         }
 
 

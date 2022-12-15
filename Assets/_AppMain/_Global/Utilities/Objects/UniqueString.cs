@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using GlobalUtilities;
 using UnityEngine;
 public class UniqueString
 {
@@ -33,7 +35,7 @@ public class UniqueString
         _value = Create(prefix, maxLength);
     }
 
-    public static UniqueString GetShortId(string prefix = "", int length = 7)
+    public static UniqueString GetShortId(string prefix = "", int length = 2)
     {
         string tempId = CreateId(length, prefix);
         return new UniqueString(tempId);
@@ -103,5 +105,16 @@ public class UniqueString
         }
 
         return id;
+    }
+
+    public static string RandomLetters(int count)
+    {
+        string letters = "";
+        for (int i = 0; i < count; i++)
+        {
+            int rand = UnityEngine.Random.Range(0, 26);
+            letters += rand.InAlphabet();
+        }
+        return letters;
     }
 }

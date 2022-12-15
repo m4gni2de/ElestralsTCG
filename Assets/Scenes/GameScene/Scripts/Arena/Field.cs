@@ -306,6 +306,7 @@ namespace Gameplay
         public void SetPlayer(Player p)
         {
             _player = p;
+            fieldId = p.lobbyId.ToString();
             //name = _player.lobbyId + "_Field";
             name = _player.userId + "_Field";
             
@@ -316,17 +317,17 @@ namespace Gameplay
 
         
 
-        public void SetPlayer(Player p, string id)
-        {
-            fieldId = id;
-            _player = p;
-            for (int i = 0; i < cardSlots.Count; i++)
-            {
+        //public void SetPlayer(Player p, string id)
+        //{
+        //    fieldId = id;
+        //    _player = p;
+        //    for (int i = 0; i < cardSlots.Count; i++)
+        //    {
                 
-                cardSlots[i].SetId(p.userId);
-            }
-            AllocateCards();
-        }
+        //        cardSlots[i].SetId(p.userId);
+        //    }
+        //    AllocateCards();
+        //}
         public void AllocateCards(bool sendToServer = true)
         {
             Deck sp = _deck.SpiritDeck;

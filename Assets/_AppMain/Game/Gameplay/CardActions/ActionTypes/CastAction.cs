@@ -193,8 +193,6 @@ namespace Gameplay.CardActions
         {
             actionTime = .65f;
             if (castType == CastActionType.Enchant || castType == CastActionType.FromFaceDown || castType == CastActionType.DisEnchant) { doesSourceMove = false; } else { doesSourceMove = true; }
-            //_declaredMessage = $"Cast {sourceCard.cardStats.title} with {SpiritString}";
-            //_actionMessage = $"{sourceCard.cardStats.title} is Cast with {SpiritString}!";
             
         }
         protected CastAction(Player p, GameCard source, CardSlot to, CastActionType castType, GameCard[] spiritsUsed, CardMode cMode, ActionResult ac = ActionResult.Pending) : base(p, source, ac)

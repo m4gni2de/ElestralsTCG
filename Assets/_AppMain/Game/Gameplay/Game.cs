@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using Decks;
 using Cards;
-using Gameplay.GameCommands;
 using System;
 using Gameplay.Data;
 using Gameplay.Turns;
 using UnityEngine.Events;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Users;
-
 using Gameplay.Networking;
 using UnityEditor;
 using UnityEngine.SocialPlatforms;
@@ -34,7 +32,7 @@ namespace Gameplay
     }
 
     [System.Serializable]
-    public class Game
+    public class Game : ElestralsEventSystem
     {
         #region Network Properties
         
@@ -70,6 +68,27 @@ namespace Gameplay
             get
             {
                 return GameManager.Instance.ActivePlayer;
+            }
+        }
+
+        public static void SetGameState(Game game)
+        {
+            game.gameState = new GameState(game);
+        }
+        private GameState _state = null;
+        public GameState gameState
+        {
+            get
+            {
+                return _state;
+            }
+            set
+            {
+                _state = value;
+                if (_state != null)
+                {
+                    _state.Print(false);
+                }
             }
         }
 
@@ -158,7 +177,7 @@ namespace Gameplay
                     decklist = d;
                 }
             }
-            Player player = new Player(userid, username, decklist, true);
+            Player player = new Player(0, userid, username, decklist, true);
             AddPlayer(player);
         }
         
@@ -205,6 +224,7 @@ namespace Gameplay
         public static void StartNewTurn(Turn turn)
         {
             OnNewTurnStart?.Invoke(turn);
+            
         }
 
         public static event Action<Turn, int> OnNewPhaseStart;
@@ -295,6 +315,19 @@ namespace Gameplay
 
 
         #region Rune Empowering
+
+        public List<GameCard> EmpoweringRunes(GameCard elestral)
+        {
+            List<GameCard> result = new List<GameCard>();
+            foreach (var item in EmpoweredRunes)
+            {
+                if (item.Value == elestral)
+                {
+                    result.Add(item.Key);
+                }
+            }
+            return result;
+        }
         private Dictionary<GameCard, GameCard> _EmpoweredRunes = null;
         public Dictionary<GameCard, GameCard> EmpoweredRunes
         {
@@ -313,6 +346,8 @@ namespace Gameplay
             {
                 active.EmpoweredRunes.Add(rune, elestral);
                 elestral.EmpoweredChange();
+                OnElestralEmpowered.Call(elestral, rune);
+
                 NetworkPipeline.SendEmpowerChange(rune.cardId, elestral.cardId, true);
             }
                 

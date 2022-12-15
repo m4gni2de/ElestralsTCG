@@ -18,6 +18,7 @@ using RiptideNetworking;
 using System.Net.Sockets;
 using System.Net;
 using Mono.Cecil.Cil;
+using System.Runtime.Remoting.Lifetime;
 #if UNITY_EDITOR
 using UnityEditor.Experimental.GraphView;
 #endif
@@ -44,11 +45,19 @@ public class NetworkScene : MonoBehaviour, iSceneScript
         WorldCanvas.SetOverlay();
         DisplayManager.ClearButton();
         DisplayManager.ToggleVisible(true);
-        
 
-        GameAction dc = GameAction.Create(Disconnect);
-        GameAction leave = GameAction.Create(App.TryChangeScene, "MainScene");
-        DisplayManager.SetDefault(dc + leave);
+        
+        if (NetworkManager.IsCreated)
+        {
+            GameAction dc = GameAction.Create(Disconnect);
+            GameAction leave = GameAction.Create(App.TryChangeScene, "MainScene");
+            DisplayManager.SetDefault(dc + leave);
+        }
+        else
+        {
+            DisplayManager.SetDefault(App.TryChangeScene, "MainScene");
+        }
+       
     }
     #endregion
 

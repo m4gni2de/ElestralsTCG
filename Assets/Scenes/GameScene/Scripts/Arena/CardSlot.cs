@@ -67,12 +67,12 @@ namespace Gameplay
             {
                 if (MainCard == null)
                 {
-                    string title = $"{Owner.userId}'s {slotType.ToString()}";
+                    string title = $"{Owner.username}'s {slotType.ToString()}";
                     return title;
                 }
                 else
                 {
-                    return $"{Owner.userId}'s {MainCard.cardStats.title}";
+                    return $"{Owner.username}'s {MainCard.cardStats.title}";
                 }
             }
         }
@@ -240,23 +240,23 @@ namespace Gameplay
             }
             slotId = $"{owner.lobbyId}{indexString}";
         }
-        public void SetIndex(int count)
-        {
-            index = count;
-            name = $"{slotType}{count}";
+        //public void SetIndex(int count)
+        //{
+        //    index = count;
+        //    name = $"{slotType}{count}";
             
-        }
-        public void SetId(string ownerId)
-        {
-            string indexString = index.ToString();
-            if (index < 10)
-            {
-                indexString = $"0{index}";
-            }
-            slotId = $"{ownerId}{indexString}";
+        //}
+        //public void SetId(string ownerId)
+        //{
+        //    string indexString = index.ToString();
+        //    if (index < 10)
+        //    {
+        //        indexString = $"0{index}";
+        //    }
+        //    slotId = $"{ownerId}{indexString}";
             
             
-        }
+        //}
 
        
         #endregion
@@ -295,6 +295,8 @@ namespace Gameplay
             TouchObject to = card.cardObject.touch;
             to.ClearClick();
             to.ClearHold();
+
+            
 
         }
 

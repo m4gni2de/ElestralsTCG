@@ -19,17 +19,17 @@ namespace Gameplay
         #region Interface
         public void Optimize()
         {
-            //for (int i = 0; i < cards.Count; i++)
-            //{
-            //    if (i == 0)
-            //    {
-            //        cards[i].cardObject.Show();
-            //    }
-            //    else
-            //    {
-            //        cards[i].cardObject.Hide();
-            //    }
-            //}
+            for (int i = 0; i < cards.Count; i++)
+            {
+                if (i == 0)
+                {
+                    cards[i].cardObject.Show();
+                }
+                else
+                {
+                    cards[i].cardObject.Hide();
+                }
+            }
         }
         #endregion
 
@@ -64,7 +64,7 @@ namespace Gameplay
             {
                 Owner.deck.MainDeck.AddCard(card);
             }
-
+            Optimize();
 
         }
 
@@ -108,7 +108,7 @@ namespace Gameplay
             if (IsYours)
             {
                 commands.Add(PopupCommand.Create("Draw", () => DrawCommand(), 0, 0));
-                commands.Add(PopupCommand.Create("Browse", () => ManageCards(Owner.deck.MainDeck.InOrder, "Manage Deck", IsYours, 1, Owner.deck.MainDeck.InOrder.Count)));
+                commands.Add(PopupCommand.Create("Browse", () => ManageCards(Owner.deck.MainDeck.InOrder.ReverseOf(), "Manage Deck", IsYours, 1, Owner.deck.MainDeck.InOrder.Count)));
                 commands.Add(PopupCommand.Create("Mill", () => MillCommand(), 0, 2));
                 commands.Add(PopupCommand.Create("Shuffle", () => ShuffleCommand(), 0, 2));
             }

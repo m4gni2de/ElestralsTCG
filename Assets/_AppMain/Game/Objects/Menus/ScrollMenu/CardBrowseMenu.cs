@@ -402,6 +402,7 @@ namespace Gameplay.Menus
 
             DisplayManager.RemoveAction(Cancel);
             OnClosed?.Invoke(menuArgs);
+            
 
         }
 

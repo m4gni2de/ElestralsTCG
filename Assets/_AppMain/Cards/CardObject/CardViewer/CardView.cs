@@ -88,7 +88,7 @@ public class CardView : MonoBehaviour, iRemoteAsset, iGridCell
             {
                 st += " - (Full Art)";
             }
-            if (ActiveCard.cardData.artType == ArtType.Stellar || ActiveCard.cardData.rarity == Rarity.Stellar)
+            if (ActiveCard.cardData.artType == ArtType.Stellar || ActiveCard.cardData.rarity == Rarity.Stellar || ActiveCard.cardData.rarity == Rarity.GoldStellar)
             {
                 st = $"Stellar {ActiveCard.cardData.cardName}";
             }

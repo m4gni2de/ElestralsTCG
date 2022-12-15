@@ -25,6 +25,8 @@ public enum Rarity
     HoloRare = 3,
     SecretRare = 4,
     Stellar = 5,
+    Gold = 6,
+    GoldStellar = 7,
 }
 
 public enum ArtType
@@ -88,6 +90,15 @@ public abstract class Card : iCard
     protected virtual CardType GetCardType()
     {
         return CardType.None;
+    }
+    public bool IsGold
+    {
+        get
+        {
+            bool gold = false;
+            if (cardData.rarity == Rarity.Gold || cardData.rarity == Rarity.GoldStellar) { gold = true; }
+            return gold;
+        }
     }
 
     #region Compare
@@ -321,7 +332,7 @@ public abstract class Card : iCard
             {
                 st += " - (Full Art)";
             }
-            if (cardData.artType == ArtType.Stellar || cardData.rarity == Rarity.Stellar)
+            if (cardData.artType == ArtType.Stellar || cardData.rarity == Rarity.Stellar || cardData.rarity == Rarity.GoldStellar)
             {
                 st = $"Stellar {cardData.cardName}";
             }

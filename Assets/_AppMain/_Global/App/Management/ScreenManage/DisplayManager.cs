@@ -77,6 +77,10 @@ public class DisplayManager : MonoBehaviour
     {
         _default = ac;
     }
+    public static void SetDefault(GameAction ac)
+    {
+        _default = ac;
+    }
 
     public static void SetDefault(Action ac)
     {

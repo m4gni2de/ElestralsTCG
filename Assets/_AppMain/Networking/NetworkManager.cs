@@ -72,6 +72,8 @@ public class NetworkManager : MonoBehaviour
 
     [SerializeField] private ushort _port;
     public ushort Port { get { return _port; } set { _port = value; } }
+    private static bool _isCreated = false;
+    public static bool IsCreated { get { return _isCreated; } }
 
     #region Client Properpties
     public Client Client { get; private set; }
@@ -108,14 +110,18 @@ public class NetworkManager : MonoBehaviour
 
     private void Start()
     {
-        GetServerAddresses();
+       
         
     }
 
     private void FixedUpdate()
     {
-        ServerManager.Tick();
-        if (Client != null) { Client.Tick(); }
+        if (IsCreated)
+        {
+            ServerManager.Tick();
+            if (Client != null) { Client.Tick(); }
+        }
+       
         
 
     }
@@ -124,6 +130,8 @@ public class NetworkManager : MonoBehaviour
 
     public void Create(NetworkMode mode)
     {
+        GetServerAddresses();
+        _isCreated = true;
         networkMode = mode;
         if (mode == NetworkMode.Client) { CreateClient(); } else if (mode == NetworkMode.Host) { CreateServer(); } else { CreateServerAsHost();  }
     }

@@ -311,11 +311,13 @@ namespace Gameplay
         {
             do
             {
-                IEnumerator move = Movements[0];
-                yield return move;
-                yield return new WaitForEndOfFrame();
-                Movements.Remove(move);
-
+                if (Movements.Count > 0)
+                {
+                    IEnumerator move = Movements[0];
+                    yield return move;
+                    yield return new WaitForEndOfFrame();
+                    Movements.Remove(move);
+                }
 
             } while (Movements.Count > 0);
             End(ActionResult.Succeed);

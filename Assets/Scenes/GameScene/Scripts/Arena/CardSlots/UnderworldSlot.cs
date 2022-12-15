@@ -43,6 +43,7 @@ namespace Gameplay
             touch.AddClickListener(() => ClickSlot());
         }
 
+
         public override void AllocateTo(GameCard card, bool sendToServer = true)
         {
             card.cardObject.Show();
@@ -86,16 +87,21 @@ namespace Gameplay
         protected override List<PopupCommand> GetSlotCommands()
         {
             List<PopupCommand> commands = new List<PopupCommand>();
-            commands.Add(PopupCommand.Create("Browse", () => BrowseCards(cards, $"{Owner.userId}'s Underworld", IsYours, 0, 0)));
-            if (IsYours)
+
+            if (cards.Count > 0)
             {
-                commands.Add(PopupCommand.Create("Manage", () => ManageCards(cards, "Select Cards to Move", true, 1, Owner.gameField.UnderworldSlot.cards.Count)));
+                commands.Add(PopupCommand.Create("Browse", () => BrowseCards(cards, $"{Owner.userId}'s Underworld", IsYours, 0, 0)));
+                if (IsYours)
+                {
+                    commands.Add(PopupCommand.Create("Manage", () => ManageCards(cards, "Select Cards to Move", true, 1, cards.Count)));
+                }
+
+
+                commands.Add(PopupCommand.Create("Close", () => CloseCommand()));
+
+
+
             }
-          
-
-            commands.Add(PopupCommand.Create("Close", () => CloseCommand()));
-
-
 
             return commands;
         }

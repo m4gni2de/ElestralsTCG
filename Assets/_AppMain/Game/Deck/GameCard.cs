@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cards;
 using CardsUI;
-using Gameplay.GameCommands;
 using System.Security.Cryptography;
 using System;
 
@@ -191,6 +190,17 @@ namespace Gameplay
                 return list;
             }
         }
+
+        public GameCard EmpoweredElestral
+        {
+            get
+            {
+                
+                if (CurrentSlot == null || CurrentSlot.GetType() != typeof(RuneSlot)) { return null; }
+                RuneSlot slot = (RuneSlot)CurrentSlot;
+                if (slot.IsEmpowering) { return slot.EmpoweredElestral; } return null;
+            }
+        }
         #endregion
 
         #region In Game Stats
@@ -330,6 +340,25 @@ namespace Gameplay
             else
             {
                 cardObject.SelectCard(false, Color.black);
+                if (CardType == CardType.Elestral)
+                {
+                    List<GameCard> empowering = EmpoweringRunes;
+                    for (int i = 0; i < empowering.Count; i++)
+                    {
+                        empowering[i].cardObject.SelectCard(false, Color.black);
+                    }
+
+                }
+                else if (CardType == CardType.Rune)
+                {
+                    if (EmpoweredElestral != null)
+                    {
+                        EmpoweredElestral.cardObject.SelectCard(false, Color.black);
+                    }
+                }
+
+
+
             }
 
 
@@ -352,10 +381,12 @@ namespace Gameplay
 
         #region Card Events
        
-        public event Action EmpoweredChanged;
+        public event Action<GameCard> EmpoweredChanged;
         public void EmpoweredChange()
         {
-            EmpoweredChanged?.Invoke();
+            EmpoweredChanged?.Invoke(this);
+
+            //Game.OnEm
         }
 
         

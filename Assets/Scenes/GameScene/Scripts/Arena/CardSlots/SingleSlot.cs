@@ -57,9 +57,14 @@ public class SingleSlot : CardSlot, iMainCard
         {
            if (_touchGroup == null)
             {
-                if (GetComponent<TouchGroup>() != null) { _touchGroup = GetComponent<TouchGroup>(); }
+               
+                if (GetComponent<TouchGroup>() != null) 
+                { 
+                    _touchGroup = GetComponent<TouchGroup>(); 
+                }
                 else
-                { _touchGroup = gameObject.AddComponent<TouchGroup>();
+                { 
+                    _touchGroup = gameObject.AddComponent<TouchGroup>();
                 }
             }
             return _touchGroup;
@@ -325,13 +330,14 @@ public class SingleSlot : CardSlot, iMainCard
     protected void AwaitDisEnchantClose(List<GameCard> selectedCards)
     {
         BrowseMenu.OnMenuClose -= AwaitDisEnchantClose;
+        if (selectedCards.Count == 0) { Refresh(); return; }
         List<GameCard> cardsList = new List<GameCard>();
         for (int i = 0; i < selectedCards.Count; i++)
         {
             cardsList.Add(selectedCards[i]);
         }
         GameManager.Instance.DisEnchant(Owner, MainCard, cardsList, Owner.gameField.UnderworldSlot);
-        Refresh();
+       
 
     }
 

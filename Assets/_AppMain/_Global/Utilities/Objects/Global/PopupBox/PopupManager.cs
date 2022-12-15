@@ -98,10 +98,6 @@ public class PopupManager : MonoBehaviour
         else
         {
             Instance.Show();
-            if (!PopList.Contains(pop))
-            {
-                PopList.Add(pop);
-            }
             AddPopup(pop, closeOnBack);
             ActivePopup = pop;
             
@@ -173,7 +169,6 @@ public class PopupManager : MonoBehaviour
 
     public void DisplayNewMessage(string msg,Action callback, bool showConfirm, bool showCancel, bool closeOnBack = true)
     {
-        StopCoroutine(AwaitPopup());
         SetActivePopup(Message, closeOnBack);
         Message.Show(msg, callback,showConfirm, showCancel);
         StartCoroutine(AwaitPopup());
