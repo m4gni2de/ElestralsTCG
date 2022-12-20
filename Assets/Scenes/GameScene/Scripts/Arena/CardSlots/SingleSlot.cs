@@ -78,16 +78,17 @@ public class SingleSlot : CardSlot, iMainCard
             gameObject.AddComponent<TouchGroup>();
         }
     }
-    protected override void WakeSlot()
+
+
+    protected override bool GetIsInPlay()
     {
-        
+        return true;
     }
 
-   
-    
     public override void RemoveCard(GameCard card)
     {
         base.RemoveCard(card);
+        touchGroup.Remove(card.cardObject.touch);
         if (MainCard != null && MainCard == card)
         {
 

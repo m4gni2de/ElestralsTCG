@@ -230,6 +230,10 @@ public class CardCatalog : MonoBehaviour, iScaleCard
         {
             Card card = dtos[i];
             list.Add(card);
+            //if (card.cardData.effect.ToLower().Contains("you can"))
+            //{
+            //    Debug.Log(card.cardData.effect);
+            //}
         }
 
 

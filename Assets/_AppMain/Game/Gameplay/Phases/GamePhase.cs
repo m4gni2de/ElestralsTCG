@@ -21,6 +21,9 @@ namespace Gameplay.Turns
         public bool IsStarted = false;
         private List<CardAction> _PhaseActions = null;
         public List<CardAction> PhaseActions { get { _PhaseActions ??= new List<CardAction>(); return _PhaseActions; } }
+
+        private Archive<CardActionData> _history = null;
+        public Archive<CardActionData> History { get { _history ??= new Archive<CardActionData>(); return _history; } private set { _history = value; } }
         public int TurnIndex { get { return GetTurnIndex(); } }
         protected virtual int GetTurnIndex()
         {
@@ -129,9 +132,8 @@ namespace Gameplay.Turns
                     yield return ActiveAction.DeclareAction();
                     yield return ActiveAction.Do();
                     //yield return ActiveAction.PerformAction();
-                    
+                    History.Add(ActiveAction.ActionData);
                     actions.RemoveAt(0);
-                    GameManager.Instance.gameLog.LogAction(ActiveAction);
                     yield return new WaitForEndOfFrame();
 
                 } while (true && actions.Count > 0);

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cards;
+using Gameplay;
 
 public class Spirit : Card
 {
@@ -17,5 +18,6 @@ public class Spirit : Card
     public Spirit(CardData data)
     {
         _data = data;
+        Effect = CardEffect.Empty;
     }
 }

@@ -11,10 +11,14 @@ public class CardCollection
     public class CollectionData : iArchive
     {
         #region Interface
-        public string Print()
+        public string Print
         {
-            string p = $"Quantity of {rarity} '{cardKey}': {quantity}.";
-            return p;
+            get
+            {
+                string p = $"Quantity of {rarity} '{cardKey}': {quantity}.";
+                return p;
+            }
+           
         }
         #endregion
 

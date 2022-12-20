@@ -13,7 +13,7 @@ namespace Cards
         public static readonly string RuneDTOTable = "cRuneDTO";
         public static readonly string vElestralsView = "vElestrals";
         public static readonly string vRunesView = "vRunes";
-        
+
 
 
         public static readonly string BaseCardView = "qBaseCard";
@@ -21,8 +21,10 @@ namespace Cards
         private static readonly string qUniqueArtView = "qUniqueArt";
         public static readonly string CardArtView = "qCardArt";
 
-        
+
         public static readonly string CardDTOTable = "CardDTO";
+
+       
 
 
 
@@ -36,7 +38,8 @@ namespace Cards
         {
             string query = $"setKey = '{setKey}'";
             qBaseCard dto = GetFirstWhere<qBaseCard>(BaseCardView, query);
-            if (dto != null) { return dto; } return null;
+            if (dto != null) { return dto; }
+            return null;
         }
 
         public static List<qBaseCard> CardsWithTitle(string title)
@@ -81,16 +84,16 @@ namespace Cards
             List<qUniqueCard> dtos = new List<qUniqueCard>();
             if (!string.IsNullOrEmpty(where))
             {
-               dtos = ListByQuery<qUniqueCard>(qUniqueArtView, where);
+                dtos = ListByQuery<qUniqueCard>(qUniqueArtView, where);
             }
             else
             {
                 dtos = GetAll<qUniqueCard>(qUniqueArtView);
             }
 
-            
+
             return dtos;
-           
+
         }
         public static List<qUniqueCard> GetAllReprints(iCardData data, string whereClause = "")
         {
@@ -173,7 +176,7 @@ namespace Cards
         public static Decks.Decklist.DeckCard DeckCardFromDTO(DeckCardDTO card)
         {
             qUniqueCard dto = ByKey<qUniqueCard>(qUniqueCardView, "setKey", card.setKey);
-            return new Decks.Decklist.DeckCard(card.setKey, (CardType)dto.cardClass, card.qty); 
+            return new Decks.Decklist.DeckCard(card.setKey, (CardType)dto.cardClass, card.qty);
         }
         #endregion
 

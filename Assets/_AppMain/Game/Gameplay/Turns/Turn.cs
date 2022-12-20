@@ -15,6 +15,10 @@ namespace Gameplay.Turns
     }
     public class Turn
     {
+        #region Rules/Restrictions
+        private bool _canNormalEnchant = false;
+        public bool CanNormalEnchant { get { return _canNormalEnchant;  } private set { _canNormalEnchant = value; } }
+        #endregion
 
         #region Properties
         public Player ActivePlayer { get; set; }
@@ -22,14 +26,9 @@ namespace Gameplay.Turns
         public GamePhase ActivePhase { get; set; }
         private List<PreparedAction> _PreparedActions = null;
         public List<PreparedAction> PreparedActions { get { _PreparedActions ??= new List<PreparedAction>(); return _PreparedActions; } }
-        public bool IsFirstTurn
-        {
-            get
-            {
-                return turnCount < 2;
-            }
-        }
 
+        #endregion
+        #region Phases
         public int phaseIndex { get; private set; }
         private int _NextPhase;
         public int NextPhase
@@ -44,9 +43,9 @@ namespace Gameplay.Turns
                 _NextPhase = value;
             }
         }
-        #endregion
+        
 
-        public bool HasNormalEnchant = true;
+        
 
         
         public GamePhase DrawPhase;
@@ -71,8 +70,16 @@ namespace Gameplay.Turns
                 return phases;
             }
         }
-       
-
+        #endregion
+        #region Functions
+        public bool IsFirstTurn
+        {
+            get
+            {
+                return turnCount < 2;
+            }
+        }
+        #endregion
 
         #region Initialization
         public Turn(Player p, int count)
@@ -84,12 +91,13 @@ namespace Gameplay.Turns
 
         protected void SetDefaults()
         {
-            HasNormalEnchant = true;
+            CanNormalEnchant = true;
             DrawPhase = new DrawPhase(ActivePlayer, IsFirstTurn);
             MainPhase = new MainPhase(ActivePlayer);
             BattlePhase = new BattlePhase(ActivePlayer);
             EndPhase = new EndPhase(ActivePlayer);
 
+           
         }
 
 
@@ -165,6 +173,7 @@ namespace Gameplay.Turns
         }
         #endregion
 
+        
         #endregion
     }
 }

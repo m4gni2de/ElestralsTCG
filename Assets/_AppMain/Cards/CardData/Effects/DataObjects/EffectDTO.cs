@@ -8,8 +8,14 @@ namespace Databases
     [System.Serializable]
     public class EffectDTO
     {
-        public string effKey { get; set; }
-        public string effName { get; set; }
+        public string cardKey { get; set; }
+        public string abiKey { get; set; }
+        public string castCost { get; set; }
+        public int effOrder { get; set; }
+        public string triggerKey { get; set; }
+          
+        public int autoUse { get; set; }
+
     }
 }
 

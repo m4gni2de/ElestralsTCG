@@ -50,5 +50,18 @@ namespace Databases
             return list[0];
         }
     }
+
+    public static class ElementHelpers
+    {
+        public static List<ElementCode> AsCodes(this List<Element> list)
+        {
+            List<ElementCode> results = new List<ElementCode>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                results.Add(list[i].Code);
+            }
+            return results;
+        }
+    }
 }
 

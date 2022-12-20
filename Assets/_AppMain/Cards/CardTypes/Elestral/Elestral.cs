@@ -37,5 +37,6 @@ public class Elestral : Card
     public Elestral(ElestralData data)
     {
         _data = data;
+
     }
 }

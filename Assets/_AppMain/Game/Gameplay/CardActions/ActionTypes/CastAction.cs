@@ -287,9 +287,9 @@ namespace Gameplay.CardActions
         {
             yield return base.DoMove(card, to, time);
             card.SetCardMode(cardMode);
-            card.CurrentSlot.RemoveCard(card);
             to.AllocateTo(card);
         }
+        
 
 
         #region Action Building

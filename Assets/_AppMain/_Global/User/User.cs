@@ -78,6 +78,20 @@ namespace Users
         private List<Decklist> _deckLists = null;
         public List<Decklist> DeckLists { get { _deckLists ??= new List<Decklist>(); return _deckLists; }}
 
+        public List<Decklist> LegalDecks
+        {
+            get
+            {
+                List<Decklist> decks = new List<Decklist>();
+                for (int i = 0; i < DeckLists.Count; i++)
+                {
+                    if (DeckLists[i].CardCount < 60) { continue; }
+                    decks.Add(DeckLists[i]);
+                }
+                return decks;
+            }
+        }
+
         public List<UploadedDeckDTO> DecksAsUploaded
         {
             get
@@ -91,10 +105,6 @@ namespace Users
                     dto.deckKey = DeckLists[i].DeckKey;
                     DataList d = JsonConvert.DeserializeObject<DataList>(DeckLists[i].GetCardList);
                     dto.deck = d.items;
-                    //for (int j = 0; j < DeckLists[i].Cards.Count; j++)
-                    //{
-                    //    dto.deck.Add(DeckLists[i].Cards[j].key);
-                    //}
 
                     list.Add(dto);
                 }

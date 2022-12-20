@@ -12,6 +12,7 @@ using Users;
 using Gameplay.Networking;
 using UnityEditor;
 using UnityEngine.SocialPlatforms;
+using System.Data;
 #if UNITY_EDITOR
 using static UnityEditor.Experimental.GraphView.GraphView;
 #endif
@@ -31,8 +32,28 @@ namespace Gameplay
         P2P = 2,
     }
 
+    public enum LocationScope
+    {
+        All = 0,
+        OnTarget = 1,
+        OnField = 2,
+        OnYourField = 3,
+        OnOpponentField = 4,
+        InSpiritDeck = 5,
+        InUnderWorld = 6,
+        InDeck = 7,
+    }
+
+    public enum PlayerScope
+    {
+        None = 0,
+        All = 100,
+        User = 101,
+        Opponent = 102,
+    }
+
     [System.Serializable]
-    public class Game : ElestralsEventSystem
+    public class Game : CommandSystem
     {
         #region Network Properties
         
@@ -41,7 +62,96 @@ namespace Gameplay
 
         #endregion
 
+        #region Game Information
+        public int CardsInHand(Player p)
+        {
+            int count = 0;
+            for (int i = 0; i < p.deck.Cards.Count; i++)
+            {
+                if (p.deck.Cards[i].location == CardLocation.Hand)
+                {
+                    count += 1;
+                }
+            }
+            return count;
+        }
+        public static Player FindPlayer(string userId)
+        {
+            for (int i = 0; i < GameManager.ActiveGame.players.Count; i++)
+            {
+                Player p = GameManager.ActiveGame.players[i];
+                if (p.userId == userId) { return p; }
+            }
+            App.LogFatal($"No player with Id {userId} exists in this Game.");
+            return null;
+        }
+        public static GameCard FindCard(string cardId)
+        {
+            for (int i = 0; i < GameManager.ActiveGame.players.Count; i++)
+            {
+                Player p = GameManager.ActiveGame.players[i];
+                foreach (var item in p.deck.Cards)
+                {
+                    if (item.cardId == cardId) { return item; }
+                }
+            }
+            //App.LogFatal($"No card with Id {cardId} exists in this Game.");
+            return null;
+        }
 
+        public static CardSlot FindSlot(string slotId)
+        {
+            for (int i = 0; i < GameManager.ActiveGame.players.Count; i++)
+            {
+                Player p = GameManager.ActiveGame.players[i];
+                foreach (var item in p.gameField.cardSlots)
+                {
+                    if (item.slotId.ToLower() == slotId.ToLower()) { return item; }
+                }
+            }
+            //App.LogFatal($"No Card Slot with Id {slotId} exists in this Game.");
+            return null;
+        }
+
+        public static List<GameCard> GetPlayerCardsInPlay(Player p)
+        {
+            Field f = p.gameField;
+            List<GameCard> list = new List<GameCard>();
+            for (int i = 0; i < f.cardSlots.Count; i++)
+            {
+                CardSlot slot = f.cardSlots[i];
+                if (!slot.IsInPlay) { continue; }
+                for (int j = 0; j < slot.cards.Count; j++)
+                {
+                    list.Add(slot.cards[j]);
+                }
+            }
+            return list;
+        }
+
+        public static List<GameCard> GetAllCardsInPlay()
+        {
+
+            List<GameCard> list = new List<GameCard>();
+            foreach (var item in GameManager.ActiveGame.players)
+            {
+                Field f = item.gameField;
+                for (int i = 0; i < f.cardSlots.Count; i++)
+                {
+                    CardSlot slot = f.cardSlots[i];
+                    if (!slot.IsInPlay) { continue; }
+                    for (int j = 0; j < slot.cards.Count; j++)
+                    {
+                        list.Add(slot.cards[j]);
+                    }
+                }
+            }
+
+            return list;
+        }
+
+        
+        #endregion
 
         #region Global Properties
         protected Player _You = null;
@@ -104,6 +214,8 @@ namespace Gameplay
             App.LogError("Can't find opponent.");
             return null;
         }
+
+       
         #endregion
 
         #region Properties
@@ -125,7 +237,7 @@ namespace Gameplay
         #region Initialization
         protected Game()
         {
-
+            
         }
         public static Game ConnectTo(string gameId)
         {
@@ -211,6 +323,8 @@ namespace Gameplay
         #endregion
 
         #region Game Events
+        private static CardEventSystem _eventSystem = null;
+        private static CardEventSystem eventSystem { get { _eventSystem ??= new CardEventSystem(true); return _eventSystem; } }
 
         #region Turn Based Events
         public static event Action<TargetArgs> OnNewTargetParams;
@@ -228,9 +342,10 @@ namespace Gameplay
         }
 
         public static event Action<Turn, int> OnNewPhaseStart;
-        public static void StartNewPhase(Turn turn, int index)
+        public static void PhaseStart(Turn turn, int index)
         {
             OnNewPhaseStart?.Invoke(turn, index);
+            eventSystem.PhaseStart.Call(turn, turn.Phases[index]);
         }
 
         //public static event Action<GameMode> OnGameModeSet;
@@ -259,75 +374,23 @@ namespace Gameplay
 
         #endregion
 
-        #region Game Information
-        public int CardsInHand(Player p)
-        {
-            int count = 0;
-            for (int i = 0; i < p.deck.Cards.Count; i++)
-            {
-                if (p.deck.Cards[i].location == CardLocation.Hand)
-                {
-                    count += 1;
-                }
-            }
-            return count;
-        }
-        public static Player FindPlayer(string userId)
-        {
-            for (int i = 0; i < GameManager.ActiveGame.players.Count; i++)
-            {
-                Player p = GameManager.ActiveGame.players[i];
-                if (p.userId == userId) { return p; }
-            }
-            App.LogFatal($"No player with Id {userId} exists in this Game.");
-            return null;
-        }
-        public static GameCard FindCard(string cardId)
-        {
-            for (int i = 0; i < GameManager.ActiveGame.players.Count; i++)
-            {
-                Player p = GameManager.ActiveGame.players[i];
-                foreach (var item in p.deck.Cards)
-                {
-                    if (item.cardId == cardId) { return item; }
-                }
-            }
-            //App.LogFatal($"No card with Id {cardId} exists in this Game.");
-            return null;
-        }
-
-        public static CardSlot FindSlot(string slotId)
-        {
-            for (int i = 0; i < GameManager.ActiveGame.players.Count; i++)
-            {
-                Player p = GameManager.ActiveGame.players[i];
-                foreach (var item in p.gameField.cardSlots)
-                {
-                    if (item.slotId.ToLower() == slotId.ToLower()) { return item; }
-                }
-            }
-            //App.LogFatal($"No Card Slot with Id {slotId} exists in this Game.");
-            return null;
-        }
-
-
-        #endregion
+      
 
 
         #region Rune Empowering
 
-        public List<GameCard> EmpoweringRunes(GameCard elestral)
-        {
-            List<GameCard> result = new List<GameCard>();
-            foreach (var item in EmpoweredRunes)
-            {
-                if (item.Value == elestral)
-                {
-                    result.Add(item.Key);
-                }
-            }
-            return result;
-        }
+        //public List<GameCard> EmpoweringRunes(GameCard elestral)
+        //{
+        //    List<GameCard> result = new List<GameCard>();
+        //    foreach (var item in EmpoweredRunes)
+        //    {
+        //        if (item.Value == elestral)
+        //        {
+        //            result.Add(item.Key);
+        //        }
+        //    }
+        //    return result;
+        //}
         private Dictionary<GameCard, GameCard> _EmpoweredRunes = null;
         public Dictionary<GameCard, GameCard> EmpoweredRunes
         {
@@ -345,17 +408,27 @@ namespace Gameplay
             if (!active.EmpoweredRunes.ContainsKey(rune))
             {
                 active.EmpoweredRunes.Add(rune, elestral);
-                elestral.EmpoweredChange();
-                OnElestralEmpowered.Call(elestral, rune);
-
+                
                 NetworkPipeline.SendEmpowerChange(rune.cardId, elestral.cardId, true);
             }
-                
-            
-
-           
         }
+       
 
+        public static void UnEmpowerFromElestral(ElestralCard elestral)
+        {
+            Game active = GameManager.ActiveGame;
+            List<GameCard> goners = new List<GameCard>();
+            foreach (var item in active.EmpoweredRunes)
+            {
+                if (item.Value == elestral) { goners.Add(item.Key); }
+            }
+            for (int i = 0; i < goners.Count; i++)
+            {
+                active.EmpoweredRunes.Remove(goners[i]);
+                NetworkPipeline.SendEmpowerChange(goners[i].cardId, elestral.cardId, false);
+            }
+            
+        }
         public static void UnEmpower(GameCard rune)
         {
             Game active = GameManager.ActiveGame;
@@ -365,7 +438,6 @@ namespace Gameplay
             {
                 GameCard elestral = active.EmpoweredRunes[rune];
                 active.EmpoweredRunes.Remove(rune);
-                elestral.EmpoweredChange();
                 NetworkPipeline.SendEmpowerChange(rune.cardId, elestral.cardId, false);
             }
         }

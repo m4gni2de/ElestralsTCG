@@ -8098,6 +8098,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05e71c0a2fa44824c805ff0754f15f4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _waypoints:
+  - {fileID: 2115375513}
+  - {fileID: 1207617425}
   MainObject: {fileID: 1425724178}
 --- !u!1 &1192224641
 GameObject:
@@ -8614,6 +8617,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05e71c0a2fa44824c805ff0754f15f4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _waypoints:
+  - {fileID: 1083563208}
+  - {fileID: 1414973071}
   MainObject: {fileID: 877811359}
 --- !u!1 &1246679442
 GameObject:

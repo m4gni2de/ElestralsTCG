@@ -100,6 +100,10 @@ namespace Gameplay.CardActions
 
             SetDetails();
         }
+        public static AscendAction Create(Player p, GameCard newCard, GameCard tributedTarget, List<GameCard> spiritsTaking, GameCard spiritAdded, CardMode cMode)
+        {
+            return new AscendAction(p, newCard, tributedTarget, spiritsTaking, spiritAdded, cMode);
+        }
         protected void SetDetails()
         {
             actionTime = .65f;
@@ -130,16 +134,15 @@ namespace Gameplay.CardActions
             GameManager.SelectedCard = sourceCard;
         }
 
-       
+
         protected override IEnumerator DoMove(GameCard card, CardSlot to, float time = .65f)
         {
             yield return base.DoMove(card, to, time);
-            card.CurrentSlot.RemoveCard(card);
             to.AllocateTo(card);
         }
 
 
-        
+
 
     }
 }

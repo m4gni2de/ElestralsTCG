@@ -222,7 +222,7 @@ public class Archive<T> where T : iArchive
         for (int i = 0; i < Entries.Count; i++)
         {
             Entry e = Entries[i];
-            obj.AddField("Item", e.Item.Print());
+            obj.AddField("Item", e.Item.Print);
         }
         return obj.Print(prettyPrint); 
     }

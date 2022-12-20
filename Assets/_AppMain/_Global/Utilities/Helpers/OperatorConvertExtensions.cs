@@ -19,4 +19,9 @@ public static class OperatorConvertExtensions
     {
         return a % 2 == 0;
     }
+
+    public static bool IsEmpty(this string a)
+    {
+        return string.IsNullOrWhiteSpace(a);
+    }
 }

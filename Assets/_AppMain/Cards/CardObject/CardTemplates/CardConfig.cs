@@ -150,6 +150,8 @@ public class CardConfig : MonoBehaviour
     public SpriteRenderer runeSpR;
     public SpriteRenderer swordSp;
     public SpriteRenderer shieldSp;
+ 
+
     [Header("Rarity")]
     public SpriteRenderer raritySp;
 
@@ -175,7 +177,7 @@ public class CardConfig : MonoBehaviour
     public SpriteRenderer spiritGlowL;
     public SpriteRenderer spiritGlowR;
 
-    [Header("Full Art Mask")]
+    [Header("Art Mask")]
     public SpriteMask artMask;
 
     #region Text Properties

@@ -567,9 +567,6 @@ CheckForAccountDevice();
     }
     #endregion
 
-   
-
-
     #region Outbound Connections
 
     public static async Task<string> DoPostRequestWithPayload(string url, WWWForm payload)

@@ -5,28 +5,15 @@ using UnityEngine;
 public class DynamicObject : MonoBehaviour 
 {
     #region Waypoints
-    private List<Waypoint> _waypoints = null;
+    [SerializeField] private List<Waypoint> _waypoints = null;
     public List<Waypoint> Waypoints
     {
         get
         {
-            if (_waypoints == null)
-            {
-                _waypoints = FindWaypoints;
-            }
             return _waypoints;
         }
     }
 
-    private List<Waypoint> FindWaypoints
-    {
-        get
-        {
-            List<Waypoint> waypoints = new List<Waypoint>();
-            GetComponentsInChildren<Waypoint>(true, waypoints);
-            return waypoints;
-        }
-    }
     #endregion
 
 

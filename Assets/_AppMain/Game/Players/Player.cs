@@ -81,6 +81,22 @@ namespace Gameplay
                 return null;
             }
         }
+        public List<Player> Opponents
+        {
+            get
+            {
+                List<Player> players = new List<Player>();
+                if (GameManager.ActiveGame == null) { return null; }
+                for (int i = 0; i < GameManager.ActiveGame.players.Count; i++)
+                {
+                    if (GameManager.ActiveGame.players[i] != this)
+                    {
+                       players.Add(GameManager.ActiveGame.players[i]);
+                    }
+                }
+                return players;
+            }
+        }
         private CardAction _activeAction = null;
         public CardAction ActiveAction
         {
@@ -189,6 +205,30 @@ namespace Gameplay
         {
             isReady = ready;
         }
+
+        #region Game Phase Interrupts
+        private List<int> _autoPhasePauses = null;
+        public List<int> AutoPhasePauses { get { _autoPhasePauses ??= new List<int>(); return _autoPhasePauses; } }
+        public void TogglePhasePause(int phaseIndex, bool doPause)
+        {
+            if (doPause)
+            {
+                if (!AutoPhasePauses.Contains(phaseIndex))
+                {
+                    AutoPhasePauses.Add(phaseIndex);
+                }
+            }
+            else
+            {
+                if (AutoPhasePauses.Contains(phaseIndex))
+                {
+                    AutoPhasePauses.Remove(phaseIndex);
+                }
+
+            }
+        }
+        #endregion
+
         public bool CanEnchantCard(GameCard card, int spiritCount = -1)
         {
             if (spiritCount < 0) { spiritCount = card.card.SpiritsReq.Count; }

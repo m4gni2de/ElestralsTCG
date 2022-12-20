@@ -32,3 +32,21 @@ Thursday, December 15, 2022
 Entry Added: 
 Message
 Thursday, December 15, 2022
+Waypoint of Key Close does not exist as a Child of this Object.
+Fatal
+Thursday, December 15, 2022
+Waypoint of Key Right does not exist as a Child of this Object.
+Fatal
+Thursday, December 15, 2022
+Waypoint of Key Right does not exist as a Child of this Object.
+Fatal
+Thursday, December 15, 2022
+Entry Added: 
+Message
+Thursday, December 15, 2022
+Entry Added: 
+Message
+Thursday, December 15, 2022
+Entry Added: 
+Message
+Thursday, December 15, 2022

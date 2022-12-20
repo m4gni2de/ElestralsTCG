@@ -24,6 +24,9 @@ namespace CardsUI
                 return _FormatCharacters;
             }
         }
+
+        private static string SpiritEffectWaypoint = "Spirit";
+        private static string RegularEffectWaypoint = "Regular";
         #endregion
 
         #region Properties
@@ -53,6 +56,14 @@ namespace CardsUI
             {
                 _defaultColors ??= new Dictionary<MagicTextBox, Color>();
                 return _defaultColors;
+            }
+        }
+
+        private DynamicObject dynamicEffectText
+        {
+            get
+            {
+                return Effect.GetComponent<DynamicObject>();
             }
         }
         #endregion
@@ -119,8 +130,8 @@ namespace CardsUI
                 title.SetText(cardTitle);
             }
 
-            
-            
+
+            dynamicEffectText.MoveToWaypoint(RegularEffectWaypoint);
             Effect.SetText(card.cardData.effect);
             artist.SetText(card.cardData.artist);
             cardNumber.SetText($"{card.cardData.setNumber}/{CardLibrary.SetCount(card.cardData.setCode)}");
@@ -153,6 +164,7 @@ namespace CardsUI
         private void DoElestral(Elestral e)
         {
             bool isGold = e.IsGold;
+            
             if (isGold)
             {
                 Attack.SetText(e.Data.attack.ToString(), Color.yellow, false);
@@ -263,6 +275,7 @@ namespace CardsUI
         {
             Attack.Hide(true);
             Defense.Hide(true);
+            dynamicEffectText.MoveToWaypoint(SpiritEffectWaypoint);
             if (card.IsGold)
             {
                 title.SetColor(Color.yellow);

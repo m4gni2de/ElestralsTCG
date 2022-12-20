@@ -11,9 +11,13 @@ namespace Decks
         public int oldQty { get; set; }
         public int qty { get; set; }
 
-        public string Print()
+        public string Print
         {
-            return $"Card '{cardKey}' had Quantity changed from {oldQty} to {qty}.";
+            get
+            {
+                return $"Card '{cardKey}' had Quantity changed from {oldQty} to {qty}.";
+            }
+           
         }
         
         

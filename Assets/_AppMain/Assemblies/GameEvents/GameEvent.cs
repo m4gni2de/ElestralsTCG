@@ -9,32 +9,35 @@ namespace GameEvents
 
     public class GameEvent
     {
+       
+       
+       
         #region Static Initialization
-        public static GameEvent Create()
+        public static GameEvent Create(string eventKey)
         {
-            return new GameEvent();
+            return new GameEvent(eventKey);
         }
-        public static GameEvent<T> Create<T>(string para1)
+        public static GameEvent<T> Create<T>(string eventKey,string para1)
         {
-            GameEvent<T> g = new GameEvent<T>();
+            GameEvent<T> g = new GameEvent<T>(eventKey);
             g.AddParameters(new Parameter<T>(para1, 0));
             return g;
         }
-        public static GameEvent<T1, T2> Create<T1, T2>(string para1, string para2)
+        public static GameEvent<T1, T2> Create<T1, T2>(string eventKey, string para1, string para2)
         {
-            GameEvent<T1, T2> g = new GameEvent<T1,T2>();
+            GameEvent<T1, T2> g = new GameEvent<T1,T2>(eventKey);
             g.AddParameters(new Parameter<T1>(para1, 0), new Parameter<T2>(para2, 1));
             return g;
         }
-        public static GameEvent<T1, T2, T3> Create<T1, T2, T3>(string para1, string para2, string para3)
+        public static GameEvent<T1, T2, T3> Create<T1, T2, T3>(string eventKey, string para1, string para2, string para3)
         {
-            GameEvent<T1, T2,T3> g = new GameEvent<T1, T2,T3>();
+            GameEvent<T1, T2,T3> g = new GameEvent<T1, T2,T3>(eventKey);
             g.AddParameters(new Parameter<T1>(para1, 0), new Parameter<T2>(para2, 1), new Parameter<T3>(para3, 2));
             return g;
         }
-        public static GameEvent<T1, T2, T3, T4> Create<T1, T2, T3, T4>(string para1, string para2, string para3, string para4)
+        public static GameEvent<T1, T2, T3, T4> Create<T1, T2, T3, T4>(string eventKey, string para1, string para2, string para3, string para4)
         {
-            GameEvent<T1, T2, T3,T4> g = new GameEvent<T1, T2, T3,T4>();
+            GameEvent<T1, T2, T3,T4> g = new GameEvent<T1, T2, T3,T4>(eventKey);
             g.AddParameters(new Parameter<T1>(para1, 0), new Parameter<T2>(para2, 1), new Parameter<T3>(para3, 2), new Parameter<T3>(para4, 3));
             return g;
         }
@@ -42,8 +45,8 @@ namespace GameEvents
         #endregion
 
         #region Properties
-        public string uniqueId { get; set; }
-        public string name { get; set; }
+        public string key { get; set; }
+        public string id { get; set; }
         protected List<iParameter> _parameters = null;
         public List<iParameter> Parameters { get { _parameters ??= new List<iParameter>(); return _parameters; } }
 
@@ -79,6 +82,11 @@ namespace GameEvents
        
 
         #region Initialization
+        public GameEvent(string eventKey)
+        {
+            key = eventKey;
+            GameEventSystem.Register(key, this);
+        }
         public virtual void AddParameters(params iParameter[] parameters)
         {
             for (int i = 0; i < parameters.Length; i++)
@@ -89,9 +97,10 @@ namespace GameEvents
         #endregion
 
         #region Watchers
-        public void SetWatcher(UnityAction ac)
+        public void SetWatcher(UnityAction ac, bool silent = false)
         {
-
+            Watcher wa = new Watcher(ac, silent);
+            Watchers.Add(wa);
         }
 
         #endregion
@@ -106,6 +115,12 @@ namespace GameEvents
             {
                 Parameters[i].SetValue(args[i]);
             }
+
+            for (int i = 0; i < Watchers.Count; i++)
+            {
+                Watcher w = Watchers[i];
+                w.Invoke(args);
+            }
         }
         #endregion
 
@@ -117,6 +132,8 @@ namespace GameEvents
     public class GameEvent<T> : GameEvent
     {
         public T param1 { get => (T)Parameters[0].GetValue(); }
+
+        public GameEvent(string eventKey) : base(eventKey) { }
         public void Call(T obj)
         {
             Invoke(obj);
@@ -130,6 +147,7 @@ namespace GameEvents
         public T1 param1 { get => (T1)Parameters[0].GetValue(); }
         public T2 param2 { get => (T2)Parameters[1].GetValue(); }
 
+        public GameEvent(string eventKey) : base(eventKey) { }
         public void Call(T1 a, T2 b)
         {
             Invoke(a, b);
@@ -142,6 +160,7 @@ namespace GameEvents
         public T2 param2 { get => (T2)Parameters[1].GetValue(); }
         public T3 param3 { get => (T3)Parameters[2].GetValue(); }
 
+        public GameEvent(string eventKey) : base(eventKey) { }
         public void Call(T1 a, T2 b, T3 c)
         {
             Invoke(a, b, c);
@@ -154,6 +173,7 @@ namespace GameEvents
         public T3 param3 { get => (T3)Parameters[2].GetValue(); }
         public T4 param4 { get => (T4)Parameters[4].GetValue(); }
 
+        public GameEvent(string eventKey) : base(eventKey) { }
         public void Call(T1 a, T2 b, T3 c, T4 d)
         {
             Invoke(a, b, c, d);

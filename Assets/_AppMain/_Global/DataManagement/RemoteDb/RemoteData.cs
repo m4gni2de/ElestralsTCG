@@ -96,9 +96,11 @@ public class RemoteData
         WWWForm form = new WWWForm();
         form.AddField("action", "insert");
         form.AddField("deckKey", deck.DeckKey);
+        form.AddField("owner", deck.Owner);
         form.AddField("title", deck.DeckName);
         form.AddField("deck", deck.GetCardList);
-        //form.AddField("created", deck.created.ToString());
+        form.AddField("code", deck.UploadCode);
+        form.AddField("created", deck.WhenCreated.ToString());
         //form.AddField("name", deck.deckName);
 
         string result = await DoRemoteQuery(pvpDecks, form);

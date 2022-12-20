@@ -7,6 +7,7 @@ using System.Globalization;
 using TouchControls;
 using GlobalUtilities;
 using System;
+using Gameplay;
 
 public enum CardType
 {
@@ -43,7 +44,7 @@ public abstract class Card : iCard
 
    
 
-    #region Operatoes and Convertions
+    #region Operators and Convertions
     public static Card FromData(CardData data)
     {
         if (data.cardType == (int)CardType.Elestral)
@@ -110,8 +111,26 @@ public abstract class Card : iCard
     #endregion
     #endregion
 
+    #region Card Effect
+    protected CardEffect _effect = null;
+    public CardEffect Effect
+    {
+        get
+        {
+            if (_effect == null)
+            {
+                _effect = CardEffect.GetEffect(cardData.baseKey);
+            }
+            return _effect;
+        }
+        set
+        {
+            _effect = value;
+        }
+    }
+    #endregion
 
-
+    #region Collection
     private List<string> _altArts = null;
     public List<string> AltArts
     {
@@ -156,12 +175,12 @@ public abstract class Card : iCard
 
         }
     }
-
+    
     public int GetQuantityOwned()
     {
         return CardCollection.GetQuantity(this);
     }
-
+    #endregion
 
     #region Spirits and Elements
     private List<Element> _SpiritsReq = null;
@@ -221,7 +240,7 @@ public abstract class Card : iCard
     }
     #endregion
 
-
+    #region Operators
     public static Card FromKey(string setKey)
     {
         qUniqueCard dto = CardService.ByKey<qUniqueCard>(CardService.qUniqueCardView, "setKey", setKey);
@@ -245,6 +264,9 @@ public abstract class Card : iCard
     }
     #endregion
 
+    #endregion
+
+   
 
     #region Specific Card Type Values
     [SortableValue(SortBy.Attack)]

@@ -150,6 +150,9 @@ namespace Decks
                     whenCreated = _whenCreated,
                     uploadCode = _uploadCode,
                     sDeckKey = _sideDeckKey,
+                    isLocked = _isLocked.BoolToInt(),
+                    
+                    
                 };
                 return dto;
             }
@@ -354,6 +357,8 @@ namespace Decks
         public string UploadCode { get { return _uploadCode; } }
         private string _sideDeckKey;
         public string sideDeckKey { get { return _sideDeckKey; } }
+        private bool _isLocked;
+        public bool isLocked { get { return _isLocked; } }
 
 
         public int CardCount
@@ -400,6 +405,7 @@ namespace Decks
             _deckName = name;
             _uploadCode = "";
             _sideDeckKey = $"sd_{key}";
+            _isLocked = false;
 
             SetZeroDTO(GetDTO);
         }
@@ -411,6 +417,7 @@ namespace Decks
             _whenCreated = DateTime.Now;
             _deckName = $"{owner}'s Uploaded Deck";
             _sideDeckKey = "";
+            _isLocked = true;
 
             SetZeroDTO(GetDTO);
         }
@@ -422,6 +429,7 @@ namespace Decks
             _whenCreated = deck.whenCreated;
             _uploadCode = deck.uploadCode;
             _sideDeckKey = deck.sDeckKey;
+            _isLocked = deck.isLocked.IntToBool();
 
             SetZeroDTO(GetDTO);
 
@@ -471,6 +479,7 @@ namespace Decks
             _whenCreated = deck.whenCreated;
             _uploadCode = deck.uploadCode;
             _sideDeckKey = deck.sDeckKey;
+            _isLocked = deck.isLocked.IntToBool();
             SetZeroDTO(deck);
 
             for (int i = 0; i < cards.Count; i++)
@@ -488,53 +497,14 @@ namespace Decks
         protected void AddCard(DeckCard c)
         {
             Cards.Add(c);
-            //ChangeCardQuantity(c.key, 1);
-
         }
 
-        //public void ChangeCardQuantity(string setKey, int changeVal)
-        //{
-        //    if (changeVal > 0)
-        //    {
-        //        if (!CardCounts.ContainsKey(setKey))
-        //        {
-        //            CardCounts.Add(setKey, changeVal);
-        //        }
-        //        else
-        //        {
-        //            CardCounts[setKey] += changeVal;
-        //        }
-        //    }
-        //    else if (changeVal < 0)
-        //    {
-        //        if (CardCounts.ContainsKey(setKey))
-        //        {
-        //            int newQty = CardCounts[setKey] += changeVal;
-        //            if (newQty > 0) { CardCounts[setKey] = newQty; } else { CardCounts.Remove(setKey); }
-        //        }
-        //    }
-        //}
-
+        
         #endregion
 
 
         #region Editing/Saving Deck
-        //public void Save(Dictionary<string, int> cardList = null)
-        //{
-        //    if (this.IsDirty())
-        //    {
-        //        DeckDTO dto = GetDTO;
-        //        UserService.Save<DeckDTO>(dto, UserService.UserDeckTable, "deckKey", dto.deckKey);
-        //    }
-        //    if (cardList != null)
-        //    {
-        //        UserService.SaveDeckList(_key, GetDeckCards(cardList));
-        //    }
-
-        //    ReloadDeck();
-
-        //}
-
+       
         public void Save(List<DeckCard> cardList = null)
         {
             if (this.IsDirty())
@@ -556,16 +526,23 @@ namespace Decks
         {
 
             if (IsUploaded) { return UploadCode; }
-
-
             string upCode = UniqueString.Create("dk", 9);
             _uploadCode = upCode;
-            Save();
+            _isLocked = true;
             bool uploaded = await RemoteData.AddDeckToRemoteDB(this);
             if (uploaded) { return _uploadCode; }
 
             return "";
 
+        }
+        #endregion
+
+        #region Uploading/Download Deck
+        public async void UploadDeck()
+        {
+            string code = await DoUpload();
+            if (code.IsEmpty()) { _uploadCode = ""; _isLocked = false; return; }
+            Save();
         }
         #endregion
 

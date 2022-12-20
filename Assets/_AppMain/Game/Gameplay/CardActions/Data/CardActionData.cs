@@ -8,10 +8,24 @@ using Gameplay.CardActions;
 namespace Gameplay
 {
     [System.Serializable]
-    public class CardActionData
+    public class CardActionData : iArchive
     {
 
-        
+        #region Interfaces
+        public string Print
+        {
+            get
+            {
+                JSONObject o = new JSONObject();
+                foreach (var item in actionValues)
+                {
+                    AddValue(o, item);
+                }
+
+                return o.Print();
+            }
+        }
+        #endregion
 
         #region Properties
         public string actionKey;
@@ -21,9 +35,6 @@ namespace Gameplay
 
         public List<string> bindings = new List<string>();
         #endregion
-
-       
-
 
         #region Indexers/Field Functions
         protected int GetActionType

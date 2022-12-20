@@ -12,12 +12,11 @@ namespace Gameplay
 
         //public string EmpoweringSlot;
 
-        public bool IsEmpowering
+        protected bool IsEmpowering
         {
             get
             {
                 if (MainCard == null) { return false; }
-
                 return GameManager.ActiveGame.EmpoweredRunes.ContainsKey(MainCard);
             }
         }
@@ -104,47 +103,18 @@ namespace Gameplay
 
         }
 
-        protected override void SetSelectedCard(GameCard view = null)
-        {
-            base.SetSelectedCard(view);
-
-            if (view != null)
-            {
-                if (view.CardType == CardType.Rune)
-                {
-                    if (IsEmpowering)
-                    {
-                        EmpoweredElestral.SelectCard(true, false);
-                    }
-                }
-                else
-                {
-                    if (IsEmpowering)
-                    {
-                        EmpoweredElestral.SelectCard(false, false);
-                    }
-                }
-                
-                
-            }
-            else
-            {
-                if (IsEmpowering)
-                {
-                    EmpoweredElestral.SelectCard(false, false);
-                }
-            }
-        }
-
+      
         public override void OpenPopMenu()
         {
             if (MainCard != null)
             {
-                SetSelectedCard(MainCard);
-                bool canClick = Validate;
+                if (MainCard == SelectedCard)
+                {
+                    bool canClick = Validate;
+                    if (!IsYours) { canClick = MainCard.IsFaceUp; }
+                    GameManager.Instance.popupMenu.LoadMenu(this, canClick);
+                }
 
-                if (!IsYours) { canClick = MainCard.IsFaceUp; }
-                GameManager.Instance.popupMenu.LoadMenu(this, canClick);
             }
 
         }
@@ -158,24 +128,29 @@ namespace Gameplay
             
             if (IsYours)
             {
-                commands.Add(PopupCommand.Create("Inspect", () => InspectCommand()));
-                if (!SelectedCard.IsFaceUp)
+                
+                if (SelectedCard.CardType == CardType.Rune)
                 {
-                    commands.Add(PopupCommand.Create("Cast", () => ChangeModeCommand()));
+                    commands.Add(PopupCommand.Create("Inspect", () => InspectCommand()));
+                    if (!SelectedCard.IsFaceUp)
+                    {
+                        commands.Add(PopupCommand.Create("Cast", () => ChangeModeCommand()));
+                    }
+                    else
+                    {
+                        commands.Add(PopupCommand.Create("Cast", () => CastToSlotCommand(SelectedCard, this)));
+                        commands.Add(PopupCommand.Create("Enchant", () => EnchantCommand(1)));
+                        commands.Add(PopupCommand.Create("DisEnchant", () => DisEnchantCommand(), 1, 0));
+                        commands.Add(PopupCommand.Create("Empower", () => EmpowerCommand(), 1, 0));
+                        commands.Add(PopupCommand.Create("Destroy", () => DestroyCommand(), 1, 0));
+                    }
                 }
-                else
-                {
-                    commands.Add(PopupCommand.Create("Cast", () => CastToSlotCommand(SelectedCard, this)));
-                    commands.Add(PopupCommand.Create("Enchant", () => EnchantCommand(1)));
-                    commands.Add(PopupCommand.Create("DisEnchant", () => DisEnchantCommand(), 1, 0));
-                    commands.Add(PopupCommand.Create("Empower", () => EmpowerCommand(), 1, 0));
-                    commands.Add(PopupCommand.Create("Destroy", () => DestroyCommand(), 1, 0));
-                }
+               
 
                 commands.Add(PopupCommand.Create("Close", () => CloseCommand()));
             }
-          
-            
+
+               
 
 
 

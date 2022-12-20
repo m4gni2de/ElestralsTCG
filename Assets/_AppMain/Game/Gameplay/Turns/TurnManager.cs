@@ -218,14 +218,13 @@ namespace Gameplay.Turns
                 cardCount = count;
 
             } while (true && cardCount < 10);
-            RoundIndex = -1;
-            StartTurn();
+            StartFirstTurn();
         }
 
         #endregion
 
         #region Turn Action Handling
-        public void OnlineStartTurn()
+        public void StartFirstTurn()
         {
             RoundIndex = -1;
             StartTurn();
@@ -245,7 +244,7 @@ namespace Gameplay.Turns
 
         protected IEnumerator StartNewPhase(int index)
         {
-            Game.StartNewPhase(ActiveTurn, index);
+            Game.PhaseStart(ActiveTurn, index); 
             yield return new WaitForSeconds(1f);
             GamePhase ph = ActiveTurn.ActivePhase;
             ph.DeclarePhase();
@@ -253,14 +252,47 @@ namespace Gameplay.Turns
             DoPhaseActions(ph);
         }
 
-       
+        #region Phase Actions/Action Interrupting
         protected void DoPhaseActions(GamePhase phase)
         {
             ActiveTurn.StartPhase(phase);
-            StartCoroutine(phase.DoActions());
+            StartCoroutine(AwaitPhaseActions(phase));
         }
 
-       public void EndTurn(Turn turn)
+        private IEnumerator AwaitPhaseActions(GamePhase phase)
+        {
+            List<CardAction> actions = phase.PhaseActions;
+
+            if (actions.Count > 0)
+            {
+                do
+                {
+                    GameManager.SetActiveAction(actions[0]);
+                    CardAction ActiveAction = GameManager.Instance.ActiveAction;
+                    yield return DeclarePhaseAction(phase, ActiveAction);
+                    yield return ActiveAction.Do();
+                    //yield return ActiveAction.PerformAction();
+                    phase.History.Add(ActiveAction.ActionData);
+                    actions.RemoveAt(0);
+                    yield return new WaitForEndOfFrame();
+
+                } while (true && actions.Count > 0);
+            }
+
+            phase.CompleteActions();
+        }
+
+        private IEnumerator DeclarePhaseAction(GamePhase ph, CardAction ac)
+        {
+            yield return ac.DeclareAction();
+            do
+            {
+
+            } while (true);
+        }
+        #endregion
+
+        public void EndTurn(Turn turn)
         {
             History.Add(turn);
             StartTurn();

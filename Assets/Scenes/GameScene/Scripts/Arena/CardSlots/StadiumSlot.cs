@@ -26,6 +26,7 @@ namespace Gameplay
         {
             return true;
         }
+
         protected override void WakeSlot()
         {
             facing = CardFacing.Both;

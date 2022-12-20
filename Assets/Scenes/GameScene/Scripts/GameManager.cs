@@ -148,14 +148,14 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
     {
         if (selector != null) { currentSelector = selector; } else { currentSelector = null; }
     }
-    private CardSlot _SelectedSlot = null;
-    public CardSlot SelectedSlot
-    {
-        get
-        {
-            return _SelectedSlot;
-        }
-    }
+    //private CardSlot _SelectedSlot = null;
+    //public CardSlot SelectedSlot
+    //{
+    //    get
+    //    {
+    //        return _SelectedSlot;
+    //    }
+    //}
 
 
     public CardView DisplayedCard;
@@ -190,6 +190,7 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
         if (Instance == null)
         {
             Instance = this;
+            CardEventSystem.ValidateEvents();
         }
         else
         {
@@ -222,7 +223,13 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
         turnManager.LoadGame(ActiveGame);
         gameLog = GameLog.Create(ActiveGame.gameId, false);
         gameLog.AddLog($"Game '{ActiveGame.gameId}' has been started.");
-        ActiveGame.AddLocalPlayer(App.Account.Id, "1", App.Account.Name);
+        ChooseDeck();
+       
+    }
+
+    private void LocalDeckSelection(string deckKey)
+    {
+        ActiveGame.AddLocalPlayer(App.Account.Id, deckKey, App.Account.Name);
         SetGameWatchers();
         SetPlayerFields();
     }
@@ -391,6 +398,11 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
 
     }
 
+    public void Ascend(Player p, GameCard newCard, GameCard tributedTarget, List<GameCard> spiritsTaking, GameCard spiritAdded, CardMode cMode)
+    {
+        AscendAction ac = AscendAction.Create(p, newCard, tributedTarget, spiritsTaking, spiritAdded, cMode);
+        Ascend(ac);
+    }
     public void Ascend(AscendAction ac)
     {
         AddAction(ac);
@@ -463,7 +475,9 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
 
     protected List<CardAction> _CardActions = null;
     public List<CardAction> CardActions { get { _CardActions ??= new List<CardAction>(); return _CardActions; } }
-    public CardAction ActiveAction = null;
+
+    private CardAction _activeAction = null;
+    public CardAction ActiveAction { get { return _activeAction; } set { _activeAction = value; } }
     public static void SetActiveAction(CardAction ac)
     {
         Instance.ActiveAction = ac;
@@ -699,7 +713,7 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
             yield return new WaitForEndOfFrame();
 
         } while (true && Player.LocalPlayer.gameField.HandSlot.cards.Count < 5);
-        Instance.turnManager.OnlineStartTurn();
+        Instance.turnManager.StartFirstTurn();
 
 
     }
@@ -782,54 +796,99 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
 
     protected async void ChooseDeck()
     {
-        //open a prompt to choose the deck here. once a deck is chosen, set the player to ready
-        if (RemoteDeckChoices.Count == 0)
+        if (IsOnline)
         {
-            RemoteDeckChoices = new List<UploadedDeckDTO>();
-            RemoteDeckChoices = App.Account.DecksAsUploaded;
-              //RemoteDeckChoices = await RemoteData.ViewDecks($"");
-        }
+            //open a prompt to choose the deck here. once a deck is chosen, set the player to ready
+            if (RemoteDeckChoices.Count == 0)
+            {
+                RemoteDeckChoices = new List<UploadedDeckDTO>();
+                RemoteDeckChoices = App.Account.DecksAsUploaded;
+                //RemoteDeckChoices = await RemoteData.ViewDecks($"");
+            }
 
-        List<string> titles = new List<string>();
-        for (int i = 0; i < RemoteDeckChoices.Count; i++)
+            List<string> titles = new List<string>();
+            for (int i = 0; i < RemoteDeckChoices.Count; i++)
+            {
+
+                titles.Add(RemoteDeckChoices[i].title);
+            }
+
+            App.ShowDropdown("Which deck do you want to use?", titles, AwaitDeckSelection);
+        }
+        else
         {
-
-            titles.Add(RemoteDeckChoices[i].title);
+            List<string> titles = new List<string>();
+            for (int i = 0; i < App.Account.LegalDecks.Count; i++)
+            {
+                titles.Add(App.Account.LegalDecks[i].DeckName);
+            }
+            App.ShowDropdown("Which deck do you want to use?", titles, AwaitDeckSelection);
         }
-
-        App.ShowDropdown("Which deck do you want to use?", titles, AwaitDeckSelection);
+       
     }
 
     private void AwaitDeckSelection(string selectedTitle)
     {
-        if (string.IsNullOrEmpty(selectedTitle))
+        if (IsOnline)
         {
-            ChooseDeck();
-
-        }
-        else
-        {
-            int selected = -1;
-            for (int i = 0; i < RemoteDeckChoices.Count; i++)
+            if (string.IsNullOrEmpty(selectedTitle))
             {
-                string title = RemoteDeckChoices[i].title;
-                if (title.ToLower() == selectedTitle.ToLower())
-                {
-                    selected = i;
-                    break;
-                }
-            }
+                ChooseDeck();
 
-            if (selected > -1)
-            {
-                UploadedDeckDTO chosenDeck = RemoteDeckChoices[selected];
-                SendDeckSelection(chosenDeck);
             }
             else
             {
-                ChooseDeck();
+                int selected = -1;
+                for (int i = 0; i < RemoteDeckChoices.Count; i++)
+                {
+                    string title = RemoteDeckChoices[i].title;
+                    if (title.ToLower() == selectedTitle.ToLower())
+                    {
+                        selected = i;
+                        break;
+                    }
+                }
+
+                if (selected > -1)
+                {
+                    UploadedDeckDTO chosenDeck = RemoteDeckChoices[selected];
+                    SendDeckSelection(chosenDeck);
+                }
+                else
+                {
+                    ChooseDeck();
+                }
             }
         }
+        else
+        {
+            if (string.IsNullOrEmpty(selectedTitle))
+            {
+                ChooseDeck();
+
+            }
+            else
+            {
+                bool hasDeck = false;
+                for (int i = 0; i < App.Account.LegalDecks.Count; i++)
+                {
+                    Decklist deck = App.Account.LegalDecks[i];
+                    string title = deck.DeckName;
+                    if (title.ToLower() == selectedTitle.ToLower())
+                    {
+                        LocalDeckSelection(deck.DeckKey);
+                        hasDeck = true;
+                        break;
+                    }
+                }
+
+               if (!hasDeck)
+                {
+                    ChooseDeck();
+                }
+            }
+        }
+        
 
     }
 
@@ -1033,7 +1092,20 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
     #endregion
 
 
-
+    #region Card Effect Management
+    public void AskCardEffect(EffectData data, GameCard card)
+    {
+        SelectedCard = card;
+        App.AskYesNo($"Do you want to activate {card.cardObject.DisplayName}'s effect?", DoEffect);
+    }
+    private void DoEffect(bool doEffect)
+    {
+        //if (doEffect)
+        //{
+        //    SelectedCard
+        //}
+    }
+    #endregion
 
 }
 

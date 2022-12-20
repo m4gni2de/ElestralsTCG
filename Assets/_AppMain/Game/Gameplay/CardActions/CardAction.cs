@@ -185,7 +185,16 @@ namespace Gameplay
             actionResult = ActionResult.Succeed;
         }
 
-       
+        #region Action Watchers
+        public virtual void SetOptionalResponse(GameCard card)
+        {
+
+            if (!OptionalResponses.Contains(card))
+            {
+                OptionalResponses.Add(card);
+            }
+        }
+        #endregion
 
         #region Doing Action
 
@@ -343,6 +352,73 @@ namespace Gameplay
             card.SetScale(startScale);
             card.FlipCard(toFaceDown);
         }
+
+        #region Silent Moves
+        protected virtual IEnumerator DoMovementsSilent()
+        {
+            do
+            {
+                if (Movements.Count > 0)
+                {
+                    IEnumerator move = Movements[0];
+                    yield return move;
+                    yield return new WaitForEndOfFrame();
+                    Movements.Remove(move);
+                }
+
+            } while (Movements.Count > 0);
+        }
+        protected IEnumerator DoMoveSilent(GameCard card, CardSlot to, float time = .65f)
+        {
+            float acumTime = 0f;
+            card.cardObject.Show();
+            Vector3 direction = GetDirection(card, to);
+
+            this.Freeze();
+            do
+            {
+
+                yield return new WaitForEndOfFrame();
+                float frames = Time.deltaTime / time;
+                Vector3 moveBy = direction * frames;
+                card.MovePosition(moveBy);
+                acumTime += Time.deltaTime;
+            } while (Validate(acumTime, time));
+            this.Thaw();
+        }
+        protected virtual IEnumerator DoStaggeredMoveSilent(List<GameCard> cards, CardSlot to, float time = .65f, float staggerTime = .04f)
+        {
+            float acumTime = 0f;
+            float fullTime = time + (staggerTime * (float)cards.Count);
+            List<Vector3> directions = new List<Vector3>();
+
+            for (int i = 0; i < cards.Count; i++)
+            {
+                Vector3 direction = GetDirection(cards[i], to);
+                directions.Add(direction);
+            }
+
+            do
+            {
+                this.Freeze();
+                yield return new WaitForEndOfFrame();
+                for (int i = 0; i < cards.Count; i++)
+                {
+                    if (acumTime > staggerTime * i)
+                    {
+                        Vector3 moveBy = directions[i] * Time.deltaTime;
+                        cards[i].MovePosition(moveBy);
+                    }
+
+
+                }
+
+                acumTime += Time.deltaTime;
+            } while (Validate(acumTime, fullTime));
+            this.Thaw();
+        }
+        #endregion
+
         #endregion
 
         #region Functions
@@ -374,16 +450,7 @@ namespace Gameplay
 
         #endregion
 
-        #region Action Watchers
-        public virtual void SetOptionalResponse(GameCard card)
-        {
-
-            if (!OptionalResponses.Contains(card))
-            {
-                OptionalResponses.Add(card);
-            }
-        }
-        #endregion
+      
 
 
 

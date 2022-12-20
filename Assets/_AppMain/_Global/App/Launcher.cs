@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.SceneManagement;
+using Gameplay;
 
 #if UNITY_EDITOR
 [InitializeOnLoad]
 public class Launcher
 {
+    
     static Launcher()
     {
         //EditorApplication.playModeStateChanged += ModeChanged;
@@ -44,6 +46,8 @@ public class Launcher
     static void ScriptsReloaded()
     {
         ConnectionManager.Disconnect();
+
+        CardEventSystem.ValidateEvents();
     }
 }
 #endif

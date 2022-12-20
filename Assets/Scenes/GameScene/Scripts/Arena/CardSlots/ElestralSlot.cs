@@ -7,19 +7,22 @@ using UnityEngine.Events;
 using Gameplay.CardActions;
 using System.IO;
 using Gameplay.Menus;
+using Databases;
 
 namespace Gameplay
 {
     public class ElestralSlot : SingleSlot, iCraftAction
     {
 
-        private List<GameCard> _empoweringRunes = null;
         public List<GameCard> EmpoweringRunes
         {
             get
             {
-                _empoweringRunes ??= new List<GameCard>();
-                return _empoweringRunes;
+
+                List<GameCard> runes = new List<GameCard>();
+                if (MainCard == null) { return runes; }
+                ElestralCard es = (ElestralCard)MainCard;
+                return es.EmpoweringRunes;
             }
         }
         protected override void WakeSlot()
@@ -66,36 +69,6 @@ namespace Gameplay
             
         }
 
-        protected override void SetSelectedCard(GameCard view = null)
-        {
-            base.SetSelectedCard(view);
-
-            if (view != null)
-            {
-                if (view.CardType == CardType.Elestral)
-                {
-                    for (int i = 0; i < EmpoweringRunes.Count; i++)
-                    {
-                        EmpoweringRunes[i].SelectCard(true, false);
-                    }
-                }
-                else
-                {
-                    for (int i = 0; i < EmpoweringRunes.Count; i++)
-                    {
-                        EmpoweringRunes[i].SelectCard(false, false);
-                    }
-                }
-               
-            }
-            else
-            {
-                for (int i = 0; i < EmpoweringRunes.Count; i++)
-                {
-                    EmpoweringRunes[i].SelectCard(false, false);
-                }
-            }
-        }
 
         public override bool ValidateCard(GameCard card)
         {
@@ -145,9 +118,21 @@ namespace Gameplay
                     //this Command is for when 'Real Rules' are not in place and players are allowed to free drag.
                     commands.Add(PopupCommand.Create("Cast", () => CastToSlotCommand(SelectedCard, this)));
                     commands.Add(PopupCommand.Create("Enchant", () => EnchantCommand(1)));
+
+                    if (!SelectedCard.Effect.IsEmpty)
+                    {
+                        if (SelectedCard.Effect.EffectsList[0].trigger.whenActivate == Abilities.ActivationEvent.YouCan)
+                        {
+                            if (SelectedCard.Effect.EffectsList[0].ability.CanActivate())
+                            {
+                                commands.Add(PopupCommand.Create("Activate Effect", () => SelectedCard.Effect.EffectsList[0].ability.Do(SelectedCard)));
+                            }
+                        }
+                    }
+
                     commands.Add(PopupCommand.Create("Ascend", () => AscendCommand()));
                    
-                    commands.Add(PopupCommand.Create("Nexus", () => NexusCommand(), 1, 1));
+                    //commands.Add(PopupCommand.Create("Nexus", () => NexusCommand(), 1, 1));
                     commands.Add(PopupCommand.Create("Attack", () => AttackCommand()));
                     commands.Add(PopupCommand.Create("DisEnchant", () => DisEnchantCommand(), 1, 0));
                     commands.Add(PopupCommand.Create("Destroy", () => DestroyCommand(), 1, 0));
@@ -295,6 +280,18 @@ namespace Gameplay
 
             
         }
+        public void AscendCommand(List<GameCard> toShow)
+        {
+            CardActionData d = this.CraftAction(ActionCategory.Ascend, Owner);
+            d.AddData(AscendAction.TributedCardKey, SelectedCard.cardId);
+            d.AddData(AscendAction.SlotToKey, slotId);
+
+            int cardCount = 1;
+            string title = $"Select Elestral to Ascend from {SelectedCard.name}";
+            BrowseMenu.LoadCards(toShow, title, true, cardCount, cardCount);
+            ClosePopMenu(true);
+            BrowseMenu.OnClosed += AwaitAscendingElestral;
+        }
         protected void AwaitAscendingElestral(CardBrowseMenu.BrowseArgs args)
         {
             BrowseMenu.OnClosed -= AwaitAscendingElestral;
@@ -341,9 +338,11 @@ namespace Gameplay
             {
                 List<GameCard> toMove = new List<GameCard>();
                 toMove.AddRange(cards);
-                for (int i = 0; i < EmpoweringRunes.Count; i++)
+                List<GameCard> runes = EmpoweringRunes;
+               
+                for (int i = 0; i < runes.Count; i++)
                 {
-                    GameCard rune = EmpoweringRunes[i];
+                    GameCard rune = runes[i];
                     toMove.Add(rune);
                     toMove.AddRange(rune.EnchantingSpirits);
                 }
@@ -360,9 +359,9 @@ namespace Gameplay
 
         protected void EmpowerElestral(GameCard card)
         {
-            if (card == null) { return; }
-            if (card.CurrentSlot != null && card.CurrentSlot != this) { return; }
-            _empoweringRunes = GameManager.ActiveGame.EmpoweringRunes(card);
+            //if (card == null) { return; }
+            //if (card.CurrentSlot != null && card.CurrentSlot != this) { return; }
+            //_empoweringRunes = GameManager.ActiveGame.EmpoweringRunes(card);
         }
         #endregion
     }

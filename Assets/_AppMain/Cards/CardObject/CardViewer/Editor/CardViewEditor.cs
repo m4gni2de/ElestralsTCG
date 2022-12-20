@@ -72,15 +72,19 @@ public class CardViewEditor : Editor
         k_Contents = new Contents();
         activeCard = (CardView)serializedObject.targetObject;
         //sortLayerName = TargetProperty("_sortLayer");
-        for (int i = 0; i < SortLayers.Count; i++)
+        if (activeCard != null)
         {
-            if (SortLayers[i].ToLower() == activeCard.CurrentConfig.BaseSortLayer.ToLower())
+            for (int i = 0; i < SortLayers.Count; i++)
             {
-                cardSortLayer = i;
+                if (SortLayers[i].ToLower() == activeCard.CurrentConfig.BaseSortLayer.ToLower())
+                {
+                    cardSortLayer = i;
+                }
             }
-        }
 
-        cardSortOrder = activeCard.CurrentConfig.BaseSortOrder;
+            cardSortOrder = activeCard.CurrentConfig.BaseSortOrder;
+        }
+        
 
 
 

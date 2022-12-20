@@ -9,9 +9,9 @@ using SimpleSQL;
 using Newtonsoft.Json;
 using Decks;
 using Defective.JSON;
-using UnityEditor.ShaderGraph.Serialization;
 using Logging;
-
+using Gameplay;
+using System.Runtime.CompilerServices;
 
 namespace Conversion
 {
@@ -21,6 +21,8 @@ namespace Conversion
         private readonly static string RuneTableName = "xRunesDoc";
         private readonly static string CardTableName = "CardDTO";
         private readonly static string ElestralTableName = "ElestralDTO";
+
+        private readonly static string CardFindTable = "CardFindDTO";
 
         private static List<DocsElestralDTO> CardsFromDocs
         {
@@ -38,7 +40,43 @@ namespace Conversion
         }
 
         
-       
+
+        //[MenuItem("Card Find/Find")]
+        //public static void DisplayCardFinds()
+        //{
+        //    List<CardFindDTO> dtos = AllCardFinds;
+
+        //    for (int i = 0; i < dtos.Count; i++)
+        //    {
+        //        CardFindQuery q = JsonUtility.FromJson<CardFindQuery>(dtos[i].cardFind);
+        //        Debug.Log(JsonUtility.ToJson(q));
+        //    }
+        //}
+
+        //[MenuItem("Card Find/Create")]
+        //public static void CreateCardFind()
+        //{
+        //    CardFindQuery q = new CardFindQuery();
+        //    q.queryKey = UniqueString.CreateId(6, "cq");
+        //    q.playerScope = 0;
+        //    q.locations = new List<int>();
+        //    q.locations.AddRange(6, 4);
+        //    q.cardTypes = new List<int>();
+        //    q.cardTypes.AddRange(0, 1, 2);
+        //    q.cardElements = new List<int>();
+        //    q.cardElements.AddRange(0, 1, 2, 3, 4, 5, 6, 7, 8);
+        //    q.enchantedElements = new List<int>();
+
+        //    q.costs = new List<int>();
+        //    q.costs.AddRange(0, 1, 2, 3);
+        //    q.withName = "Penterror";
+
+        //    CardFindDTO dto = new CardFindDTO();
+        //    dto.queryKey = q.queryKey;
+        //    dto.cardFind = JsonUtility.ToJson(q);
+
+        //    DataService.Insert<CardFindDTO>(dto, CardFindTable);
+        //}
 
         //[MenuItem("Data Converting/Elestrals")]
         public static void UpdateElestralsFromSheets()

@@ -144,6 +144,8 @@ namespace Gameplay
         #endregion
 
         #region Functions/Commands
+        public bool IsInPlay { get => GetIsInPlay(); }
+        protected virtual bool GetIsInPlay() { return false; }
         public bool IsOpen { get => GetIsOpen(); }
         protected virtual bool GetIsOpen() { return !isBlocked && MainCard == null; }
         public bool Validate { get { return GetClickValidation(); } }

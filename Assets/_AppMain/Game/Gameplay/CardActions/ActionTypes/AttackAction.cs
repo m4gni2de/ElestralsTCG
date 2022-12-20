@@ -6,16 +6,17 @@ using UnityEngine.UIElements;
 
 namespace Gameplay
 {
+    public enum AttackResult
+    {
+        Succeed = 0,
+        Failure = 1,
+        Draw = 2,
+
+    }
     public class AttackAction : CardAction
     {
 
-        public enum AttackResult
-        {
-            Succeed = 0,
-            Failure = 1,
-            Draw = 2,
-
-        }
+      
         protected bool IsDirectAttack = false;
         public CardSlot targetSlot;
         public AttackResult attackResult;

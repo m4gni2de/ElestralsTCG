@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface iArchive 
 {
-    string Print();
+    string Print { get; }
 }

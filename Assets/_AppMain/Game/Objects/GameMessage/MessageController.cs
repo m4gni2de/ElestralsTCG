@@ -59,6 +59,7 @@ namespace Gameplay
         #region Hide/Show Properties
         protected float timeOn = 0f;
         protected float maxTimeOn = 0f;
+        protected bool isShowing = false;
         #endregion
 
         #region Slot Selection Display Properties
@@ -95,18 +96,25 @@ namespace Gameplay
             {
                 Messages.Add(msg);
             }
-            
-            ActiveMessage.ShowMessage(msg);
 
-            if (msg != null && msg.DisplayTime > 0f)
+            ActiveMessage.ShowMessage(msg);
+            if (!isShowing)
             {
-                StopCoroutine(DoDisplay(0f));
-                StartCoroutine(DoDisplay(msg.DisplayTime));
+                if (msg != null && msg.DisplayTime > 0f)
+                {
+                    StartCoroutine(DoDisplay(msg));
+                }
             }
+            else
+            {
+                timeOn = 0f;
+                maxTimeOn = msg.DisplayTime;
+            }
+
         }
 
-       
-       
+
+
         #region Touch Events
         //public void EndOnTouch()
         //{
@@ -122,24 +130,13 @@ namespace Gameplay
         #endregion
 
 
-       
-        #region DisplayTimer
-       
-        protected void EndDisplayTimer()
-        {
-            timeOn = 0f;
-            maxTimeOn = 0f;
-            if (ActiveMessage.gameObject.activeSelf == true)
-            {
-                ActiveMessage.Hide();
-            }
-            
-        }
 
-        protected IEnumerator DoDisplay(float maxTime)
+        #region DisplayTimer
+        protected IEnumerator DoDisplay(GameMessage msg)
         {
             timeOn = 0f;
-            maxTimeOn = maxTime;
+            maxTimeOn = msg.DisplayTime;
+            isShowing = true;
             do
             {
                 yield return new WaitForEndOfFrame();
@@ -147,10 +144,23 @@ namespace Gameplay
 
             } while (true && ActiveMessage.gameObject.activeSelf == true && timeOn <= maxTimeOn);
 
+            EndDisplayTimer(msg);
+        }
+
+        protected void EndDisplayTimer(GameMessage msg)
+        {
             timeOn = 0f;
             maxTimeOn = 0f;
-            EndDisplayTimer();
+            if (ActiveMessage.gameObject.activeSelf == true)
+            {
+                ActiveMessage.Hide();
+            }
+            isShowing = false;
+
+
         }
+
+        
 
         private void Update()
         {

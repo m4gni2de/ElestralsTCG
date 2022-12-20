@@ -5,11 +5,13 @@ using Cards;
 using CardsUI;
 using System.Security.Cryptography;
 using System;
+using UnityEngine.Rendering;
 
 namespace Gameplay
 {
     public enum CardLocation
     {
+        Local = -2,
         removed = -1,
         Elestral = 0,
         Rune = 1,
@@ -37,13 +39,11 @@ namespace Gameplay
 
         #region Visual Properties
         public bool IsFaceUp { get { return cardObject.IsFaceUp; } }
-        protected bool isSelected { get; private set; }
+        protected bool isSelected { get; set; }
         protected Color colSelected = Color.yellow;
         #endregion
 
         #endregion
-
-        
 
         #region Network Linking
         //the id of the card in as it appears in order on the uploaded deck list. 
@@ -66,24 +66,26 @@ namespace Gameplay
         public static GameCard Elestral(ElestralData data, int copy)
         {
             Elestral card = new Elestral(data);
-            return new GameCard(card, copy);
+            return new ElestralCard(card, copy);
+            //return new GameCard(card, copy);
         }
         public static GameCard Rune(RuneData data, int copy)
         {
             Rune card = new Rune(data);
-            return new GameCard(card, copy);
+            return new RuneCard(card, copy);
+            //return new GameCard(card, copy);
         }
         #endregion
 
         #region Properties
-        private Card _card = null;
+        protected Card _card = null;
         public Card card { get { return _card; } }
         public CardLocation location;
         public CardMode mode;
         public int deckPosition;
         public string cardId;
 
-        private string _slotId = "";
+        protected string _slotId = "";
             
         public string slotId { get { return _slotId; } }
 
@@ -172,35 +174,13 @@ namespace Gameplay
             get
             {
                 List<GameCard> list = new List<GameCard>();
-                if (CurrentSlot == null || CurrentSlot.GetType() != typeof(SingleSlot)) { return list; }
+                if (CurrentSlot == null || !CurrentSlot.IsInPlay) { return list; }
                 SingleSlot slot = (SingleSlot)CurrentSlot;
                 list.AddRange(slot.EnchantingSpirits);
                 return list;
             }
         }
 
-        public List<GameCard> EmpoweringRunes
-        {
-            get
-            {
-                List<GameCard> list = new List<GameCard>();
-                if (CurrentSlot == null || CurrentSlot.GetType() != typeof(ElestralSlot)) { return list; }
-                ElestralSlot slot = (ElestralSlot)CurrentSlot;
-                list.AddRange(slot.EmpoweringRunes);
-                return list;
-            }
-        }
-
-        public GameCard EmpoweredElestral
-        {
-            get
-            {
-                
-                if (CurrentSlot == null || CurrentSlot.GetType() != typeof(RuneSlot)) { return null; }
-                RuneSlot slot = (RuneSlot)CurrentSlot;
-                if (slot.IsEmpowering) { return slot.EmpoweredElestral; } return null;
-            }
-        }
         #endregion
 
         #region In Game Stats
@@ -208,12 +188,17 @@ namespace Gameplay
         public CardType CardType { get { return cardStats.cardType; } }
         public CardType DefaultCardType { get { return card.CardType; } }
 
-       
+        private CardEventSystem _eventSystem = null;
+        public CardEventSystem eventSystem { get { _eventSystem ??= new CardEventSystem(true); return _eventSystem; } }
+
+        private CardStatus _statusReport = null;
+        public CardStatus statusReport { get { _statusReport ??= new CardStatus(this); return _statusReport; } }
         #endregion
+        private CardEffect _effect = null;
+        public CardEffect Effect { get { return _effect; } set { _effect = value; } }
         #endregion
 
-
-
+        #region Initialization
         public GameCard(Card data, int copy)
         {
             _card = data;
@@ -221,6 +206,12 @@ namespace Gameplay
             name = $"{_card.cardData.cardName} - {copy}";
             cardStats = new CardStats(this);
             isSelected = false;
+            Effect = _card.Effect;
+
+            if (!Effect.IsEmpty)
+            {
+                Effect.SetEvents(this, eventSystem);
+            }
         }
         public void SetId(string id)
         {
@@ -235,7 +226,7 @@ namespace Gameplay
             obj.CardName = name;
             obj.CardSessionId = cardId;
         }
-
+        #endregion
 
         public void SetDeckPosition(int index)
         {
@@ -278,7 +269,7 @@ namespace Gameplay
         {
 
         }
-        public void AllocateTo(CardSlot slot, bool sendToServer = true)
+        public virtual void AllocateTo(CardSlot slot, bool sendToServer = true)
         {
            
             _CurrentSlot = slot;
@@ -294,7 +285,7 @@ namespace Gameplay
         }
        
        
-        public void RemoveFromSlot()
+        public virtual void RemoveFromSlot()
         {
             if (CurrentSlot == null) { return; }
             CurrentSlot.RemoveCard(this);
@@ -329,7 +320,7 @@ namespace Gameplay
             SelectCard(toggle, colSelected, sendToServer);
         }
 
-        protected void SelectCard(bool toggle, Color color, bool sendToServer)
+        protected virtual void SelectCard(bool toggle, Color color, bool sendToServer)
         {
             bool current = isSelected;
             if (toggle)
@@ -340,24 +331,22 @@ namespace Gameplay
             else
             {
                 cardObject.SelectCard(false, Color.black);
-                if (CardType == CardType.Elestral)
-                {
-                    List<GameCard> empowering = EmpoweringRunes;
-                    for (int i = 0; i < empowering.Count; i++)
-                    {
-                        empowering[i].cardObject.SelectCard(false, Color.black);
-                    }
+                //if (CardType == CardType.Elestral)
+                //{
+                //    List<GameCard> empowering = EmpoweringRunes;
+                //    for (int i = 0; i < empowering.Count; i++)
+                //    {
+                //        empowering[i].cardObject.SelectCard(false, Color.black);
+                //    }
 
-                }
-                else if (CardType == CardType.Rune)
-                {
-                    if (EmpoweredElestral != null)
-                    {
-                        EmpoweredElestral.cardObject.SelectCard(false, Color.black);
-                    }
-                }
-
-
+                //}
+                //else if (CardType == CardType.Rune)
+                //{
+                //    if (EmpoweredElestral != null)
+                //    {
+                //        EmpoweredElestral.cardObject.SelectCard(false, Color.black);
+                //    }
+                //}
 
             }
 
@@ -407,7 +396,7 @@ namespace Gameplay
            
         }
 
-        private void SendSelectStatus(bool isSelected)
+        protected void SendSelectStatus(bool isSelected)
         {
             NetworkPipeline.SendCardSelect(this, isSelected);
         }
@@ -477,7 +466,6 @@ namespace Gameplay
         #endregion
 
 
-       
     }
 
 
