@@ -20,7 +20,7 @@ namespace Gameplay.Turns
             return 0;
         }
         #endregion
-        public DrawPhase(Player p, bool isFirstTurn = false) : base(p)
+        public DrawPhase(Player p, bool isFirstTurn = false)
         {
             AutoEnd = true;
             if (!isFirstTurn)

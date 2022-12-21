@@ -80,7 +80,7 @@ namespace Gameplay
         }
         #endregion
 
-       
+
 
         public GameDeck(Decklist list)
         {
@@ -89,7 +89,7 @@ namespace Gameplay
             deckName = list.DeckName;
 
             _spiritDeck = Deck.SpiritDeck();
-            _mainDeck = Deck.MainDeck(); 
+            _mainDeck = Deck.MainDeck();
         }
 
         #region From Remote
@@ -105,7 +105,7 @@ namespace Gameplay
             return new GameDeck(key, title);
         }
 
-       
+
         public void AddCard(GameCard card, bool toTop = true)
         {
             if (card.CardType == CardType.Spirit)
@@ -123,10 +123,10 @@ namespace Gameplay
 
         public void SeparateCards(Decklist list)
         {
-            
+
             for (int i = 0; i < list.Cards.Count; i++)
             {
-                
+
                 if (list.Cards[i].cardType == CardType.Spirit)
                 {
                     GameCard card = NewCard(list.Cards[i].key, CardType.Spirit, list.Cards[i].copy);
@@ -145,12 +145,12 @@ namespace Gameplay
                     card.ToggleNetwork(true);
                 }
 
-                
+
 
             }
         }
 
-       
+
         public void Shuffle(Deck deck = null)
         {
             if (deck == null)
@@ -160,7 +160,7 @@ namespace Gameplay
             deck.Shuffle();
         }
 
-       
+
 
         #region Deck Commands
         public GameCard Top
@@ -174,14 +174,14 @@ namespace Gameplay
                 return MainDeck.AtPosition(0);
             }
         }
-        
+
 
         public void RemoveCard(GameCard c, Deck deck)
         {
             deck.Remove(c);
         }
 
-        
+
         //public void Draw(Deck deck, int count)
         //{
         //    for (int i = 0; i < count; i++)
@@ -190,10 +190,38 @@ namespace Gameplay
         //        c.AllocateTo(CardLocation.Hand);
         //        deck.InOrder.Remove(c);
         //    }
-            
+
         //}
         #endregion
-       
+
+
+        #region Spirit Deck Functions
+        public Dictionary<ElementCode, int> SpiritDeckCounts
+        {
+            get
+            {
+                Dictionary<ElementCode, int> results = new Dictionary<ElementCode, int>();
+                for (int i = 0; i < SpiritDeck.InOrder.Count; i++)
+                {
+                    SpiritCard s = SpiritDeck.InOrder[i] as SpiritCard;
+                    for (int j = 0; j < s.CurrentTypes.Count; j++)
+                    {
+                        ElementCode e = s.CurrentTypes[j];
+                        if (results.ContainsKey(e))
+                        {
+                            results[e] += 1;
+                        }
+                        else
+                        {
+                            results.Add(e, 1);
+                        }
+                    }
+                }
+                return results;
+            }
+        }
+        #endregion
+
     }
 }
 

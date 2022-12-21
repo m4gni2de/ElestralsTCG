@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using Databases;
+using Gameplay.CardActions;
+using Gameplay.Commands;
 using UnityEngine;
 
 namespace Gameplay.Abilities
@@ -30,10 +32,12 @@ namespace Gameplay.Abilities
         public List<GameCard> Targets { get { _targets ??= new List<GameCard>(); return _targets; } }
         #endregion
 
+        #region Initialization
         public AscendAbility(string name, string key) : base(name, key)
         {
             abiType = AbilityType.Ascend;
         }
+        #endregion
 
         #region Overrides
         public override void LoadArgs(string args)
@@ -48,32 +52,31 @@ namespace Gameplay.Abilities
             return Targets.Count > 0;
         }
 
-        public override void TryAbility()
+        public override void TryAbility(GameCard source)
         {
-            
-        }
-        public override void Do(GameCard source)
-        {
-            //if (Targets.Count == 1)
-            //{
-            //    GameCard toAscend = Targets[0];
-            //    List<GameCard> spirits = new List<GameCard>();
-            //    GameManager.Instance.Ascend(source.Owner, toAscend, source, spirits, source.Owner.deck.SpiritDeck.AtPosition(0), CardMode.Attack);
-            //    return;
-
-            //}
-            //else if (Targets.Count > 1)
-            //{
-
-            //}
-            GameCard toAscend = Targets[0];
-            List<GameCard> spirits = new List<GameCard>();
-            GameManager.Instance.Ascend(source.Owner, toAscend, source, spirits, source.Owner.deck.SpiritDeck.AtPosition(0), CardMode.Attack);
+            abilityActions.Clear();
+            Ascend ascend = Ascend.FromTributedChosen(source.Owner, source, Targets);
+            if (AbilityArgs.forceMode.IntToBool() == true)
+            {
+                ascend.SetForceMode(true, (CardMode)AbilityArgs.cardMode);
+            }
+            GameManager.ActiveGame.DoAscend(ascend);
             GameManager.Instance.popupMenu.CloseMenu();
 
+            ascend.OnActionReady += AwaitAction;
             return;
-
         }
+        private void AwaitAction(Ascend ascend, bool doAbility)
+        {
+            ascend.OnActionReady -= AwaitAction;
+            if (doAbility)
+            {
+                AscendAction ac = ascend.commandAction as AscendAction;
+                abilityActions.Add(ac);
+                Do(true);
+            }
+        }
+        
         #endregion
 
     }

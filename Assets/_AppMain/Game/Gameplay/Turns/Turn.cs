@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Gameplay.CardActions;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Gameplay.Turns
 {
@@ -23,7 +24,22 @@ namespace Gameplay.Turns
         #region Properties
         public Player ActivePlayer { get; set; }
         public int turnCount;
-        public GamePhase ActivePhase { get; set; }
+        private GamePhase _activePhase = null;
+        public GamePhase ActivePhase
+        {
+            get
+            {
+                if (_activePhase == null)
+                {
+                    return new StandbyPhase();
+                }
+                return _activePhase;
+            }
+            set
+            {
+                _activePhase = value;
+            }
+        }
         private List<PreparedAction> _PreparedActions = null;
         public List<PreparedAction> PreparedActions { get { _PreparedActions ??= new List<PreparedAction>(); return _PreparedActions; } }
 
@@ -79,6 +95,7 @@ namespace Gameplay.Turns
                 return turnCount < 2;
             }
         }
+        //public bool IsMainPhase { get { return ActivePhase.i; } }
         #endregion
 
         #region Initialization
@@ -97,10 +114,10 @@ namespace Gameplay.Turns
             BattlePhase = new BattlePhase(ActivePlayer);
             EndPhase = new EndPhase(ActivePlayer);
 
-           
+            
         }
 
-
+       
         #region Phases
         public void AddPhaseAction(CardAction ac, GamePhase phase)
         {

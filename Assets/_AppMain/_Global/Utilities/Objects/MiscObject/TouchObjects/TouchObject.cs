@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using System;
 using UnityEngine.Events;
 using TouchControls;
-
+using UnityEditor.ShaderGraph.Internal;
 
 public class TouchObject : ValidationObject, iFreeze
 {
@@ -99,7 +99,7 @@ public class TouchObject : ValidationObject, iFreeze
         OnThisHeld?.Invoke(this);
     }
     public event Action<TouchObject> OnStartClick;
-    protected void ClickStart()
+    public void ClickStart()
     {
         OnStartClick?.Invoke(this);
     }
@@ -577,6 +577,12 @@ public class TouchObject : ValidationObject, iFreeze
     public void DoHold()
     {
         OnHoldEvent?.Invoke();
+    }
+    public void TransferHold(float time)
+    {
+        _holdTime = time;
+        _isClicked = true;
+        
     }
     protected void DoDoubleClick()
     {

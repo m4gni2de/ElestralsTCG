@@ -64,7 +64,7 @@ namespace Gameplay
         /// </summary>
         /// <param name="containsKey"></param>
         /// <returns></returns>
-        protected int CountOfBaseField(string containsKey)
+        public int CountOfBaseField(string containsKey)
         {
             int count = 0;
             foreach (var item in actionValues)
@@ -286,6 +286,8 @@ namespace Gameplay
                     return NexusAction.FromData(data);
                 case ActionCategory.Ascend:
                     return AscendAction.FromData(data);
+                case ActionCategory.Effect:
+                    return EffectAction.FromData(data);
                 default:
                     break;
             }

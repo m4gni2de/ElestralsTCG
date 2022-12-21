@@ -85,7 +85,11 @@ namespace Gameplay
                         if (_useCardElements && (!ContainsAny(ofTypes, card.card.DifferentElements.AsCodes()))) { continue; }
                         if (_useEnchantedElements && (!ContainsAny(enchantedTypes, card.EnchantingSpiritTypes))) { continue; }
                         if (_useCost && (!IsInFilter(cardCosts, card.card.SpiritsReq.Count))) { continue; }
-                        results.Add(card);
+                        if (!results.Contains(card))
+                        {
+                            results.Add(card);
+                        }
+
 
                     }
 

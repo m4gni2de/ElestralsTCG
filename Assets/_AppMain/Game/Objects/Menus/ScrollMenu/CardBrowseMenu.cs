@@ -61,6 +61,56 @@ namespace Gameplay.Menus
         public MagicToggleGroup CardModeGroup;
         public MagicToggle AttackToggle, DefenseToggle;
         protected bool isCastMode = false;
+
+       
+        private void OnTapListener(bool isTapped)
+        {
+            if (isTapped)
+            {
+                StartCoroutine(AwaitHold());
+            }
+        }
+
+        private IEnumerator AwaitHold()
+        {
+            float acumTime = 0f;
+            bool isHeld = false;
+
+            CardView touchedClone = null;
+            do
+            {
+                yield return null;
+                acumTime += Time.deltaTime;
+
+                if (acumTime >= 1f) { isHeld = true; }
+
+                if (isHeld)
+                {
+                    if (!touchedClone)
+                    {
+                        for (int i = 0; i < clones.Count; i++)
+                        {
+                            if (clones[i].touch.IsPointerOverMe())
+                            {
+                                touchedClone = clones[i];
+                                GameManager.Instance.DisplayCard(cards[i]);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (!touchedClone.touch.IsPointerOverMe())
+                        {
+                            touchedClone = null;
+                            GameManager.Instance.HideDisplayCard();
+                        }
+                    }
+                    
+                }
+            } while (true && AppManager.tap);
+
+            GameManager.Instance.HideDisplayCard();
+        }
         #endregion
 
         #region Menu Origin Properties
@@ -79,10 +129,16 @@ namespace Gameplay.Menus
         #endregion
 
         #region Overrides
-
+        protected override void Open()
+        {
+            base.Open();
+            AppManager.OnTapped -= OnTapListener;
+            AppManager.OnTapped += OnTapListener;
+        }
         #endregion
 
         #region Click and Holding Cards
+
         protected void TrySelectCard(int index)
         {
             if (Scroll.velocity.magnitude > 0) { return; }
@@ -107,7 +163,7 @@ namespace Gameplay.Menus
                     SelectedCards.Add(v);
                     OnCardSelected?.Invoke(v, true);
                     ToggleSelect(clone, true);
-                    
+
                 }
 
             }
@@ -142,15 +198,21 @@ namespace Gameplay.Menus
             ToggleSelect(clone, true);
             GameManager.Instance.DisplayCard(v);
 
+            
             do
             {
                 yield return null;
+
             } while (true && Input.GetMouseButton(0) && IsOpen && clone.touch.IsPointerOverMe());
 
+           
             GameManager.Instance.HideDisplayCard();
             ToggleSelect(clone, false);
             ToggleScrolling(false);
+
+
         }
+       
         #endregion
 
 
@@ -190,10 +252,10 @@ namespace Gameplay.Menus
 
         }
 
-        public void CastLoad(List<GameCard> cards, string title, bool faceUp, int minSelectable, int maxSelectable, GameCard toEnchant, bool isAdding)
+        public void CastLoad(List<GameCard> cards, string title, bool faceUp, int minSelectable, int maxSelectable, GameCard toEnchant, bool isAdding, CardMode forceMode = CardMode.None)
         {
             LoadCards(cards, title, faceUp, minSelectable, maxSelectable);
-            CastMode(toEnchant, null, isAdding);
+            CastMode(toEnchant, null, isAdding, forceMode);
         }
         public void LoadCards(List<GameCard> cards, string title, bool faceUp, int minSelectable, int maxSelectable)
         {
@@ -209,6 +271,7 @@ namespace Gameplay.Menus
             
             for (int i = 0; i < cards.Count; i++)
             {
+                
                 this.cards.Add(cards[i]);
                 CardView co = CardFactory.Copy(cards[i].cardObject, Content, cards[i].card);
                 DisplayCard(cards[i], co, faceUp);
@@ -222,7 +285,7 @@ namespace Gameplay.Menus
             ShowButtons();
 
         }
-        public void CastMode(GameCard card, CardSlot to = null, bool isAdding = true)
+        public void CastMode(GameCard card, CardSlot to = null, bool isAdding = true, CardMode forcedMode = CardMode.None)
         {
             DefenseToggle.OnToggleChanged -= CheckForFaceDownRune;
             SourceCard = card;
@@ -257,13 +320,28 @@ namespace Gameplay.Menus
                     DefenseToggle.OnToggleChanged += CheckForFaceDownRune;
                 }
 
-                DefenseToggle.Show();
-                AttackToggle.Show();
+                if (forcedMode == CardMode.None)
+                {
+                    DefenseToggle.Show();
+                    AttackToggle.Show();
+                }
+                else if (forcedMode == CardMode.Defense)
+                {
+                    DefenseToggle.Show();
+                    AttackToggle.Hide();
+                    DefenseToggle.Toggle(true);
+                }
+                else if (forcedMode == CardMode.Attack)
+                {
+                    DefenseToggle.Hide();
+                    AttackToggle.Show();
+                    AttackToggle.Toggle(true);
+                }
+               
             }
         }
-        
 
-
+       
         protected void CheckForFaceDownRune(MagicToggle toggle)
         {
             bool isOn = toggle.IsOn;
@@ -300,6 +378,11 @@ namespace Gameplay.Menus
             co.touch.ClearAll();
             co.SetAsChild(Content, CardScale, SortLayer, 0);
             
+            if (card.isBlackout)
+            {
+                co.Hide();
+                return;
+            }
             if (minSelectCount > 0)
             {
                 ToggleSelect(co, false);
@@ -392,6 +475,7 @@ namespace Gameplay.Menus
 
             OnCastClose?.Invoke(selected, cMode);
             OnMenuClose?.Invoke(selected);
+            AppManager.OnTapped -= OnTapListener;
             Refresh();
             base.Close();
             DefenseToggle.OnToggleChanged -= CheckForFaceDownRune;

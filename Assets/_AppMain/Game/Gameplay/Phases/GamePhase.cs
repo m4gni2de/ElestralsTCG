@@ -71,13 +71,7 @@ namespace Gameplay.Turns
         }
         #endregion
 
-
-        public GamePhase(Player p)
-        {
-            
-        }
-            
-
+       
         
         public void AddAction(CardAction ac)
         {

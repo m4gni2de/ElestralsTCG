@@ -62,6 +62,7 @@ namespace Gameplay
 
         #endregion
 
+
         #region Game Information
         public int CardsInHand(Player p)
         {
@@ -150,7 +151,25 @@ namespace Gameplay
             return list;
         }
 
-        
+        #region Turn Information
+        public static bool GameStarted
+        {
+            get
+            {
+                if (GameManager.Instance == null) { return false; }
+                if (GameManager.Instance.ActiveTurn == null) { return false; }
+                return true;
+            }
+        }
+        public static bool IsPlayerTurn(Player p, out Turn t)
+        {
+            t = null;
+            if (!GameStarted) { return false; }
+            t = GameManager.Instance.ActiveTurn;
+            return GameManager.Instance.ActivePlayer == p;
+        }
+        #endregion
+
         #endregion
 
         #region Global Properties
@@ -215,7 +234,7 @@ namespace Gameplay
             return null;
         }
 
-       
+
         #endregion
 
         #region Properties
@@ -324,7 +343,7 @@ namespace Gameplay
 
         #region Game Events
         private static CardEventSystem _eventSystem = null;
-        private static CardEventSystem eventSystem { get { _eventSystem ??= new CardEventSystem(true); return _eventSystem; } }
+        public static CardEventSystem eventSystem { get { _eventSystem ??= new CardEventSystem(true); return _eventSystem; } }
 
         #region Turn Based Events
         public static event Action<TargetArgs> OnNewTargetParams;
@@ -373,9 +392,6 @@ namespace Gameplay
         #endregion
 
         #endregion
-
-      
-
 
         #region Rune Empowering
 

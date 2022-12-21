@@ -97,7 +97,7 @@ namespace GameEvents
         #endregion
 
         #region Watchers
-        public void SetWatcher(UnityAction ac, bool silent = false)
+        public void AddWatcher(UnityAction ac, bool silent = false)
         {
             Watcher wa = new Watcher(ac, silent);
             Watchers.Add(wa);
@@ -125,8 +125,20 @@ namespace GameEvents
         #endregion
 
 
+        #region Management
+        public void FlushWatchers()
+        {
+            for (int i = 0; i < Watchers.Count; i++)
+            {
+                Watcher w = Watchers[i];
+                w.FLush();
+                w = null;
+            }
+            Watchers.Clear();
+        }
+        #endregion
 
-       
+
     }
 
     public class GameEvent<T> : GameEvent

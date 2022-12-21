@@ -20,14 +20,23 @@ namespace GameEvents
 
         public void Invoke(params object[] args)
         {
-            if (isSilent)
+            if (Response != null)
             {
-                Response.DynamicInvoke();
+                if (isSilent)
+                {
+
+                    Response.DynamicInvoke();
+                }
+                else
+                {
+                    Response.DynamicInvoke(args);
+                }
             }
-            else
-            {
-                Response.DynamicInvoke(args);   
-            }
+           
+        }
+        public void FLush()
+        {
+            Response = null;
         }
         public void ParseCall(GameEventArgs args)
         {

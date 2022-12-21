@@ -301,6 +301,31 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
         DoThaw();
     }
 
+    protected Coroutine _actionRoutine { get; set; }
+    public void DeclareCardAction(CardAction ac)
+    {
+        //if (_actionRoutine == null)
+        //{
+        //    _actionRoutine = StartCoroutine(AwaitActionResponses(ac));
+        //}
+
+
+    }
+
+    private IEnumerator AwaitActionResponses(CardAction ac)
+    {
+        //turnManager.
+        //Game.eventSystem.ActionDeclared.Call(ac, ac.sourceCard);
+        yield return new WaitForSeconds(.25f);
+
+        do
+        {
+            yield return null;
+
+        } while (true && !ac.isConfirmed);
+
+        _actionRoutine = null;
+    }
 
     //public void ConfirmActiveAction(ActionResult result)
     //{
@@ -317,16 +342,8 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
 
 
 
-    public static void DeclareCardAction(CardAction ac)
-    {
-        CardAction declaredAction = ac;
-        Instance.OnActionDeclared?.Invoke(declaredAction);
-    }
 
 
-
-
-    
     public void PlayerDraw(DrawAction draw)
     {
         AddAction(draw);
@@ -416,6 +433,14 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
     {
         AddAction(ac);
     }
+    public void CardEffectActivate(EffectAction ac)
+    {
+        AddAction(ac);
+        for (int i = 0; i < ac.effectActions.Count; i++)
+        {
+            AddAction(ac.effectActions[i]);
+        }
+    }
     #endregion
 
     #region Rules/Validation
@@ -483,9 +508,6 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
         Instance.ActiveAction = ac;
 
     }
-
-    public event Action<CardAction> OnActionDeclared;
-
     #endregion
 
     #region Card Dragging
@@ -611,6 +633,7 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
     }
     protected virtual void RemoveGameWatchers()
     {
+        CardEventSystem.GameStateChanged.FlushWatchers();
         //Game.OnNewTargetParams -= TargetModeWatcher;
     }
     #endregion
@@ -1093,17 +1116,10 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
 
 
     #region Card Effect Management
-    public void AskCardEffect(EffectData data, GameCard card)
+    public void AskCardEffect(CardEffect effect, GameCard card)
     {
         SelectedCard = card;
-        App.AskYesNo($"Do you want to activate {card.cardObject.DisplayName}'s effect?", DoEffect);
-    }
-    private void DoEffect(bool doEffect)
-    {
-        //if (doEffect)
-        //{
-        //    SelectedCard
-        //}
+        App.AskYesNo($"Do you want to activate {card.cardObject.DisplayName}'s effect?", card.DecideOnEffect);
     }
     #endregion
 

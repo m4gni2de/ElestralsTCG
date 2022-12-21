@@ -1,13 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
-using Gameplay.CardActions;
 using UnityEngine;
 
 namespace Gameplay.Turns
 {
-    public class EndPhase : GamePhase
+    public class StandbyPhase : GamePhase
     {
-
         #region Properties
 
 
@@ -15,19 +13,16 @@ namespace Gameplay.Turns
 
         #region Overrides
 
-       
+
         protected override int GetTurnIndex()
         {
-            return 3;
+            return -1;
         }
         #endregion
-        public EndPhase(Player p) 
+
+        public StandbyPhase() 
         {
-            AutoEnd = true;
+
         }
-
-
     }
 }
-
-

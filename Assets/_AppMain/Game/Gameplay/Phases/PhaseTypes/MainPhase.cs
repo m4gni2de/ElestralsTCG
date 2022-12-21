@@ -19,7 +19,7 @@ namespace Gameplay.Turns
             return 1;
         }
         #endregion
-        public MainPhase(Player p) : base(p)
+        public MainPhase(Player p) 
         {
 
         }

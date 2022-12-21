@@ -10,12 +10,30 @@ namespace Gameplay
     [System.Serializable]
     public class CommandSystem
     {
-       
+        private GameCommand _activeCommand = null;
+        protected GameCommand ActiveCommand
+        {
+            get
+            {
+                return _activeCommand;
+            }
+            set
+            {
+                if (value == _activeCommand) { return; }
+                _activeCommand = value;
+
+                //do some waiting here if you are not the one doing the command
+                if (!_activeCommand.CanActivate)
+                {
+                    _activeCommand.CompleteCommand();
+                }
+            }
+        }
 
         #region Game Specific Commands
-        public void Ascend(Player player, Ascend.AscendArgs args)
+        public void DoAscend(Ascend ascend)
         {
-
+            ActiveCommand = ascend;
         }
 
         protected void Expend(Player player, params ElementCode[] toExpend)

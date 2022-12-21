@@ -8,7 +8,7 @@ namespace Gameplay.Commands
     {
         public string id { get; protected set; }
         public string key { get; protected set; }
-        public GameCommand.Result result { get; protected set; }
+        public Result result { get; protected set; }
 
         public CommandArgs(GameCommand comm)
         {

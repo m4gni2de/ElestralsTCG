@@ -6,6 +6,7 @@ using CardsUI;
 using System.Security.Cryptography;
 using System;
 using UnityEngine.Rendering;
+using UnityEngine.Events;
 
 namespace Gameplay
 {
@@ -61,7 +62,8 @@ namespace Gameplay
         public static GameCard Spirit(CardData data, int copy)
         {
             Spirit spirit = new Spirit(data);
-            return new GameCard(spirit, copy);
+            return new SpiritCard(spirit, copy);
+            //return new GameCard(spirit, copy);
         }
         public static GameCard Elestral(ElestralData data, int copy)
         {
@@ -185,6 +187,8 @@ namespace Gameplay
 
         #region In Game Stats
         #region Information/Stats Management
+        private bool _isBlackout = false;
+        public bool isBlackout { get { return _isBlackout; } set { _isBlackout = value; } }
         public CardType CardType { get { return cardStats.cardType; } }
         public CardType DefaultCardType { get { return card.CardType; } }
 
@@ -194,8 +198,33 @@ namespace Gameplay
         private CardStatus _statusReport = null;
         public CardStatus statusReport { get { _statusReport ??= new CardStatus(this); return _statusReport; } }
         #endregion
-        private CardEffect _effect = null;
+
+        #region Card Effect
+       
+        private void GameStateWatcher()
+        {
+            CheckEffects();
+        }
+        [SerializeField] private CardEffect _effect = null;
         public CardEffect Effect { get { return _effect; } set { _effect = value; } }
+        public void CheckEffects()
+        {
+            Effect.CheckEffects(this);
+        }
+        public void DecideOnEffect(bool toUse)
+        {
+            if (toUse)
+            {
+                DoEffect();
+            }
+        }
+        public void DoEffect()
+        {
+            Effect.Try(this);
+        }
+        
+        #endregion
+
         #endregion
 
         #region Initialization
@@ -206,6 +235,10 @@ namespace Gameplay
             name = $"{_card.cardData.cardName} - {copy}";
             cardStats = new CardStats(this);
             isSelected = false;
+
+
+            CardEventSystem.GameStateChanged.AddWatcher(()=> GameStateWatcher());
+
             Effect = _card.Effect;
 
             if (!Effect.IsEmpty)
@@ -326,6 +359,10 @@ namespace Gameplay
             if (toggle)
             {
                 cardObject.SelectCard(true, color);
+                //if (CurrentSlot.IsInPlay)
+                //{
+                //    GameManager.Instance.cardSlotMenu.LoadMenu(CurrentSlot);
+                //}
 
             }
             else
@@ -369,7 +406,6 @@ namespace Gameplay
 
 
         #region Card Events
-       
         public event Action<GameCard> EmpoweredChanged;
         public void EmpoweredChange()
         {

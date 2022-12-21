@@ -1,23 +1,26 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 
 namespace Gameplay.Commands
 {
-   
+    #region Enum
+    public enum Result
+    {
+        Cancelled = -1,
+        Pending = 0,
+        Succeed = 1,
+        Fail = 2,
+        Fizzle = 3
+    }
+    #endregion
 
 
     public abstract class GameCommand
     {
-        #region Enum
-        public enum Result
-        {
-            Pending = 0,
-            Succeed = 1,
-            Fail = 2,
-            Fizzle = 3
-        }
-        #endregion
+       
 
         #region Properties
         protected abstract string DefaultKey { get; }
@@ -27,27 +30,30 @@ namespace Gameplay.Commands
         public string key { get { return _key; } set { _key = value; } }
         private Result _result = Result.Pending;
         public Result result { get { return _result; } set { _result = value; } }
+
+        private Player _player = null;
+        public Player player { get { return _player; } protected set { _player = value; } }
+
+        public CardAction commandAction { get; set; }
         #endregion
 
+        #region Functions
+        public abstract bool CanActivate { get; }
+        #endregion
 
-      
-       protected void SetCommand(string key)
+       
+        protected void SetCommand(string key)
         {
             this.key = key;
             id = UniqueString.CreateId(4, key);
         }
 
-        public virtual void Declare()
+        public abstract void CompleteCommand();
+        public abstract void Refresh();
+        public abstract void Do();
+        public virtual void Resolve(Result res)
         {
-
-        }
-        public virtual void Do()
-        {
-
-        }
-        public virtual void Resolve()
-        {
-           
+            result = res;
         }
     }
 }

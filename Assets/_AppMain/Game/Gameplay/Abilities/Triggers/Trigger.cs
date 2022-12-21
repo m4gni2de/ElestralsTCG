@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Defective.JSON;
 using GameEvents;
 using UnityEngine;
 
@@ -31,6 +32,7 @@ namespace Gameplay.Abilities
         RespondLast = 100
     }
 
+
     public class Trigger
     {
         public ActivationEvent whenActivate;
@@ -38,6 +40,9 @@ namespace Gameplay.Abilities
         public EventTiming timing;
         public bool isLocal;
         public int index;
+
+        private JSONObject _triggerArgs = null;
+        public JSONObject triggerArgs { get { return _triggerArgs; } set { _triggerArgs = value; } }
 
         private bool _isWatching = false;
         public bool IsWatching { get { return _isWatching; } }  
@@ -67,12 +72,20 @@ namespace Gameplay.Abilities
 
 
         #region Initialization
-        public Trigger(bool local, int activation, int eventResult, int eventTiming)
+        public Trigger(bool local, int activation, int eventResult, int eventTiming, string args)
         {
             isLocal = local;
             result = (EventResult)eventResult;
             timing = (EventTiming)eventTiming;
-
+            if (!args.IsEmpty())
+            {
+                triggerArgs = new JSONObject(args);
+            }
+            else
+            {
+                triggerArgs = null;
+            }
+            
             GetActivation(activation);
             
         }

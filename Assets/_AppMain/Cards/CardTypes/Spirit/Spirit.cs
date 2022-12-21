@@ -9,6 +9,7 @@ public class Spirit : Card
     #region Properties
     private CardData _data = null;
     public CardData Data { get { return _data; } }
+    public ElementCode SpiritType { get; set; }
     #endregion
 
     #region Overrides
@@ -19,5 +20,6 @@ public class Spirit : Card
     {
         _data = data;
         Effect = CardEffect.Empty;
+        SpiritType = (ElementCode)Data.cost1;
     }
 }

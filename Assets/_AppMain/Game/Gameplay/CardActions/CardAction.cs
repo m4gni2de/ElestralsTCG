@@ -30,6 +30,7 @@ namespace Gameplay
         Nexus = 5,
         Ascend = 6,
         Empower = 7,
+        Effect = 8,
     }
     public class CardAction : iFreeze
     {
@@ -40,12 +41,12 @@ namespace Gameplay
         public string id;
         public GameCard sourceCard;
         public Player player;
-        private bool _isRunning = false;
+        protected bool _isRunning = false;
         public bool isRunning { get { return _isRunning; } }
-        private bool _isResolved = false;
+        protected bool _isResolved = false;
         public bool isResolved { get { return _isResolved; } }
 
-        private bool _isConfirmed = false;
+        protected bool _isConfirmed = false;
         public bool isConfirmed { get { return _isConfirmed; } }
 
         public ActionCategory category
@@ -174,6 +175,11 @@ namespace Gameplay
             _isRunning = true;
             GameMessage message = GameMessage.FromAction(GetDeclaredMessage(false), this, true, -1f);
             GameManager.Instance.messageControl.ShowMessage(message);
+
+            //_isConfirmed = false;
+            //GameManager.Instance.DeclareCardAction(this);
+
+
             do
             {
 

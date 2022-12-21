@@ -21,7 +21,7 @@ namespace Gameplay.Turns
             return 2;
         }
         #endregion
-        public BattlePhase(Player p) : base(p)
+        public BattlePhase(Player p) 
         {
 
         }

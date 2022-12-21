@@ -8,6 +8,7 @@ using Gameplay.CardActions;
 using System.IO;
 using Gameplay.Menus;
 using Databases;
+using Gameplay.Commands;
 
 namespace Gameplay
 {
@@ -121,16 +122,22 @@ namespace Gameplay
 
                     if (!SelectedCard.Effect.IsEmpty)
                     {
-                        if (SelectedCard.Effect.EffectsList[0].trigger.whenActivate == Abilities.ActivationEvent.YouCan)
+                        SelectedCard.CheckEffects();
+                        CardEffect eff = SelectedCard.Effect;
+                        if (eff != null && eff.Trigger.whenActivate == Abilities.ActivationEvent.YouCan)
                         {
-                            if (SelectedCard.Effect.EffectsList[0].ability.CanActivate())
+                            if (eff.canActivate)
                             {
-                                commands.Add(PopupCommand.Create("Activate Effect", () => SelectedCard.Effect.EffectsList[0].ability.Do(SelectedCard)));
+                                commands.Add(PopupCommand.Create("Activate Effect", () => SelectedCard.DoEffect()));
                             }
+                            
                         }
                     }
 
-                    commands.Add(PopupCommand.Create("Ascend", () => AscendCommand()));
+                    commands.Add(PopupCommand.Create("Ascend", () => TryAscend()));
+
+
+                    //commands.Add(PopupCommand.Create("Ascend", () => AscendCommand()));
                    
                     //commands.Add(PopupCommand.Create("Nexus", () => NexusCommand(), 1, 1));
                     commands.Add(PopupCommand.Create("Attack", () => AttackCommand()));
@@ -264,6 +271,37 @@ namespace Gameplay
         }
 
         #region Ascend Command
+
+        public void TryAscend()
+        {
+            List<GameCard> options = new List<GameCard>();
+            List<GameCard> inHand = Owner.gameField.HandSlot.cards;
+            for (int i = 0; i < inHand.Count; i++)
+            {
+                GameCard c = inHand[i];
+                if (c.CardType != CardType.Elestral) { continue; }
+                if (c.card.SpiritsReq.Count > 1)
+                {
+                    options.Add(c);
+                }
+            }
+            if (options.Count == 0) { App.DisplayError($"There are no valid cards to Ascend from {SelectedCard.name}."); ClickCard(SelectedCard); return; }
+            Ascend ac = Ascend.FromTributedChosen(Owner, SelectedCard, options);
+            GameManager.ActiveGame.DoAscend(ac);
+
+            ac.OnActionReady += AwaitAscend;
+            ClosePopMenu(true);
+
+        }
+
+        private void AwaitAscend(Ascend ascend, bool didTry)
+        {
+            ascend.OnActionReady -= AwaitAscend;
+            AscendAction ac = ascend.commandAction as AscendAction;
+            GameManager.Instance.Ascend(ac);
+        }
+
+        #region DEPRECIATED ASCEND
         //do validation on clicking based on number of spirits the Ascending card has and the number of spirits the cards on the field have
         protected void AscendCommand()
         {
@@ -326,12 +364,14 @@ namespace Gameplay
             }
         }
 
+        #endregion
+
 
         #endregion
 
         #endregion
 
-        
+
         protected override void DestroyResponse(bool confirm)
         {
             if (confirm)

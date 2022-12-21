@@ -237,6 +237,82 @@ namespace Gameplay
         }
         #endregion
 
+        #region In Game Lookups
+        public bool HasAvailableSpirits(List<ElementCode> elements)
+        {
+            
+            Dictionary<ElementCode, int> requiredCounts = new Dictionary<ElementCode, int>();
+            for (int i = 0; i < elements.Count; i++)
+            {
+                if (requiredCounts.ContainsKey(elements[i]))
+                {
+                    requiredCounts[elements[i]]++;
+                }
+                else
+                {
+                    requiredCounts.Add(elements[i], 1);
+                }
+            }
+
+            Dictionary<ElementCode, int> spiritCounts = deck.SpiritDeckCounts;
+
+            foreach (var item in requiredCounts)
+            {
+                ElementCode e = item.Key;
+                int reqVal = item.Value;
+
+                if (!spiritCounts.ContainsKey(e)) { return false; }
+                if (spiritCounts[e] < reqVal) { return false; }
+            }
+            return true;
+
+        }
+
+        public List<GameCard> GetSpiritsOfType(Dictionary<ElementCode, int> req)
+        {
+            List<ElementCode> elements = new List<ElementCode>();
+            foreach (var item in req)
+            {
+                for (int i = 0; i < item.Value; i++)
+                {
+                    elements.Add(item.Key);
+                }
+            }
+
+            List<GameCard> ReturnedSpirits = new List<GameCard>();
+            if (!HasAvailableSpirits(elements)) { return ReturnedSpirits; }
+
+            Dictionary<ElementCode, int> spiritCounts = deck.SpiritDeckCounts;
+
+            foreach (var item in req)
+            {
+                
+                List<SpiritCard> spiritsWithType = new List<SpiritCard>();
+                for (int i = 0; i < deck.SpiritDeck.InOrder.Count; i++)
+                {
+                    SpiritCard sp = deck.SpiritDeck.InOrder[i] as SpiritCard;
+                    if (sp.CurrentTypes.Contains(item.Key))
+                    {
+                        if (spiritsWithType.Count < item.Value)
+                        {
+                            spiritsWithType.Add(sp);
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                        
+                    }
+
+                }
+                ReturnedSpirits.AddRange(spiritsWithType);
+            }
+
+            return ReturnedSpirits;
+
+        }
+        #endregion
+
 
         #region Drawing Actions
         public GameCard DrawPreview(bool isMainDeck)

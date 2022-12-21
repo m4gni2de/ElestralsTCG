@@ -5,12 +5,15 @@ using Gameplay.Abilities;
 using Databases;
 using Cards;
 using Database;
+using Gameplay.Turns;
 
 namespace Gameplay
 {
     [System.Serializable]
     public class EffectData
     {
+
+
         #region Properties
         private EffectDTO rawData { get; set; }
 
@@ -24,9 +27,13 @@ namespace Gameplay
         public int index { get; set; }
         public bool autoUse { get; set; }
         private List<ElementCode> _castCost = null;
-        public List<ElementCode> castCost { get { _castCost ??= new List<ElementCode>(); return _castCost; }protected set { _castCost = value; } }
+        public List<ElementCode> castCost { get { _castCost ??= new List<ElementCode>(); return _castCost; } protected set { _castCost = value; } }
+
 
         #endregion
+
+
+       
 
         #region Initialization
         public EffectData(EffectDTO dto)
@@ -60,7 +67,7 @@ namespace Gameplay
             if (dto != null)
             {
                 bool isLocal = dto.isLocal.IntToBool();
-                return new Trigger(isLocal, dto.activation, dto.result, dto.timing);
+                return new Trigger(isLocal, dto.activation, dto.result, dto.timing, dto.triggerArgs);
             }
             return null;
         }
@@ -76,6 +83,8 @@ namespace Gameplay
             return results;
         }
         #endregion
+
+      
     }
 }
 
