@@ -7,7 +7,7 @@ using UnityEngine.Events;
 namespace GameEvents
 {
 
-    public class GameEvent
+    public class GameEvent : iGameEvent
     {
        
        
@@ -59,7 +59,25 @@ namespace GameEvents
                 return _watchers;
             }
         }
+        private GameEventArgs _args = null;
+        public GameEventArgs Args
+        {
+            get
+            {
+                _args ??= new GameEventArgs(this);
+                return _args;
+            }
+        }
 
+        private List<iGameEvent> _connectedEvents = null;
+        public List<iGameEvent> ConnectedEvents
+        {
+            get
+            {
+                _connectedEvents ??= new List<iGameEvent>();
+                return _connectedEvents;
+            }
+        }
         #endregion
 
         #region Static Functions
@@ -102,12 +120,23 @@ namespace GameEvents
             Watcher wa = new Watcher(ac, silent);
             Watchers.Add(wa);
         }
-
+        public void AddArgWatcher(Action<GameEventArgs> ac)
+        {
+            Watcher wa = new Watcher(ac);
+            Watchers.Add(wa);
+        }
+        public void ConnectEvent(iGameEvent ev)
+        {
+            if (!ConnectedEvents.Contains(ev))
+            {
+                ConnectedEvents.Add(ev);
+            }
+        }
         #endregion
 
 
         #region Calling
-        protected void Invoke(params object[] args)
+        public void Invoke(params object[] args)
         {
            if (args.Length != Parameters.Count) { throw new SystemException("Parameter count does not match."); }
 
@@ -116,12 +145,19 @@ namespace GameEvents
                 Parameters[i].SetValue(args[i]);
             }
 
+            _args = new GameEventArgs(this);
             for (int i = 0; i < Watchers.Count; i++)
             {
                 Watcher w = Watchers[i];
-                w.Invoke(args);
+                w.Invoke(Args, args);
+            }
+
+            for (int i = 0; i < ConnectedEvents.Count; i++)
+            {
+                ConnectedEvents[i].Invoke(args);
             }
         }
+
         #endregion
 
 
@@ -135,6 +171,12 @@ namespace GameEvents
                 w = null;
             }
             Watchers.Clear();
+
+            for (int i = 0; i < ConnectedEvents.Count; i++)
+            {
+                ConnectedEvents[i] = null;
+            }
+            ConnectedEvents.Clear();
         }
         #endregion
 

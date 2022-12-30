@@ -11,7 +11,7 @@ public class MultiImage : MonoBehaviour
         public SpriteDisplay image;
     }
 
-
+    #region Properties
     private Dictionary<int, string> _mapping = null;
     public Dictionary<int, string> Mapping
     {
@@ -23,7 +23,9 @@ public class MultiImage : MonoBehaviour
     }
 
     public List<MappedImage> images = new List<MappedImage>();
+    #endregion
 
+    #region Indexing
     protected SpriteDisplay this[string key]
     {
         get
@@ -31,7 +33,48 @@ public class MultiImage : MonoBehaviour
             return images[MappedKey(key)].image;
         }
     }
+    public SpriteDisplay FromKey(string key)
+    {
+        return this[key];
+    }
+    public SpriteDisplay AtIndex(int index)
+    {
+        string key = Mapping[index];
+        return this[key];
+    }
+    #endregion
 
+    #region Life Cycle
+    private void Awake()
+    {
+        if (images.Count > 0)
+        {
+            for (int i = 0; i < images.Count; i++)
+            {
+                if (images[i].key.IsEmpty())
+                {
+                    images[i].key = i.ToString();
+                }
+            }
+        }
+
+        Mapping.Clear();
+        for (int i = 0; i < images.Count; i++)
+        {
+            Mapping.Add(i, images[i].key);
+        }
+    }
+    public void Show()
+    {
+        gameObject.SetActive(true);
+    }
+    public void Hide()
+    {
+        gameObject.SetActive(false);
+    }
+    #endregion
+
+    #region Mapping
     protected int MappedKey(string objectKey)
     {
         for (int i = 0; i < images.Count; i++)
@@ -76,7 +119,9 @@ public class MultiImage : MonoBehaviour
             }
         }
     }
+    #endregion
 
+    #region Image Management
     public void AddImage(MappedImage map, bool overwriteMapping = false)
     {
         int count = Mapping.Count;
@@ -87,15 +132,9 @@ public class MultiImage : MonoBehaviour
                 map.key = Mapping[count];
             }
         }
-        
+
         images.Add(map);
     }
-
-    public SpriteDisplay FromKey(string key)
-    {
-        return this[key];
-    }
-
     public void SetSprite(string objectKey, Sprite sp)
     {
         int key = MappedKey(objectKey);
@@ -129,8 +168,7 @@ public class MultiImage : MonoBehaviour
     {
         this[key].gameObject.SetActive(false);
     }
-    
-
+   
     public void ClearAll()
     {
         for (int i = 0; i < images.Count; i++)
@@ -138,14 +176,9 @@ public class MultiImage : MonoBehaviour
             images[i].image.Clear();
         }
     }
-    public void Show()
-    {
-        gameObject.SetActive(true);
-    }
-    public void Hide()
-    {
-        gameObject.SetActive(false);
-    }
+    #endregion
+
+  
 }
 
 

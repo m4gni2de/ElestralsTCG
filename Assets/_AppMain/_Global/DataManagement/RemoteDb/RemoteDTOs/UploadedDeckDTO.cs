@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,7 +19,9 @@ public class DownloadedDeckDTO
     public string deckKey { get; set; }
     public string title { get; set; }
     public List<string> deck { get; set; }
-    public string uploadCode { get; set; }
     public string owner { get; set; }
+    public DateTime whenUpload { get; set; }
+    public int downloads { get; set; }
+    public DateTime lastDownload { get; set; }
 
 }

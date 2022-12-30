@@ -9,6 +9,7 @@ using TMPro;
 using nsSettings;
 using System.Reflection;
 using System;
+using System.Collections;
 
 public enum CatalogMode
 {
@@ -53,6 +54,8 @@ public class CardCatalog : MonoBehaviour, iScaleCard
 
     [SerializeField]
     private GameObject PagesObject;
+    [SerializeField] private MagicInputText cardSearchText;
+    protected string textSearch { get; set; }
 
     private Canvas _pagesCanvas = null;
     public Canvas pagesCanvas
@@ -153,7 +156,11 @@ public class CardCatalog : MonoBehaviour, iScaleCard
         return cardCount / settings.itemsPerPage;
     }
     private List<Card> _results = null;
-    private List<Card> results { get { _results ??= new List<Card>(); return _results; } }
+    private List<Card> results { get { _results ??= QueryResults; return _results; } }
+
+    private List<Card> _queryResults = null;
+    public List<Card> QueryResults { get { _queryResults ??= new List<Card>(); return _queryResults; } }
+
 
     protected List<CardView> _visibleCards
     {
@@ -205,12 +212,12 @@ public class CardCatalog : MonoBehaviour, iScaleCard
     public TMP_Text cPageText;
     public TMP_Text totalText;
 
-    protected List<Card> Results()
+    protected List<Card> ResultsFromQuery()
     {
         List<Card> list = new List<Card>();
         List<Card> uniqueList = new List<Card>();
         results.Clear();
-
+        QueryResults.Clear();
 
         string queryWhere = FilterMenu.GenerateQuery();
 
@@ -230,6 +237,7 @@ public class CardCatalog : MonoBehaviour, iScaleCard
         {
             Card card = dtos[i];
             list.Add(card);
+            
             //if (card.cardData.effect.ToLower().Contains("you can"))
             //{
             //    Debug.Log(card.cardData.effect);
@@ -240,6 +248,67 @@ public class CardCatalog : MonoBehaviour, iScaleCard
 
         return list;
 
+    }
+
+    protected bool ValidateTextSearch(Card card)
+    {
+        CardType t = card.CardType;
+        Rarity rariry = card.GetRarity;
+        bool isFullArt = card.isFullArt;
+        ArtType art = card.cardData.artType;
+        if (textSearch.IsEmpty()) { return true; }
+
+        if (card.cardData.cardName.ToLower().Contains(textSearch)) { return true; }
+        if (card.cardData.effect.ToLower().Contains(textSearch)) { return true; }
+
+        if (textSearch == "rune")
+        {
+            if (t == CardType.Rune) { return true; }
+        }
+        if (textSearch == "spirit")
+        {
+            if (t == CardType.Spirit) { return true; }
+        }
+        if (textSearch == "elestral")
+        {
+            if (t == CardType.Elestral) { return true; }
+        }
+        if (textSearch == "stellar")
+        {
+            if (rariry == Rarity.Stellar || art == ArtType.Stellar) { return true; }
+        }
+        if (textSearch == "common")
+        {
+            if (rariry == Rarity.Common) { return true; }
+        }
+        if (textSearch == "uncommon")
+        {
+            if (rariry == Rarity.Uncommon) { return true; }
+        }
+        if (textSearch == "rare")
+        {
+            if (rariry == Rarity.Rare) { return true; }
+        }
+        if (textSearch == "holo")
+        {
+            if (rariry == Rarity.HoloRare) { return true; }
+        }
+        if (textSearch == "full art" || textSearch == "full-art")
+        {
+            if (card.isFullArt) { return true; }
+        }
+        if (textSearch == "alt art" || textSearch == "alt-art")
+        {
+            if (art == ArtType.AltArt) { return true; }
+        }
+
+        for (int i = 0; i < card.DifferentElements.Count; i++)
+        {
+            string elName = card.DifferentElements[i].Name.ToLower();
+            if (textSearch.Contains(elName)) { return true; }
+        }
+
+        return false;
     }
 
 
@@ -278,6 +347,14 @@ public class CardCatalog : MonoBehaviour, iScaleCard
 
     public void Toggle(bool isOn)
     {
+        if (!isOn)
+        {
+            cardSearchText.OnTextChanged.RemoveAllListeners();
+        }
+        else
+        {
+            cardSearchText.OnTextChanged.AddListener(() => OnSearchTextChanged(cardSearchText.Input));
+        }
         _isOpen = isOn;
         gameObject.SetActive(isOn);
 
@@ -346,8 +423,10 @@ public class CardCatalog : MonoBehaviour, iScaleCard
 
     private void InitializeCards()
     {
+        
         Refresh();
-        _results = Results();
+        _queryResults = ResultsFromQuery();
+        _results = TextFilterResults(QueryResults);
         PageNumber = 1;
         TotalPages = GetTotalPages(results.Count);
 
@@ -386,7 +465,8 @@ public class CardCatalog : MonoBehaviour, iScaleCard
     {
 
         Refresh();
-        _results = Results();
+        _queryResults = ResultsFromQuery();
+        _results = TextFilterResults(_queryResults);
         PageNumber = 1;
         TotalPages = GetTotalPages(results.Count);
 
@@ -410,6 +490,19 @@ public class CardCatalog : MonoBehaviour, iScaleCard
         }
 
         CheckCardsInView();
+    }
+
+    protected void ChangedTextSearch()
+    {
+        _results = TextFilterResults(_queryResults);
+        PageNumber = 1;
+        TotalPages = GetTotalPages(results.Count);
+
+
+        int loadCount = settings.itemsPerPage;
+        if (TotalPages == 1) { loadCount = results.Count; }
+
+        LoadCards(0, loadCount);
     }
 
     #region Page Movement
@@ -576,6 +669,52 @@ public class CardCatalog : MonoBehaviour, iScaleCard
 
     }
 
+    private List<Card> TextFilterResults(List<Card> list)
+    {
+        List<Card> filteredList = new List<Card>();
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (ValidateTextSearch(list[i]))
+            {
+                filteredList.Add(list[i]);
+            }
+        }
+        return filteredList;
+    }
 
+    private bool _isInputting = false;
+    private DateTime _lastInput;
+    private float _inputWaitTime = .5f;
+    public void OnSearchTextChanged(string text)
+    {
+        textSearch = text.ToLower().Trim();
+        _lastInput = DateTime.Now;
+        if (!_isInputting)
+        {
+            StartCoroutine(AwaitInputDelay(_inputWaitTime));
+        }
+    }
+
+    private IEnumerator AwaitInputDelay(float seconds)
+    {
+        _isInputting = true;
+        double secondsBetweenTouches = (DateTime.Now - _lastInput).TotalSeconds;
+        do
+        {
+            yield return new WaitForFixedUpdate();
+            secondsBetweenTouches = (DateTime.Now - _lastInput).TotalSeconds;
+
+
+        } while (true && secondsBetweenTouches < seconds);
+        _isInputting = false;
+
+        
+        ChangedTextSearch();
+    }
     #endregion
+
+    private void OnDestroy()
+    {
+       
+    }
 }

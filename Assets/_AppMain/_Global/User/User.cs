@@ -11,6 +11,7 @@ using System.IO;
 using Cards.Collection;
 using Gameplay.Decks;
 using Newtonsoft.Json;
+using nsSettings;
 #if UNITY_EDITOR
 using ParrelSync;
 #endif
@@ -205,6 +206,34 @@ namespace Users
         #endregion
 
 
+        #region Deleting
+        public bool DeleteDeck(Decklist list)
+        {
+            bool isActive = list.IsActiveDeck;
+            int deckIndex = App.Account.DeckIndex(list.DeckKey);
+
+            DeckLists.Remove(list);
+            UserService.DeleteDeck(list);
+
+            
+            if (isActive)
+            {
+                SettingsManager.Account.Settings.ActiveDeck = 0;
+                SettingsManager.Account.Save();
+            }
+            else
+            {
+                if (deckIndex < SettingsManager.Account.Settings.ActiveDeck)
+                {
+                    SettingsManager.Account.Settings.ActiveDeck -= 1;
+                    SettingsManager.Account.Save();
+                }
+            }
+
+            return true;
+        }
+        #endregion
+
         #region Card Collection
         public void AcquireCard(string setKey, int rarity, int qty)
         {
@@ -215,6 +244,22 @@ namespace Users
             Collection.RemoveQuantity(setKey, rarity, qty);
         }
         #endregion
+
+        #region Decks
+        public int DeckIndex(string deckKey)
+        {
+            for (int i = 0; i < DeckLists.Count; i++)
+            {
+                Decklist d = DeckLists[i];
+                if (d.DeckKey.Trim().ToLower() == deckKey.Trim().ToLower())
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+        #endregion
+
 
         #region Network Properties
 

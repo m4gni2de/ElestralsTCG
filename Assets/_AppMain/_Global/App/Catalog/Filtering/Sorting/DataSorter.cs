@@ -15,6 +15,7 @@ namespace GlobalUtilities
 
     public enum SortBy
     {
+        Property = -1,
         Name = 0,
         Cost = 1,
         Rarity = 2,
@@ -41,7 +42,7 @@ namespace GlobalUtilities
             this.sortBy = sorter;
             this.sortDirection = sortDirection;
         }
-
+       
         public void ChangeDirection(SortDirection dir)
         {
             sortDirection = dir;

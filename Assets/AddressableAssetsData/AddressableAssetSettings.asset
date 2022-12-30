@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: cee7d87e0ca1dfd4fa51f33e3cafc7ee
   m_CachedHash:
     serializedVersion: 2
-    Hash: ac94f206e1f8accb556dad33f1a7c525
+    Hash: 00000000000000000000000000000000
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 1
   m_BundleLocalCatalog: 0
@@ -54,6 +54,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 868d512e0db610f4e816d0f50f9cd83e, type: 2}
   - {fileID: 11400000, guid: b74e719a1ec6e9c41917773e78177056, type: 2}
   - {fileID: 11400000, guid: ee6f771998498914baf81ce90cabad31, type: 2}
+  - {fileID: 11400000, guid: a30d50b660fe6954d83a780a9be045b2, type: 2}
+  - {fileID: 11400000, guid: a02597768d24e744e8b66bbdc7cc78cb, type: 2}
   - {fileID: 11400000, guid: bb5e7ac1077571a44bc04dfa7134d588, type: 2}
   - {fileID: 11400000, guid: 7e66ce34edaed3348a5b8ddef0c866ba, type: 2}
   - {fileID: 11400000, guid: 8ae7e165ee059504d81e32c7cdadfcf5, type: 2}
@@ -64,6 +66,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b33b5fe955ee7454da08090d1ebe1d06, type: 2}
   - {fileID: 11400000, guid: 00da0af36a85ad944a07ff404e2658c7, type: 2}
   - {fileID: 11400000, guid: c79623686016e9f42a60294f1b0602bc, type: 2}
+  - {fileID: 11400000, guid: 151f8bec44a406447b77f322232a5140, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -128,6 +131,9 @@ MonoBehaviour:
     - FullCard
     - Networking
     - Preload
+    - LoadScreens
+    - Playmatt
+    - Sleeves
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 3d5c90bdd758ba543be9ec6fd2b4dc16, type: 2}

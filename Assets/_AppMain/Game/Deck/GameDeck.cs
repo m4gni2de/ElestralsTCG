@@ -13,6 +13,7 @@ namespace Gameplay
         #region Properties
         public string uniqueId { get; set; }
         public string deckName { get; set; }
+        public int cardSleeves { get; set; }
         [SerializeField] private Deck _mainDeck = null;
         public Deck MainDeck { get { return _mainDeck; } }
 
@@ -35,8 +36,6 @@ namespace Gameplay
                 return _cards;
             }
         }
-
-
         public List<GameCard> CardsInHand
         {
             get
@@ -54,7 +53,6 @@ namespace Gameplay
                 return cards;
             }
         }
-
 
         public GameCard NewCard(string key, CardType type, int copy)
         {

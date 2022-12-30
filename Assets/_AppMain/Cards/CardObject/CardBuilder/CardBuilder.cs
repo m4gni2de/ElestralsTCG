@@ -43,7 +43,7 @@ public class CardBuilder : MonoBehaviour
         else
         {
             ActiveCard = null;
-            //sp.MainSprite = AssetPipeline.ByKey<Sprite>("cardbackSp");
+            
         }
 
 

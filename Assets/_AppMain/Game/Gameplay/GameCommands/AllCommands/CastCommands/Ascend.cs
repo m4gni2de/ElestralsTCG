@@ -211,11 +211,11 @@ namespace Gameplay.Commands
         {
 
             selectMode = selMode;
-            string title = $"Select Elestral to Ascend from {tributedCard.name}";
+            string title = $"Select Elestral to Ascend from {tributedCard.cardName}";
             List<GameCard> options = ascendOptions;
             if (selectMode == SelectMode.Tribute)
             {
-                title = $"Select Elestral to Tribute for the Ascension of {ascendCard.name}";
+                title = $"Select Elestral to Tribute for the Ascension of {ascendCard.cardName}";
                 options = tributeOptions;
             }
 
@@ -233,7 +233,7 @@ namespace Gameplay.Commands
                 tributedCard = args.Selections[0];
                 
             }
-            string title = $"Select Catalyst Spirit to Ascend from {tributedCard.name} to {ascendCard.name}.";
+            string title = $"Select Catalyst Spirit to Ascend from {tributedCard.cardName} to {ascendCard.cardName}.";
             if (!forceMode)
             {
                 GameManager.Instance.browseMenu.CastLoad(player.gameField.SpiritDeckSlot.cards, title, true, 1, 1, ascendCard, true);

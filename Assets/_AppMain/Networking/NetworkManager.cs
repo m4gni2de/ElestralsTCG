@@ -95,6 +95,7 @@ public class NetworkManager : MonoBehaviour
 
     #endregion
 
+   
 
     private void Awake()
     {
@@ -176,7 +177,7 @@ public class NetworkManager : MonoBehaviour
     {
         OnConnectAsClient?.Invoke(Client.Id);
         OnConnectionChanged.Invoke();
-
+        
     }
     
 
@@ -204,7 +205,9 @@ public class NetworkManager : MonoBehaviour
         OnConnectionChanged.Invoke();
         OnClientDisconnected?.Invoke();
 
-        RemoteData.DeletePlayer();
+        ClientManager.RemovePlayer();
+        
+       
     }
     
     #endregion

@@ -174,7 +174,7 @@ namespace Gameplay
                 int castCount = SelectedCard.card.SpiritsReq.Count;
                 List<GameCard> toShow = Owner.gameField.SpiritDeckSlot.cards;
 
-                string title = $"Select {CardUI.AnySpiritUnicode(castCount)} for Cast of {SelectedCard.name}";
+                string title = $"Select {CardUI.AnySpiritUnicode(castCount)} for Cast of {SelectedCard.cardName}";
                 GameManager.Instance.browseMenu.LoadCards(toShow, title, true, castCount, castCount);
                 GameManager.Instance.browseMenu.CastMode(SelectedCard);
                 ClosePopMenu();

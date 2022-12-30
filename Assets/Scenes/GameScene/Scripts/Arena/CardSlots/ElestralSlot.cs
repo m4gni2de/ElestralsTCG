@@ -120,19 +120,19 @@ namespace Gameplay
                     commands.Add(PopupCommand.Create("Cast", () => CastToSlotCommand(SelectedCard, this)));
                     commands.Add(PopupCommand.Create("Enchant", () => EnchantCommand(1)));
 
-                    if (!SelectedCard.Effect.IsEmpty)
-                    {
-                        SelectedCard.CheckEffects();
-                        CardEffect eff = SelectedCard.Effect;
-                        if (eff != null && eff.Trigger.whenActivate == Abilities.ActivationEvent.YouCan)
-                        {
-                            if (eff.canActivate)
-                            {
-                                commands.Add(PopupCommand.Create("Activate Effect", () => SelectedCard.DoEffect()));
-                            }
+                    //if (!SelectedCard.Effect.IsEmpty)
+                    //{
+                    //    SelectedCard.CheckEffects();
+                    //    CardEffect eff = SelectedCard.Effect;
+                    //    if (eff != null && eff.Trigger.whenActivate == Abilities.ActivationEvent.YouCan)
+                    //    {
+                    //        if (eff.canActivate)
+                    //        {
+                    //            commands.Add(PopupCommand.Create("Activate Effect", () => SelectedCard.DoEffect()));
+                    //        }
                             
-                        }
-                    }
+                    //    }
+                    //}
 
                     commands.Add(PopupCommand.Create("Ascend", () => TryAscend()));
 
@@ -198,7 +198,7 @@ namespace Gameplay
             int enchantCount = card.card.SpiritsReq.Count;
             List<GameCard> toShow = Owner.gameField.SpiritDeckSlot.cards;
 
-            string title = $"Select {CardUI.AnySpiritUnicode(enchantCount)} for Cast of {card.name}";
+            string title = $"Select {CardUI.AnySpiritUnicode(enchantCount)} for Cast of {card.cardName}";
             GameManager.Instance.browseMenu.LoadCards(toShow, title, true, enchantCount, enchantCount);
             GameManager.Instance.browseMenu.CastMode(card, this);
             ClosePopMenu(true);
@@ -223,19 +223,20 @@ namespace Gameplay
         #region Attack Command
         protected void AttackCommand()
         {
-            if (TurnManager.ValidateStartBattle())
-            {
-                if (TurnManager.IsBattlePhase)
-                {
-                    AttackTargetSelect(true);
-                }
-                else
-                {
-                    ClosePopMenu();
-                    App.AskYesNo("Do you wish to end the Main Phase and start the Battle Phase?", AttackTargetSelect);
-                }
-            }
-            
+            //if (TurnManager.ValidateStartBattle())
+            //{
+            //    if (TurnManager.IsBattlePhase)
+            //    {
+            //        AttackTargetSelect(true);
+            //    }
+            //    else
+            //    {
+            //        ClosePopMenu();
+            //        App.AskYesNo("Do you wish to end the Main Phase and start the Battle Phase?", AttackTargetSelect);
+            //    }
+            //}
+            AttackTargetSelect(true);
+
         }
 
         protected void AttackTargetSelect(bool confirm)
@@ -285,7 +286,7 @@ namespace Gameplay
                     options.Add(c);
                 }
             }
-            if (options.Count == 0) { App.DisplayError($"There are no valid cards to Ascend from {SelectedCard.name}."); ClickCard(SelectedCard); return; }
+            if (options.Count == 0) { App.DisplayError($"There are no valid cards to Ascend from {SelectedCard.cardName}."); ClickCard(SelectedCard); return; }
             Ascend ac = Ascend.FromTributedChosen(Owner, SelectedCard, options);
             GameManager.ActiveGame.DoAscend(ac);
 
@@ -311,7 +312,7 @@ namespace Gameplay
 
             int cardCount = 1;
             List<GameCard> toShow = Owner.gameField.HandSlot.cards;
-            string title = $"Select Elestral to Ascend from {SelectedCard.name}";
+            string title = $"Select Elestral to Ascend from {SelectedCard.cardName}";
             BrowseMenu.LoadCards(toShow, title, true, cardCount, cardCount);
             ClosePopMenu(true);
             BrowseMenu.OnClosed += AwaitAscendingElestral;
@@ -325,7 +326,7 @@ namespace Gameplay
             d.AddData(AscendAction.SlotToKey, slotId);
 
             int cardCount = 1;
-            string title = $"Select Elestral to Ascend from {SelectedCard.name}";
+            string title = $"Select Elestral to Ascend from {SelectedCard.cardName}";
             BrowseMenu.LoadCards(toShow, title, true, cardCount, cardCount);
             ClosePopMenu(true);
             BrowseMenu.OnClosed += AwaitAscendingElestral;
@@ -338,7 +339,7 @@ namespace Gameplay
             GameCard sourceCard = this.GetCraftingAction().FindSourceCard();
 
 
-            string title = $"Select Catalyst Spirit to Ascend from {SelectedCard.name} to {sourceCard.name}.";
+            string title = $"Select Catalyst Spirit to Ascend from {SelectedCard.cardName} to {sourceCard.cardName}.";
             BrowseMenu.CastLoad(Owner.gameField.SpiritDeckSlot.cards, title, true, 1, 1, sourceCard, true);
             ClosePopMenu(true);
             BrowseMenu.OnClosed += DoAscend;

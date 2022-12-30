@@ -8,22 +8,13 @@ using System.Threading.Tasks;
 
 public class LoadingBar : MonoBehaviour
 {
-    public static LoadingBar Instance
-    {
-        get
-        {
-            if (AppManager.Instance != null && AppManager.Instance.loadingBar != null)
-            {
-                return AppManager.Instance.loadingBar;
-            }
-            return null;
-        }
-    }
     
     #region Properties
-    //public event Action OnLoadComplete;
     private bool _LoadComplete = false;
     public bool LoadComplete { get { return _LoadComplete; } }
+
+    public bool IsRunning = false;
+
     #endregion
     private Slider _slider = null;
     public Slider slider { get { _slider ??= GetComponentInChildren<Slider>(); return _slider; } }
@@ -43,8 +34,21 @@ public class LoadingBar : MonoBehaviour
             _LoadComplete = value >= slider.maxValue;
         }
     }
-    public float LoadPercent { get { return (slider.value / slider.maxValue) * 100f; } }
 
+    private int roundedDigits = -1;
+    public double LoadPercent
+    {
+        get
+        {
+            double val = (slider.value / slider.maxValue) * 100f;
+            if (roundedDigits > -1)
+            {
+                return Math.Round(val, roundedDigits);
+            }
+            return val;
+        }
+    }
+    
     [SerializeField]
     private TMP_Text displayText;
     [SerializeField]
@@ -62,57 +66,21 @@ public class LoadingBar : MonoBehaviour
         
     }
 
-    public void AddJob(DownloadJob job)
-    {
-        LoadQueue.Add(job);
-        if (LoadQueue.Count == 1)
-        {
-            StartJob(job);
-        }
-    }
-
-    protected async void StartJob(DownloadJob job)
-    {
-        Display(job.message, job.startVal, job.maxVal, job.minVal);
-        job.job.DynamicInvoke();
-        job.OnJobUpdate += MoveSlider;
-
-        do
-        {
-            await Task.Delay(1);
-
-
-        } while (true && !LoadComplete);
-
-        job.CompleteJob();
-        job.OnJobUpdate -= MoveSlider;
-
-        LoadQueue.Remove(job);
-        if (LoadQueue.Count > 0)
-        {
-            StartJob(LoadQueue[0]);
-        }
-        else
-        {
-            Hide();
-        }
-    }
-
     
-  
-    public void Display(string display, float start, float max, float min = 0f)
+    public void Display(string display, float start, float max, float min = 0f, int percentDecimals = -1)
     {
         gameObject.SetActive(true);
         _LoadComplete = false;
-        slider.maxValue = max;
+        IsRunning = true;
         slider.minValue = min;
-        //countText.text = $"{slider.minValue} / {slider.maxValue} - {LoadPercent}%";
-        countText.text = $"{LoadPercent}%";
+        slider.maxValue = max;
+        slider.value = start;
+        roundedDigits = percentDecimals;
         if (start >= max)
         {
             start = max;
         }
-        slider.value = start;
+        
         SetText(display);
         
 
@@ -123,6 +91,7 @@ public class LoadingBar : MonoBehaviour
         _LoadComplete = false;
         countText.text = "";
         displayText.text = "";
+        roundedDigits = -1;
         gameObject.SetActive(false);
     }
 
@@ -145,8 +114,8 @@ public class LoadingBar : MonoBehaviour
     {
         Value = slider.maxValue;
         _LoadComplete = true;
-        
-        //OnLoadComplete?.Invoke();
+        IsRunning = false;
+        gameObject.SetActive(false);
     }
 
 

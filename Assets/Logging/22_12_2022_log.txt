@@ -1,0 +1,85 @@
+12/22/2022 12:02:11 AM - Log Created.
+Cirrucoon - 1 has started Watching the 'PhaseEnd' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Cirrucoon - 2 has started Watching the 'PhaseEnd' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Nimbug - 1 has started Watching the 'CardCast' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Nimbug - 2 has started Watching the 'CardCast' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Nimbug - 3 has started Watching the 'CardCast' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Entry Added: 
+Message
+Thursday, December 22, 2022
+Entry Added: 
+Message
+Thursday, December 22, 2022
+Cirrucoon - 1 can activate its Effect after being Triggered by the 'PhaseEnd' GameEvent.
+Message
+Thursday, December 22, 2022
+Cirrucoon - 1 has started Watching the 'PhaseEnd' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Cirrucoon - 2 has started Watching the 'PhaseEnd' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Nimbug - 1 has started Watching the 'CardCast' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Nimbug - 2 has started Watching the 'CardCast' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Nimbug - 3 has started Watching the 'CardCast' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Cirrucoon - 1 has started Watching the 'PhaseEnd' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Cirrucoon - 2 has started Watching the 'PhaseEnd' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Nimbug - 1 has started Watching the 'CardCast' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Nimbug - 2 has started Watching the 'CardCast' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Nimbug - 3 has started Watching the 'CardCast' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Cirrucoon - 1 has started Watching the 'PhaseEnd' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Cirrucoon - 2 has started Watching the 'PhaseEnd' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Nimbug - 1 has started Watching the 'CardCast' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Nimbug - 2 has started Watching the 'CardCast' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Nimbug - 3 has started Watching the 'CardCast' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Cirrucoon - 1 has started Watching the 'PhaseEnd' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Cirrucoon - 2 has started Watching the 'PhaseEnd' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Nimbug - 1 has started Watching the 'CardCast' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Nimbug - 2 has started Watching the 'CardCast' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022
+Nimbug - 3 has started Watching the 'CardCast' GameEvent for its Effect.
+Message
+Thursday, December 22, 2022

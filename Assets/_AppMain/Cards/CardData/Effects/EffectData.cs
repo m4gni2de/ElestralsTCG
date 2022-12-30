@@ -9,7 +9,7 @@ using Gameplay.Turns;
 
 namespace Gameplay
 {
-    [System.Serializable]
+    
     public class EffectData
     {
 
@@ -67,7 +67,7 @@ namespace Gameplay
             if (dto != null)
             {
                 bool isLocal = dto.isLocal.IntToBool();
-                return new Trigger(isLocal, dto.activation, dto.result, dto.timing, dto.triggerArgs);
+                return new Trigger(isLocal, dto.activation, dto.result, dto.timing, dto.watchFrom, dto.triggerArgs);
             }
             return null;
         }

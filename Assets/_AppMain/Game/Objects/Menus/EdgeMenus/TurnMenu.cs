@@ -5,7 +5,7 @@ using Gameplay;
 using Gameplay.Turns;
 using UnityEngine.UI;
 
-public class TurnMenu : EdgeMenu, iDynamicObject
+public class TurnMenu : EdgeMenu, iDynamicObject, iFreeze
 {
     public Turn ActiveTurn { get { return TurnManager.Instance.ActiveTurn; } }
     public List<Button> PhaseButtons = new List<Button>();
@@ -63,6 +63,7 @@ public class TurnMenu : EdgeMenu, iDynamicObject
         _isOpen = true;
         menuObject.SetActive(true);
         this.MoveToWaypoint("Open");
+        this.Freeze();
         //menuObject.transform.localPosition = new Vector3(GetComponent<RectTransform>().rect.width, transform.localPosition.y, -2f);
 
     }
@@ -72,6 +73,7 @@ public class TurnMenu : EdgeMenu, iDynamicObject
         _isOpen = false;
 
         this.MoveToWaypoint("Close");
+        this.Thaw();
         //menuObject.transform.localPosition = new Vector3(-GetComponent<RectTransform>().rect.width, transform.localPosition.y, -2f);
     }
     #endregion
@@ -116,6 +118,7 @@ public class TurnMenu : EdgeMenu, iDynamicObject
         if (startPhase)
         {
             TurnManager.StartBattlePhase();
+            Close();
         }
     }
     public void EndCommand()
@@ -127,6 +130,7 @@ public class TurnMenu : EdgeMenu, iDynamicObject
         if (startPhase)
         {
             TurnManager.StartEndPhase();
+            Close();
         }
     }
     #endregion

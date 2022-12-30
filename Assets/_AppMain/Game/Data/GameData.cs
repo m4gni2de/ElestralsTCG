@@ -40,7 +40,7 @@ namespace Gameplay.Data
         {
             gameId = dto.gameId;
             Decklist deck = Decklist.Load(dto.deckKey);
-            opponent = new Player(99, dto.playerId, "Opponent", deck, false);
+            opponent = new Player(99, dto.playerId, "Opponent", deck, false, 0, 0);
         }
        
         

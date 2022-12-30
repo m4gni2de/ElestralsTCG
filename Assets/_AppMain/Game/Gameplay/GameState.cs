@@ -208,14 +208,14 @@ namespace Gameplay
         public string Print(bool prettyPrint = false)
         {
 
-            //string s = JsonUtility.ToJson(this, prettyPrint);
-            string s = "";
+            string s = JsonUtility.ToJson(this, prettyPrint);
+            //string s = "";
 
             //for (int i = 0; i < Players.Count; i++)
             //{
             //    s += Players[i].Print(prettyPrint);
             //}
-            //Debug.Log(s);
+            Debug.Log(s);
             return s;
         }
 

@@ -13,6 +13,7 @@ using nsSettings;
 using Databases;
 using static Users.User;
 using PopupBox;
+using AppManagement.Loading;
 #if UNITY_EDITOR
 using ParrelSync;
 #endif
@@ -161,6 +162,10 @@ public class App
     }
     public static void ChangeScene(string scene)
     {
+        //if (ScreenManager.Instance)
+        //{
+        //    ScreenManager.Instance.ShowRandomScreen(.5f);
+        //}
         SceneManager.LoadScene(scene, LoadSceneMode.Single);
     }
     public static void ChangeScene(int scene)
@@ -198,6 +203,7 @@ public class App
         {
             popUp.DisplayMessage(msg, callback, true, false);
         }
+        
     }
     public static void ShowTimedMessage(string msg, float time, Action callback = null)
     {
@@ -277,5 +283,18 @@ public class App
 
     #region Global Functions
     public static string WhoAmI { get { return Account.Id; } }
+
+    public static double DateTimeToUnixTimestamp(DateTime dateTime)
+    {
+        DateTime unixStart = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+        long unixTimeStampInTicks = (dateTime.ToUniversalTime() - unixStart).Ticks;
+        return (double)unixTimeStampInTicks / TimeSpan.TicksPerSecond;
+    }
+    public static DateTime UnixTimestampToDateTime(double unixTime)
+    {
+        DateTime unixStart = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+        long unixTimeStampInTicks = (long)(unixTime * TimeSpan.TicksPerSecond);
+        return new DateTime(unixStart.Ticks + unixTimeStampInTicks, System.DateTimeKind.Utc);
+    }
     #endregion
 }

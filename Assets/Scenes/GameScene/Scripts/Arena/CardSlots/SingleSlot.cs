@@ -302,7 +302,7 @@ public class SingleSlot : CardSlot, iMainCard
 
         List<GameCard> toShow = Owner.gameField.SpiritDeckSlot.cards;
 
-        string title = $"Select {CardUI.AnySpiritUnicode(spiritCount)} to Enchant {SelectedCard.name} with.";
+        string title = $"Select {CardUI.AnySpiritUnicode(spiritCount)} to Enchant {SelectedCard.cardName} with.";
         BrowseMenu.LoadCards(toShow, title, true, spiritCount, spiritCount);
         BrowseMenu.CastMode(SelectedCard);
         ClosePopMenu(true);
@@ -322,7 +322,7 @@ public class SingleSlot : CardSlot, iMainCard
         int maxEnchantCount = toShow.Count;
 
 
-        string title = $"Select {CardUI.AnySpiritUnicode(spiritCount)} to DisEnchant from {SelectedCard.name}";
+        string title = $"Select {CardUI.AnySpiritUnicode(spiritCount)} to DisEnchant from {SelectedCard.cardName}";
         BrowseMenu.LoadCards(toShow, title, true, spiritCount, maxEnchantCount);
         BrowseMenu.CastMode(SelectedCard, null, false);
         ClosePopMenu(true);

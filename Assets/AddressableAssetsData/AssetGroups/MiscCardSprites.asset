@@ -17,12 +17,13 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 49a8e650bfad5be428118b8302e57a9a
   m_SerializeEntries:
-  - m_GUID: e70d181a5f079e94ba50f12eb9c78169
-    m_Address: cardbackSp
+  - m_GUID: 5a24cc4cf3b29f747a8a967182e92128
+    m_Address: sleeves0
     m_ReadOnly: 0
     m_SerializedLabels:
     - Preload
     - default
+    - Sleeves
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 66dd52e4fe6dbe14f9cb4ad0e82323dd
     m_Address: defaultcard
@@ -58,6 +59,22 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1105371530c33f5488c2c7f18614f752
+    m_Address: sleeves1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    - Sleeves
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aded109ed79a64b40bbabf9c91160dfd
+    m_Address: sleeves2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Preload
+    - Sleeves
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}

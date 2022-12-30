@@ -11,6 +11,7 @@ namespace Databases
         public string gameId { get; set; }
         public string playerId { get; set; }
         public string deckKey { get; set; }
+        public int sleeves { get; set; }
     }
 }
 

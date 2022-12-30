@@ -1,0 +1,158 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: LoadScreenMaterials
+  m_EditorClassIdentifier: 
+  m_GroupName: LoadScreenMaterials
+  m_Data:
+    m_SerializedData: []
+  m_GUID: b8ed9e917cc35294f942e781eea839d6
+  m_SerializeEntries:
+  - m_GUID: 14a76ad9601d8484aaf52db79dff0971
+    m_Address: ls0_4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - LoadScreens
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 982e402211123d84ebf92dbf3fe60e84
+    m_Address: ls0_2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - LoadScreens
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2bbc4b13330aa69408b7c44a214b8fbe
+    m_Address: ls0_1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - LoadScreens
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eba60934b64106547b06585139b95fe8
+    m_Address: ls0_0
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - LoadScreens
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7689430159ea16c43bc41d350d4cca46
+    m_Address: ls0_3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - LoadScreens
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b681517cb73c56f45b8a34c5e005c955
+    m_Address: ls1_3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - LoadScreens
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f75674d1f6e4d6649a9ec43dff95ac77
+    m_Address: ls1_1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - LoadScreens
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: af880f1f6ae07e6418e8f8789c711cfb
+    m_Address: ls1_7
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - LoadScreens
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 65a1d2554c8da5b4d9c348eb8ff9355e
+    m_Address: ls1_5
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - LoadScreens
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8174d762cf9beb14a84e9a09a5dfae95
+    m_Address: ls1_4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - LoadScreens
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4603aa223d531bd449003609e315882d
+    m_Address: ls1_8
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - LoadScreens
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 383c4fe241b13d54b8833d51f796cd49
+    m_Address: ls1_6
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - LoadScreens
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5ee76fac8818aae48abe6a4e54841101
+    m_Address: ls1_2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - LoadScreens
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5aec8169f7deee848833b62c85180f6e
+    m_Address: ls1_0
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - LoadScreens
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 92369dd70dd62b74382dd248996af62f
+    m_Address: ls2_2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - LoadScreens
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f842aa04eeceab745be4900775e636b2
+    m_Address: ls2_4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - LoadScreens
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fb0f97139d3660f4891c70ec92d0a176
+    m_Address: ls2_3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - LoadScreens
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 987de803738431f419efa2187e21fbfe
+    m_Address: ls2_1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - LoadScreens
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2a648da6c975029478b76ad2923d67a3
+    m_Address: ls2_0
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - LoadScreens
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 5311f54b5f0aa5c4dab10457f4e9e053, type: 2}
+    - {fileID: 11400000, guid: 4168fe8bded0d7b4ea9f61f26bf84b80, type: 2}

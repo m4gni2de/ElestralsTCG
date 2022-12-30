@@ -16,6 +16,8 @@ public class NetworkPlayer
     public int index { get; private set; }
     public string deckKey { get; private set; }
     public string deckName { get; private set; }
+    public int sleeves { get; set; }
+    public int playmatt { get; set; }
 
     public bool isConnected = false;
 
@@ -59,7 +61,7 @@ public class NetworkPlayer
         this.username = username;
         Cards.Clear();
         CreateSlots();
-
+       
     }
 
     protected void CreateSlots()

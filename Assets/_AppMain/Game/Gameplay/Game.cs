@@ -13,6 +13,7 @@ using Gameplay.Networking;
 using UnityEditor;
 using UnityEngine.SocialPlatforms;
 using System.Data;
+using nsSettings;
 #if UNITY_EDITOR
 using static UnityEditor.Experimental.GraphView.GraphView;
 #endif
@@ -250,9 +251,6 @@ namespace Gameplay
         
         #endregion
 
-
-       
-
         #region Initialization
         protected Game()
         {
@@ -308,7 +306,10 @@ namespace Gameplay
                     decklist = d;
                 }
             }
-            Player player = new Player(0, userid, username, decklist, true);
+
+            int sleeves = SettingsManager.Account.Settings.Sleeves;
+            int playmatt = SettingsManager.Account.Settings.Playmatt;
+            Player player = new Player(0, userid, username, decklist, true, sleeves, playmatt);
             AddPlayer(player);
         }
         
@@ -341,57 +342,7 @@ namespace Gameplay
         }
         #endregion
 
-        #region Game Events
-        private static CardEventSystem _eventSystem = null;
-        public static CardEventSystem eventSystem { get { _eventSystem ??= new CardEventSystem(true); return _eventSystem; } }
-
-        #region Turn Based Events
-        public static event Action<TargetArgs> OnNewTargetParams;
-        public static void SetTargetParams(TargetArgs args = null)
-        {
-            OnNewTargetParams?.Invoke(args);
-
-        }
-
-        public static event Action<Turn> OnNewTurnStart;
-        public static void StartNewTurn(Turn turn)
-        {
-            OnNewTurnStart?.Invoke(turn);
-            
-        }
-
-        public static event Action<Turn, int> OnNewPhaseStart;
-        public static void PhaseStart(Turn turn, int index)
-        {
-            OnNewPhaseStart?.Invoke(turn, index);
-            eventSystem.PhaseStart.Call(turn, turn.Phases[index]);
-        }
-
-        //public static event Action<GameMode> OnGameModeSet;
-        #endregion
-
-        #region Action Events
-        public static event Action<CardAction> OnActionDeclared;
-        public static void ActionDeclared(CardAction ac)
-        {
-            OnActionDeclared?.Invoke(ac);
-        }
-        #endregion
-
-        #region Card Based Events
-        public static event Action<GameCard, GameCard> OnEnchantment;
-        public static void OnEnchantmentSend(GameCard source, GameCard spirit)
-        {
-            OnEnchantment?.Invoke(source, spirit);
-        }
-        public static event Action<GameCard, GameCard> OnDisEnchantment;
-        public static void OnDisEnchantmentSend(GameCard source, GameCard spirit)
-        {
-            OnDisEnchantment?.Invoke(source, spirit);
-        }
-        #endregion
-
-        #endregion
+      
 
         #region Rune Empowering
 
@@ -472,6 +423,59 @@ namespace Gameplay
             //if (this.gameId != gameId) { return; }
 
         }
+
+        #endregion
+
+
+        #region Game Events
+        private static CardEventSystem _events = null;
+        public static CardEventSystem Events { get { _events ??= new CardEventSystem(true); return _events; } }
+
+        #region Turn Based Events
+        public static event Action<TargetArgs> OnNewTargetParams;
+        public static void SetTargetParams(TargetArgs args = null)
+        {
+            OnNewTargetParams?.Invoke(args);
+
+        }
+
+        public static event Action<Turn> OnNewTurnStart;
+        public static void StartNewTurn(Turn turn)
+        {
+            OnNewTurnStart?.Invoke(turn);
+
+        }
+
+        public static event Action<Turn, int> OnNewPhaseStart;
+        public static void PhaseStart(Turn turn, int index)
+        {
+            OnNewPhaseStart?.Invoke(turn, index);
+            //eventSystem.PhaseStart.Call(turn, turn.Phases[index]);
+        }
+
+        //public static event Action<GameMode> OnGameModeSet;
+        #endregion
+
+        #region Action Events
+        public static event Action<CardAction> OnActionDeclared;
+        public static void ActionDeclared(CardAction ac)
+        {
+            OnActionDeclared?.Invoke(ac);
+        }
+        #endregion
+
+        #region Card Based Events
+        public static event Action<GameCard, GameCard> OnEnchantment;
+        public static void OnEnchantmentSend(GameCard source, GameCard spirit)
+        {
+            OnEnchantment?.Invoke(source, spirit);
+        }
+        public static event Action<GameCard, GameCard> OnDisEnchantment;
+        public static void OnDisEnchantmentSend(GameCard source, GameCard spirit)
+        {
+            OnDisEnchantment?.Invoke(source, spirit);
+        }
+        #endregion
 
         #endregion
     }

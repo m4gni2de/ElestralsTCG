@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Gameplay
 {
-    [System.Serializable]
+    
     public class CardStats
     {
       
@@ -32,7 +32,7 @@ namespace Gameplay
         {
             CardElements = new List<ElementCode>();
 
-            name = card.name;
+            name = card.cardName;
             title = card.card.cardData.cardName;
             if (card.DefaultCardType == CardType.Elestral)
             {

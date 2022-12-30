@@ -14,6 +14,7 @@ using TMPro;
 
 using UnityEngine;
 using UnityEngine.Profiling;
+using System;
 
 #if UNITY_EDITOR
 using UnityEditor.SceneManagement;
@@ -84,7 +85,7 @@ public class CardConfig : MonoBehaviour
         {
             List<SpriteRenderer> list = new List<SpriteRenderer>();
             list.Add(cardBg);
-            list.Add(cardCover);
+            list.Add(cardCover.sp);
             list.Add(raritySp);
             list.Add(cardBorder);
             return list;
@@ -132,6 +133,7 @@ public class CardConfig : MonoBehaviour
         }
     }
 
+    protected bool IsFaceUp { get { return cardCover.MainSprite == null; } }
    
 #endregion
 
@@ -140,7 +142,7 @@ public class CardConfig : MonoBehaviour
     public SpriteRenderer cardImageSp;
     public SpriteRenderer cardBorder;
     public SpriteRenderer cardBg;
-    public SpriteRenderer cardCover;
+    [SerializeField] private SpriteDisplay cardCover;
     public SpriteRenderer frameSp;
     public SpriteRenderer cardPipping;
     public SpriteRenderer glowL;
@@ -202,6 +204,22 @@ public class CardConfig : MonoBehaviour
 
     #endregion
 
+    #region Unique Graphic Attributes
+    public Sprite CardSleeve
+    {
+        get
+        {
+
+            return cardCover.MainSprite;
+        }
+        set
+        {
+            cardCover.SetSprite(value);
+        }
+    }
+    
+    #endregion
+
     private void Awake()
     {
         
@@ -237,7 +255,7 @@ public class CardConfig : MonoBehaviour
         stoneSp.sprite = null;
         cardImageSp.sprite = null;
         cardBg.gameObject.SetActive(false);
-        cardCover.sprite = CardFactory.cardBackSp;
+        ToggleCardBack(true);
     }
     public void LoadCard(Card card)
     {
@@ -532,17 +550,16 @@ public class CardConfig : MonoBehaviour
 
     public void Flip(bool showBack)
     {
+        ToggleCardBack(showBack);
         if (showBack)
         {
-            cardCover.sprite = CardFactory.cardBackSp;
             cardBg.gameObject.SetActive(false);
             cardBorder.sprite = CardFactory.borderSp;
             cardBorder.color = Color.black;
-            cardBorder.sortingOrder = cardCover.sortingOrder + 1;
+            cardBorder.sortingOrder = cardCover.SortOrder + 1;
         }
         else
         {
-            cardCover.sprite = null;
             cardBg.gameObject.SetActive(true);
             cardBorder.sprite = CardFactory.borderSp;
             cardBorder.color = Color.black;
@@ -610,7 +627,7 @@ public class CardConfig : MonoBehaviour
         int diff = newOrder - current;
 
         SetSpriteOffset(cardBg, -1);
-        SetSpriteOffset(cardCover, 8);
+        SetSpriteOffset(cardCover.sp, 8);
         SetSpriteOffset(cardBorder, 1);
         SetSpriteOffset(raritySp, 0);
 
@@ -649,7 +666,7 @@ public class CardConfig : MonoBehaviour
         if (refreshRenderers) { allSp = null; }
 
         SetSpriteOffset(cardBg, -1);
-        SetSpriteOffset(cardCover, 8);
+        SetSpriteOffset(cardCover.sp, 8);
         SetSpriteOffset(cardBorder, 1);
         SetSpriteOffset(raritySp, 0);
 
@@ -679,7 +696,32 @@ public class CardConfig : MonoBehaviour
         artMask.backSortingLayerID = cardImageSp.sortingLayerID;
     }
 
-#endregion
+    #endregion
+
+    #region Card Borders/Backs
+    private void ToggleCardBack(bool showBack)
+    {
+        if (showBack)
+        {
+            if (cardCover.MainSprite == null)
+            {
+                CardSleeve = CardFactory.DefaultCardBack;
+            }
+            cardCover.DisplaySprite(true);
+        }
+        else
+        {
+            cardCover.DisplaySprite(false);
+        }
+       
+    }
+    public void SetCardSleeves(Sprite sp)
+    {
+        CardSleeve = sp;
+        cardCover.DisplaySprite(!IsFaceUp);
+        
+    }
+    #endregion
 
     private void OnDestroy()
     {

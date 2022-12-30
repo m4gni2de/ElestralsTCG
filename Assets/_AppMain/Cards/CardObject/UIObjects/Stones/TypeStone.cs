@@ -58,7 +58,7 @@ namespace CardsUI.Stones
 
             string spName = $"{element.ToString()}Symbol_Large";
 
-            spriteDisplay.SetSprite(AssetPipeline.ByKey<Sprite>(spName, "cardbackSp"));
+            spriteDisplay.SetSprite(AssetPipeline.ByKey<Sprite>(spName, CardFactory.DefaultSleeves));
             Show();
             //TypeSymbolSp.sprite = AssetPipeline.ByKey<Sprite>(spName);
         }

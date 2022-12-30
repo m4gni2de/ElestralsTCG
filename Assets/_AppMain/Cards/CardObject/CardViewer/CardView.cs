@@ -110,6 +110,7 @@ public class CardView : MonoBehaviour, iRemoteAsset, iGridCell
         }
     }
     #endregion
+
     #region Functions
     public bool IsCard(string cardKey)
     {
@@ -179,9 +180,15 @@ public class CardView : MonoBehaviour, iRemoteAsset, iGridCell
        
     }
 
+    public void ChangeSleeves(Sprite sprite)
+    {
+        CurrentConfig.SetCardSleeves(sprite);
+    }
     #endregion
     #region Built Card Properties
     public SpriteDisplay cardBorder { get { return CurrentConfig.cardBorder; } }
+
+    
     #endregion
 
     #region Events
@@ -201,7 +208,6 @@ public class CardView : MonoBehaviour, iRemoteAsset, iGridCell
     private void Awake()
     {
         DefaultPosition = transform.position;
-       
     }
     
 
@@ -253,7 +259,6 @@ public class CardView : MonoBehaviour, iRemoteAsset, iGridCell
     {
         if (toBack)
         {
-            //sp.MainSprite = AssetPipeline.ByKey<Sprite>("cardbackSp");
 
             DefaultConfig.Toggle(false);
             FullArtConfig.Toggle(false);

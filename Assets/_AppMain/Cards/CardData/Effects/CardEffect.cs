@@ -7,20 +7,34 @@ using Cards;
 using Gameplay.Commands;
 using Gameplay.Turns;
 using System;
-using static UnityEditor.Progress;
 using Gameplay.CardActions;
+using GameEvents;
+using UnityEngine.UIElements;
 
 namespace Gameplay
 {
-   
-    public class CardEffect
+    [System.Serializable]
+    public class CardEffect : iLog
     {
+        #region Static Indexing
+        private static Dictionary<CardEffect, GameCard> _cardsByEffect = null;
+        public static Dictionary<CardEffect, GameCard> CardsByEffect
+        {
+            get
+            {
+                _cardsByEffect ??= new Dictionary<CardEffect, GameCard>();
+                return _cardsByEffect;
+            }
+        }
+        #endregion
+
         #region Operators
         //public static implicit operator CardEffect(EffectDTO dto)
         //{
         //    CardEffect eff = new CardEffect(dto);
         //}
         #endregion
+
 
         #region Properties
         private string _key = "";
@@ -37,8 +51,19 @@ namespace Gameplay
         private bool _isExhausted = false;
         public bool IsExhausted { get { return _isExhausted; } protected set { _isExhausted = value; } }
 
-        private List<GameCard> _costSpirits = null;
-        public List<GameCard> CostSpirits { get { _costSpirits ??= new List<GameCard>(); return _costSpirits; } set { _costSpirits = value; } }
+        private List<string> _costSpirits = null;
+        public List<string> CostSpirits { get { _costSpirits ??= new List<string>(); return _costSpirits; } set { _costSpirits = value; } }
+        protected List<GameCard> GetCostSpiritCards()
+        {
+            List<GameCard> cards = new List<GameCard>();
+            if (_costSpirits == null) { return cards; }
+            for (int i = 0; i < CostSpirits.Count; i++)
+            {
+                GameCard spirit = Game.FindCard(CostSpirits[i]);
+                cards.Add(spirit);
+            }
+            return cards;
+        }
 
 
         private EffectAction _effectAction = null;
@@ -66,11 +91,11 @@ namespace Gameplay
 
         protected bool CanActivate(GameCard source)
         {
-            if (Ability == null) { return false; }
-            if (Ability.CanActivate())
-            {
-                return Validate(source);
-            }
+            //if (Ability == null) { return false; }
+            //if (Ability.CanActivate())
+            //{
+            //    return Validate(source);
+            //}
             return false;
         }
 
@@ -83,15 +108,20 @@ namespace Gameplay
             EffectAction = new EffectAction(source.Owner, source, this);
             Ability.OnAbilityTry += AwaitAbilityTry;
             CostSpirits.Clear();
+
+            List<GameCard> spiritCards = new List<GameCard>();
+            
+
             if (CastCost.Count > 0)
             {
                 CostSpirits = GetCostSpirits(source);
-                for (int i = 0; i < CostSpirits.Count; i++)
+                spiritCards = GetCostSpiritCards();
+                for (int i = 0; i < spiritCards.Count; i++)
                 {
-                    CostSpirits[i].isBlackout = true;
+                    spiritCards[i].isBlackout = true;
                 }
             }
-            EffectAction.AddSpiritsCost(CostSpirits);
+            EffectAction.AddSpiritsCost(spiritCards);
             Ability.TryAbility(source);
         }
         public void AwaitAbilityTry(Ability abi, bool didTry)
@@ -108,9 +138,9 @@ namespace Gameplay
             }
         }
 
-        private List<GameCard> GetCostSpirits(GameCard source)
+        private List<string> GetCostSpirits(GameCard source)
         {
-
+            
             Dictionary<ElementCode, int> req = new Dictionary<ElementCode, int>();
             for (int i = 0; i < CastCost.Count; i++)
             {
@@ -126,9 +156,15 @@ namespace Gameplay
 
 
             List<GameCard> results = source.Owner.GetSpiritsOfType(req);
-            return results;
+            List<string> ids = new List<string>();
+            for (int i = 0; i < results.Count; i++)
+            {
+                ids.Add(results[i].cardId);
+            }
+            return ids;
 
         }
+
         #endregion
 
         #region Initialization
@@ -140,6 +176,18 @@ namespace Gameplay
                 return new CardEffect(list[0]);
             }
             return new CardEffect(null);
+        }
+        public static List<CardEffect> GetCardEffects(string cardKey)
+        {
+            List<EffectDTO> list = EffectService.FindCardEffects(cardKey);
+            List<CardEffect> effects = new List<CardEffect>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                CardEffect cf = new CardEffect(list[i]);
+                effects.Add(cf);
+            }
+
+            return effects;
         }
         public static CardEffect Empty
         {
@@ -172,82 +220,103 @@ namespace Gameplay
         }
         public void SetEvents(GameCard card, CardEventSystem ev)
         {
-            key = card.cardId;
-            if (effectData != null)
-            {
-                SetTrigger(effectData, card, ev);
-            }
+            //key = card.cardId;
+            //if (!CardsByEffect.ContainsKey(this))
+            //{
+            //    CardsByEffect.Add(this, card);
+            //}
+
+            //if (effectData != null)
+            //{
+            //    SetTrigger(effectData, card, ev);
+            //}
             
         }
 
         private void SetTrigger(EffectData data, GameCard card, CardEventSystem ev)
         {
-            Trigger t = data.trigger;
+            Trigger t = data.trigger; 
+
             if (t.isLocal)
             {
                 t.EventWatching = ev.FindLocal(t.index);
             }
             else
             {
-                t.EventWatching = CardEventSystem.Find(t.index);
+                t.EventWatching = CardEventSystem.FindGlobal(t.index);
             }
 
             if (t.EventWatching != null)
             {
-                t.EventWatching.AddWatcher(() => OnEventTriggered(data, card), true);
+                t.EventWatching.AddArgWatcher(OnWatchedEventTriggered);
+
+                this.Log($"{card.workingName} has started Watching the '{t.EventWatching.key}' GameEvent for its Effect.");
 
             }
         }
 
-        private void OnEventTriggered(EffectData data, GameCard card)
+        private void OnWatchedEventTriggered(GameEventArgs args)
         {
-            Trigger t = data.trigger;
-            Ability a = data.ability;
+            GameCard card = CardsByEffect[this];
 
-            if (!data.autoUse && a.CanActivate())
+            if (!Ability.CanActivate()) { return; }
+            if (Trigger.whenActivate == ActivationEvent.OnEvent)
             {
-                if (t.whenActivate == ActivationEvent.OnEvent)
-                {
-                    if (ValidateTriggerArgs(t, card))
-                    {
-                        GameManager.Instance.AskCardEffect(this, card);
-                    }
-                   
-                }
+                if (!ValidateArgs(Trigger, args, card)) { return; }
             }
-        }
+            if (!effectData.autoUse)
+            {
+                GameManager.Instance.AskCardEffect(this, card);
+                this.Log($"{card.workingName} can activate its Effect after being Triggered by the '{Trigger.EventWatching.key}' GameEvent.");
+            }
+            else
+            {
+                Try(card);
+                this.Log($"{card.workingName} will activate its Effect after being Triggered by the '{Trigger.EventWatching.key}' GameEvent.");
+            }
 
-        private bool ValidateTriggerArgs(Trigger t, GameCard card)
+          
+        }
+      
+        private bool ValidateArgs(Trigger t, GameEventArgs args, GameCard source)
         {
             if (t.triggerArgs == null) { return true; }
 
-            
+
             for (int i = 0; i < t.triggerArgs.keys.Count; i++)
             {
-                string key = t.triggerArgs.keys[i];
-                var value = t.triggerArgs[key];
+                string triggerKey = t.triggerArgs.keys[i];
+                var triggerValue = t.GetTriggerArgsValue(triggerKey); 
 
-                for (int j = 0; j < t.EventWatching.Parameters.Count; j++)
+
+
+                var KeyProp = t.ParseKeyPropFromArgs(triggerKey);
+                string key = KeyProp.Item1;
+                string prop = KeyProp.Item2;
+
+                object argValue = null;
+                if (key.ToLower() == "this")
                 {
-                    if (t.EventWatching.Parameters[i].Name.ToLower() == key.ToLower())
-                    {
-                        var pValue = t.EventWatching.Parameters[i].GetValue();
-                        if (value != pValue)
-                        {
-                            return false;
-                        }
-                        else
-                        {
-                            continue;
-                        }
-                    }
-                    
+                    argValue = source.GetPropertyOrFieldValue(prop);
+                }
+                else
+                {
+                    argValue = args.GetArgProperty(key, prop);
                 }
 
-
+                
+                if (argValue.GetType() == typeof(bool))
+                {
+                    bool boolVal = (bool) argValue;
+                    argValue = boolVal.BoolToInt();
+                }
+                if (!argValue.Equals(triggerValue)) { return false; }
             }
             return true;
         }
+
+       
+
         #endregion
 
         #region Validation
@@ -264,11 +333,11 @@ namespace Gameplay
 
             if (IsExhausted) { AddError("Effect has already been used."); return false; }
 
-            if (!CanBeUsedInGameState(owner, sourceCard)) { return false; }
+            if (!CanBeUsedInGameState(owner, sourceCard)) { AddError($"{sourceCard.cardName} cannot active its effect from its Location."); return false; }
 
             if (CastCost.Count > 0)
             {
-                if (!owner.HasAvailableSpirits(CastCost)) { AddError($"Not enough Spirits to pay for the cost!"); }
+                if (!owner.HasAvailableSpirits(CastCost)) { AddError($"Not enough Spirits to pay for the cost!"); return false; }
             }
 
             return ErrorList.Count == 0;
@@ -279,15 +348,15 @@ namespace Gameplay
             if (Game.GameStarted)
             {
                 bool isInPlay = card.CurrentSlot.IsInPlay;
-                if (Trigger.whenActivate == ActivationEvent.Perpetual) { return isInPlay; }
-                if (Trigger.whenActivate == ActivationEvent.OnEvent) { return true; }
+                if (Trigger.whenActivate == ActivationEvent.Perpetual) { return Trigger.ValidateCardLocation(card); }
+                if (Trigger.whenActivate == ActivationEvent.OnEvent) { return Trigger.ValidateCardLocation(card); }
                 if (Trigger.whenActivate == ActivationEvent.YouCan)
                 {
                     Turn activeTurn;
                     bool isActivePlayer = Game.IsPlayerTurn(p, out activeTurn);
-                    if (isActivePlayer)
+                    if (isActivePlayer && activeTurn.IsYours)
                     {
-                        if (!isInPlay) { return false; }
+                        if (!Trigger.ValidateCardLocation(card)) { return false; }
                         return activeTurn.ActivePhase == activeTurn.MainPhase;
                     }
                     return false;

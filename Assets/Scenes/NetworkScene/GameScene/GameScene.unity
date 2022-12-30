@@ -1959,6 +1959,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 138814760701479512}
+  - {fileID: 138814761992739362}
   m_Father: {fileID: 138814761052882125}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -7964,7 +7965,7 @@ Camera:
   far clip plane: 1000
   field of view: 102.85078
   orthographic: 1
-  orthographic size: 1480
+  orthographic size: 1546
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -13006,7 +13007,11 @@ PrefabInstance:
     - target: {fileID: 3904531719011968168, guid: 69ae6524e1c22f245a411d07ca434dab, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: d757cd482c085974d85b59f466c998ad, type: 3}
+      objectReference: {fileID: 21300000, guid: f663aba17ce9f1c4b8340b05458076c1, type: 3}
+    - target: {fileID: 3904531719011968168, guid: 69ae6524e1c22f245a411d07ca434dab, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4057977218235377376, guid: 69ae6524e1c22f245a411d07ca434dab, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -16388,7 +16393,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &138814761052882125
 RectTransform:
   m_ObjectHideFlags: 0
@@ -16402,14 +16407,13 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 213971289}
-  - {fileID: 138814761992739362}
   m_Father: {fileID: 826659642}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: -46, y: 34}
-  m_SizeDelta: {x: 150, y: 150}
+  m_SizeDelta: {x: 210, y: 210}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &138814761052882127
 CanvasRenderer:
@@ -16426,7 +16430,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 138814761052882122}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f89eec404703c76459b8bde5f27891db, type: 3}
   m_Name: 
@@ -16448,7 +16452,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1032536915}
-  m_Father: {fileID: 138814761052882125}
+  m_Father: {fileID: 213971289}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -16475,7 +16479,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!222 &138814761992739364
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -13,6 +13,16 @@ public class GameSettings<T> where T : ISettingsType<T>, new()
 
     public T Settings { get; set; }
 
+    public object GetValue(string key)
+    {
+        object val = Settings.GetPropertyOrFieldValue(key);
+        if (val == null)
+        {
+            return App.DisplayError($"Setting {key} does not Exist in {Settings.GetType().Name}!;");
+        }
+        return Settings.GetPropertyOrFieldValue(key);
+    }
+
     public T this[T val]
     {
         get { return Settings; }
@@ -98,6 +108,11 @@ public class GameSettings<T> where T : ISettingsType<T>, new()
     public void Save()
     {
         SettingsService.Save(Key, Settings);
+    }
+
+    public void Rollback()
+    {
+        Load(LastSaved);
     }
     #endregion
 

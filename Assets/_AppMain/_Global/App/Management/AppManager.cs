@@ -20,6 +20,7 @@ using System.Net.Sockets;
 using AppManagement;
 using UnityEngine.Events;
 using Cards.Collection;
+using AppManagement.Loading;
 #if UNITY_EDITOR
 using ParrelSync;
 #endif
@@ -61,7 +62,8 @@ public class AppManager : MonoBehaviour
             double size = data.Item2;
             if (size > 0)
             {
-                Instance.ShowLoadingBar("Items Downloaded", 0f, items.Count);
+                //Instance.ShowLoadingBar("Items Downloaded", 0f, items.Count);
+                
                 //AssetPipeline.DoRedownloadAllCards();
 
             }
@@ -359,6 +361,10 @@ CheckForAccountDevice();
         {
             Thaw(obj);
         }
+        else
+        {
+            FreezeObjects.Remove(obj);
+        }
             
 
     }
@@ -397,7 +403,9 @@ CheckForAccountDevice();
     {
         worldCanvas = WorldCanvas.Instance;
         appCanvas.worldCamera = Camera.main;
-        
+        WorldCanvas.Instance.ScaleToSafeArea();
+        ScreenManager.Instance.ShowRandomScreen(1.25f);
+
         PopupManager.SetActivePopup();
         
     }
@@ -448,8 +456,6 @@ CheckForAccountDevice();
         {
             End();
         }
-        //_SessionEnd = DateTime.Now;
-        //LogSession();
 
     }
     public void End()
@@ -487,59 +493,62 @@ CheckForAccountDevice();
         obj.transform.SetParent(transform);
     }
 
-    public void ShowLoadingBar(string msg, float startVal, float maxVal, float minVal = 0)
+    public void ShowLoadingBar(string msg, float startVal, float maxVal, float minVal = 0, int roundingDecimals = -1)
     {
-        loadingBar.Display(msg, startVal, maxVal, minVal);
+        ScreenManager.Instance.LoadingBarDisplay(msg, startVal, maxVal, minVal, roundingDecimals);
     }
-    public static async Task<bool> AwaitLoading(LoadingBar bar, Action ac)
-    {
+    //public static async Task<bool> AwaitLoading(LoadingBar bar, Action ac)
+    //{
 
-        ac.Invoke();
-        do
-        {
-            await Task.Delay(1);
-        } while (true && !bar.LoadComplete);
+    //    ac.Invoke();
+    //    do
+    //    {
+    //        await Task.Delay(1);
+    //    } while (true && !bar.LoadComplete);
 
-        bar.Hide();
-        return true;
-    }
-
-
-    public void DoAssetLoad<T>(string key)
-    {
-        StartCoroutine(AwaitAssetLoad<T>(key));
-    }
-
-    private IEnumerator AwaitAssetLoad<T>(string key)
-    {
-        loadingBar.Display($"Initializing {key}", 0f, 1f, 0f);
-        AsyncOperationHandle<T> handle = Addressables.LoadAssetAsync<T>(key);
-
-        do
-        {
-            yield return new WaitForEndOfFrame();
-            if (loadingBar != null)
-            {
-                loadingBar.SetSlider(handle.PercentComplete);
-            }
-
-        } while (true && !handle.IsDone);
-        yield return handle;
-
-    }
+    //    bar.Hide();
+    //    return true;
+    //}
 
 
+    //public void DoAssetLoad<T>(string key)
+    //{
+    //    StartCoroutine(AwaitAssetLoad<T>(key));
+    //}
+
+    //private IEnumerator AwaitAssetLoad<T>(string key)
+    //{
+    //    loadingBar.Display($"Initializing {key}", 0f, 1f, 0f);
+    //    AsyncOperationHandle<T> handle = Addressables.LoadAssetAsync<T>(key);
+
+    //    do
+    //    {
+    //        yield return new WaitForEndOfFrame();
+    //        if (loadingBar != null)
+    //        {
+    //            loadingBar.SetSlider(handle.PercentComplete);
+    //        }
+
+    //    } while (true && !handle.IsDone);
+    //    yield return handle;
+
+    //}
+
+    private static Coroutine loadingAssets = null;
     public static event Action AssetsLoadComplete;
     public void DoMultipleAssetLoad<T>(List<string> keys)
     {
-        StartCoroutine(AwaitMulitpleAssets<T>(keys));
+        if (loadingAssets == null)
+        {
+            loadingAssets = StartCoroutine(AwaitMulitpleAssets<T>(keys));
+        }
+        
     }
 
     private IEnumerator AwaitMulitpleAssets<T>(List<string> keys)
     {
         int count = keys.Count;
-        loadingBar.Display($"Initializing assets", 0f, count, 0f);
-
+        ShowLoadingBar($"Initializing assets", 0f, count, 0f, 2);
 
         int doneCount = 0;
         do
@@ -547,8 +556,6 @@ CheckForAccountDevice();
             AsyncOperationHandle<T> handle = Addressables.LoadAssetAsync<T>(keys[doneCount]);
             do
             {
-                loadingBar.SetText($"{keys[doneCount]} - {handle.PercentComplete * 100f}%");
-                //yield return new WaitForEndOfFrame();
                 yield return null;
                 loadingBar.SetText($"{keys[doneCount]} - {handle.PercentComplete * 100f}%");
             } while (!handle.IsDone);
@@ -561,8 +568,8 @@ CheckForAccountDevice();
         } while (true && doneCount < count);
 
 
-        loadingBar.Hide();
         AssetsLoadComplete?.Invoke();
+        loadingAssets = null;
 
     }
     #endregion

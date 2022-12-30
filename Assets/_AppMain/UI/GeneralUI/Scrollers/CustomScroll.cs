@@ -171,8 +171,8 @@ public class CustomScroll : MonoBehaviour
     #endregion
 
     #region Sorting
-    private Sorter _scrollSorter = null;
-    public Sorter Sorter
+    private iSorter _scrollSorter = null;
+    public iSorter Sorter
     {
         get
         {
@@ -183,6 +183,11 @@ public class CustomScroll : MonoBehaviour
         {
             _scrollSorter = value;
         }
+    }
+
+    public void SetSorter(iSorter sorter)
+    {
+        this.Sorter = sorter;
     }
     #endregion
 

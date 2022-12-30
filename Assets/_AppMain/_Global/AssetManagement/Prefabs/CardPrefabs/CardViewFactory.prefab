@@ -481,7 +481,7 @@ MonoBehaviour:
   cardImageSp: {fileID: 5115487905463287367}
   cardBorder: {fileID: 5115487906897567119}
   cardBg: {fileID: 5115487907003513331}
-  cardCover: {fileID: 1268569064009437863}
+  cardCover: {fileID: 5789755775818803012}
   frameSp: {fileID: 5115487906953653755}
   cardPipping: {fileID: 5115487905415901180}
   glowL: {fileID: 5115487905106233932}
@@ -3116,7 +3116,7 @@ MonoBehaviour:
   cardImageSp: {fileID: 5115487906471239355}
   cardBorder: {fileID: 5115487906897567119}
   cardBg: {fileID: 5115487907003513331}
-  cardCover: {fileID: 1268569064009437863}
+  cardCover: {fileID: 5789755775818803012}
   frameSp: {fileID: 5115487906659210202}
   cardPipping: {fileID: 5115487905301326446}
   glowL: {fileID: 5115487905106233932}

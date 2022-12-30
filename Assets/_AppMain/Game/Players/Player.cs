@@ -121,6 +121,35 @@ namespace Gameplay
             get { return _username; }
         }
 
+        private int _cardSleeves = -1;
+        public int cardSleeves
+        {
+            get
+            {
+                return _cardSleeves;
+            }
+            set
+            {
+                if (_cardSleeves == value) { return; }
+                _cardSleeves = value;
+                SleevesSp = CardFactory.CardSleeveSprite(value);
+            }
+
+        }
+        private int _playmatt = -1;
+        public int playmatt
+        {
+            get
+            {
+                return _playmatt;
+            }
+            set
+            {
+                if (_playmatt == value) { return; }
+                _playmatt = value;
+                PlaymattSp = CardFactory.PlaymattSprite(value);
+            }
+        }
         public Decklist decklist { get; private set; }
         public string[] GetDeckList()
         {
@@ -148,19 +177,58 @@ namespace Gameplay
         }
         #endregion
 
+        #region In Game Properties
+        private Sprite _sleevesSp = null;
+        public Sprite SleevesSp
+        {
+            get
+            {
+                if (_sleevesSp == null)
+                {
+                    _sleevesSp = CardFactory.CardSleeveSprite(cardSleeves);
+                }
+                return _sleevesSp;
+            }
+            set
+            {
+                if (_sleevesSp == value) { return; }
+                _sleevesSp = value;
+            }
+        }
+
+        private Sprite _playmattSp = null;
+        public Sprite PlaymattSp
+        {
+            get
+            {
+                if (_playmattSp == null)
+                {
+                    _playmattSp = CardFactory.PlaymattSprite(playmatt);
+                }
+                return _playmattSp;
+            }
+            set
+            {
+                if (_playmattSp == value) { return; }
+                _playmattSp = value;
+            }
+        }
+        #endregion
+
         #region Constructors
-        public Player(ushort tempGameId, string userId, string username, bool isLocal)
+        public Player(ushort tempGameId, string userId, string username, bool isLocal, int sleeves, int playMatt)
         {
             _userId = userId;
             _username = username;
             lobbyId = tempGameId;
             this.IsLocal = isLocal;
+            cardSleeves = sleeves;
+            this.playmatt = playMatt;
 
         }
-
-        public Player(ushort tempGameId, string userId, string username, Decklist list, bool isLocal) : this(tempGameId, userId, username, isLocal)
+        public Player(ushort tempGameId, string userId, string username, Decklist list, bool isLocal, int sleeves, int playMatt) : this(tempGameId, userId, username, isLocal, sleeves, playMatt)
         {
-            LoadDeckList(list);
+            LoadDeckList(list, true);
         }
 
         public void LoadDeckList(Decklist list, bool shuffle = true)

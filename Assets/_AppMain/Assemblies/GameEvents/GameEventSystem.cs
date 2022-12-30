@@ -11,7 +11,21 @@ namespace GameEvents
        
         public GameEventSystem(bool doLocal)
         {
-            if (doLocal) { ValidateLocalEvents(); }
+            if (doLocal) { ValidateLocalEvents(); } 
+        }
+        public static void RegisterIndexedEvents()
+        {
+            foreach (var ev in IndexedEvents)
+            {
+                string key = ev.Value;
+                GameEvent iEvent = Find(key);
+
+                if (!RegisteredEvents.ContainsKey(key))
+                {
+                    RegisteredEvents.Add(key, iEvent);
+                }
+            }
+           
         }
         #region Event Registering/Finding
         private static Dictionary<string, GameEvent> _registeredEvents = null;
@@ -60,11 +74,9 @@ namespace GameEvents
 
         #region Event Indexing
         public static Dictionary<int, string> IndexedEvents = new Dictionary<int, string>();
-        public static void ValidateEvents()
+        public static void ValidateEvents(Type t)
         {
             IndexedEvents.Clear();
-
-            Type t = typeof(GameEventSystem);
 
             foreach (var prop in t.GetProperties())
             {
@@ -83,9 +95,8 @@ namespace GameEvents
                         else
                         {
                             IndexedEvents.Add(i, prop.Name);
+                          
                         }
-
-
                     }
                 }
             }
@@ -111,7 +122,7 @@ namespace GameEvents
                         {
                             if (LocalEvents.ContainsKey(i))
                             {
-                                string existingVal = IndexedEvents[i];
+                                string existingVal = LocalEvents[i].key;
                                 string msg = $"DUPLICATE ENTRY ({prop.Name}). Event Index '{i}' already belongs locally to Event '{existingVal}'.";
                                 throw new Exception(msg);
                             }

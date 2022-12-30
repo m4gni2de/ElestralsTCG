@@ -47,7 +47,7 @@ public class Launcher
     {
         ConnectionManager.Disconnect();
 
-        CardEventSystem.ValidateEvents();
+        CardEventSystem.ValidateEvents(typeof(CardEventSystem));
     }
 }
 #endif

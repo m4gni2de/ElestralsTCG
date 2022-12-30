@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: LoadScreenPrefabs
+  m_EditorClassIdentifier: 
+  m_GroupName: LoadScreenPrefabs
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 351e07deeeb694747b7f6ff1a48420ed
+  m_SerializeEntries:
+  - m_GUID: fede9916e5b44e241a83e8cef2cbe373
+    m_Address: ls0_centarbour
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - LoadScreens
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eabcd3b211fd25941b5de5f7540b0880
+    m_Address: ls1_krakking
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - LoadScreens
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2d7738bb7dd51ab48958e4252f33e04c
+    m_Address: ls2_leonite
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    - LoadScreens
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 46de9eff82978c84f868c9fdd884b26b, type: 2}
+    - {fileID: 11400000, guid: a677c8d07be6bbc4582b4a555055701e, type: 2}

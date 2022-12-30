@@ -7,7 +7,7 @@ using UnityEngine.Events;
 using TouchControls;
 using UnityEditor.ShaderGraph.Internal;
 
-public class TouchObject : ValidationObject, iFreeze
+public class TouchObject : ValidationObject
 {
    
 
@@ -448,7 +448,7 @@ public class TouchObject : ValidationObject, iFreeze
         {
             CurrentObjects.Remove(this);
         }
-        DoThaw();
+        
     }
 
     protected void Start()
@@ -590,19 +590,7 @@ public class TouchObject : ValidationObject, iFreeze
     }
 
 
-    #region Game Freezing
-    protected void DoFreeze()
-    {
-        this.Freeze();
-    }
-
-    protected void DoThaw()
-    {
-        this.Thaw();
-    }
-    #endregion
-
-
+   
 
     #region Comparing
     public virtual float GetSortValue()

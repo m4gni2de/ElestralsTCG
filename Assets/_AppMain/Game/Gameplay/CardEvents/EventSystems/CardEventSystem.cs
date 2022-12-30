@@ -11,7 +11,52 @@ namespace Gameplay
 {
     public class CardEventSystem : GameEventSystem
     {
+        #region Static Properties
         private static GameEvent _GameStateChanged = null;
+
+        #region Global Events
+        private static Dictionary<int, GameEvent> _globalEvents = null;
+        public static Dictionary<int, GameEvent> GlobalEvents
+        {
+            get
+            {
+                _globalEvents ??= new Dictionary<int, GameEvent>();
+                return _globalEvents;
+            }
+        }
+       
+        public static void RegisterGlobalEvents(CardEventSystem globalSystem)
+        {
+            GlobalEvents.Clear();
+
+            Type t = typeof(CardEventSystem);
+            foreach (var prop in t.GetProperties())
+            {
+                foreach (var att in prop.GetCustomAttributes(typeof(EventIndexAttribute), true))
+                {
+                    if (att is EventIndexAttribute)
+                    {
+                        int i = prop.GetCustomAttribute<EventIndexAttribute>().index;
+                        if (!GlobalEvents.ContainsKey(i))
+                        {
+                            GameEvent ev = (GameEvent)prop.GetValue(globalSystem);
+                            GlobalEvents.Add(i, ev);
+                        }
+                    }
+                }
+            }
+        }
+
+        public static GameEvent FindGlobal(int index)
+        {
+            if (GlobalEvents.ContainsKey(index))
+            {
+                return GlobalEvents[index];
+            }
+            return null;
+        }
+        #endregion
+        #endregion
         [EventIndex(0, false)] public static GameEvent GameStateChanged { get { _GameStateChanged ??= GameEvent.Create("GameStateChanged"); return _GameStateChanged; } }
 
         public CardEventSystem(bool doLocal) : base(doLocal)
@@ -61,34 +106,46 @@ namespace Gameplay
         [EventIndex(502, true)] public GameEvent<GameCard, GameCard, AttackResult> BattleEnd { get { _battleEnd ??= GameEvent.Create<GameCard, GameCard, AttackResult>("BattleEnd", "Attacker", "AttackTarget", "Result"); return _battleEnd; } }
         #endregion
 
-        #region Turn Phase Related
-        protected GameEvent<Turn,GamePhase> _phaseStart = null;
-        [EventIndex(100, false)] public GameEvent<Turn,GamePhase> PhaseStart { get { _phaseStart ??= GameEvent.Create<Turn, GamePhase>("PhaseStart","Turn","Phase"); return _phaseStart; } }
+
+        #region Turn Phase Related(100-199)
+        protected GameEvent<Game> _gameStart = null;
+        [EventIndex(100, false)] public GameEvent<Game> GameStart { get { _gameStart ??= GameEvent.Create<Game>("GameStart", "Game"); return _gameStart; } }
+
+        protected GameEvent<Turn, GamePhase> _phaseStart = null;
+        [EventIndex(101, false)] public GameEvent<Turn,GamePhase> PhaseStart { get { _phaseStart ??= GameEvent.Create<Turn, GamePhase>("PhaseStart","Turn","Phase"); return _phaseStart; } }
+       
         protected GameEvent<Turn, GamePhase> _phaseEnd = null;
-        [EventIndex(101, false)] public GameEvent<Turn, GamePhase> PhaseEnd { get { _phaseEnd ??= GameEvent.Create<Turn, GamePhase>("PhaseEnd", "Turn", "Phase"); return _phaseEnd; } }
+        [EventIndex(102, false)] public GameEvent<Turn, GamePhase> PhaseEnd { get { _phaseEnd ??= GameEvent.Create<Turn, GamePhase>("PhaseEnd", "Turn", "Phase"); return _phaseEnd; } }
 
         protected GameEvent<Turn, GamePhase> _drawPhaseStart = null;
-        [EventIndex(102, false)] public GameEvent<Turn, GamePhase> DrawPhaseStart { get { _drawPhaseStart ??= GameEvent.Create<Turn, GamePhase>("DrawPhaseStart", "Turn", "Phase"); return _drawPhaseStart; } }
+        [EventIndex(103, false)] public GameEvent<Turn, GamePhase> DrawPhaseStart { get { _drawPhaseStart ??= GameEvent.Create<Turn, GamePhase>("DrawPhaseStart", "Turn", "Phase"); return _drawPhaseStart; } }
         protected GameEvent<Turn, GamePhase> _drawPhaseEnd = null;
-        [EventIndex(103, false)] public GameEvent<Turn, GamePhase> DrawPhaseEnd { get { _drawPhaseEnd ??= GameEvent.Create<Turn, GamePhase>("DrawPhaseEnd", "Turn", "Phase"); return _drawPhaseEnd; } }
+        [EventIndex(104, false)] public GameEvent<Turn, GamePhase> DrawPhaseEnd { get { _drawPhaseEnd ??= GameEvent.Create<Turn, GamePhase>("DrawPhaseEnd", "Turn", "Phase"); return _drawPhaseEnd; } }
 
         protected GameEvent<Turn, GamePhase> _mainPhaseStart = null;
-        [EventIndex(104, false)] public GameEvent<Turn, GamePhase> MainPhaseStart { get { _mainPhaseStart ??= GameEvent.Create<Turn, GamePhase>("MainPhaseStart", "Turn", "Phase"); return _mainPhaseStart; } }
+        [EventIndex(105, false)] public GameEvent<Turn, GamePhase> MainPhaseStart { get { _mainPhaseStart ??= GameEvent.Create<Turn, GamePhase>("MainPhaseStart", "Turn", "Phase"); return _mainPhaseStart; } }
         protected GameEvent<Turn, GamePhase> _mainPhaseEnd = null;
-        [EventIndex(105, false)] public GameEvent<Turn, GamePhase> MainPhaseEnd { get { _mainPhaseEnd ??= GameEvent.Create<Turn, GamePhase>("MainPhaseEnd", "Turn", "Phase"); return _mainPhaseEnd; } }
+        [EventIndex(106, false)] public GameEvent<Turn, GamePhase> MainPhaseEnd { get { _mainPhaseEnd ??= GameEvent.Create<Turn, GamePhase>("MainPhaseEnd", "Turn", "Phase"); return _mainPhaseEnd; } }
 
         protected GameEvent<Turn, GamePhase> _battlePhaseStart = null;
-        [EventIndex(105, false)] public GameEvent<Turn, GamePhase> BattlePhaseStart { get { _battlePhaseStart ??= GameEvent.Create<Turn, GamePhase>("BattlePhaseStart", "Turn", "Phase"); return _battlePhaseStart; } }
+        [EventIndex(107, false)] public GameEvent<Turn, GamePhase> BattlePhaseStart { get { _battlePhaseStart ??= GameEvent.Create<Turn, GamePhase>("BattlePhaseStart", "Turn", "Phase"); return _battlePhaseStart; } }
         protected GameEvent<Turn, GamePhase> _battlePhaseEnd = null;
-        [EventIndex(106, false)] public GameEvent<Turn, GamePhase> BattlePhaseEnd { get { _battlePhaseEnd ??= GameEvent.Create<Turn, GamePhase>("BattlePhaseEnd", "Turn", "Phase"); return _battlePhaseEnd; } }
+        [EventIndex(108, false)] public GameEvent<Turn, GamePhase> BattlePhaseEnd { get { _battlePhaseEnd ??= GameEvent.Create<Turn, GamePhase>("BattlePhaseEnd", "Turn", "Phase"); return _battlePhaseEnd; } }
 
         protected GameEvent<Turn, GamePhase> _endPhaseStart = null;
-        [EventIndex(108, false)] public GameEvent<Turn, GamePhase> EndPhaseStart { get { _endPhaseStart ??= GameEvent.Create<Turn, GamePhase>("EndPhaseStart", "Turn", "Phase"); return _endPhaseStart; } }
+        [EventIndex(109, false)] public GameEvent<Turn, GamePhase> EndPhaseStart { get { _endPhaseStart ??= GameEvent.Create<Turn, GamePhase>("EndPhaseStart", "Turn", "Phase"); return _endPhaseStart; } }
         protected GameEvent<Turn, GamePhase> _endPhaseEnd = null;
-        [EventIndex(109, false)] public GameEvent<Turn, GamePhase> EndPhaseEnd { get { _endPhaseEnd ??= GameEvent.Create<Turn, GamePhase>("EndPhaseEnd", "Turn", "Phase"); return _endPhaseEnd; } }
+        [EventIndex(111, false)] public GameEvent<Turn, GamePhase> EndPhaseEnd { get { _endPhaseEnd ??= GameEvent.Create<Turn, GamePhase>("EndPhaseEnd", "Turn", "Phase"); return _endPhaseEnd; } }
+
+        protected GameEvent<Game> _gameEnd = null;
+        [EventIndex(199, false)] public GameEvent<Game> GameEnd { get { _gameEnd ??= GameEvent.Create<Game>("GameEnd", "Game"); return _gameEnd; } }
         #endregion
 
         #endregion
+
+
+
+      
 
     }
 }

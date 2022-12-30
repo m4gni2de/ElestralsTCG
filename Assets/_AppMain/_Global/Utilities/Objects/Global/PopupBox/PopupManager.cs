@@ -5,7 +5,7 @@ using PopupBox;
 using System;
 using UnityEngine.Events;
 
-public class PopupManager : MonoBehaviour
+public class PopupManager : MonoBehaviour, iFreeze
 {
     public static PopupManager Instance { get; set; }
     public static BasePopup ActivePopup;
@@ -79,6 +79,7 @@ public class PopupManager : MonoBehaviour
     {
         if (pop == null)
         {
+            Instance.Thaw();
             if (ActivePopup != null)
             {
                 ActivePopup.ForceClose();
@@ -97,6 +98,7 @@ public class PopupManager : MonoBehaviour
         }
         else
         {
+            Instance.Freeze();
             Instance.Show();
             AddPopup(pop, closeOnBack);
             ActivePopup = pop;
@@ -180,6 +182,14 @@ public class PopupManager : MonoBehaviour
         Message.Show(msg, callback, showConfirm, showCancel);
         StartCoroutine(AwaitPopup());
     }
+    public void CloneMessage(string msg, Action callback, bool showConfirm, bool showCancel, bool closeOnBack = true)
+    {
+        DisplayBox clone = Instantiate(Message, Message.transform.parent);
+        Message.gameObject.SetActive(false);
+        clone.Show(msg, callback, showConfirm, showCancel);
+        AddPopup(clone, true);
+        StartCoroutine(AwaitPopup(clone));
+    }
     public void DisplayTimedMessage(string msg, Action callback, float time, bool closeOnBack = true)
     {
         SetActivePopup(Message, closeOnBack);
@@ -209,7 +219,7 @@ public class PopupManager : MonoBehaviour
     #endregion
     protected IEnumerator AwaitPopup()
     {
-        
+        DoFreeze();
         do
         {
             yield return new WaitForEndOfFrame();
@@ -236,5 +246,14 @@ public class PopupManager : MonoBehaviour
         }
     }
 
-
+    #region Freeze
+    protected void DoFreeze()
+    {
+        this.Freeze();
+    }
+    protected void DoThaw()
+    {
+        this.Thaw();
+    }
+    #endregion
 }

@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using System;
 using UnityEngine.Rendering;
 using UnityEngine.Events;
+using GameEvents;
 
 namespace Gameplay
 {
@@ -35,7 +36,8 @@ namespace Gameplay
     public class GameCard: iGameMover
     {
         #region Properties
-        public string name;
+        public string workingName;
+        public string cardName;
         public CardStats cardStats;
 
         #region Visual Properties
@@ -63,19 +65,16 @@ namespace Gameplay
         {
             Spirit spirit = new Spirit(data);
             return new SpiritCard(spirit, copy);
-            //return new GameCard(spirit, copy);
         }
         public static GameCard Elestral(ElestralData data, int copy)
         {
             Elestral card = new Elestral(data);
             return new ElestralCard(card, copy);
-            //return new GameCard(card, copy);
         }
         public static GameCard Rune(RuneData data, int copy)
         {
             Rune card = new Rune(data);
             return new RuneCard(card, copy);
-            //return new GameCard(card, copy);
         }
         #endregion
 
@@ -88,7 +87,6 @@ namespace Gameplay
         public string cardId;
 
         protected string _slotId = "";
-            
         public string slotId { get { return _slotId; } }
 
        
@@ -147,13 +145,7 @@ namespace Gameplay
             get { return _CurrentSlot; }
         }
 
-        public bool IsYours
-        {
-            get
-            {
-                return Owner == GameManager.ActiveGame.You;
-            }
-        }
+        public bool IsYours { get => Owner == GameManager.ActiveGame.You; }
 
         public List<ElementCode> EnchantingSpiritTypes
         {
@@ -203,24 +195,31 @@ namespace Gameplay
        
         private void GameStateWatcher()
         {
-            CheckEffects();
+            //CheckEffects();
         }
-        [SerializeField] private CardEffect _effect = null;
+        protected CardEffect _effect = null;
         public CardEffect Effect { get { return _effect; } set { _effect = value; } }
+
+        protected List<CardEffect> _effects = null;
+        public List<CardEffect> Effects { get { return _effects; } set { _effects = value; } }
         public void CheckEffects()
         {
-            Effect.CheckEffects(this);
+            //for (int i = 0; i < Effects.Count; i++)
+            //{
+            //    Effects[i].CheckEffects(this);
+            //}
+            //Effect.CheckEffects(this);
         }
         public void DecideOnEffect(bool toUse)
         {
-            if (toUse)
-            {
-                DoEffect();
-            }
+            //if (toUse)
+            //{
+            //    DoEffect();
+            //}
         }
         public void DoEffect()
         {
-            Effect.Try(this);
+            //Effect.Try(this);
         }
         
         #endregion
@@ -232,19 +231,20 @@ namespace Gameplay
         {
             _card = data;
             location = CardLocation.Deck;
-            name = $"{_card.cardData.cardName} - {copy}";
+            workingName = $"{_card.cardData.cardName} - {copy}";
+            cardName = _card.cardData.cardName;
             cardStats = new CardStats(this);
             isSelected = false;
 
 
-            CardEventSystem.GameStateChanged.AddWatcher(()=> GameStateWatcher());
+            //CardEventSystem.GameStateChanged.AddWatcher(() => GameStateWatcher());
 
-            Effect = _card.Effect;
+            //Effect = _card.Effect;
 
-            if (!Effect.IsEmpty)
-            {
-                Effect.SetEvents(this, eventSystem);
-            }
+            //if (!Effect.IsEmpty)
+            //{
+            //    Effect.SetEvents(this, eventSystem);
+            //}
         }
         public void SetId(string id)
         {
@@ -256,7 +256,7 @@ namespace Gameplay
         {
             //do something to tie the carddata of the Object to the GameCard
             cardObject = obj;
-            obj.CardName = name;
+            obj.CardName = workingName;
             obj.CardSessionId = cardId;
         }
         #endregion
@@ -402,24 +402,6 @@ namespace Gameplay
         }
         #endregion
 
-
-
-
-        #region Card Events
-        public event Action<GameCard> EmpoweredChanged;
-        public void EmpoweredChange()
-        {
-            EmpoweredChanged?.Invoke(this);
-
-            //Game.OnEm
-        }
-
-        
-       
-        #endregion
-
-
-
         #region Network Events
         public void ToggleNetwork(bool network)
         {
@@ -501,6 +483,28 @@ namespace Gameplay
         }
         #endregion
 
+
+        #region GameEvent Watching
+        public void SetWatchers()
+        {
+            Game.Events.PhaseStart.ConnectEvent(eventSystem.PhaseStart);
+            Game.Events.PhaseEnd.ConnectEvent(eventSystem.PhaseEnd);
+
+        }
+
+
+
+        public event Action<GameCard> EmpoweredChanged;
+        public void EmpoweredChange()
+        {
+            EmpoweredChanged?.Invoke(this);
+
+            //Game.OnEm
+        }
+
+
+
+        #endregion
 
     }
 

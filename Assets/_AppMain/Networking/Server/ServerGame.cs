@@ -119,8 +119,8 @@ public class ServerGame
 
     public static void Create(string lobbyId, ushort host, string userId, string username, int players = 2)
     {
-        NetworkPlayer p = new NetworkPlayer(host, userId, "", "", username);
-        Instance = new ServerGame(lobbyId, p, players);
+        //NetworkPlayer p = new NetworkPlayer(host, userId, "", "", username);
+        //Instance = new ServerGame(lobbyId, p, players);
     }
 
     ServerGame(string lobbyId, NetworkPlayer p, int players)

@@ -6,7 +6,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using GlobalUtilities;
 using UnityEngine;
 
-public class Sorter
+public class Sorter : iSorter
 {
 
     #region SortValueMap
@@ -68,7 +68,7 @@ public class Sorter
 
 
     private List<SortValueMap> _items = null;
-    protected List<SortValueMap> Items
+    private List<SortValueMap> Items
     {
         get
         {

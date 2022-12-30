@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: PlayMatts
+  m_EditorClassIdentifier: 
+  m_GroupName: PlayMatts
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 47f8dc8ca2cd3dd439abffa5ab890cc4
+  m_SerializeEntries:
+  - m_GUID: f663aba17ce9f1c4b8340b05458076c1
+    m_Address: playmatt0
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Playmatt
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f8fec7a104c3bc44f80a49370b6b165e
+    m_Address: playmatt3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Playmatt
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d757cd482c085974d85b59f466c998ad
+    m_Address: playmatt2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Playmatt
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 51b605626f1b92e46ac9d50e66e4a11e
+    m_Address: playmatt1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Playmatt
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bb6ded2d69c12e940839458bc1b2500d
+    m_Address: playmatt4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    - Playmatt
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c29b0b88a03d0fe4791bfbdb283b0035, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 74743238cae3a854da311ece39aae0a4, type: 2}
+    - {fileID: 11400000, guid: 9161f1d6afa76e04fbea5083a8e73e8f, type: 2}

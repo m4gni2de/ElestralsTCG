@@ -5,6 +5,7 @@ using Packs;
 using UnityEngine.UI;
 using System.Net.Sockets;
 using System.Net;
+using nsSettings;
 
 public class MainScene : MonoBehaviour, iSceneScript
 {
@@ -41,6 +42,7 @@ public class MainScene : MonoBehaviour, iSceneScript
 
     #region Properties
     public List<Button> mainButtons = new List<Button>();
+    [SerializeField] private AccountSettingsMenu accountMenu;
 
     #endregion
 
@@ -125,6 +127,30 @@ public class MainScene : MonoBehaviour, iSceneScript
     {
         menuButtons.SetActive(false);
         App.ChangeScene(DeckEditorScene.SceneName);
+    }
+
+    public void AccountButton(bool doOpen)
+    {
+        if (doOpen)
+        {
+            accountMenu.OnDisplayChanged += OnAccountMenuDislayChanged;
+            menuButtons.SetActive(false);
+            accountMenu.LoadSettings();
+        }
+        else
+        {
+            menuButtons.SetActive(true);
+        }
+        
+    }
+
+    private void OnAccountMenuDislayChanged(bool isShowing)
+    {
+        if (!isShowing)
+        {
+            accountMenu.OnDisplayChanged -= OnAccountMenuDislayChanged;
+            menuButtons.SetActive(true);
+        }
     }
     #endregion
 }

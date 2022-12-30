@@ -18,6 +18,7 @@ using TMPro;
 using RiptideNetworking;
 using System.Security.Cryptography;
 using UnityEngine.Networking.Types;
+using UnityEngine.EventSystems;
 
 #if UNITY_EDITOR
 using UnityEditorInternal;
@@ -46,7 +47,21 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
     }
 
     #region Instance 
-    public static Game ActiveGame { get; protected set; }
+    private static Game _activeGame;
+
+    public static Game ActiveGame
+    {
+        get
+        {
+            return _activeGame;
+        }
+        protected set
+        {
+            
+            _activeGame = value;
+            
+        }
+    }
     public static GameManager Instance { get; protected set; }
 
     public Player ActivePlayer { get { return turnManager.ActiveTurn.ActivePlayer; } }
@@ -190,7 +205,8 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
         if (Instance == null)
         {
             Instance = this;
-            CardEventSystem.ValidateEvents();
+            CardEventSystem.ValidateEvents(typeof(CardEventSystem));
+            CardEventSystem.RegisterGlobalEvents(Game.Events);
         }
         else
         {
@@ -634,6 +650,8 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
     protected virtual void RemoveGameWatchers()
     {
         CardEventSystem.GameStateChanged.FlushWatchers();
+        Game.Events.PhaseStart.FlushWatchers();
+        Game.Events.PhaseEnd.FlushWatchers();
         //Game.OnNewTargetParams -= TargetModeWatcher;
     }
     #endregion
@@ -764,25 +782,27 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
         NetworkPipeline.OnPlayerJoined += NewPlayerJoined;
         App.ChangeScene(SceneName);
     }
-    public static void JoinGame(string gameId, NetworkPlayer opponent)
+
+    public static void JoinGame(string gameId, ConnectedPlayerDTO dto)
     {
         IsOnline = true;
         ConnectionType ty = ClientManager.ConnectionType;
         ActiveGame = Game.ConnectToNetwork(gameId, ty);
-        Player opp = new Player(opponent.networkId, opponent.userId, opponent.username, false);
-        opp.SetBlankDeck(opponent.deckKey, opponent.deckName);
+
+
+        Player opp = new Player((ushort)dto.serverId, dto.userId, dto.username, false, dto.sleeves, dto.playmatt);
+        opp.SetBlankDeck("Opponent Deck Key", $"{opp.username}'s Deck");
         ActiveGame.AddPlayer(opp);
         OnGameLoaded += AsJoinedPlayer;
         App.ChangeScene(SceneName);
     }
-    public static void NewPlayerJoined(ushort networkId, string userId, string username)
+    public static void NewPlayerJoined(ConnectedPlayerDTO dto)
     {
         NetworkPipeline.OnPlayerJoined -= NewPlayerJoined;
-        Player opp = new Player(networkId, userId, username, false);
+        Player opp = new Player((ushort)dto.serverId, dto.userId, dto.username, false, dto.sleeves, dto.playmatt);
         MessageController.Instance.ShowMessage($"{opp.username} has joined the Battle!", true);
         ActiveGame.AddPlayer(opp);
         Instance.arena.SetPlayer(opp);
-
     }
 
     private static void AsHost()
@@ -807,7 +827,9 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
     
     protected void LoadLocalPlayer()
     {
-        Player p = new Player(NetworkManager.Instance.Client.Id, App.Account.Id, App.Account.Name, true);
+        int sleeves = SettingsManager.Account.Settings.Sleeves;
+        int matt = SettingsManager.Account.Settings.Playmatt;
+        Player p = new Player(NetworkManager.Instance.Client.Id, App.Account.Id, App.Account.Name, true, sleeves, matt);
         Instance.turnManager.LoadGame(ActiveGame);
         ActiveGame.AddPlayer(p);
         arena.SetPlayer(p);
@@ -917,7 +939,6 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
 
     private void SendDeckSelection(UploadedDeckDTO deck)
     {
-
         //do this if the server is REMOTE
         NetworkPipeline.SendDeckSelection(deck.deckKey, deck.title);
         //send deck to server here

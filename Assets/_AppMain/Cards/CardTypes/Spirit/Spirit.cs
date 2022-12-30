@@ -20,6 +20,7 @@ public class Spirit : Card
     {
         _data = data;
         Effect = CardEffect.Empty;
+        effectsList = new List<CardEffect>();
         SpiritType = (ElementCode)Data.cost1;
     }
 }

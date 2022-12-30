@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Gameplay.CardActions;
+using UnityEditor.Build.Pipeline;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -42,8 +43,9 @@ namespace Gameplay.Turns
         }
         private List<PreparedAction> _PreparedActions = null;
         public List<PreparedAction> PreparedActions { get { _PreparedActions ??= new List<PreparedAction>(); return _PreparedActions; } }
-
+        public bool IsYours { get { return ActivePlayer == GameManager.ActiveGame.You; } }
         #endregion
+
         #region Phases
         public int phaseIndex { get; private set; }
         private int _NextPhase;
@@ -124,21 +126,9 @@ namespace Gameplay.Turns
             phase.AddAction(ac);
         }
 
-        public void StartPhase(int index)
+        public void DeclareNewPhase(int index, int nextIndex = -1)
         {
             phaseIndex = index;
-            SetActivePhase(index);
-        }
-
-        public event Action<GamePhase> OnPhaseDeclared; 
-        public void DeclareDrawPhase()
-        {
-            OnPhaseDeclared?.Invoke(DrawPhase);
-            
-        }
-
-        public void SetActivePhase(int index, int nextIndex = -1)
-        {
             ActivePhase = Phases[index];
             if (nextIndex > -1)
             {
@@ -148,15 +138,17 @@ namespace Gameplay.Turns
             {
                 NextPhase = ActivePhase.TurnIndex + 1;
             }
-            TurnManager.Instance.StartTurnPhase(index);
+            TurnManager.Instance.DeclareTurnPhase(index);
         }
+
+       
         public void StartPhase(GamePhase phase)
         {
             ActivePhase.OnActionsComplete -= CompletePhaseActions;
             phase.StartPhase();
             ActivePhase.OnActionsComplete += CompletePhaseActions;
         }
-       
+
         public void CompletePhaseActions(GamePhase phase)
         {
             phase.OnPhaseEnd -= EndActivePhase;
@@ -173,15 +165,21 @@ namespace Gameplay.Turns
         {
             phase.OnPhaseEnd -= EndActivePhase;
             phase.EndPhase();
-            
+            Game.Events.PhaseEnd.Call(this, phase);
+
             if (NextPhase == 0)
             {
-                TurnManager.Instance.EndTurn(this);
+                EndTurn();
             }
             else
             {
-                StartPhase(NextPhase);
+                DeclareNewPhase(NextPhase);
             }
+        }
+
+        public void EndTurn()
+        {
+            TurnManager.Instance.EndTurn(this);
         }
         public void OverwriteAndEndPhase(GamePhase phase, int newIndex)
         {

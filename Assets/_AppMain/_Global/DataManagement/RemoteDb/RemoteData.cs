@@ -13,19 +13,15 @@ using Gameplay;
 using System.Net;
 using SimpleSQL;
 using System;
+using nsSettings;
 
 public class RemoteData
 {
-    
-    private readonly static string singleDeck = "http://45.77.157.225/singledeck.php?";
-    public readonly static string deckSearch = "http://45.77.157.225/decksearch.php?";
-    public readonly static string profilesUrl = "http://45.77.157.225/profiles.php?";
-    public readonly static string pricesUrl = "http://45.77.157.225/price.php?";
 
 
-    private readonly static string pvpDecks = "http://45.77.157.225/pvpDeck.php?";
-    private readonly static string pvpLobby = "http://45.77.157.225/pvpLobby.php?";
-    private readonly static string serverInfo = "http://45.77.157.225/pvpServer.php?";
+    private readonly static string pvpDecks = "http://149.28.60.66/pvpDeck.php?";
+    private readonly static string pvpLobby = "http://149.28.60.66/pvpLobby.php?";
+    private readonly static string serverInfo = "http://149.28.60.66/pvpServer.php?";
 
 
 
@@ -34,12 +30,6 @@ public class RemoteData
     {
 
         string result = await AppManager.DoPostRequestWithPayload(url, form);
-        //if (result == "error")
-        //{
-        //    string title = "Connection Error";
-        //    string msg = "There was a problem connecting to the server. Please check your connection and try again.";
-        //    GameManager.Instance.ShowMessage(title, msg);
-        //}
        
         return result;
     }
@@ -53,11 +43,11 @@ public class RemoteData
         return true;
     }
 
-    public static async Task<UploadedDeckDTO> SearchDeck(string deckKey)
+    public static async Task<DownloadedDeckDTO> SearchDeck(string deckKey)
     {
         WWWForm form = new WWWForm();
         form.AddField("action", "search");
-        form.AddField("uploadCode", deckKey);
+        form.AddField("deckKey", deckKey);
 
         string results = await DoRemoteQuery(pvpDecks, form);
         if (results != "error" && results != "" && results != null)
@@ -67,11 +57,15 @@ public class RemoteData
             {
                 foreach (var prop in array)
                 {
-                    UploadedDeckDTO deck = new UploadedDeckDTO();
+                    DownloadedDeckDTO deck = new DownloadedDeckDTO();
                     deck.deckKey = prop[0].stringValue;
                     deck.title = prop[1].stringValue;
                     DataList d = JsonConvert.DeserializeObject<DataList>(prop[2].stringValue);
                     deck.deck = d.items;
+                    deck.owner = prop[3].stringValue;
+                    deck.whenUpload = App.UnixTimestampToDateTime(prop[4].doubleValue);
+                    deck.downloads = prop[5].intValue;
+                    deck.lastDownload = App.UnixTimestampToDateTime(prop[6].doubleValue);
                     return deck;
                 }
 
@@ -95,12 +89,10 @@ public class RemoteData
 
         WWWForm form = new WWWForm();
         form.AddField("action", "insert");
-        form.AddField("deckKey", deck.DeckKey);
-        form.AddField("owner", deck.Owner);
+        form.AddField("deckKey", deck.UploadCode);
         form.AddField("title", deck.DeckName);
         form.AddField("deck", deck.GetCardList);
-        form.AddField("code", deck.UploadCode);
-        form.AddField("created", deck.WhenCreated.ToString());
+        form.AddField("owner", deck.Owner);
         //form.AddField("name", deck.deckName);
 
         string result = await DoRemoteQuery(pvpDecks, form);
@@ -113,27 +105,28 @@ public class RemoteData
         return true;
     }
 
-    public static async Task<bool> RemoveDeckFromRemoteDB(string key)
+    public static async Task<bool> RemoveDeckFromRemoteDB(Decklist deck)
     {
-        WWWForm form = new WWWForm();
-        form.AddField("action", "delete");
-        form.AddField("code", key);
 
-        string result = await DoRemoteQuery(singleDeck, form);
+        WWWForm form = new WWWForm();
+        form.AddField("action", "remove");
+        form.AddField("deckKey", deck.UploadCode);
+        string result = await DoRemoteQuery(pvpDecks, form);
 
         if (result == "error")
         {
             return false;
         }
+
         return true;
     }
+
 
     public static async Task<List<UploadedDeckDTO>> ViewDecks(string whereClause)
     {
         List<UploadedDeckDTO> decks = new List<UploadedDeckDTO>();
         WWWForm form = new WWWForm();
         form.AddField("action", "view");
-        //form.AddField("whereClause", "whereClause");
 
         string results = await DoRemoteQuery(pvpDecks, form);
         if (results != "error" && results != "" && results != null)
@@ -158,15 +151,7 @@ public class RemoteData
 
    
 
-    public static async void DownloadDeck(string key)
-    {
-        WWWForm form = new WWWForm();
-        form.AddField("action", "download");
-        form.AddField("code", key);
-
-        await DoRemoteQuery(singleDeck, form);
-    }
-
+   
 
     #region Server List
     public static async Task<List<ServerDTO>> ServerList()
@@ -299,27 +284,35 @@ public class RemoteData
         return list;
     }
 
-    //public static async Task<bool> RegisterPlayer()
-    //{
-    //    ConnectedPlayerDTO player = await FindPlayer(App.Account.Id);
-    //    bool exists = (player != null);
-    //    if (exists) { return true; }
+    public static async Task<bool> RegisterPlayer(int serverId)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("action", "registerPlayer");
+        form.AddField("serverId", serverId);
+        form.AddField("userId", App.Account.Id);
+        form.AddField("username", App.Account.Name);
+        form.AddField("sleeves", SettingsManager.Account.Settings.Sleeves);
+        form.AddField("playmatt", SettingsManager.Account.Settings.Playmatt);
 
-    //    WWWForm form = new WWWForm();
-    //    form.AddField("action", "registerPlayer");
-    //    form.AddField("lobbyId", (int)NetworkManager.Instance.Client.Id);
-    //    form.AddField("id", App.Account.Id);
-    //    form.AddField("name", App.Account.Name);
+        string results = await DoRemoteQuery(pvpLobby, form);
+        return results != "error";
+    }
 
-    //    string results = await DoRemoteQuery(pvpLobby, form);
-    //    return results != "error";
-    //}
+    public static async Task<bool> UpdatePlayer(int serverId)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("action", "updatePlayer");
+        form.AddField("serverId", serverId);
+
+        string results = await DoRemoteQuery(pvpLobby, form);
+        return results != "error";
+    }
     public static async Task<ConnectedPlayerDTO> FindPlayer(string id)
     {
 
         WWWForm form = new WWWForm();
         form.AddField("action", "findPlayer");
-        form.AddField("id", id);
+        form.AddField("userId", id);
 
         string results = await DoRemoteQuery(pvpLobby, form);
         if (HasResults(results))
@@ -334,7 +327,9 @@ public class RemoteData
                     player.userId = prop[1].stringValue;
                     player.username = prop[2].stringValue;
                     player.whenConnect = DateTime.Parse(prop[3].stringValue);
-
+                    player.sleeves = prop[4].intValue;
+                    player.playmatt = prop[5].intValue;
+                    player.lobby = prop[6].stringValue;
                     return player;
                 }
 
@@ -344,11 +339,11 @@ public class RemoteData
         return null;
     }
 
-    public static async void DeletePlayer()
+    public static async void DeletePlayer(string userId)
     {
         WWWForm form = new WWWForm();
         form.AddField("action", "deletePlayer");
-        form.AddField("id", App.Account.Id);
+        form.AddField("id", userId);
 
         string results = await DoRemoteQuery(pvpLobby, form);
     }
@@ -528,6 +523,9 @@ public class ConnectedPlayerDTO
     public string userId { get; set; }
     public string username { get; set; }
     public DateTime whenConnect { get; set; }
+    public int sleeves { get; set; }
+    public int playmatt { get; set; }
+    public string lobby { get; set; }
 }
 
 #endregion

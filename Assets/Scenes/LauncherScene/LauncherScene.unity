@@ -467,9 +467,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvas: {fileID: 919201597}
-  _scalerCanvas: {fileID: 0}
   worldCanvasScaler: {fileID: 0}
   Scale: {x: 0, y: 0}
+  _scalerCanvas: {fileID: 0}
 --- !u!1 &972279465
 GameObject:
   m_ObjectHideFlags: 0
@@ -635,11 +635,11 @@ PrefabInstance:
       objectReference: {fileID: 73660698}
     - target: {fileID: 1967069495229486048, guid: f363fad03ab251742ab8cb98bd79c448, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1967069495229486048, guid: f363fad03ab251742ab8cb98bd79c448, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2246147401643933116, guid: f363fad03ab251742ab8cb98bd79c448, type: 3}
       propertyPath: m_SortingOrder
@@ -665,17 +665,21 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3818596826979942280, guid: f363fad03ab251742ab8cb98bd79c448, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7437829098450180182, guid: f363fad03ab251742ab8cb98bd79c448, type: 3}
       propertyPath: m_SortingLayerID
       value: 217826789
       objectReference: {fileID: 0}
     - target: {fileID: 8107200636902157432, guid: f363fad03ab251742ab8cb98bd79c448, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 35.399994
+      value: 35.400024
       objectReference: {fileID: 0}
     - target: {fileID: 8107200636902157432, guid: f363fad03ab251742ab8cb98bd79c448, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -37.200012
+      value: -37.19995
       objectReference: {fileID: 0}
     - target: {fileID: 8889608244220253930, guid: f363fad03ab251742ab8cb98bd79c448, type: 3}
       propertyPath: m_Name

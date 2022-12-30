@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class MagicInputText : MagicTextBox, iValidate
 {
@@ -34,9 +35,9 @@ public class MagicInputText : MagicTextBox, iValidate
     [SerializeField] private Button cancelButton;
     [SerializeField] private Button displayButton;
 
-    private int minLength = 1;
-    private int maxLength = 30;
-    private InputMode _mode;
+    [SerializeField] private int minLength = 0;
+    [SerializeField] private int maxLength = 30;
+    [SerializeField] private InputMode _mode;
     public InputMode Mode
     {
         get { return _mode; }
@@ -74,6 +75,29 @@ public class MagicInputText : MagicTextBox, iValidate
     }
     #endregion
 
+    #region Settings
+    public void SetLengthContraints(int min = 0, int max = 0)
+    {
+        if (min > 0)
+        {
+            minLength = min;
+        }
+        if (max > 0)
+        {
+            maxLength = max;
+        }
+
+        if (maxLength <= minLength)
+        {
+            maxLength = minLength + 1;
+        }
+    }
+    #endregion
+
+    #region Customization
+    //private bool 
+    #endregion
+
     #region Overrides
     protected override void Load()
     {
@@ -93,14 +117,26 @@ public class MagicInputText : MagicTextBox, iValidate
     #region Events
     public void OnInputChanged(string txt)
     {
-
+        OnTextChanged?.Invoke();
     }
     #endregion
 
     #region Initialize
     private void Awake()
     {
-
+        IsDirty = false;
+        if (_mode == InputMode.DisplayMode)
+        {
+            TextBox.gameObject.SetActive(true);
+            Input = "";
+            InputText.gameObject.SetActive(false);
+        }
+        else if (_mode == InputMode.EditMode)
+        {
+            InputText.gameObject.SetActive(true);
+            Input = Content;
+            TextBox.gameObject.SetActive(false);
+        }
     }
     #endregion
 
@@ -121,6 +157,46 @@ public class MagicInputText : MagicTextBox, iValidate
         }
     }
 
+    public void SetToDefault(int mode, bool clearAll, bool saveFirstText)
+    {
+        IsDirty = false;
+        SaveInitialText = saveFirstText;
+        if ((InputMode)mode == InputMode.DisplayMode)
+        {
+            TextBox.gameObject.SetActive(true);
+            if (clearAll)
+            {
+                InputText.SetTextWithoutNotify("");
+
+            }
+            else
+            {
+                InputText.SetTextWithoutNotify(Content);
+            }
+            InputText.gameObject.SetActive(false);
+        }
+        else if (_mode == InputMode.EditMode)
+        {
+            InputText.gameObject.SetActive(true);
+            if (clearAll)
+            {
+                InputText.SetTextWithoutNotify("");
+            }
+            else
+            {
+                InputText.SetTextWithoutNotify(Content);
+            }
+
+            TextBox.gameObject.SetActive(false);
+        }
+    }
+
+    public void ToggleInputEnabled(bool enabled)
+    {
+        editButton.interactable = enabled;
+        InputText.interactable = enabled;
+    }
+    #endregion
 
     #region Button Listeners
     public void EditButtonClick()
@@ -157,7 +233,24 @@ public class MagicInputText : MagicTextBox, iValidate
         Mode = InputMode.DisplayMode;
     }
 
-    #endregion
+    public void CancelButtonClickSilent()
+    {
+        Rollback();
+        Mode = InputMode.EditMode;
+    }
+    public void ClearInput()
+    {
+        bool hasInput = !Input.IsEmpty();
+        Content = "";
+        Input = "";
+        Mode = InputMode.EditMode;
+
+        if (hasInput)
+        {
+            OnTextChanged?.Invoke();
+        }
+        
+    }
 
     private void ToEditMode()
     {
@@ -179,6 +272,23 @@ public class MagicInputText : MagicTextBox, iValidate
         InputText.gameObject.SetActive(false);
     }
 
+    public void AddDisplayListener(UnityAction ac, bool removeOthers = true)
+    {
+        if (removeOthers)
+        {
+            displayButton.onClick.RemoveAllListeners();
+        }
+        displayButton.onClick.AddListener(ac);
+    }
+    public void AddEditListener(UnityAction ac, bool removeOthers = true)
+    {
+        if (removeOthers)
+        {
+            editButton.onClick.RemoveAllListeners();
+        }
+        editButton.onClick.AddListener(ac);
+    }
+    #endregion
     //public void TrySetNewMode(int mode)
     //{
     //    if (IsDisplayMode)
@@ -218,7 +328,7 @@ public class MagicInputText : MagicTextBox, iValidate
 
 
 
-    #endregion
+
 
 
     #region Validate Changes

@@ -28,6 +28,12 @@ public static class ClientManager
         }
     }
 
+    public static ushort GetClientId()
+    {
+        if (client == null) { return 0; }
+        return client.Id;
+    }
+
 
     public static void Disconnect()
     {
@@ -37,5 +43,38 @@ public static class ClientManager
         }
         
     }
-    
+
+    #region ConnectedPlayer
+    private static ConnectedPlayer _player = null;
+    public static ConnectedPlayer Player
+    {
+        get { return _player; }
+        set { _player = value; }
+    }
+
+    public static void SetPlayer(ushort serverId)
+    {
+        if (Player == null)
+        {
+            Player = ConnectedPlayer.Create(serverId);
+        }
+        else
+        {
+            if (serverId != Player.ServerId)
+            {
+                Player.SetDirty(true);
+            }
+        }
+       
+    }
+    public static void RemovePlayer()
+    {
+        if (Player != null)
+        {
+            string userId = Player.playerData.userId;
+            RemoteData.DeletePlayer(userId);
+        }
+    }
+    #endregion
+
 }

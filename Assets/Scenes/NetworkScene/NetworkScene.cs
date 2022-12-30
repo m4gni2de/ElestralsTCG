@@ -19,6 +19,8 @@ using System.Net.Sockets;
 using System.Net;
 using Mono.Cecil.Cil;
 using System.Runtime.Remoting.Lifetime;
+using UnityEngine.Networking.Types;
+using System.ComponentModel;
 #if UNITY_EDITOR
 using UnityEditor.Experimental.GraphView;
 #endif
@@ -230,18 +232,9 @@ public class NetworkScene : MonoBehaviour, iSceneScript
     #endregion
     private void TryConnection(string ip, ushort port)
     {
-        //btnServerJoin.interactable = false;
-        //string connectIp;
-        //int connectPort;
-        //using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
-        //{
-        //    socket.Connect(ip, port);
-        //    IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;
-        //    connectIp = endPoint.Address.ToString();
-        //    connectPort = (ushort)endPoint.Port;
-        //}
         NetworkManager.OnConnectAsClient -= OnClientConnected;
         NetworkManager.OnConnectAsClient += OnClientConnected;
+        
         NetworkManager.OnConnectionFailed -= OnClientConnectionFailed;
         NetworkManager.OnConnectionFailed += OnClientConnectionFailed;
         NetworkManager.Instance.Create(NetworkManager.NetworkMode.Client);
@@ -253,16 +246,13 @@ public class NetworkScene : MonoBehaviour, iSceneScript
 
 
     #region Connection Attempts
+   
     private void OnClientConnected(ushort networkId)
     {
-        isConnecting = false;
         NetworkManager.OnConnectAsClient -= OnClientConnected;
-        ToggleMainMenu(true);
-        Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.Connected);
-        message.AddUShort(NetworkManager.Instance.Client.Id);
-        message.AddString(App.Account.Id);
-        message.AddString(App.Account.Name);
-        NetworkPipeline.SendMessageToServer(message);
+        NetworkPipeline.OnPlayerRegistered -= RegisterPlayer;
+        NetworkPipeline.OnPlayerRegistered += RegisterPlayer;
+        NetworkPipeline.OnConnectedToServer();
     }
 
     protected void OnClientConnectionFailed()
@@ -278,33 +268,13 @@ public class NetworkScene : MonoBehaviour, iSceneScript
     }
 
 
-    //private async void RegisterPlayer()
-    //{
-    //    bool didRegister = await RemoteData.RegisterPlayer();
-    //    if (didRegister)
-    //    {
-    //        NetworkManager.OnConnectAsClient -= OnClientConnected;
-    //        ToggleMainMenu(true);
-    //        Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.Connected);
-    //        message.AddUShort(NetworkManager.Instance.Client.Id);
-    //        message.AddString(App.Account.Id);
-    //        NetworkPipeline.SendMessageToServer(message);
-    //    }
-    //    else
-    //    {
-    //        App.ShowMessage($"Connection to Server Failed. Please check your connection and try again.");
-    //        connectAttempts += 1;
-    //        if (connectAttempts > maxConnectAttmempts)
-    //        {
-    //            Disconnect();
-    //        }
-    //        else
-    //        {
-    //            RegisterPlayer();
-    //        }
-            
-    //    }
-    //}
+    private void RegisterPlayer(ushort networkid)
+    {
+        NetworkPipeline.OnPlayerRegistered -= RegisterPlayer;
+        ClientManager.Player.SetDirty(true);
+        ToggleMainMenu(true);
+        
+    }
 
     #endregion
 
@@ -445,17 +415,41 @@ public class NetworkScene : MonoBehaviour, iSceneScript
     //}
 
 
-    private void OnGameJoined(string gameId, List<NetworkPlayer> otherPlayers)
+    private async void OnGameJoined(string gameId, List<string> otherPlayers)
     {
         NetworkPipeline.OnGameJoined -= OnGameJoined;
         NetworkPipeline.OnJoinedFailed -= JoinLobbyFailed;
 
         if (otherPlayers.Count > 1) { throw new System.Exception("GAME DOES NOT SUPPORT MORE THAN 2 PLAYERS AT THIS TIME."); }
-        NetworkPlayer player = otherPlayers[0];
+        string pid = otherPlayers[0];
 
-        GameManager.JoinGame(gameId, player);
+        ConnectedPlayerDTO dto = await RemoteData.FindPlayer(pid);
+        GameManager.JoinGame(gameId, dto);
 
     }
+    //private async void OnGameJoined(string gameId, List<NetworkPlayer> otherPlayers)
+    //{
+    //    NetworkPipeline.OnGameJoined -= OnGameJoined;
+    //    NetworkPipeline.OnJoinedFailed -= JoinLobbyFailed;
+
+    //    if (otherPlayers.Count > 1) { throw new System.Exception("GAME DOES NOT SUPPORT MORE THAN 2 PLAYERS AT THIS TIME."); }
+    //    NetworkPlayer player = otherPlayers[0];
+
+    //    ConnectedPlayerDTO dto = await RemoteData.FindPlayer(player.userId);
+
+    //    int sleeves = 0;
+    //    int playmatt = 0;
+    //    if (dto != null)
+    //    {
+    //        sleeves = dto.sleeves;
+    //        playmatt = dto.playmatt;
+    //    }
+
+    //    player.sleeves = sleeves;
+    //    player.playmatt = playmatt;
+    //    GameManager.JoinGame(gameId, player);
+
+    //}
 
     
     #endregion

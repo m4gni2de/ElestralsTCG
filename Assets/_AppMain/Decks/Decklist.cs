@@ -123,6 +123,14 @@ namespace Decks
             return deck;
 
         }
+        public static implicit operator Decklist(DownloadedDeckDTO dto)
+        {
+            Decklist deck = new Decklist(dto);
+            List<DeckCard> cards = DeckCard.FromCardList(dto.deck);
+            deck.Cards.AddRange(cards);
+            return deck;
+
+        }
         #endregion
 
         #region Interface
@@ -174,7 +182,7 @@ namespace Decks
             List<Decklist> list = new List<Decklist>();
             for (int i = 0; i < dto.Count; i++)
             {
-                Decklist deck = new Decklist(dto[i].owner, dto[i].deckKey, dto[i].title);
+                Decklist deck = new Decklist(dto[i]);
                 list.Add(deck);
             }
 
@@ -256,7 +264,9 @@ namespace Decks
             {
 
                 int activeIndex = SettingsManager.Account.Settings.ActiveDeck;
-                return activeIndex.ToString() == _key;
+
+                int deckIndex = App.Account.DeckIndex(DeckKey);
+                return activeIndex == deckIndex;
             }
         }
 
@@ -307,6 +317,14 @@ namespace Decks
 
                 return cards;
                
+            }
+        }
+
+        public bool IsSavedLocally
+        {
+            get
+            {
+                return DeckKey.ToLower() != UploadCode.ToLower();
             }
         }
         #endregion
@@ -360,6 +378,8 @@ namespace Decks
         private bool _isLocked;
         public bool isLocked { get { return _isLocked; } }
 
+        private int _downloads = 0;
+        public int downloads { get { return _downloads; } }
 
         public int CardCount
         {
@@ -409,16 +429,49 @@ namespace Decks
 
             SetZeroDTO(GetDTO);
         }
-
-        Decklist(string owner, string uploadKey)
+        Decklist(DeckDTO dto)
         {
-            _key = uploadKey;
-            _owner = owner;
+            _key = dto.deckKey;
+            _owner = dto.owner;
+            _whenCreated = dto.whenCreated;
+            _deckName = dto.title;
+            if (string.IsNullOrWhiteSpace(dto.uploadCode))
+            {
+                _uploadCode = "";
+            }
+            else
+            {
+                _uploadCode = dto.uploadCode;
+            }
+            
+            _sideDeckKey = dto.sDeckKey;
+            _isLocked = dto.isLocked.IntToBool();
+
+            SetZeroDTO(GetDTO);
+        }
+
+        Decklist(string title, string deckKey)
+        {
+            _key = deckKey;
+            _owner = title;
             _whenCreated = DateTime.Now;
-            _deckName = $"{owner}'s Uploaded Deck";
+            _deckName = title;
+            _sideDeckKey = $"sd_{deckKey}";
+            _isLocked = false;
+            _uploadCode= "";
+            
+            SetZeroDTO(GetDTO);
+        }
+        Decklist(DownloadedDeckDTO dto)
+        {
+            _key = dto.deckKey;
+            _owner = dto.owner;
+            _whenCreated = dto.whenUpload;
+            _deckName = dto.title;
             _sideDeckKey = "";
             _isLocked = true;
-
+            _uploadCode = dto.deckKey;
+            _downloads = dto.downloads;
             SetZeroDTO(GetDTO);
         }
         Decklist(DeckDTO deck, List<qDeckList> cards)
@@ -427,7 +480,14 @@ namespace Decks
             _key = deck.deckKey;
             _owner = deck.owner;
             _whenCreated = deck.whenCreated;
-            _uploadCode = deck.uploadCode;
+            if (string.IsNullOrWhiteSpace(deck.uploadCode))
+            {
+                _uploadCode = "";
+            }
+            else
+            {
+                _uploadCode = deck.uploadCode;
+            }
             _sideDeckKey = deck.sDeckKey;
             _isLocked = deck.isLocked.IntToBool();
 
@@ -477,7 +537,14 @@ namespace Decks
             _key = deck.deckKey;
             _owner = deck.owner;
             _whenCreated = deck.whenCreated;
-            _uploadCode = deck.uploadCode;
+            if (string.IsNullOrWhiteSpace(deck.uploadCode))
+            {
+                _uploadCode = "";
+            }
+            else
+            {
+                _uploadCode = deck.uploadCode;
+            }
             _sideDeckKey = deck.sDeckKey;
             _isLocked = deck.isLocked.IntToBool();
             SetZeroDTO(deck);
@@ -499,14 +566,33 @@ namespace Decks
             Cards.Add(c);
         }
 
-        
+
         #endregion
 
 
         #region Editing/Saving Deck
+
+        #region Property Editing
+        public void Lock(bool doLock)
+        {
+            _isLocked = doLock;
+        }
+        public void SetUploadCode(string code)
+        {
+            _uploadCode = code;
+        }
+        #endregion
        
         public void Save(List<DeckCard> cardList = null)
         {
+            if (!IsSavedLocally)
+            {
+                string prefix = UniqueString.RandomLetters(3);
+                _key = UniqueString.CreateId(6, prefix);
+                _uploadCode = "";
+                _isLocked = false;
+               
+            }
             if (this.IsDirty())
             {
                 DeckDTO dto = GetDTO;
@@ -522,27 +608,62 @@ namespace Decks
         }
 
 
-        public async Task<string> DoUpload()
+        /// <summary>
+        /// Use this only when adding a deck directly from an import
+        /// </summary>
+        public void AddAndSave()
+        {
+            DeckDTO dto = GetDTO;
+            UserService.Save<DeckDTO>(dto, UserService.UserDeckTable, "deckKey", dto.deckKey);
+            UserService.SaveDeckList(_key, GetDeckCards(GetCardQuantities));
+
+            ReloadDeck();
+        }
+
+        
+        protected async Task<string> DoUpload()
         {
 
             if (IsUploaded) { return UploadCode; }
             string upCode = UniqueString.Create("dk", 9);
-            _uploadCode = upCode;
-            _isLocked = true;
+            SetUploadCode(upCode);
+            Lock(true);
             bool uploaded = await RemoteData.AddDeckToRemoteDB(this);
             if (uploaded) { return _uploadCode; }
 
             return "";
 
         }
+
+        protected async Task<bool> DoRemove()
+        {
+
+            if (!IsUploaded) { return false; }
+            bool removed = await RemoteData.RemoveDeckFromRemoteDB(this);
+            if (removed)
+            {
+                SetUploadCode("");
+                Lock(false);
+                return true;
+            }
+            return false;
+
+        }
         #endregion
 
         #region Uploading/Download Deck
-        public async void UploadDeck()
+        public async Task<bool> UploadDeck()
         {
             string code = await DoUpload();
-            if (code.IsEmpty()) { _uploadCode = ""; _isLocked = false; return; }
+            if (code.IsEmpty()) { SetUploadCode("") ; Lock(false); return false; }
             Save();
+            return true;
+        }
+
+        public async Task<bool> RemoveUpload()
+        {
+            bool removed = await DoRemove();
+            if (removed) { Save(); return true; } return false;
         }
         #endregion
 

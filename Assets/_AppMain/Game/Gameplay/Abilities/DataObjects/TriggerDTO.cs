@@ -13,6 +13,7 @@ namespace Database
         public int result { get; set; }
         public int timing { get; set; }
         public int isLocal { get; set; }
+        public string watchFrom { get; set; }
         public string triggerArgs { get; set; }
     }
 }

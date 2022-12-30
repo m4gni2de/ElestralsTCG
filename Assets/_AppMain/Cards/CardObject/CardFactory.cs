@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using AppManagement.Loading;
 using CardsUI.Stones;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using nsSettings;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -60,15 +62,55 @@ public class CardFactory : MonoBehaviour
     public static Dictionary<Rune.RuneType, Sprite> RuneSprites = new Dictionary<Rune.RuneType, Sprite>();
     public static Dictionary<string, Sprite> SetStampSprites = new Dictionary<string, Sprite>();
 
+    #region Sleeves
+    public static readonly string DefaultSleeves = "sleeves0";
+
     private static Sprite _cardBackSp = null;
     public static Sprite cardBackSp
     {
         get
         {
-            _cardBackSp ??= AssetPipeline.ByKey<Sprite>("cardbackSp");
+            if (_cardBackSp == null)
+            {
+                
+                int sleeveIndex = SettingsManager.Account.Settings.Sleeves;
+                string asset = $"sleeves{sleeveIndex}";
+                _cardBackSp = AssetPipeline.ByKey<Sprite>(asset, DefaultSleeves);
+            }
             return _cardBackSp;
         }
     }
+
+    private static Sprite _DefaultCardBack = null;
+    public static Sprite DefaultCardBack
+    {
+        get
+        {
+            if (_DefaultCardBack == null)
+            {
+                _DefaultCardBack = AssetPipeline.ByKey<Sprite>(DefaultSleeves, DefaultSleeves);
+            }
+            return _DefaultCardBack;
+        }
+    }
+
+    public static Sprite CardSleeveSprite(int sleeveIndex)
+    {
+        string asset = $"sleeves{sleeveIndex}";
+        return AssetPipeline.ByKey<Sprite>(asset, DefaultSleeves);
+    }
+    #endregion
+    #region Playmatt
+    private static readonly string PlayMattAsset = "playmatt";
+    private static readonly string PlaymattFallback = "playmatt0";
+    public static Sprite PlaymattSprite(int matIndex)
+    {
+        string assetString = $"{PlayMattAsset}{matIndex}";
+        Sprite sp = AssetPipeline.ByKey<Sprite>(assetString, PlaymattFallback);
+        return sp;
+    }
+    #endregion
+
     private static Sprite _borderSp = null;
     
     public static Sprite borderSp
@@ -132,7 +174,8 @@ public class CardFactory : MonoBehaviour
     
     public static async void LoadSprites()
     {
-       
+
+        
         await LoadSubClassSprites();
         await LoadElementSprites();
         await LoadRaritySprites();
@@ -168,7 +211,7 @@ public class CardFactory : MonoBehaviour
     {
         
         int total = Enum.GetNames(typeof(Elestral.SubClass)).Length;
-        LoadingBar.Instance.Display("Loading Elestral Sprites", 0f, total);
+        ScreenManager.Instance.LoadingBarDisplay("Loading Elestral Sprites", 0f, total);
         for (int i = 0; i < total; i++)
         {
             Elestral.SubClass code = (Elestral.SubClass)i;
@@ -197,7 +240,7 @@ public class CardFactory : MonoBehaviour
     private static async Task LoadElementSprites()
     {
         int total = Enum.GetNames(typeof(ElementCode)).Length;
-        LoadingBar.Instance.Display("Loading Element Sprites", 0f, total * 2);
+        ScreenManager.Instance.LoadingBarDisplay("Loading Element Sprites", 0f, total * 2);
         for (int i = 0; i < total; i++)
         {
             ElementCode code = (ElementCode)i;
@@ -271,7 +314,7 @@ public class CardFactory : MonoBehaviour
     private static async Task LoadRaritySprites()
     {
         int total = Enum.GetNames(typeof(Rarity)).Length;
-        LoadingBar.Instance.Display("Loading Rarity Sprites", 0f, total);
+        ScreenManager.Instance.LoadingBarDisplay("Loading Rarity Sprites", 0f, total);
         for (int i = 0; i < total; i++)
         {
             Rarity code = (Rarity)i;
@@ -304,7 +347,7 @@ public class CardFactory : MonoBehaviour
     private static async Task LoadRuneSprites()
     {
         int total = Enum.GetNames(typeof(Rune.RuneType)).Length;
-        LoadingBar.Instance.Display("Loading Rune Sprites", 0f, total);
+        ScreenManager.Instance.LoadingBarDisplay("Loading Rune Sprites", 0f, total);
         for (int i = 0; i < total; i++)
         {
             

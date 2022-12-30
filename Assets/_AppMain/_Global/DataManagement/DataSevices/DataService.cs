@@ -70,6 +70,13 @@ public class DataService
         //if (exists) { return dto; } else { Game.LogFatalError(db, objName, $"Column {colName} does not exists in Database."); return default(T); }
     }
 
+    public static T ByKey<T, T1>(string tableName, string colName, T1 colValue) where T : new()
+    {
+        string query = $"SELECT * FROM {tableName} WHERE {colName} = ?";
+        T dto = db.QueryFirstRecord<T>(out bool exists, query, colValue);
+        if (exists) { return dto; } return default(T);
+    }
+
     public static T ByQuery<T>(string tableName, string queryWhere) where T : new()
     {
         string query = $"SELECT * FROM {tableName} WHERE {queryWhere}";

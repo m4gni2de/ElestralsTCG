@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Decks;
 using UnityEngine;
 using Users;
 
@@ -115,6 +116,20 @@ namespace Databases
                 db.Commit();
             }
         }
+
+        public static void DeleteDeck(Decklist deck)
+        {
+            string queryWhere = $"deckKey = '{deck.DeckKey}'";
+
+            db.BeginTransaction();
+            Delete(DeckCardTable, queryWhere);
+            Delete(UserDeckTable, queryWhere);
+
+            //ADD SUPPORT FOR SIDE-DECK DELETION WHEN SIDE DECKS ARE ADDED
+            //Delete(SideDeckTable, queryWhere);
+            db.Commit();
+        }
+
         #endregion
 
       

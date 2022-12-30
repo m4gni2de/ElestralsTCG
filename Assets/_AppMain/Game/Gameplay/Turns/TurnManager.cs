@@ -18,6 +18,8 @@ namespace Gameplay.Turns
             get
             {
                 if (Instance == null) { return false; }
+                if (Instance.ActiveTurn == null) { return false; }
+                if (Instance.ActiveTurn.ActivePhase == null) { return false; }
                 return Instance.ActiveTurn.ActivePhase == Instance.ActiveTurn.BattlePhase;
             }
         }
@@ -26,6 +28,8 @@ namespace Gameplay.Turns
             get
             {
                 if (Instance == null) { return false; }
+                if (Instance.ActiveTurn == null) { return false; }
+                if (Instance.ActiveTurn.ActivePhase == null) { return false; }
                 if (Instance.ActiveTurn.ActivePhase == Instance.ActiveTurn.MainPhase && Instance.ActiveTurn.ActivePhase.ActionsComplete)
                 {
                     return true;
@@ -150,10 +154,9 @@ namespace Gameplay.Turns
             }
             int index = 0;
             if (TurnCount == 0) { index = 1; }
-            turn.StartPhase(index);
+            turn.DeclareNewPhase(index);
             Game.SetGameState(GameManager.ActiveGame);
         }
-
 
         #endregion
 
@@ -227,6 +230,15 @@ namespace Gameplay.Turns
         public void StartFirstTurn()
         {
             RoundIndex = -1;
+            for (int i = 0; i < GameManager.ActiveGame.players.Count; i++)
+            {
+                Player p = GameManager.ActiveGame.players[i];
+                for (int j = 0; j < p.deck.Cards.Count; j++)
+                {
+                    GameCard c = p.deck.Cards[i];
+                    c.SetWatchers();
+                }
+            }
             StartTurn();
         }
         public void StartTurn()
@@ -237,18 +249,19 @@ namespace Gameplay.Turns
             StartCoroutine(NewTurn(ActiveTurn));
         }
 
-        public void StartTurnPhase(int index)
+        public void DeclareTurnPhase(int index)
         {
-            StartCoroutine(StartNewPhase(index));
+            StartCoroutine(DeclareNewPhase(index));
         }
 
-        protected IEnumerator StartNewPhase(int index)
+        protected IEnumerator DeclareNewPhase(int index)
         {
             Game.PhaseStart(ActiveTurn, index); 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(.25f);
             GamePhase ph = ActiveTurn.ActivePhase;
+            Game.Events.PhaseStart.Call(ActiveTurn, ph);
             ph.DeclarePhase();
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(.25f);
             DoPhaseActions(ph);
         }
 
@@ -258,6 +271,8 @@ namespace Gameplay.Turns
             ActiveTurn.StartPhase(phase);
             StartCoroutine(AwaitPhaseActions(phase));
         }
+
+        
 
         private IEnumerator AwaitPhaseActions(GamePhase phase)
         {
@@ -285,10 +300,10 @@ namespace Gameplay.Turns
         private IEnumerator DeclarePhaseAction(GamePhase ph, CardAction ac)
         {
             yield return ac.DeclareAction();
-            do
-            {
+            //do
+            //{
 
-            } while (true);
+            //} while (true);
         }
         #endregion
 

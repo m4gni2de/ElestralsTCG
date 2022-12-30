@@ -88,7 +88,7 @@ public class UniqueString
 
         key = prefix + newKey;
 
-        if (maxLength > 0)
+        if (maxLength > 0 && key.Length > maxLength)
         {
             key = key.Substring(0, maxLength);
         }

@@ -36,4 +36,19 @@ public static class StringTools
             });
 
     }
+
+    public static void CopyToClipboard(this string str, bool displayMessage = false)
+    {
+        GUIUtility.systemCopyBuffer = str;
+        if (displayMessage)
+        {
+            App.ShowMessage($"'{str}' has been copied to clipboard!");
+        }
+    }
+
+    public static void CopyToClipboard(this string str, string message)
+    {
+        GUIUtility.systemCopyBuffer = str;
+        App.ShowMessage($"'{message}' has been copied to clipboard!");
+    }
 }

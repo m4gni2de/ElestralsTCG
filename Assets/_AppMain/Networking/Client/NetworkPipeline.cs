@@ -11,6 +11,7 @@ using UnityEditor;
 using System.Linq;
 using Gameplay.Decks;
 using RiptideNetworking;
+using nsSettings;
 
 public enum ServerFunction
 {
@@ -123,12 +124,12 @@ public class NetworkPipeline
     }
 
 
-    public static event Action OnPlayerRegistered;
+    public static event Action<ushort> OnPlayerRegistered;
     [MessageHandler((ushort)FromServer.Connected)]
     private static void PlayerIdRegistered(Message message)
     {
         ushort networkId = message.GetUShort();
-        OnPlayerRegistered?.Invoke();
+        OnPlayerRegistered?.Invoke(networkId);
     }
 
     public static event Action<string> OnGameCreated;
@@ -143,39 +144,65 @@ public class NetworkPipeline
 
 
 
-    public static event Action<string, List<NetworkPlayer>> OnGameJoined;
+    //public static event Action<string, List<NetworkPlayer>> OnGameJoined;
+    //[MessageHandler((ushort)FromServer.JoinGame)]
+    //private static void GameJoined(Message message)
+    //{
+    //    string lobbyId = message.GetString();
+    //    int playersToAdd = message.GetInt();
+
+    //    List<NetworkPlayer> otherPlayers = new List<NetworkPlayer>();
+    //    for (int i = 0; i < playersToAdd; i++)
+    //    {
+    //        ushort netId = message.GetUShort();
+    //        string user = message.GetString();
+    //        string deckKey = message.GetString();
+    //        string deckName = message.GetString();
+    //        string username = message.GetString();
+    //        int sleeves = message.GetInt();
+    //        int playmatt = message.GetInt();
+    //        NetworkPlayer p = new NetworkPlayer(netId, user, deckKey, deckName, username);
+    //        p.sleeves = sleeves;
+    //        p.playmatt = playmatt;
+    //        otherPlayers.Add(p);
+    //    }
+    //    OnGameJoined?.Invoke(lobbyId, otherPlayers);
+    //}
+
+    public static event Action<string, List<string>> OnGameJoined;
     [MessageHandler((ushort)FromServer.JoinGame)]
     private static void GameJoined(Message message)
     {
         string lobbyId = message.GetString();
         int playersToAdd = message.GetInt();
 
-        List<NetworkPlayer> otherPlayers = new List<NetworkPlayer>();
+        //List<NetworkPlayer> otherPlayers = new List<NetworkPlayer>();
+        List<string> otherPlayers = new List<string>();
         for (int i = 0; i < playersToAdd; i++)
         {
-            ushort netId = message.GetUShort();
+
             string user = message.GetString();
-            string deckKey = message.GetString();
-            string deckName = message.GetString();
-            string username = message.GetString();
-            NetworkPlayer p = new NetworkPlayer(netId, user, deckKey, deckName, username);
-            otherPlayers.Add(p);
+            otherPlayers.Add(user);
         }
         OnGameJoined?.Invoke(lobbyId, otherPlayers);
     }
 
-    public static event Action<ushort, string, string> OnPlayerJoined;
-    public static void DoPlayerJoined(ushort netId, string userId, string username)
+    public static event Action<ConnectedPlayerDTO> OnPlayerJoined;
+    public static void DoPlayerJoined(ConnectedPlayerDTO dto)
     {
-        OnPlayerJoined?.Invoke(netId, userId, username);
+        OnPlayerJoined?.Invoke(dto);
     }
     [MessageHandler((ushort)FromServer.PlayerJoined)]
-    private static void PlayerJoined(Message message)
+    private static async void PlayerJoined(Message message)
     {
-        ushort netId = message.GetUShort();
         string userId = message.GetString();
-        string username = message.GetString();
-        DoPlayerJoined(netId, userId, username);
+
+
+        ConnectedPlayerDTO dto = await RemoteData.FindPlayer(userId);
+        if (dto != null)
+        {
+            DoPlayerJoined(dto);
+        }
     }
 
 
@@ -319,6 +346,22 @@ public class NetworkPipeline
     }
 
     #region To Server Messages
+
+    public static void OnConnectedToServer()
+    {
+        Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.Connected);
+        ClientManager.SetPlayer(NetworkManager.Instance.Client.Id);
+
+        ConnectedPlayer p = ClientManager.Player;
+        
+        message.AddUShort(p.ServerId);
+        message.AddString(p.playerData.userId);
+        message.AddString(p.playerData.username);
+        message.AddInt(p.playerData.sleeves);
+        message.AddInt(p.playerData.playmatt);
+
+        SendMessageToServer(message);
+    }
     public static void CreateGame()
     {
         Message message = Message.Create(MessageSendMode.reliable, (ushort)ToServer.CreateGame);

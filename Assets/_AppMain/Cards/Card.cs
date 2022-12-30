@@ -128,6 +128,23 @@ public abstract class Card : iCard
             _effect = value;
         }
     }
+
+    protected List<CardEffect> _effectsList = null;
+    public List<CardEffect> effectsList
+    {
+        get
+        {
+            if (_effectsList == null)
+            {
+                _effectsList = CardEffect.GetCardEffects(cardData.baseKey);
+            }
+            return _effectsList;
+        }
+        set
+        {
+            _effectsList = value;
+        }
+    }
     #endregion
 
     #region Collection

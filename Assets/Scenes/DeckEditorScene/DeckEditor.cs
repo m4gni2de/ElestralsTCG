@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Net.Sockets;
 using Cards;
 using CardsUI.Filtering;
 using Databases;
 using Decks;
+using Gameplay.Decks;
 using Gameplay.Menus;
 using nsSettings;
 using PopupBox;
@@ -12,6 +14,7 @@ using TMPro;
 using TouchControls;
 #if UNITY_EDITOR
 using UnityEditor.Experimental.GraphView;
+using UnityEditor.Rendering.LookDev;
 #endif
 
 using UnityEngine;
@@ -39,10 +42,18 @@ public class DeckEditor : ValidationObject, iFreeze
     }
 
 
+    public static void EditDeck(Decklist deck)
+    {
+        if (Instance != null)
+        {
+            Instance.LoadSpecificDeck(App.Account.DeckLists, deck);
+        }
+    }
     #endregion
 
     #region Properties
 
+    #region Card Properties
     private Card _activeCard = null;
     public Card ActiveCard
     {
@@ -94,16 +105,18 @@ public class DeckEditor : ValidationObject, iFreeze
 
             bool canAdd = CanAddCard(ActiveCard.CardType, qty);
             bool canRemove = qty > 0;
+
+            if (IsRemoteDeck || IsLocked) { canAdd = false; canRemove = false; }
             SetQtyButtons(canAdd, canRemove);
         }
     }
-
+    #endregion
     public TMP_Dropdown deckSelector;
 
    
     private Canvas canvas;
     [SerializeField] private string canvasSortingLayer;
-    [SerializeField] private Button btnUndo, btnOpenCatalog;
+    [SerializeField] private MagicButton btnUndo, btnOpenCatalog, btnSave, btnLock, btnDownload, btnUpload, btnDelete;
     [SerializeField] private MagicTextBox spiritTxt, mainTxt, totalTxt;
     [Header("Canvas Sorting")]
     [SerializeField] private int _catalogSortId = 2;
@@ -115,6 +128,7 @@ public class DeckEditor : ValidationObject, iFreeze
     #region Catalog Section
     public CardCatalog catalog;
     [SerializeField] private CustomScroll deckCardScroll;
+    [SerializeField] private DeckImporter deckImporter;
 
     
 
@@ -137,9 +151,6 @@ public class DeckEditor : ValidationObject, iFreeze
             catalog.Toggle(true);
             deckCardScroll.Toggle(true);
             deckScroller.Toggle(false);
-            //spiritTxt.SetSortLayer(catalog.SortLayer);
-            //mainTxt.SetSortLayer(catalog.SortLayer);
-            //totalTxt.SetSortLayer(catalog.SortLayer);
         }
         else
         {
@@ -170,41 +181,7 @@ public class DeckEditor : ValidationObject, iFreeze
     #endregion
 
     #region Deck Functions
-    public List<CardView> CardsWithSharedBase(Card card, List<CardView> cardsToSearch)
-    {
-        List<CardView> cards = new List<CardView>();
-        List<string> allDupes = card.AltArts;
-        for (int i = 0; i < cardsToSearch.Count; i++)
-        {
-            CardView view = cardsToSearch[i];
-            if (view.ActiveCard != null)
-            {
-                if (allDupes.Contains(view.CardKey))
-                {
-                    cards.Add(view);
-                }
-            }
-        }
-        return cards;
-
-    }
-
-    public List<DeckCard> CardsWithSharedBase(Card card, List<DeckCard> cardsToSearch)
-    {
-        List<DeckCard> cards = new List<DeckCard>();
-        List<string> allDupes = card.AltArts;
-        for (int i = 0; i < cardsToSearch.Count; i++)
-        {
-            DeckCard dc = cardsToSearch[i];
-            if (allDupes.Contains(dc.key))
-            {
-                cards.Add(dc);
-            }
-
-        }
-        return cards;
-
-    }
+   
     public int IndexInDeck(string setKey)
     {
         for (int i = 0; i < DeckCards.Count; i++)
@@ -289,10 +266,28 @@ public class DeckEditor : ValidationObject, iFreeze
 
         return cardQty;
     }
+
+
+    private bool _isRemoteDeck = false;
+    public bool IsRemoteDeck
+    {
+        get
+        {
+            return _isRemoteDeck;
+        }
+        set
+        {
+            _isRemoteDeck = value;
+        }
+
+    }
+
+    public bool IsLocked { get; set; }
     #endregion
 
     #region Deck Selecting Properties
     [SerializeField] private GameObject selectorPanel;
+    [SerializeField] private DeckDownloader downloader;
     [SerializeField] private Button showSelectorBtn;
     [SerializeField] private Button hideSelectorBtn;
 
@@ -326,6 +321,7 @@ public class DeckEditor : ValidationObject, iFreeze
     [SerializeField] private GameObject DeckInfo;
     [SerializeField] private MagicInputText deckNameText;
     [SerializeField] private MagicToggle activeToggle;
+    [SerializeField] private MagicTextBox uploadCodeText;
 
     private Archive<CardHistory> _history = null;
     public Archive<CardHistory> History
@@ -390,9 +386,11 @@ public class DeckEditor : ValidationObject, iFreeze
         {
             if (_isDirty != value)
             {
-                btnUndo.interactable = History.Count > 0;
+                btnUndo.CanClick = History.Count > 0;
             }
             _isDirty = value;
+
+            btnSave.CanClick = value;
         }
     }
 
@@ -409,8 +407,11 @@ public class DeckEditor : ValidationObject, iFreeze
         ToggleSelector(true);
         ToggleCatalog(false);
         qtyChanger.Hide();
+        downloader.Hide();
         Decklist.Clear();
         ActiveDeck = null;
+        IsRemoteDeck = false;
+        IsLocked = false;
 
     }
     private void Awake()
@@ -433,13 +434,22 @@ public class DeckEditor : ValidationObject, iFreeze
     private void Start()
     {
         qtyChanger.OnValueChanged += ChangeCardQtyInDeck;
+        downloader.OnSearchComplete += DownloaderSearchComplete;
+        downloader.OnDisplayChanged += OnCodeSearchDisplay;
     }
+
+    
+
     private void OnDestroy()
     {
         //CardStack.OnQuantityChanged -= SetCardQuantity;
         CardView.OnCardClicked -= SelectCard;
         CardView.OnCardHeld -= StartCardHold;
         qtyChanger.OnValueChanged -= ChangeCardQtyInDeck;
+        downloader.OnSearchComplete -= DownloaderSearchComplete;
+        downloader.OnDisplayChanged -= OnCodeSearchDisplay;
+        ActiveDeck = null;
+        ActiveCard = null;
         if (Instance != null)
         {
             Instance = null;
@@ -458,7 +468,27 @@ public class DeckEditor : ValidationObject, iFreeze
 
         deckSelector.AddOptions(DeckOptions);
         deckSelector.value = 0;
+    }
+    public void LoadSpecificDeck(List<Decklist> list, Decklist deck)
+    {
+        Refresh();
+        _deckList = new List<Decklist>();
+        for (int i = 0; i < list.Count; i++)
+        {
+            Decklist.Add(list[i]);
 
+        }
+
+        deckSelector.AddOptions(DeckOptions);
+        deckSelector.value = 0;
+        SetActiveDeck(deck);
+
+        int index = -1;
+        for (int i = 0; i < Decklist.Count; i++)
+        {
+            if (Decklist[i].DeckKey.Trim().ToLower() == deck.DeckKey.Trim().ToLower()) { index = i; break; }
+        }
+        deckIndex = index;
     }
 
     #endregion
@@ -469,7 +499,48 @@ public class DeckEditor : ValidationObject, iFreeze
         selectorPanel.SetActive(isOn);
         showSelectorBtn.gameObject.SetActive(!isOn);
         deckScroller.ToggleCanvas(!isOn);
+        if (isOn)
+        {
+            downloader.Toggle(false);
+        }
     }
+    public void ToggleDownloder(bool isOn)
+    {
+        selectorPanel.SetActive(!isOn);
+        showSelectorBtn.gameObject.SetActive(!isOn);
+        downloader.Toggle(isOn);
+    }
+
+
+
+    #region Deck Importer
+    public void LoadImporter()
+    {
+        deckImporter.OnDisplayChanged += OnImporterDisplayChange;
+        deckImporter.Show();
+        
+    }
+    private void OnImporterDisplayChange(bool isShowing)
+    {
+        if (!isShowing)
+        {
+            deckImporter.OnDisplayChanged -= OnImporterDisplayChange;
+            deckScroller.ToggleCanvas(true);
+            if (ActiveDeck == null || DeckCards.Count == 0)
+            {
+                selectorPanel.SetActive(true);
+            }
+        }
+        else
+        {
+            selectorPanel.SetActive(false);
+            deckScroller.ToggleCanvas(false);
+            downloader.Toggle(false);
+        }
+    }
+    #endregion
+
+
 
     public void SelectDeck()
     {
@@ -484,11 +555,14 @@ public class DeckEditor : ValidationObject, iFreeze
     private void TryChangeDeck(int newIndex)
     {
         _pendingDeckIndex = newIndex;
+
+        string saveMsg = $"There are unsaved changes to the deck. Do you wish to Save them before changing Decks?";
+        if (IsRemoteDeck) { saveMsg = $"This deck has not been saved to your device. Do you wish to save it locally before changing Decks?"; IsDirty = true; }
+
         if (IsDirty || deckNameText.IsContentChanged())
         {
             
-            string msg = $"There are unsaved changes to the deck. Do you wish to Save them before changing Decks?";
-            App.AskYesNoCancel(msg, SaveDeckChanges);
+            App.AskYesNoCancel(saveMsg, SaveDeckChanges);
         }
         else
         {
@@ -498,6 +572,7 @@ public class DeckEditor : ValidationObject, iFreeze
         }
 
     }
+    
 
     public void OpenDeckEditor()
     {
@@ -556,27 +631,71 @@ public class DeckEditor : ValidationObject, iFreeze
         DeckCards.Clear();
         DeckCards.AddRange(deck.GetCardQuantities);
         deckScroller.SetDataContext(Cards);
-       
+
+        IsRemoteDeck = !deck.IsSavedLocally;
+        IsLocked = deck.isLocked;
+
+        
         ToggleSelector(false);
         SetDeckInfo(deck);
         SetWatchers(true);
         ToggleCatalog(false);
+
+        
         
     }
 
-
+    public void LockMode(Decklist deck)
+    {
+        deckNameText.Refresh();
+        deckNameText.SetText(deck.DeckName);
+        if (IsLocked)
+        {
+            deckNameText.ToggleInputEnabled(false);
+            btnUndo.CanClick = false;
+            btnDelete.CanClick = false;
+            App.ShowMessage("Deck is currently locked! To make changes to this Deck, it must be Unlocked by pushing the Unlock Button, or, if the deck is uploaded, remove it from the Database.");
+        }
+        else
+        {
+            deckNameText.AddTextChangeListener(() => SetDeckName(deckNameText.Content));
+            deckNameText.ToggleInputEnabled(true);
+            SetActiveToggle(deck);
+            btnUndo.CanClick = History.Count > 0;
+            btnDelete.CanClick = !IsRemoteDeck;
+        }
+    }
 
 
     #endregion
 
-    #region Deck Information
+    #region Deck Information 
     private void SetDeckInfo(Decklist deck)
     {
-        deckNameText.Refresh();
-        deckNameText.SetText(deck.DeckName);
-        deckNameText.AddTextChangeListener(() => SetDeckName(deckNameText.Content));
+        LockMode(deck);
 
-        SetActiveToggle(deck);
+        if (IsRemoteDeck)
+        {
+            activeToggle.OnToggleChanged -= OnActiveDeckChanged;
+            activeToggle.Interactable = false;
+            activeToggle.Toggle(false);
+            activeToggle.SetText("Deck not yet downloaded.");
+            deckNameText.ToggleInputEnabled(false);
+        }
+
+        uploadCodeText.Refresh();
+        if (deck.IsUploaded)
+        {
+            uploadCodeText.gameObject.SetActive(true);
+            uploadCodeText.SetText(deck.UploadCode);
+        }
+        else
+        {
+            uploadCodeText.SetText("");
+            uploadCodeText.gameObject.SetActive(false);
+        }
+
+       
         SetQuantityTexts();
 
     }
@@ -629,7 +748,8 @@ public class DeckEditor : ValidationObject, iFreeze
     {
         if (confirm)
         {
-            SettingsManager.Account.Settings.ActiveDeck = int.Parse(ActiveDeck.DeckKey);
+            int index = App.Account.DeckIndex(ActiveDeck.DeckKey);
+            SettingsManager.Account.Settings.ActiveDeck = index;
             SetActiveToggle(ActiveDeck);
         }
         else
@@ -650,21 +770,21 @@ public class DeckEditor : ValidationObject, iFreeze
     }
     #endregion
 
-   
-
+  
     #region Card Quantity 
     [SerializeField] private IncrementChanger qtyChanger;
     private void AddHistory(string cardKey, int oldQty, int newQty)
     {
         CardHistory h = new CardHistory(cardKey, oldQty, newQty);
         History.Add(h);
-        btnUndo.interactable = true;
+        btnUndo.CanClick = true;
+        btnSave.CanClick = true;
     }
     private void UndoChange(bool undo)
     {
-        Invoke("DoThaw", .5f);
+        DoThawAtInteveral(.5f);
         if (!undo) { return; }
-        if (History.Count == 0) { IsDirty = false;  btnUndo.interactable = false; return; }
+        if (History.Count == 0) { IsDirty = false;  btnUndo.CanClick = false; return; }
        
         CardHistory mostRecent = History.LastItem;
 
@@ -675,7 +795,13 @@ public class DeckEditor : ValidationObject, iFreeze
         ActiveCardQuantityChange(mostRecent.oldQty, false);
 
        
-        if (History.Count == 0) { btnUndo.interactable = false; }  
+        if (History.Count == 0)
+        {
+            btnUndo.CanClick = false;
+            btnSave.CanClick = !Validate();
+            
+        }
+
     }
 
 
@@ -780,7 +906,6 @@ public class DeckEditor : ValidationObject, iFreeze
 
     public bool CanAddCard(CardType type, int deckQty)
     {
-
         float max = 3f;
         if (type == CardType.Spirit)
         {
@@ -802,7 +927,6 @@ public class DeckEditor : ValidationObject, iFreeze
     #endregion
 
 
-    #region SELECTED CARD DEPRECIATED
    
     #region Card Qty Constraints
     private void SetQuantityTexts()
@@ -811,7 +935,7 @@ public class DeckEditor : ValidationObject, iFreeze
         mainTxt.SetText($"Main Deck:  {MainDeckCount}");
         totalTxt.SetText($"Total:  {DeckCardCount}");
 
-        btnOpenCatalog.interactable = DeckCardCount < MaxDeckCount;
+        btnOpenCatalog.CanClick = DeckCardCount < MaxDeckCount || IsRemoteDeck;
     }
     private void SetQtyButtons(bool canAdd, bool canRemove)
     {
@@ -821,8 +945,6 @@ public class DeckEditor : ValidationObject, iFreeze
 
     #endregion
 
-
-    #endregion
     #region Card Adding/Removing
    
     public void CatalogToggleButton(bool turnOn)
@@ -882,7 +1004,7 @@ public class DeckEditor : ValidationObject, iFreeze
             DisplayCard.Clear();
         }
     }
-   
+
     #endregion
 
 
@@ -891,6 +1013,7 @@ public class DeckEditor : ValidationObject, iFreeze
     public override bool Validate()
     {
         ErrorList.Clear();
+        if (IsRemoteDeck) { AddError($"Deck has not been saved locally."); };
         if (deckNameText.IsContentChanged()) { AddError($"Deck Name has un-saved changes."); }
         if (History.Count > 0) { AddError($"Deck has un-saved card changes."); }
         if (IsDeckChanged()) { AddError($"Quantities in deck and in editor don't match."); }
@@ -900,7 +1023,7 @@ public class DeckEditor : ValidationObject, iFreeze
     public bool IsDeckChanged()
     {
         if (ActiveDeck == null) { return false; }
-
+        if (DeckCards.Count == 0) { return false; }
         List<DeckCard> originalCards = ActiveDeck.GetCardQuantities;
 
 
@@ -936,13 +1059,13 @@ public class DeckEditor : ValidationObject, iFreeze
     }
     private void SaveDeckChanges(PopupResponse response)
     {
-
         switch (response)
         {
             case PopupResponse.Cancel:
                 break;
             case PopupResponse.Yes:
                 SaveActiveDeck();
+                App.ShowMessage("Deck saved!");
                 SetActiveDeck(Decklist[_pendingDeckIndex]);
                 deckIndex = _pendingDeckIndex;
                 break;
@@ -955,12 +1078,13 @@ public class DeckEditor : ValidationObject, iFreeze
         _pendingDeckIndex = -1;
 
     }
+    
     public void SaveActiveDeck()
     {
-        //ActiveDeck.Save(CardCounts);
         ActiveDeck.Save(DeckCards);
-        
     }
+
+   
     #endregion
 
     #region Touch Freezing
@@ -972,6 +1096,195 @@ public class DeckEditor : ValidationObject, iFreeze
     protected void DoThaw()
     {
         this.Thaw();
+    }
+    protected void DoThawAtInteveral(float seconds)
+    {
+        Invoke("DoThaw", seconds);
+    }
+    #endregion
+
+
+    #region Upload/Downloading
+    private void DownloaderSearchComplete(Decklist obj)
+    {
+        bool containsDeck = false;
+        //for (int i = 0; i < Decklist.Count; i++)
+        //{
+        //    Decklist d = Decklist[i];
+        //    if (d.UploadCode.ToLower() == obj.DeckKey.ToLower()) { containsDeck = true; break; }
+        //}
+        if (!containsDeck)
+        {
+            Decklist.Add(obj);
+            int index = Decklist.Count - 1;
+            TryChangeDeck(index);
+        }
+    }
+
+    public void DeckUploadButton()
+    {
+        if (ActiveDeck.IsUploaded)
+        {
+            string msg = $"This deck is already uploaded with code '{ActiveDeck.UploadCode}'.";
+            if (!IsRemoteDeck)
+            {
+                msg += " Do you want to remove it from the server?";
+                App.AskYesNoCancel(msg, AwaitDeckRemove);
+                return;
+            }
+            else
+            {
+                App.DisplayError(msg);
+            }
+
+        }
+        else
+        {
+            string msg = $"Uploading a deck to the public server will allow it to be shared with the rest of the world. Do you want to Upload it?";
+            App.AskYesNoCancel(msg, AwaitDeckUpload);
+        }
+    }
+
+    private async void AwaitDeckUpload(PopupResponse response)
+    {
+        switch (response)
+        {
+            case PopupResponse.Cancel:
+                break;
+            case PopupResponse.Yes:
+                bool uploaded = await ActiveDeck.UploadDeck();
+                if (uploaded)
+                {
+                    string msg = $"Deck uploaded with code {ActiveDeck.UploadCode}";
+                    ActiveDeck.UploadCode.CopyToClipboard(false);
+                    App.ShowMessage(msg);
+                    SetActiveDeck(ActiveDeck);
+                }
+                break;
+            case PopupResponse.No:
+                break;
+        }
+    }
+
+    private async void AwaitDeckRemove(PopupResponse response)
+    {
+        switch (response)
+        {
+            case PopupResponse.Cancel:
+                break;
+            case PopupResponse.Yes:
+                bool removed = await ActiveDeck.RemoveUpload();
+                if (removed)
+                {
+                    string msg = $"Deck removed from server!";
+                    App.ShowMessage(msg);
+                    SetActiveDeck(ActiveDeck);
+                }
+                break;
+            case PopupResponse.No:
+                SetActiveDeck(ActiveDeck);
+                break;
+        }
+    }
+    #endregion
+
+    #region Buttons
+    public void CopyCodeButton()
+    {
+        if (!uploadCodeText.Content.IsEmpty())
+        {
+            uploadCodeText.Content.CopyToClipboard(true);
+        }
+    }
+    public void ExportDecklistButton()
+    {
+        if (ActiveDeck == null || DeckCards.Count == 0) { return; }
+
+        if (DeckCards.Count > 0)
+        {
+            string msg = $"Decklist has been copied to your clipboard!";
+            ActiveDeck.GetCardList.CopyToClipboard(msg);
+        }
+    }
+    public void SaveDeckButton()
+    {
+        string saveMsg = $"Do you wish to save your deck?";
+        if (IsRemoteDeck) { saveMsg = $"This deck has not been saved to your device. Do you wish to save it locally?"; IsDirty = true; }
+
+        if (IsDirty || deckNameText.IsContentChanged())
+        {
+            _pendingDeckIndex = deckIndex;
+            App.AskYesNoCancel(saveMsg, SaveDeckChanges);
+        }
+    }
+    public void LockButton()
+    {
+        if (IsRemoteDeck) { App.DisplayError("$Deck must be saved locally before being able to edit it."); return; }
+        bool locked = ActiveDeck.isLocked;
+
+        if (!locked)
+        {
+            App.AskYesNoCancel($"In order to lock a deck, it needs to be saved. Do you wish to save and lock this deck?", ToggleDeckLocked);
+        }
+        else
+        {
+            ActiveDeck.Lock(false);
+            IsDirty = true;
+            IsLocked = false;
+            LockMode(ActiveDeck);
+            App.ShowMessage("Deck unlocked!");
+        }
+        
+        
+
+    }
+
+    private void ToggleDeckLocked(PopupResponse response)
+    {
+        switch (response)
+        {
+            case PopupResponse.Cancel:
+                break;
+            case PopupResponse.Yes:
+                ActiveDeck.Lock(true);
+                App.ShowMessage("Deck locked!");
+                SaveActiveDeck();
+                SetActiveDeck(ActiveDeck);
+                break;
+            case PopupResponse.No:
+                SetActiveDeck(ActiveDeck);
+                break;
+        }
+
+    }
+    
+    public void DeleteDeckButton()
+    {
+        if (App.Account.DeckLists.Count == 1) { App.DisplayError("You cannot delete your only remaining deck!"); return; }
+        if (ActiveDeck == null) { App.DisplayError("A deck must be selected in order to delete it!"); return; }
+        if (ActiveDeck.IsUploaded) { App.DisplayError("A deck uploaded to the server cannot be deleted. Remove it from the server if you wish to delete this deck."); return; }
+
+        string question = $"Do you want to delete '{ActiveDeck.DeckName}'? This action is permanent and cannot be undone. Selecting 'yes' will permanently remove thie deck from your device.";
+        App.AskYesNo(question, DoDeleteDeck);
+    }
+    private void DoDeleteDeck(bool delete)
+    {
+        if (delete)
+        {
+            string msg = $"Deck '{ActiveDeck.DeckName}' has been deleted!";
+            App.Account.DeleteDeck(ActiveDeck);
+            Decklist newActive = App.Account.DeckLists[SettingsManager.Account.Settings.ActiveDeck];
+            LoadSpecificDeck(App.Account.DeckLists, newActive);
+            App.ShowMessage(msg);
+
+        }
+    }
+    #endregion
+
+    #region Misc Event Watching
+    private void OnCodeSearchDisplay(bool isVisible)
+    {
+        if (isVisible) { DoFreeze(); } else { DoThaw(); }
     }
     #endregion
 

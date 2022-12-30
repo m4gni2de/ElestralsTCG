@@ -89,5 +89,20 @@ public class WorldCanvas : GlobalObject, iInvert
         Instance.canvas.renderMode = RenderMode.ScreenSpaceOverlay;
     }
 
+    public void ScaleToSafeArea()
+    {
+        float screenHeight = canvas.pixelRect.height;
+        float screenWidth = canvas.pixelRect.width;
+
+        float safeHeight = Screen.safeArea.height;
+        float safeWidth = Screen.safeArea.width;
+       
+        if (safeWidth < screenWidth)
+        {
+            float widthRatio = safeWidth / screenWidth;
+            canvas.GetComponent<RectTransform>().localScale *= widthRatio;
+        }
+    }
+
     
 }

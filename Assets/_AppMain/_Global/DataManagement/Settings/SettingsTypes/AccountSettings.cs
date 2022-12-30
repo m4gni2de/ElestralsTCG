@@ -8,6 +8,8 @@ namespace nsSettings
     public class AccountSettings : ISettingsType<AccountSettings>
     {
         public int ActiveDeck;
+        public int Sleeves;
+        public int Playmatt;
 
         public AccountSettings Default
         {
@@ -15,7 +17,9 @@ namespace nsSettings
             {
                 return new AccountSettings
                 {
-                    ActiveDeck = 0
+                    ActiveDeck = 0,
+                    Sleeves = 0,
+                    Playmatt = 0,
                 };
             }
         }

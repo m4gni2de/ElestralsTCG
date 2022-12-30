@@ -79,6 +79,43 @@ public class SpriteDisplay : MonoBehaviour
     }
 
     #endregion
+
+    #region Visualization
+    protected Sprite previousSprite = null;
+    private bool _isHidden = false;
+    public bool isHidden
+    {
+        get
+        {
+            return _isHidden;
+        }
+        set
+        {
+            if (_isHidden == value) { return; }
+            _isHidden = value;
+            if (_isHidden)
+            {
+                if (MainSprite != null)
+                {
+                    previousSprite = MainSprite;
+                }
+                SetSprite(null);
+            }
+            else
+            {
+                if (previousSprite != null)
+                {
+                    SetSprite(previousSprite);
+                }
+                previousSprite = null;
+            }
+        }
+    }
+    public void DisplaySprite(bool toDisplay)
+    {
+        isHidden = !toDisplay;
+    }
+    #endregion
     public Transform m_Transform
     {
         get
@@ -149,6 +186,17 @@ public class SpriteDisplay : MonoBehaviour
         if (RendType == RenderType.Sprite) { return _sp.color; }
         return Color.white;
     }
+    public void SetAlpha(float alpha)
+    {
+        if (RendType == RenderType.Image)
+        {
+            _image.color = new Color(_image.color.r, _image.color.g, _image.color.b, alpha);
+        }
+        else if (RendType == RenderType.Sprite)
+        {
+            _sp.color = new Color(_sp.color.r, _sp.color.g, _sp.color.b, alpha);
+        }
+    }
     public void ChangeToColor(Color col, float changeDuration)
     {
         StartCoroutine(FadeColor(col, changeDuration));
@@ -209,6 +257,8 @@ public class SpriteDisplay : MonoBehaviour
         SetColor(prevCol);
     }
     #endregion
+
+
 
     #region Functions
 

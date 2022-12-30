@@ -10,10 +10,10 @@ namespace Gameplay
 {
     public class Field : MonoBehaviour
     {
-        [SerializeField]
+        #region Properties
         public string fieldId { get; set; }
         public int baseIndex;
-        private SpriteRenderer spMat;
+        [SerializeField] private SpriteDisplay spMat;
 
         public List<CardSlot> cardSlots = new List<CardSlot>();
         
@@ -22,14 +22,28 @@ namespace Gameplay
         public Player _player { get; set; }
         protected GameDeck _deck { get { return _player.deck; } }
 
-
-
+        #region Playmatt
+        private static readonly string PlayMattAsset = "playmatt";
+        private static readonly string PlaymattFallback = "playmatt0";
+        public async void SetPlaymatt(int matIndex)
+        {
+            string assetString = $"{PlayMattAsset}{matIndex}";
+            Sprite sp = await AssetPipeline.ByKeyAsync<Sprite>(assetString, PlaymattFallback);
+            if (sp != null)
+            {
+                spMat.SetSprite(sp);
+            }
+        }
         #endregion
 
+            #endregion
 
-        #region Functions
+            #endregion
 
-        #region Explicit Slots
+
+            #region Functions
+
+            #region Explicit Slots
         public CardSlot DeckSlot
         {
             get
@@ -295,10 +309,6 @@ namespace Gameplay
                 }
 
                 cardSlots[i].SetPlayer(_player, i);
-                //cardSlots[i].SetIndex(i);
-                //cardSlots[i].SetId(_player.lobbyId.ToString());
-
-
             }
             
         }
@@ -309,25 +319,14 @@ namespace Gameplay
             fieldId = p.lobbyId.ToString();
             //name = _player.lobbyId + "_Field";
             name = _player.userId + "_Field";
-            
+            SetPlaymatt(p.playmatt);
+
             Register();
 
             
         }
 
         
-
-        //public void SetPlayer(Player p, string id)
-        //{
-        //    fieldId = id;
-        //    _player = p;
-        //    for (int i = 0; i < cardSlots.Count; i++)
-        //    {
-                
-        //        cardSlots[i].SetId(p.userId);
-        //    }
-        //    AllocateCards();
-        //}
         public void AllocateCards(bool sendToServer = true)
         {
             Deck sp = _deck.SpiritDeck;
@@ -337,7 +336,7 @@ namespace Gameplay
                 CardView co = SpawnCard(g, SpiritDeckSlot);
                 g.SetObject(co);
                 SpiritDeckSlot.AllocateTo(g, sendToServer);
-
+               
             }
 
             Deck de = _deck.MainDeck;
@@ -353,29 +352,31 @@ namespace Gameplay
             GameManager.Instance.ReadyPlayer(_player);
         }
 
-        public void SpawnCard(GameCard card)
-        {
-            if (card.CardType == CardType.Spirit)
-            {
-                CardView co = SpawnCard(card, SpiritDeckSlot);
-                card.SetObject(co);
-                SpiritDeckSlot.AllocateTo(card);
-            }
-            else
-            {
-                CardView co = SpawnCard(card, DeckSlot);
-                card.SetObject(co);
-                DeckSlot.AllocateTo(card);
-            }
-        }
+        //public void SpawnCard(GameCard card)
+        //{
+        //    if (card.CardType == CardType.Spirit)
+        //    {
+        //        CardView co = SpawnCard(card, SpiritDeckSlot);
+        //        card.SetObject(co);
+        //        SpiritDeckSlot.AllocateTo(card);
+        //    }
+        //    else
+        //    {
+        //        CardView co = SpawnCard(card, DeckSlot);
+        //        card.SetObject(co);
+        //        DeckSlot.AllocateTo(card);
+        //    }
+        //}
 
 
 
         protected CardView SpawnCard(GameCard card, CardSlot slot)
         {
             bool displayBack = slot.facing == CardSlot.CardFacing.FaceDown;
+            Sprite sleeveSp = _player.SleevesSp;
             CardView c = CardFactory.CreateCard(transform, card.card, displayBack);
-            c.name = card.name;
+            c.ChangeSleeves(sleeveSp);
+            c.name = card.cardName;
             c.gameObject.AddComponent<NetworkCard>();
             return c;
         }
