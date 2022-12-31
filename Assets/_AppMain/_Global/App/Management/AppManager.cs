@@ -21,6 +21,7 @@ using AppManagement;
 using UnityEngine.Events;
 using Cards.Collection;
 using AppManagement.Loading;
+using nsSettings;
 #if UNITY_EDITOR
 using ParrelSync;
 #endif
@@ -53,6 +54,18 @@ public class AppManager : MonoBehaviour
 
         bool hasDb = await dbConnector.ConnectAsync();
 
+        //if (hasDb)
+        //{
+        //    bool isLatest = App.IsVersionLatest();
+        //    if (!isLatest)
+        //    {
+        //        App.UpdateToNewestVersion();
+        //        return;
+        //    }
+        //    SettingsManager.Advanced.Settings.buildVersion = App.AppVersionKey;
+        //    SettingsManager.Advanced.Save();
+        //}
+
         var data = await AssetPipeline.CheckForCatalogUpdate();
         bool hasUpdate = data != null;
         if (data != null)
@@ -62,7 +75,7 @@ public class AppManager : MonoBehaviour
             double size = data.Item2;
             if (size > 0)
             {
-                //Instance.ShowLoadingBar("Items Downloaded", 0f, items.Count);
+                Instance.ShowLoadingBar("Items Downloaded", 0f, items.Count);
                 
                 //AssetPipeline.DoRedownloadAllCards();
 
@@ -82,6 +95,8 @@ public class AppManager : MonoBehaviour
         }
 
     }
+
+  
     #endregion
 
 
@@ -404,7 +419,7 @@ CheckForAccountDevice();
         worldCanvas = WorldCanvas.Instance;
         appCanvas.worldCamera = Camera.main;
         WorldCanvas.Instance.ScaleToSafeArea();
-        ScreenManager.Instance.ShowRandomScreen(1.25f);
+        //ScreenManager.Instance.ShowRandomScreen(1.25f);
 
         PopupManager.SetActivePopup();
         
@@ -541,6 +556,7 @@ CheckForAccountDevice();
         if (loadingAssets == null)
         {
             loadingAssets = StartCoroutine(AwaitMulitpleAssets<T>(keys));
+           
         }
         
     }
@@ -567,7 +583,7 @@ CheckForAccountDevice();
 
         } while (true && doneCount < count);
 
-
+        loadingBar.Hide();
         AssetsLoadComplete?.Invoke();
         loadingAssets = null;
 

@@ -15,6 +15,7 @@ namespace GlobalUtilities
 
     public enum SortBy
     {
+        Age = -2,
         Property = -1,
         Name = 0,
         Cost = 1,

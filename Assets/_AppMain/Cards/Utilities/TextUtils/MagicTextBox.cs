@@ -34,8 +34,9 @@ public class MagicTextBox : MonoBehaviour, iSortRenderer
         }
     }
 
+    public Vector2 defaultLocalPosition { get; private set; }    
     
-    public string Content
+    public virtual string Content
     {
         get
         {
@@ -153,6 +154,7 @@ public class MagicTextBox : MonoBehaviour, iSortRenderer
     private void Awake()
     {
         defaultMaterial = new Material(TextBox.fontSharedMaterial);
+        
     }
 
     public void Hide(bool blank)
@@ -167,7 +169,7 @@ public class MagicTextBox : MonoBehaviour, iSortRenderer
     public virtual void Show()
     {
         gameObject.SetActive(true);
-        if (!IsLoaded) { IsLoaded = true; }
+        if (!IsLoaded) { defaultLocalPosition = transform.localPosition;  IsLoaded = true; }
     }
     protected virtual void Load()
     {
@@ -243,10 +245,11 @@ public class MagicTextBox : MonoBehaviour, iSortRenderer
             ArchiveText();
         }
     }
-    
-   
+
+
     #endregion
 
+    #region Formatting
     public void SetStellar(string txt)
     {
         Show();
@@ -316,6 +319,11 @@ public class MagicTextBox : MonoBehaviour, iSortRenderer
     {
         SortOrder = sortOrder;
     }
+    public void Align(TextAlignmentOptions alignment)
+    {
+        TextBox.alignment = alignment;
+    }
+    #endregion
 
     private void OnDestroy()
     {

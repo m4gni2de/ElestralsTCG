@@ -5,8 +5,9 @@ using System.Reflection;
 using GlobalUtilities;
 using UnityEngine;
 using static Sorter;
+#if UNITY_EDITOR
 using static UnityEditor.Progress;
-
+#endif
 public class ValueSorter : iSorter
 {
 

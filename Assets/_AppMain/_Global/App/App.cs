@@ -106,12 +106,50 @@ public class App
         }
     }
 
-   
-    #endregion
 
     #endregion
 
+    #endregion
 
+
+    /// <summary>
+    /// Figure this out later. 
+    /// </summary>
+    #region Verion Management
+
+    private static readonly string AppUrl = "https://drive.google.com/file/d/1OyFb76IbbfpFjb0d0q4xds2TtVOJZ2pH/view?usp=sharing";
+    /// <summary>
+    ///  BE SURE TO CHANGE THESE WHEN BUILDING APP
+    /// </summary>
+    public static readonly string AppVersionKey = "tts-002";
+    public static readonly int BuildIndex = 0;
+    private static VersionData _currentVersion = null;
+    public static VersionData CurrentVersion
+    {
+        get
+        {
+            if (_currentVersion == null)
+            {
+                _currentVersion = VersionService.GetVersion(AppVersionKey);
+            }
+            return _currentVersion;
+        }
+    }
+
+    public static bool IsVersionLatest()
+    {
+        return CurrentVersion.IsLatestVersion();
+    }
+    public static void UpdateToNewestVersion()
+    {
+        string msg = $"There is a newer version available! This version of the app is no longer in use.";
+        App.DisplayError(msg, ConfirmAppUpdate);
+    }
+    private static void ConfirmAppUpdate()
+    {
+        Application.OpenURL(AppUrl);
+    }
+    #endregion
 
 
     #region Closing

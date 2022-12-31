@@ -174,7 +174,7 @@ namespace nsSettings
                 }
 
                 mattScroll.Toggle(true);
-                if (!sleevesScroll.IsLoaded)
+                if (!mattScroll.IsLoaded)
                 {
                     GridSettings sett = GridSettings.CreateInfinite(2, 0, new Vector2(10f, 50f), .5f);
                     mattScroll.Initialize(sett, SetPlaymatCell);

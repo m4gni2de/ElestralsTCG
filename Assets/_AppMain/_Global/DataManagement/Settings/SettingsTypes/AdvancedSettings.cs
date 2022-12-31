@@ -19,7 +19,7 @@ namespace nsSettings
                 return new AdvancedSettings
                 {
                     LogLevel = 1,
-                    PreloadCards = 1
+                    PreloadCards = 1,
                 };
             }
         }

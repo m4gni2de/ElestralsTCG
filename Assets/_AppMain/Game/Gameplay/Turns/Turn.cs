@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Gameplay.CardActions;
+#if UNITY_EDITOR
 using UnityEditor.Build.Pipeline;
+#endif
 using UnityEngine;
 using UnityEngine.UIElements;
 

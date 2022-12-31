@@ -213,6 +213,14 @@ namespace Gameplay
                 _playmattSp = value;
             }
         }
+
+        public bool IsYou
+        {
+            get
+            {
+                return userId.ToLower() == App.Account.Id.ToLower();
+            }
+        }
         #endregion
 
         #region Constructors

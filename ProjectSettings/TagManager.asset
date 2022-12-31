@@ -60,6 +60,9 @@ TagManager:
   - name: CardSpotlight
     uniqueID: 1671384291
     locked: 0
+  - name: GameChat
+    uniqueID: 3523036481
+    locked: 0
   - name: GameMenu
     uniqueID: 386768785
     locked: 0

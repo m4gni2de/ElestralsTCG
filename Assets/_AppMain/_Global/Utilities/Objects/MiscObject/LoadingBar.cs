@@ -62,7 +62,7 @@ public class LoadingBar : MonoBehaviour
 
     private void Awake()
     {
-        Hide();
+        //Hide();
         
     }
 

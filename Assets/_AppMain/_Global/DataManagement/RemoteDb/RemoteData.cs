@@ -14,6 +14,7 @@ using System.Net;
 using SimpleSQL;
 using System;
 using nsSettings;
+using Gameplay.P2P;
 
 public class RemoteData
 {
@@ -483,6 +484,34 @@ public class RemoteData
         string results = await DoRemoteQuery(serverInfo, form);
         return results != "error";
 
+    }
+    #endregion
+
+
+    #region Chat Management
+    public static async Task<bool> AddChatMessage(ChatDTO dto)
+    {
+
+        WWWForm form = new WWWForm();
+        form.AddField("action", "addChat");
+        form.AddField("chatId", dto.id);
+        form.AddField("sender", dto.sender);
+        form.AddField("originalContent", dto.originalContent);
+        form.AddField("updatedContent", dto.updatedContent);
+        form.AddField("type", dto.type);
+        form.AddField("whenSend", dto.whenSend);
+        form.AddField("deleted", dto.deleted);
+        form.AddField("edited", dto.edited);
+        //form.AddField("name", deck.deckName);
+
+        string result = await DoRemoteQuery(pvpLobby, form);
+
+        if (result == "error")
+        {
+            return false;
+        }
+
+        return true;
     }
     #endregion
 }

@@ -123,11 +123,13 @@ namespace AppManagement.Loading
 
         }
         public void ShowRandomScreen(float displayTime)
-        {
+    {
+#if UNITY_EDITOR
             int newIndex = LoadScreenService.RandomScreenIndex();
             DisplayScreen(newIndex, displayTime);
+#endif
 
-        }
+    }
         public void ShowScreen(float displayTime = 0f)
         {
             Screen.Show();

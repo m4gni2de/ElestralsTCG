@@ -19,6 +19,7 @@ using RiptideNetworking;
 using System.Security.Cryptography;
 using UnityEngine.Networking.Types;
 using UnityEngine.EventSystems;
+using Gameplay.P2P;
 
 #if UNITY_EDITOR
 using UnityEditorInternal;
@@ -31,6 +32,7 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
     #region Interface
     public void StartScene()
     {
+        
         DisplayManager.ClearButton();
         DisplayManager.ToggleVisible(false);
         DisplayManager.ToggleActive(true);
@@ -124,6 +126,7 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
     public TMP_Text txtGameId;
     public PauseMenu pauseMenu;
     public RotatingMenu optionsMenu;
+    public GameChatBox gameChat;
     #endregion
 
 
@@ -223,6 +226,7 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
     public static event Action OnGameLoaded;
     private void Start()
     {
+        
         //CameraMotion.ReScale();
         OnGameLoaded?.Invoke();
         StartScene();
@@ -841,6 +845,7 @@ public class GameManager : MonoBehaviour, iFreeze, iSceneScript
 
     protected async void ChooseDeck()
     {
+
         if (IsOnline)
         {
             //open a prompt to choose the deck here. once a deck is chosen, set the player to ready

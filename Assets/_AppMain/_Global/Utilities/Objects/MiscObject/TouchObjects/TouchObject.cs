@@ -5,7 +5,9 @@ using UnityEngine.UI;
 using System;
 using UnityEngine.Events;
 using TouchControls;
+#if UNITY_EDITOR
 using UnityEditor.ShaderGraph.Internal;
+#endif
 
 public class TouchObject : ValidationObject
 {

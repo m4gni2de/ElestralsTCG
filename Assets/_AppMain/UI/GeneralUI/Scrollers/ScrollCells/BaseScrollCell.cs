@@ -5,7 +5,7 @@ using UnityEngine;
 public abstract class BaseScrollCell : MonoBehaviour, iGridCell
 {
     #region Interface
-    public int Index => throw new System.NotImplementedException();
+    public virtual int Index => throw new System.NotImplementedException();
 
     public virtual void Clear()
     {

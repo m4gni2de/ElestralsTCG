@@ -74,6 +74,10 @@ public class CardCollection
         Instance.Generate();
     }
         
+
+    /// <summary>
+    /// FIX THIS
+    /// </summary>
     private void Generate()
     {
         //int cardsAdded = CardCollectionService.NewCardsAdded();

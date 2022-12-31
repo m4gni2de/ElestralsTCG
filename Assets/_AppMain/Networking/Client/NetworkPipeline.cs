@@ -80,6 +80,17 @@ public enum PlayerActivity
     Left = 896
 }
 
+public enum ChatActivity : ushort
+{
+    NewChat = 1000,
+    NewChatResponse = 1001,
+
+}
+public enum MessageGroupId
+{
+    GameChat = 10
+}
+
 public class NetworkPipeline
 {
     //[MenuItem("Remote DB/Upload Deck")]
@@ -323,6 +334,7 @@ public class NetworkPipeline
         m.Add(obj3);
         return m;
     }
+
     #endregion
     public static void SendMessageToServer(Message message)
     {

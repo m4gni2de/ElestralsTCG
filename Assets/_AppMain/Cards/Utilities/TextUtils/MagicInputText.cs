@@ -13,7 +13,7 @@ public class MagicInputText : MagicTextBox, iValidate
         DisplayMode = 0,
         EditMode = 1,
     }
-    private bool IsDisplayMode { get => Mode == InputMode.DisplayMode; }
+    protected bool IsDisplayMode { get => Mode == InputMode.DisplayMode; }
     #endregion
     #region Interface
     private List<string> _errorList = null;
@@ -30,18 +30,18 @@ public class MagicInputText : MagicTextBox, iValidate
     #endregion
 
     #region Properties
-    [SerializeField] private TMP_InputField InputText;
+    [SerializeField] protected TMP_InputField InputText;
     [SerializeField] private Button editButton;
-    [SerializeField] private Button cancelButton;
+    [SerializeField] protected Button cancelButton;
     [SerializeField] private Button displayButton;
 
-    [SerializeField] private int minLength = 0;
-    [SerializeField] private int maxLength = 30;
-    [SerializeField] private InputMode _mode;
-    public InputMode Mode
+    [SerializeField] protected int minLength = 0;
+    [SerializeField] protected int maxLength = 30;
+    [SerializeField] protected InputMode _mode;
+    public virtual InputMode Mode
     {
         get { return _mode; }
-        private set
+        protected set
         {
             InputMode current = _mode;
             _mode = value;
@@ -63,9 +63,9 @@ public class MagicInputText : MagicTextBox, iValidate
             InputText.text = value;
         }
     }
-    
-    private MagicTextBox _placeHolder = null;
-    private MagicTextBox placeHolder
+
+    protected MagicTextBox _placeHolder = null;
+    protected MagicTextBox placeHolder
     {
         get
         {
@@ -109,7 +109,7 @@ public class MagicInputText : MagicTextBox, iValidate
     public override void Refresh(bool clearListeners = true)
     {
         base.Refresh();
-        SaveInitialText = true;
+        SaveInitialText = false;
         _mode = InputMode.DisplayMode;
     }
     #endregion
@@ -252,7 +252,7 @@ public class MagicInputText : MagicTextBox, iValidate
         
     }
 
-    private void ToEditMode()
+    protected virtual void ToEditMode()
     {
         InputText.gameObject.SetActive(true);
         Input = Content;
@@ -332,14 +332,14 @@ public class MagicInputText : MagicTextBox, iValidate
 
 
     #region Validate Changes
-    private bool ValidateInput()
+    protected bool ValidateInput()
     {
         ErrorList.Clear();
         if (Mode != InputMode.EditMode) { return true; }
         if (Input.Length < minLength) { AddError($"Input text must be at least {minLength} Characters!"); }
         return ErrorList.Count <= 0;
     }
-    private bool HasChanges()
+    protected bool HasChanges()
     {
         if (Input != Content) { return true; }
         return false;
@@ -348,7 +348,7 @@ public class MagicInputText : MagicTextBox, iValidate
 
 
 
-    private void Rollback()
+    protected void Rollback()
     {
         InputText.SetTextWithoutNotify(Content);
         InputText.MoveTextEnd(true);
@@ -365,3 +365,5 @@ public class MagicInputText : MagicTextBox, iValidate
 
 
 }
+
+

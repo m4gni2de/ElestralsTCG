@@ -149,7 +149,7 @@ public class CustomScroll : MonoBehaviour
         return (T)cell;
     }
 
-    public List<iGridCell> VisibleCards()
+    public List<iGridCell> VisibleCells()
     {
         List<iGridCell> list = new List<iGridCell>();
         for (int i = 0; i < Cells.Count; i++)
